@@ -9,7 +9,7 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Gen Z vibrant color palette */
-    --background: 0 0% 100%;
+    --background: 245 100% 98%;
     --foreground: 240 10% 15%;
 
     --card: 0 0% 100%;
@@ -19,48 +19,52 @@ All colors MUST be HSL.
     --popover-foreground: 240 10% 15%;
 
     /* Vibrant purple-blue gradient brand */
-    --primary: 260 85% 60%;
-    --primary-glow: 260 90% 70%;
+    --primary: 260 100% 65%;
+    --primary-glow: 260 100% 75%;
     --primary-foreground: 0 0% 100%;
 
     /* Pink accent for energy */
-    --secondary: 330 80% 60%;
-    --secondary-glow: 330 85% 70%;
+    --secondary: 330 100% 65%;
+    --secondary-glow: 330 100% 75%;
     --secondary-foreground: 0 0% 100%;
 
     /* Success green for streaks */
-    --success: 150 70% 50%;
+    --success: 150 80% 45%;
     --success-foreground: 0 0% 100%;
 
     /* Muted backgrounds */
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 5% 45%;
+    --muted: 240 10% 95%;
+    --muted-foreground: 240 5% 50%;
 
     /* Orange accent for warnings */
-    --accent: 25 95% 55%;
+    --accent: 25 100% 60%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 85% 60%;
+    --destructive: 0 90% 65%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 10% 90%;
-    --input: 240 10% 90%;
-    --ring: 260 85% 60%;
+    --border: 240 20% 92%;
+    --input: 240 20% 94%;
+    --ring: 260 100% 65%;
 
-    --radius: 1rem;
+    --radius: 1.25rem;
 
     /* Custom gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(260, 85%, 60%), hsl(240, 90%, 65%));
-    --gradient-secondary: linear-gradient(135deg, hsl(330, 80%, 60%), hsl(350, 85%, 65%));
-    --gradient-success: linear-gradient(135deg, hsl(150, 70%, 50%), hsl(170, 75%, 55%));
+    --gradient-primary: linear-gradient(135deg, hsl(260, 100%, 65%), hsl(240, 100%, 70%));
+    --gradient-secondary: linear-gradient(135deg, hsl(330, 100%, 65%), hsl(350, 100%, 70%));
+    --gradient-success: linear-gradient(135deg, hsl(150, 80%, 45%), hsl(170, 85%, 50%));
+    --gradient-accent: linear-gradient(135deg, hsl(25, 100%, 60%), hsl(45, 100%, 55%));
     
     /* Shadows with color */
-    --shadow-primary: 0 10px 30px -10px hsl(260 85% 60% / 0.3);
-    --shadow-secondary: 0 10px 30px -10px hsl(330 80% 60% / 0.3);
-    --shadow-card: 0 4px 20px -4px hsl(240 10% 15% / 0.1);
+    --shadow-primary: 0 20px 50px -15px hsl(260 100% 65% / 0.4);
+    --shadow-secondary: 0 20px 50px -15px hsl(330 100% 65% / 0.4);
+    --shadow-success: 0 15px 40px -10px hsl(150 80% 45% / 0.3);
+    --shadow-card: 0 8px 30px -8px hsl(240 10% 15% / 0.12);
+    --shadow-hover: 0 15px 40px -10px hsl(240 10% 15% / 0.2);
     
     /* Smooth transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
   .dark {
@@ -130,6 +134,10 @@ All colors MUST be HSL.
   .gradient-success {
     background: var(--gradient-success);
   }
+
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
   
   .shadow-primary {
     box-shadow: var(--shadow-primary);
@@ -138,9 +146,17 @@ All colors MUST be HSL.
   .shadow-secondary {
     box-shadow: var(--shadow-secondary);
   }
+
+  .shadow-success {
+    box-shadow: var(--shadow-success);
+  }
   
   .shadow-card {
     box-shadow: var(--shadow-card);
+  }
+
+  .shadow-hover {
+    box-shadow: var(--shadow-hover);
   }
   
   .animate-float {
@@ -149,16 +165,49 @@ All colors MUST be HSL.
   
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+    50% { transform: translateY(-15px); }
   }
   
   .animate-gradient {
     background-size: 200% 200%;
-    animation: gradient 3s ease infinite;
+    animation: gradient 4s ease infinite;
   }
   
   @keyframes gradient {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
+  }
+
+  .animate-bounce-slow {
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+  }
+
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .card-hover {
+    transition: var(--transition-smooth);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-hover);
   }
 }

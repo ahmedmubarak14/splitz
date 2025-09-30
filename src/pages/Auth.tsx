@@ -66,25 +66,30 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 gradient-primary animate-gradient">
-      <Card className="w-full max-w-md shadow-primary">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 rounded-2xl gradient-secondary flex items-center justify-center shadow-secondary">
-              <Sparkles className="w-8 h-8 text-white" />
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(260,100%,70%,0.1),transparent_50%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,hsl(330,100%,70%,0.1),transparent_50%)]"></div>
+      
+      <Card className="w-full max-w-md shadow-card border-2 relative z-10">
+        <CardHeader className="space-y-4 text-center pb-6">
+          <div className="flex justify-center">
+            <div className="w-20 h-20 rounded-3xl gradient-primary flex items-center justify-center shadow-primary animate-pulse-glow">
+              <Sparkles className="w-10 h-10 text-white" />
             </div>
           </div>
-          <CardTitle className="text-3xl font-bold">
-            {isLogin ? t('home.login') : t('home.signup')}
-          </CardTitle>
-          <CardDescription>
-            {isLogin
-              ? 'Welcome back to LinkUp!'
-              : 'Join LinkUp and start tracking your goals'}
-          </CardDescription>
+          <div>
+            <CardTitle className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              {isLogin ? t('home.login') : t('home.signup')}
+            </CardTitle>
+            <CardDescription className="text-base">
+              {isLogin
+                ? 'Welcome back to LinkUp!'
+                : 'Join LinkUp and start tracking your goals'}
+            </CardDescription>
+          </div>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleAuth} className="space-y-4">
+        <CardContent className="pt-2">
+          <form onSubmit={handleAuth} className="space-y-5">
             {!isLogin && (
               <div className="space-y-2">
                 <Input
@@ -93,7 +98,7 @@ const Auth = () => {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   required
-                  className="border-2 focus:border-primary"
+                  className="h-12 border-2 focus:border-primary text-base"
                 />
               </div>
             )}
@@ -104,7 +109,7 @@ const Auth = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="border-2 focus:border-primary"
+                className="h-12 border-2 focus:border-primary text-base"
               />
             </div>
             <div className="space-y-2">
@@ -115,22 +120,24 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="border-2 focus:border-primary"
+                className="h-12 border-2 focus:border-primary text-base"
               />
             </div>
             <Button
               type="submit"
               disabled={loading}
-              className="w-full gradient-primary text-white font-semibold shadow-primary hover:scale-105 transition-transform"
+              variant="gradient"
+              size="lg"
+              className="w-full text-base font-bold"
             >
               {loading ? t('common.loading') : isLogin ? t('home.login') : t('home.signup')}
             </Button>
           </form>
-          <div className="mt-4 text-center">
+          <div className="mt-6 text-center">
             <Button
               variant="link"
               onClick={() => setIsLogin(!isLogin)}
-              className="text-sm"
+              className="text-base font-medium"
             >
               {isLogin
                 ? "Don't have an account? Sign up"
