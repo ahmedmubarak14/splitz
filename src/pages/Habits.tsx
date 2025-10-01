@@ -42,8 +42,8 @@ const Habits = () => {
 
   const fetchHabits = async () => {
     try {
-      const { data, error } = await supabase
-        .from('habits' as any)
+      const { data, error } = await (supabase as any)
+        .from('habits')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -63,7 +63,7 @@ const Habits = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase.from('habits' as any).insert({
+      const { error } = await (supabase as any).from('habits').insert({
         user_id: user.id,
         title: newHabitTitle,
         icon: newHabitIcon,
@@ -86,7 +86,7 @@ const Habits = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase.from('habit_check_ins' as any).insert({
+      const { error } = await (supabase as any).from('habit_check_ins').insert({
         habit_id: habitId,
         user_id: user.id,
       });

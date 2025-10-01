@@ -27,11 +27,11 @@ const Profile = () => {
     }
     setUser(user);
 
-    const { data: profile } = await supabase
-      .from('profiles' as any)
+    const { data: profile } = await (supabase as any)
+      .from('profiles')
       .select('*')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
     
     setProfile(profile);
   };
