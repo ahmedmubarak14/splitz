@@ -55,21 +55,22 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-purple-50/30 to-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#F6F2E8] via-[#C5C0C9]/20 to-[#C0D6EA]/30">
       {/* Background Blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-300/20 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-300/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#C0D6EA]/30 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#DDFF55]/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-[#11425D]/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
       </div>
 
       {/* Fixed Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-700 to-cyan-500 flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-violet-700 to-cyan-500 bg-clip-text text-transparent">
+            <span className="text-2xl font-bold text-primary">
               LinkUp
             </span>
           </div>
@@ -135,15 +136,15 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-6">
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-100 to-cyan-100 border border-violet-200/50 mb-8 animate-fade-in">
-            <span className="text-sm font-medium text-violet-700">{t('hero.badge')}</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/50 border border-primary/20 mb-8 animate-fade-in">
+            <span className="text-sm font-medium text-primary">{t('hero.badge')}</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-violet-700 via-purple-600 to-cyan-500 bg-clip-text text-transparent leading-tight animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <h1 className="text-5xl md:text-7xl font-extrabold mb-6 text-primary leading-tight animate-fade-in" style={{ animationDelay: '0.1s' }}>
             {t('hero.title')}
           </h1>
 
-          <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
             {t('hero.subtitle')}
           </p>
 
@@ -179,8 +180,8 @@ const Index = () => {
                   onClick={() => setActiveTab('users')}
                   className={`flex-1 py-4 px-6 rounded-2xl font-semibold transition-all ${
                     activeTab === 'users'
-                      ? 'bg-gradient-to-r from-violet-700 to-cyan-500 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-primary text-white shadow-lg'
+                      : 'bg-muted text-foreground hover:bg-muted/80'
                   }`}
                 >
                   {t('tabs.users')}
@@ -189,16 +190,16 @@ const Index = () => {
                   onClick={() => setActiveTab('friends')}
                   className={`flex-1 py-4 px-6 rounded-2xl font-semibold transition-all ${
                     activeTab === 'friends'
-                      ? 'bg-gradient-to-r from-violet-700 to-cyan-500 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-primary text-white shadow-lg'
+                      : 'bg-muted text-foreground hover:bg-muted/80'
                   }`}
                 >
                   {t('tabs.friends')}
                 </button>
                 {/* Progress dots */}
                 <div className="absolute -top-4 right-0 flex gap-2">
-                  <div className={`w-2 h-2 rounded-full transition-colors ${activeTab === 'users' ? 'bg-violet-700' : 'bg-gray-300'}`}></div>
-                  <div className={`w-2 h-2 rounded-full transition-colors ${activeTab === 'friends' ? 'bg-cyan-500' : 'bg-gray-300'}`}></div>
+                  <div className={`w-2 h-2 rounded-full transition-colors ${activeTab === 'users' ? 'bg-primary' : 'bg-muted'}`}></div>
+                  <div className={`w-2 h-2 rounded-full transition-colors ${activeTab === 'friends' ? 'bg-primary' : 'bg-muted'}`}></div>
                 </div>
               </div>
 
@@ -206,36 +207,36 @@ const Index = () => {
               <div className="space-y-6">
                 {activeTab === 'users' ? (
                   <div className="animate-fade-in">
-                    <h3 className="text-2xl font-bold mb-4 text-gray-900">{t('showcase.users.title')}</h3>
+                    <h3 className="text-2xl font-bold mb-4 text-foreground">{t('showcase.users.title')}</h3>
                     <ul className="space-y-3">
-                      <li className="flex items-center gap-3 text-lg text-gray-700">
-                        <CheckCircle2 className="w-6 h-6 text-violet-600" />
+                      <li className="flex items-center gap-3 text-lg text-muted-foreground">
+                        <CheckCircle2 className="w-6 h-6 text-primary" />
                         {t('showcase.users.feature1')}
                       </li>
-                      <li className="flex items-center gap-3 text-lg text-gray-700">
-                        <CheckCircle2 className="w-6 h-6 text-violet-600" />
+                      <li className="flex items-center gap-3 text-lg text-muted-foreground">
+                        <CheckCircle2 className="w-6 h-6 text-primary" />
                         {t('showcase.users.feature2')}
                       </li>
-                      <li className="flex items-center gap-3 text-lg text-gray-700">
-                        <CheckCircle2 className="w-6 h-6 text-violet-600" />
+                      <li className="flex items-center gap-3 text-lg text-muted-foreground">
+                        <CheckCircle2 className="w-6 h-6 text-primary" />
                         {t('showcase.users.feature3')}
                       </li>
                     </ul>
                   </div>
                 ) : (
                   <div className="animate-fade-in">
-                    <h3 className="text-2xl font-bold mb-4 text-gray-900">{t('showcase.friends.title')}</h3>
+                    <h3 className="text-2xl font-bold mb-4 text-foreground">{t('showcase.friends.title')}</h3>
                     <ul className="space-y-3">
-                      <li className="flex items-center gap-3 text-lg text-gray-700">
-                        <CheckCircle2 className="w-6 h-6 text-cyan-600" />
+                      <li className="flex items-center gap-3 text-lg text-muted-foreground">
+                        <CheckCircle2 className="w-6 h-6 text-primary" />
                         {t('showcase.friends.feature1')}
                       </li>
-                      <li className="flex items-center gap-3 text-lg text-gray-700">
-                        <CheckCircle2 className="w-6 h-6 text-cyan-600" />
+                      <li className="flex items-center gap-3 text-lg text-muted-foreground">
+                        <CheckCircle2 className="w-6 h-6 text-primary" />
                         {t('showcase.friends.feature2')}
                       </li>
-                      <li className="flex items-center gap-3 text-lg text-gray-700">
-                        <CheckCircle2 className="w-6 h-6 text-cyan-600" />
+                      <li className="flex items-center gap-3 text-lg text-muted-foreground">
+                        <CheckCircle2 className="w-6 h-6 text-primary" />
                         {t('showcase.friends.feature3')}
                       </li>
                     </ul>
@@ -250,25 +251,25 @@ const Index = () => {
       {/* Trust Stats */}
       <section className="relative px-6 pb-20">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-          <Card className="rounded-2xl border border-gray-200/50 shadow-md text-center p-6 card-hover">
-            <Star className="w-8 h-8 text-yellow-500 mx-auto mb-3" />
-            <div className="text-3xl font-bold text-gray-900">4.9/5</div>
-            <div className="text-sm text-gray-600">{t('trust.rating')}</div>
+          <Card className="rounded-2xl border border-border shadow-md text-center p-6 card-hover">
+            <Star className="w-8 h-8 text-accent mx-auto mb-3" />
+            <div className="text-3xl font-bold text-foreground">4.9/5</div>
+            <div className="text-sm text-muted-foreground">{t('trust.rating')}</div>
           </Card>
-          <Card className="rounded-2xl border border-gray-200/50 shadow-md text-center p-6 card-hover">
-            <Zap className="w-8 h-8 text-orange-500 mx-auto mb-3" />
-            <div className="text-3xl font-bold text-gray-900">&lt; 2s</div>
-            <div className="text-sm text-gray-600">{t('trust.load')}</div>
+          <Card className="rounded-2xl border border-border shadow-md text-center p-6 card-hover">
+            <Zap className="w-8 h-8 text-accent mx-auto mb-3" />
+            <div className="text-3xl font-bold text-foreground">&lt; 2s</div>
+            <div className="text-sm text-muted-foreground">{t('trust.load')}</div>
           </Card>
-          <Card className="rounded-2xl border border-gray-200/50 shadow-md text-center p-6 card-hover">
-            <TrendingUp className="w-8 h-8 text-green-500 mx-auto mb-3" />
-            <div className="text-3xl font-bold text-gray-900">99.9%</div>
-            <div className="text-sm text-gray-600">{t('trust.uptime')}</div>
+          <Card className="rounded-2xl border border-border shadow-md text-center p-6 card-hover">
+            <TrendingUp className="w-8 h-8 text-success mx-auto mb-3" />
+            <div className="text-3xl font-bold text-foreground">99.9%</div>
+            <div className="text-sm text-muted-foreground">{t('trust.uptime')}</div>
           </Card>
-          <Card className="rounded-2xl border border-gray-200/50 shadow-md text-center p-6 card-hover">
-            <Shield className="w-8 h-8 text-blue-500 mx-auto mb-3" />
-            <div className="text-3xl font-bold text-gray-900">100%</div>
-            <div className="text-sm text-gray-600">{t('trust.privacy')}</div>
+          <Card className="rounded-2xl border border-border shadow-md text-center p-6 card-hover">
+            <Shield className="w-8 h-8 text-primary mx-auto mb-3" />
+            <div className="text-3xl font-bold text-foreground">100%</div>
+            <div className="text-sm text-muted-foreground">{t('trust.privacy')}</div>
           </Card>
         </div>
       </section>
@@ -277,8 +278,8 @@ const Index = () => {
       <section className="relative px-6 pb-20">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8">
           {/* Live Streaks */}
-          <Card className="rounded-3xl border-2 border-gray-200/50 shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-violet-700 to-purple-600 p-6">
+          <Card className="rounded-3xl border-2 border-border shadow-xl overflow-hidden">
+            <div className="bg-primary p-6">
               <h3 className="text-2xl font-bold text-white flex items-center gap-3">
                 <Target className="w-7 h-7" />
                 {t('live.streaks')}
@@ -286,18 +287,18 @@ const Index = () => {
             </div>
             <CardContent className="p-6 space-y-4">
               {liveStreaks.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors">
+                <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-muted/50 hover:bg-muted transition-colors">
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900">{item.user}</div>
-                    <div className="text-sm text-gray-600">{item.habit}</div>
+                    <div className="font-semibold text-foreground">{item.user}</div>
+                    <div className="text-sm text-muted-foreground">{item.habit}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-lg font-bold text-orange-600">🔥 {item.streak}d</div>
-                    <div className="text-xs text-gray-500">{item.lastCheckIn}</div>
+                    <div className="text-lg font-bold text-accent">🔥 {item.streak}d</div>
+                    <div className="text-xs text-muted-foreground">{item.lastCheckIn}</div>
                   </div>
                 </div>
               ))}
-              <div className="pt-4 border-t border-gray-200 text-sm text-gray-600 flex items-center gap-2">
+              <div className="pt-4 border-t border-border text-sm text-muted-foreground flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 {t('live.avgCheckIn')}: 3m
               </div>
@@ -305,32 +306,32 @@ const Index = () => {
           </Card>
 
           {/* Recent Splits */}
-          <Card className="rounded-3xl border-2 border-gray-200/50 shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-cyan-600 to-blue-600 p-6">
-              <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+          <Card className="rounded-3xl border-2 border-border shadow-xl overflow-hidden">
+            <div className="bg-secondary p-6">
+              <h3 className="text-2xl font-bold text-foreground flex items-center gap-3">
                 <DollarSign className="w-7 h-7" />
                 {t('live.splits')}
               </h3>
             </div>
             <CardContent className="p-6 space-y-4">
               {recentSplits.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors">
+                <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-muted/50 hover:bg-muted transition-colors">
                   <div className="flex-1">
-                    <div className="font-semibold text-gray-900">{item.group}</div>
-                    <div className="text-sm text-gray-600">SAR {item.total}</div>
+                    <div className="font-semibold text-foreground">{item.group}</div>
+                    <div className="text-sm text-muted-foreground">SAR {item.total}</div>
                   </div>
                   <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
                     item.members[0].delta.includes('+') 
-                      ? 'bg-green-100 text-green-700' 
+                      ? 'bg-success/20 text-success' 
                       : item.members[0].delta === 'Settled'
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'bg-orange-100 text-orange-700'
+                      ? 'bg-primary/20 text-primary'
+                      : 'bg-accent/20 text-accent'
                   }`}>
                     {item.members[0].delta}
                   </div>
                 </div>
               ))}
-              <div className="pt-4 border-t border-gray-200 text-sm text-gray-600 flex items-center gap-2">
+              <div className="pt-4 border-t border-border text-sm text-muted-foreground flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 {t('live.avgSettle')}: 24h
               </div>
@@ -343,54 +344,54 @@ const Index = () => {
       <section id="features" className="relative px-6 pb-20">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-violet-700 to-cyan-500 bg-clip-text text-transparent">
+            <h2 className="text-5xl font-bold mb-4 text-primary">
               {t('features.title')}
             </h2>
-            <p className="text-xl text-gray-600">{t('features.subtitle')}</p>
+            <p className="text-xl text-muted-foreground">{t('features.subtitle')}</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="rounded-3xl border-2 border-gray-200/50 shadow-lg card-hover overflow-hidden">
-              <div className="h-2 bg-gradient-to-r from-violet-700 to-purple-600"></div>
+            <Card className="rounded-3xl border-2 border-border shadow-lg card-hover overflow-hidden">
+              <div className="h-2 bg-primary"></div>
               <CardContent className="p-8">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-700 to-purple-600 flex items-center justify-center mb-6 shadow-lg">
+                <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mb-6 shadow-lg">
                   <Target className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-gray-900">{t('features.streaks.title')}</h3>
-                <p className="text-gray-600 leading-relaxed">{t('features.streaks.desc')}</p>
+                <h3 className="text-2xl font-bold mb-3 text-foreground">{t('features.streaks.title')}</h3>
+                <p className="text-muted-foreground leading-relaxed">{t('features.streaks.desc')}</p>
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-2 border-gray-200/50 shadow-lg card-hover overflow-hidden">
-              <div className="h-2 bg-gradient-to-r from-orange-500 to-red-500"></div>
+            <Card className="rounded-3xl border-2 border-border shadow-lg card-hover overflow-hidden">
+              <div className="h-2 bg-accent"></div>
               <CardContent className="p-8">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center mb-6 shadow-lg">
-                  <Trophy className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 rounded-2xl bg-accent flex items-center justify-center mb-6 shadow-lg">
+                  <Trophy className="w-8 h-8 text-foreground" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-gray-900">{t('features.challenges.title')}</h3>
-                <p className="text-gray-600 leading-relaxed">{t('features.challenges.desc')}</p>
+                <h3 className="text-2xl font-bold mb-3 text-foreground">{t('features.challenges.title')}</h3>
+                <p className="text-muted-foreground leading-relaxed">{t('features.challenges.desc')}</p>
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-2 border-gray-200/50 shadow-lg card-hover overflow-hidden">
-              <div className="h-2 bg-gradient-to-r from-cyan-600 to-blue-600"></div>
+            <Card className="rounded-3xl border-2 border-border shadow-lg card-hover overflow-hidden">
+              <div className="h-2 bg-secondary"></div>
               <CardContent className="p-8">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-600 to-blue-600 flex items-center justify-center mb-6 shadow-lg">
-                  <DollarSign className="w-8 h-8 text-white" />
+                <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center mb-6 shadow-lg">
+                  <DollarSign className="w-8 h-8 text-foreground" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-gray-900">{t('features.splitter.title')}</h3>
-                <p className="text-gray-600 leading-relaxed">{t('features.splitter.desc')}</p>
+                <h3 className="text-2xl font-bold mb-3 text-foreground">{t('features.splitter.title')}</h3>
+                <p className="text-muted-foreground leading-relaxed">{t('features.splitter.desc')}</p>
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-2 border-gray-200/50 shadow-lg card-hover overflow-hidden">
-              <div className="h-2 bg-gradient-to-r from-green-500 to-emerald-500"></div>
+            <Card className="rounded-3xl border-2 border-border shadow-lg card-hover overflow-hidden">
+              <div className="h-2 bg-success"></div>
               <CardContent className="p-8">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-6 shadow-lg">
+                <div className="w-16 h-16 rounded-2xl bg-success flex items-center justify-center mb-6 shadow-lg">
                   <MessageCircle className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-gray-900">{t('features.reminders.title')}</h3>
-                <p className="text-gray-600 leading-relaxed">{t('features.reminders.desc')}</p>
+                <h3 className="text-2xl font-bold mb-3 text-foreground">{t('features.reminders.title')}</h3>
+                <p className="text-muted-foreground leading-relaxed">{t('features.reminders.desc')}</p>
               </CardContent>
             </Card>
           </div>
@@ -401,29 +402,29 @@ const Index = () => {
       <section id="how" className="relative px-6 pb-20">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-violet-700 to-cyan-500 bg-clip-text text-transparent">
+            <h2 className="text-5xl font-bold mb-4 text-primary">
               {t('howItWorks.title')}
             </h2>
-            <p className="text-xl text-gray-600">{t('howItWorks.subtitle')}</p>
+            <p className="text-xl text-muted-foreground">{t('howItWorks.subtitle')}</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { icon: Users, title: t('howItWorks.step1.title'), desc: t('howItWorks.step1.desc'), color: 'violet' },
-              { icon: Trophy, title: t('howItWorks.step2.title'), desc: t('howItWorks.step2.desc'), color: 'cyan' },
-              { icon: Rocket, title: t('howItWorks.step3.title'), desc: t('howItWorks.step3.desc'), color: 'orange' },
+              { icon: Users, title: t('howItWorks.step1.title'), desc: t('howItWorks.step1.desc'), color: 'primary' },
+              { icon: Trophy, title: t('howItWorks.step2.title'), desc: t('howItWorks.step2.desc'), color: 'secondary' },
+              { icon: Rocket, title: t('howItWorks.step3.title'), desc: t('howItWorks.step3.desc'), color: 'accent' },
             ].map((step, idx) => {
               const Icon = step.icon;
               return (
-                <Card key={idx} className="rounded-3xl border-2 border-gray-200/50 shadow-lg text-center p-8 card-hover">
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-violet-100 to-cyan-100 flex items-center justify-center">
-                    <Icon className={`w-10 h-10 text-${step.color}-600`} />
+                <Card key={idx} className="rounded-3xl border-2 border-border shadow-lg text-center p-8 card-hover">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-muted flex items-center justify-center">
+                    <Icon className="w-10 h-10 text-primary" />
                   </div>
-                  <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full bg-${step.color}-100 text-${step.color}-700 font-bold mb-4`}>
+                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-bold mb-4">
                     {idx + 1}
                   </div>
-                  <h3 className="text-2xl font-bold mb-3 text-gray-900">{step.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{step.desc}</p>
+                  <h3 className="text-2xl font-bold mb-3 text-foreground">{step.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{step.desc}</p>
                 </Card>
               );
             })}
@@ -435,18 +436,18 @@ const Index = () => {
       <section id="pricing" className="relative px-6 pb-20">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-violet-700 to-cyan-500 bg-clip-text text-transparent">
+            <h2 className="text-5xl font-bold mb-4 text-primary">
               {t('pricing.title')}
             </h2>
-            <p className="text-xl text-gray-600">{t('pricing.subtitle')}</p>
+            <p className="text-xl text-muted-foreground">{t('pricing.subtitle')}</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-            <Card className="rounded-3xl border-2 border-violet-200 shadow-xl p-8 card-hover">
+            <Card className="rounded-3xl border-2 border-primary/50 shadow-xl p-8 card-hover">
               <div className="text-center mb-8">
-                <h3 className="text-3xl font-bold mb-2 text-gray-900">{t('pricing.free.title')}</h3>
-                <div className="text-5xl font-extrabold text-violet-700 mb-2">{t('pricing.free.price')}</div>
-                <p className="text-gray-600">{t('pricing.free.desc')}</p>
+                <h3 className="text-3xl font-bold mb-2 text-foreground">{t('pricing.free.title')}</h3>
+                <div className="text-5xl font-extrabold text-primary mb-2">{t('pricing.free.price')}</div>
+                <p className="text-muted-foreground">{t('pricing.free.desc')}</p>
               </div>
               <Button 
                 variant="gradient" 
@@ -457,11 +458,11 @@ const Index = () => {
               </Button>
             </Card>
 
-            <Card className="rounded-3xl border-2 border-gray-200 shadow-xl p-8 opacity-60">
+            <Card className="rounded-3xl border-2 border-border shadow-xl p-8 opacity-60">
               <div className="text-center mb-8">
-                <h3 className="text-3xl font-bold mb-2 text-gray-900">{t('pricing.pro.title')}</h3>
-                <div className="text-5xl font-extrabold text-gray-700 mb-2">{t('pricing.pro.price')}</div>
-                <p className="text-gray-600">{t('pricing.pro.desc')}</p>
+                <h3 className="text-3xl font-bold mb-2 text-foreground">{t('pricing.pro.title')}</h3>
+                <div className="text-5xl font-extrabold text-muted-foreground mb-2">{t('pricing.pro.price')}</div>
+                <p className="text-muted-foreground">{t('pricing.pro.desc')}</p>
               </div>
               <Button 
                 variant="outline" 
@@ -479,7 +480,7 @@ const Index = () => {
       <section className="relative px-6 pb-32">
         <div className="max-w-5xl mx-auto">
           <Card className="rounded-[2.5rem] overflow-hidden border-0 shadow-2xl">
-            <div className="bg-gradient-to-br from-violet-700 via-purple-600 to-cyan-500 p-16 text-center relative overflow-hidden">
+            <div className="bg-primary p-16 text-center relative overflow-hidden">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_70%)]"></div>
               <div className="relative">
                 <div className="inline-flex items-center gap-3 mb-6">
@@ -497,7 +498,7 @@ const Index = () => {
                   <Button
                     onClick={() => navigate('/auth')}
                     size="lg"
-                    className="text-xl px-14 py-8 bg-white text-violet-700 hover:bg-white/95 shadow-2xl hover:shadow-white/50 h-auto font-bold"
+                    className="text-xl px-14 py-8 bg-white text-primary hover:bg-white/95 shadow-2xl hover:shadow-white/50 h-auto font-bold"
                   >
                     {t('cta.start')} 🚀
                   </Button>
@@ -516,18 +517,18 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="relative px-6 py-12 border-t border-gray-200/50 bg-white/50 backdrop-blur-sm">
+      <footer className="relative px-6 py-12 border-t border-border bg-background/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-700 to-cyan-500 flex items-center justify-center shadow-lg">
+            <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-violet-700 to-cyan-500 bg-clip-text text-transparent">
+            <span className="text-2xl font-bold text-primary">
               LinkUp
             </span>
           </div>
-          <p className="text-gray-600 mb-4">{t('footer.tagline')}</p>
-          <p className="text-sm text-gray-500">© 2025 LinkUp. {t('footer.rights')}</p>
+          <p className="text-muted-foreground mb-4">{t('footer.tagline')}</p>
+          <p className="text-sm text-muted-foreground">© 2025 LinkUp. {t('footer.rights')}</p>
         </div>
       </footer>
     </div>
