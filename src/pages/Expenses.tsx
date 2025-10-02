@@ -159,11 +159,9 @@ const Expenses = () => {
         total_amount: 0,
       };
 
-      const { data: newExpense, error: expenseError } = await supabase
+      const { error: expenseError } = await supabase
         .from('expenses')
-        .insert(payload)
-        .select()
-        .single();
+        .insert(payload);
 
       if (expenseError) throw expenseError;
 
