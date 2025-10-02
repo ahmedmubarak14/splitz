@@ -21,6 +21,29 @@ export default function Dashboard() {
 
   useEffect(() => {
     checkAuth();
+    // Realtime subscriptions
+    const channel = supabase.channel('dashboard-realtime');
+
+    channel
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'habits' }, () => {
+        fetchDashboardData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'challenge_participants' }, () => {
+        fetchDashboardData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'challenges' }, () => {
+        fetchDashboardData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'expense_members' }, () => {
+        fetchDashboardData();
+      })
+      .subscribe();
+
+    return () => {
+      try {
+        supabase.removeChannel(channel);
+      } catch {}
+    };
   }, []);
 
   const checkAuth = async () => {
