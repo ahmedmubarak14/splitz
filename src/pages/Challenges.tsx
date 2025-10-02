@@ -17,6 +17,7 @@ import LanguageToggle from '@/components/LanguageToggle';
 import ChallengeCard from '@/components/ChallengeCard';
 import ChallengeDetailsDialog from '@/components/ChallengeDetailsDialog';
 import EditChallengeDialog from '@/components/EditChallengeDialog';
+import { InviteDialog } from '@/components/InviteDialog';
 
 type Challenge = Tables<'challenges'> & {
   participant_count?: number;

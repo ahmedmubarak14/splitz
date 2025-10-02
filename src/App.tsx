@@ -13,6 +13,7 @@ import Habits from "./pages/Habits";
 import Expenses from "./pages/Expenses";
 import Challenges from "./pages/Challenges";
 import Profile from "./pages/Profile";
+import JoinInvite from "./pages/JoinInvite";
 import NotFound from "./pages/NotFound";
 import './i18n/config';
 
@@ -28,6 +29,7 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/join/:inviteCode" element={<JoinInvite />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/habits" element={<Habits />} />
         <Route path="/expenses" element={<Expenses />} />
@@ -50,6 +52,7 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/join/:inviteCode" element={<JoinInvite />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/habits" element={<Habits />} />
             <Route path="/expenses" element={<Expenses />} />

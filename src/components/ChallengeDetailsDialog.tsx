@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Trophy, Users, Calendar, Target, TrendingUp, Crown } from 'lucide-react';
+import { Trophy, Users, Calendar, Target, TrendingUp, Crown, Share2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Tables } from '@/integrations/supabase/types';
+import { InviteDialog } from './InviteDialog';
 
 type ChallengeParticipant = {
   id: string;
@@ -38,6 +40,7 @@ const ChallengeDetailsDialog = ({
   onUpdateProgress
 }: ChallengeDetailsDialogProps) => {
   const { t } = useTranslation();
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   if (!challenge) return null;
 
@@ -220,6 +223,14 @@ const ChallengeDetailsDialog = ({
 
           {/* Actions */}
           <div className="flex gap-3 pt-2">
+            <Button
+              onClick={() => setInviteDialogOpen(true)}
+              variant="outline"
+              className="flex-1"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              Invite Friends
+            </Button>
             {challenge.is_participant ? (
               isActive && (
                 <Button
@@ -257,6 +268,14 @@ const ChallengeDetailsDialog = ({
           </div>
         </div>
       </DialogContent>
+      
+      <InviteDialog
+        open={inviteDialogOpen}
+        onOpenChange={setInviteDialogOpen}
+        resourceId={challenge.id}
+        resourceType="challenge"
+        resourceName={challenge.name}
+      />
     </Dialog>
   );
 };

@@ -212,6 +212,42 @@ export type Database = {
         }
         Relationships: []
       }
+      invitations: {
+        Row: {
+          created_at: string
+          created_by: string
+          current_uses: number | null
+          expires_at: string | null
+          id: string
+          invite_code: string
+          invite_type: string
+          max_uses: number | null
+          resource_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          current_uses?: number | null
+          expires_at?: string | null
+          id?: string
+          invite_code: string
+          invite_type: string
+          max_uses?: number | null
+          resource_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          current_uses?: number | null
+          expires_at?: string | null
+          id?: string
+          invite_code?: string
+          invite_type?: string
+          max_uses?: number | null
+          resource_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -244,6 +280,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      habit_checkin_date: {
+        Args: { checked_in_at: string }
+        Returns: string
+      }
       is_challenge_member: {
         Args: { _challenge_id: string; _user_id: string }
         Returns: boolean

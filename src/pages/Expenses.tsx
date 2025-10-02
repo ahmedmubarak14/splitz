@@ -14,6 +14,7 @@ import Navigation from '@/components/Navigation';
 import LanguageToggle from '@/components/LanguageToggle';
 import ExpenseCard from '@/components/ExpenseCard';
 import ExpenseDetailsDialog from '@/components/ExpenseDetailsDialog';
+import { InviteDialog } from '@/components/InviteDialog';
 
 type ExpenseWithDetails = Tables<'expenses'> & {
   member_count?: number;
@@ -36,6 +37,7 @@ const Expenses = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<ExpenseWithDetails | null>(null);
   
   // Create group form state
@@ -366,12 +368,24 @@ const Expenses = () => {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {expenses.map((expense) => (
-              <ExpenseCard
-                key={expense.id}
-                expense={expense}
-                onViewDetails={viewDetails}
-                onAddExpense={openAddExpense}
-              />
+              <div key={expense.id} className="relative">
+                <ExpenseCard
+                  expense={expense}
+                  onViewDetails={viewDetails}
+                  onAddExpense={openAddExpense}
+                />
+                <Button
+                  onClick={() => {
+                    setSelectedExpense(expense);
+                    setInviteDialogOpen(true);
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className="absolute top-4 right-4"
+                >
+                  Invite
+                </Button>
+              </div>
             ))}
           </div>
         )}
@@ -424,6 +438,16 @@ const Expenses = () => {
         onOpenChange={setDetailsDialogOpen}
         onToggleSettlement={toggleSettlement}
       />
+
+      {selectedExpense && (
+        <InviteDialog
+          open={inviteDialogOpen}
+          onOpenChange={setInviteDialogOpen}
+          resourceId={selectedExpense.id}
+          resourceType="expense"
+          resourceName={selectedExpense.name}
+        />
+      )}
 
       <Navigation />
     </div>
