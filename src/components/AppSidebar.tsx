@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, Link } from 'react-router-dom';
 import { Home, Target, DollarSign, Trophy, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,6 +12,7 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from '@/components/ui/sidebar';
+import logo from '@/assets/logo.png';
 
 const navItems = [
   { path: '/dashboard', icon: Home, labelKey: 'nav.dashboard' },
@@ -38,7 +39,9 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel className="px-4 py-6">
             {isCollapsed ? null : (
-              <img src="/logo.png" alt="LinkUp" className="h-8 w-auto" />
+              <Link to="/">
+                <img src={logo} alt="LinkUp" className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity" />
+              </Link>
             )}
           </SidebarGroupLabel>
           
