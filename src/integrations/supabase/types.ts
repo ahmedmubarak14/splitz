@@ -303,6 +303,10 @@ export type Database = {
         Args: { _expense_id: string; _user_id: string }
         Returns: boolean
       }
+      recalc_expense_split: {
+        Args: { _expense_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
