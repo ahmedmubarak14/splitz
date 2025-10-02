@@ -149,6 +149,8 @@ export type Database = {
           last_completed_at: string | null
           name: string
           streak_count: number | null
+          icon: string | null
+          best_streak: number | null
           updated_at: string
           user_id: string
         }
@@ -159,6 +161,8 @@ export type Database = {
           last_completed_at?: string | null
           name: string
           streak_count?: number | null
+          icon?: string | null
+          best_streak?: number | null
           updated_at?: string
           user_id: string
         }
@@ -169,8 +173,69 @@ export type Database = {
           last_completed_at?: string | null
           name?: string
           streak_count?: number | null
+          icon?: string | null
+          best_streak?: number | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      habit_check_ins: {
+        Row: {
+          id: string
+          habit_id: string
+          user_id: string
+          checked_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          habit_id: string
+          user_id: string
+          checked_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          habit_id?: string
+          user_id?: string
+          checked_at?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_check_ins_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          id: string
+          full_name: string | null
+          preferred_language: string | null
+          avatar_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          full_name?: string | null
+          preferred_language?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          full_name?: string | null
+          preferred_language?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }

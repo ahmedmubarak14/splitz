@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import type { Tables, TablesInsert } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,10 +14,10 @@ import LanguageToggle from '@/components/LanguageToggle';
 
 type Habit = {
   id: string;
-  title: string;
-  icon: string;
-  current_streak: number;
-  best_streak: number;
+  name: string;
+  icon: string | null;
+  streak_count: number | null;
+  best_streak: number | null;
 };
 
 const Habits = () => {
@@ -42,15 +43,25 @@ const Habits = () => {
 
   const fetchHabits = async () => {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('habits')
-        .select('*')
+        .select('id, name, icon, streak_count, best_streak, created_at')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setHabits(data || []);
-    } catch (error: any) {
-      toast.error('Failed to load habits');
+
+      const mapped: Habit[] = ((data as Tables<'habits'>[] | null) ?? []).map((row) => ({
+        id: row.id,
+        name: row.name,
+        icon: (row as any).icon ?? null,
+        streak_count: row.streak_count,
+        best_streak: (row as any).best_streak ?? null,
+      }));
+
+      setHabits(mapped);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to load habits';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -63,11 +74,12 @@ const Habits = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await (supabase as any).from('habits').insert({
+      const payload: TablesInsert<'habits'> = {
         user_id: user.id,
-        title: newHabitTitle,
+        name: newHabitTitle,
         icon: newHabitIcon,
-      });
+      };
+      const { error } = await supabase.from('habits').insert(payload);
 
       if (error) throw error;
 
@@ -76,8 +88,9 @@ const Habits = () => {
       setNewHabitIcon('🔥');
       setDialogOpen(false);
       fetchHabits();
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to create habit';
+      toast.error(message);
     }
   };
 
@@ -86,10 +99,10 @@ const Habits = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await (supabase as any).from('habit_check_ins').insert({
+      const { error } = await supabase.from('habit_check_ins').insert({
         habit_id: habitId,
         user_id: user.id,
-      });
+      } as TablesInsert<'habit_check_ins'>);
 
       if (error) {
         if (error.code === '23505') {
@@ -101,8 +114,9 @@ const Habits = () => {
         toast.success('Streak updated! 🔥');
         fetchHabits();
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to check in';
+      toast.error(message);
     }
   };
 
@@ -215,13 +229,13 @@ const Habits = () => {
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="text-5xl animate-pulse-glow">{habit.icon}</div>
+                      <div className="text-5xl animate-pulse-glow">{habit.icon || '🔥'}</div>
                       <div>
-                        <CardTitle className="text-xl mb-1">{habit.title}</CardTitle>
+                        <CardTitle className="text-xl mb-1">{habit.name}</CardTitle>
                         <CardDescription className="flex items-center gap-2">
                           <Flame className="w-5 h-5 text-orange-500 animate-bounce" />
                           <span className="font-bold text-xl text-orange-500">
-                            {habit.current_streak}
+                            {habit.streak_count ?? 0}
                           </span>
                           <span className="text-sm">{t('habits.days')}</span>
                         </CardDescription>
@@ -235,7 +249,7 @@ const Habits = () => {
                       {t('habits.bestStreak')}
                     </span>
                     <span className="font-bold text-lg flex items-center gap-1">
-                      <span className="text-primary">{habit.best_streak}</span>
+                      <span className="text-primary">{habit.best_streak ?? 0}</span>
                       {t('habits.days')}
                     </span>
                   </div>
