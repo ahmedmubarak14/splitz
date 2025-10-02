@@ -207,7 +207,7 @@ const Habits = () => {
                 <Target className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                <h1 className="font-display text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
                   {t('habits.title')}
                 </h1>
                 <p className="text-muted-foreground mt-1 flex items-center gap-2">

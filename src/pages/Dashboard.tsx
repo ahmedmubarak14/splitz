@@ -112,7 +112,7 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-4xl font-bold text-foreground mb-2">
+          <h1 className="font-display text-5xl md:text-6xl font-bold text-foreground mb-3">
             {t('dashboard.welcome')}
           </h1>
           <p className="text-muted-foreground">
@@ -122,7 +122,7 @@ export default function Dashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="border-primary/20 hover:shadow-lg transition-shadow">
+          <Card className="rounded-3xl border-2 shadow-card card-hover">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Active Habits
@@ -134,7 +134,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-secondary/20 hover:shadow-lg transition-shadow">
+          <Card className="rounded-3xl border-2 shadow-card card-hover">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Longest Streak
@@ -146,7 +146,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-accent/20 hover:shadow-lg transition-shadow">
+          <Card className="rounded-3xl border-2 shadow-card card-hover">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Active Challenges
@@ -158,7 +158,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-muted/20 hover:shadow-lg transition-shadow">
+          <Card className="rounded-3xl border-2 shadow-card card-hover">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Pending Expenses

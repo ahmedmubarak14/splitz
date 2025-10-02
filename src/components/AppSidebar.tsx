@@ -55,8 +55,8 @@ export function AppSidebar() {
                       end
                       className={({ isActive }) =>
                         isActive
-                          ? 'bg-primary/10 text-primary font-medium'
-                          : 'hover:bg-accent/50'
+                          ? 'bg-primary/10 text-primary font-semibold rounded-xl'
+                          : 'hover:bg-muted/70 rounded-xl'
                       }
                     >
                       <item.icon className="h-5 w-5" />
