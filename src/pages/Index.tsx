@@ -67,12 +67,11 @@ const Index = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-primary">
-              LinkUp
-            </span>
+            <img
+              src="/logo.png"
+              alt="LinkUp"
+              className="h-10 w-auto rounded-none"
+            />
           </div>
 
           {/* Desktop Nav */}
@@ -520,12 +519,11 @@ const Index = () => {
       <footer className="relative px-6 py-12 border-t border-border bg-background/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-primary">
-              LinkUp
-            </span>
+            <img
+              src="/logo.png"
+              alt="LinkUp"
+              className="h-10 w-auto"
+            />
           </div>
           <p className="text-muted-foreground mb-4">{t('footer.tagline')}</p>
           <p className="text-sm text-muted-foreground">© 2025 LinkUp. {t('footer.rights')}</p>

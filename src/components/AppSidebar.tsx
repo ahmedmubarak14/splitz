@@ -36,8 +36,10 @@ export function AppSidebar() {
     >
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-primary font-bold text-lg px-4 py-6">
-            {!isCollapsed && 'LinkUp'}
+          <SidebarGroupLabel className="px-4 py-6">
+            {isCollapsed ? null : (
+              <img src="/logo.png" alt="LinkUp" className="h-8 w-auto" />
+            )}
           </SidebarGroupLabel>
           
           <SidebarGroupContent>
