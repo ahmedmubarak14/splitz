@@ -252,6 +252,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          email: string | null
           full_name: string | null
           id: string
           preferred_language: string | null
@@ -260,6 +261,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id: string
           preferred_language?: string | null
@@ -268,6 +270,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
           preferred_language?: string | null
@@ -280,6 +283,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      backfill_profile_emails: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       habit_checkin_date: {
         Args: { checked_in_at: string }
         Returns: string

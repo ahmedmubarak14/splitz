@@ -161,21 +161,42 @@ const Expenses = () => {
         total_amount: 0,
       };
 
-      const { error: expenseError } = await supabase
+      const { data: newExpense, error: expenseError } = await supabase
         .from('expenses')
-        .insert(payload);
+        .insert(payload)
+        .select()
+        .single();
 
       if (expenseError) throw expenseError;
 
-      // Find users by email (using profiles table)
-      const { data: profiles } = await supabase
+      // Lookup users by email in profiles
+      const { data: foundProfiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, full_name')
-        .in('full_name', emails);
+        .select('id, email, full_name')
+        .in('email', emails);
 
-      // For now, we'll just create placeholder members
-      // In production, you'd have a proper user lookup by email
-      toast.success(`Group created! Add members manually for now.`);
+      if (profilesError) throw profilesError;
+
+      const foundEmails = new Set((foundProfiles || []).map((p: any) => (p.email || '').toLowerCase()));
+      const notFound = emails.filter(e => !foundEmails.has(e.toLowerCase()));
+
+      // Insert expense members for found users (exclude creator)
+      const membersToInsert = (foundProfiles || [])
+        .filter((p: any) => p.id !== user.id)
+        .map((p: any) => ({
+          expense_id: newExpense!.id,
+          user_id: p.id,
+          amount_owed: 0,
+        }));
+
+      if (membersToInsert.length > 0) {
+        const { error: membersInsertError } = await supabase
+          .from('expense_members')
+          .insert(membersToInsert as TablesInsert<'expense_members'>[]);
+        if (membersInsertError) throw membersInsertError;
+      }
+
+      toast.success(`Group created! Added ${membersToInsert.length} member(s).${notFound.length ? ` ${notFound.length} email(s) not found.` : ''}`);
       
       setGroupName('');
       setMemberEmails('');
