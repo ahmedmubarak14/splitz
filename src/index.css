@@ -8,102 +8,96 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Clean Black & White Design System */
-    --background: 0 0% 100%; /* Pure White */
-    --foreground: 0 0% 9%; /* Almost Black #171717 */
+    /* Professional Black & White Design System */
+    --background: 0 0% 99%; /* Off-white for reduced eye strain */
+    --foreground: 0 0% 9%; /* Rich black */
 
-    --card: 0 0% 100%;
+    --card: 0 0% 100%; /* Pure white cards */
     --card-foreground: 0 0% 9%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 9%;
 
-    /* Primary - Black */
+    /* Primary - Black with subtle variations */
     --primary: 0 0% 9%;
-    --primary-glow: 0 0% 20%;
+    --primary-glow: 0 0% 15%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Light Gray */
-    --secondary: 0 0% 96%;
+    /* Secondary - Subtle gray */
+    --secondary: 0 0% 97%;
     --secondary-glow: 0 0% 98%;
     --secondary-foreground: 0 0% 9%;
 
-    /* Success - Dark Gray */
-    --success: 0 0% 30%;
+    /* Success - Medium gray */
+    --success: 0 0% 20%;
     --success-foreground: 0 0% 100%;
 
-    /* Muted - Light Gray */
+    /* Muted - Light gray backgrounds */
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 45%;
 
-    /* Accent - Medium Gray */
-    --accent: 0 0% 15%;
+    /* Accent - Strong black for emphasis */
+    --accent: 0 0% 5%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
+    --border: 0 0% 92%; /* Subtle borders */
+    --input: 0 0% 96%;
     --ring: 0 0% 9%;
 
-    --radius: 1rem;
+    --radius: 0.75rem; /* Slightly rounded for modern feel */
 
-    /* Simple gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(0, 0%, 9%), hsl(0, 0%, 20%));
-    --gradient-secondary: linear-gradient(135deg, hsl(0, 0%, 96%), hsl(0, 0%, 98%));
-    --gradient-success: linear-gradient(135deg, hsl(0, 0%, 30%), hsl(0, 0%, 40%));
-    --gradient-accent: linear-gradient(135deg, hsl(0, 0%, 15%), hsl(0, 0%, 25%));
-    
-    /* Subtle shadows */
-    --shadow-primary: 0 10px 40px -10px hsl(0 0% 0% / 0.15);
-    --shadow-secondary: 0 8px 30px -8px hsl(0 0% 0% / 0.1);
-    --shadow-success: 0 8px 30px -8px hsl(0 0% 0% / 0.12);
-    --shadow-card: 0 4px 20px -4px hsl(0 0% 0% / 0.08);
-    --shadow-hover: 0 8px 30px -8px hsl(0 0% 0% / 0.15);
+    /* Professional shadows - layered for depth */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.08), 0 2px 4px -1px hsl(0 0% 0% / 0.04);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.08), 0 4px 6px -2px hsl(0 0% 0% / 0.04);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.08), 0 10px 10px -5px hsl(0 0% 0% / 0.02);
     
     /* Smooth transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .dark {
-    --background: 0 0% 9%; /* Almost Black */
-    --foreground: 0 0% 100%;
+    --background: 0 0% 9%;
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 12%;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 11%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 12%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 11%;
+    --popover-foreground: 0 0% 98%;
 
     --primary: 0 0% 98%;
-    --primary-glow: 0 0% 90%;
+    --primary-glow: 0 0% 85%;
     --primary-foreground: 0 0% 9%;
 
-    --secondary: 0 0% 15%;
-    --secondary-glow: 0 0% 20%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 0 0% 14%;
+    --secondary-glow: 0 0% 18%;
+    --secondary-foreground: 0 0% 98%;
 
-    --success: 0 0% 70%;
+    --success: 0 0% 80%;
     --success-foreground: 0 0% 9%;
 
-    --muted: 0 0% 15%;
+    --muted: 0 0% 14%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 0 0% 90%;
+    --accent: 0 0% 95%;
     --accent-foreground: 0 0% 9%;
 
     --destructive: 0 85% 65%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
+    --border: 0 0% 16%;
+    --input: 0 0% 14%;
     --ring: 0 0% 90%;
 
-    --shadow-primary: 0 10px 30px -10px hsl(0 0% 0% / 0.6);
-    --shadow-secondary: 0 8px 30px -8px hsl(0 0% 0% / 0.4);
-    --shadow-card: 0 4px 20px -4px hsl(0 0% 0% / 0.5);
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.3), 0 2px 4px -1px hsl(0 0% 0% / 0.2);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.3), 0 4px 6px -2px hsl(0 0% 0% / 0.2);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.4), 0 10px 10px -5px hsl(0 0% 0% / 0.1);
   }
 }
 
@@ -123,91 +117,53 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
-  .gradient-primary {
-    background: var(--gradient-primary);
+  /* Shadow utilities */
+  .shadow-sm {
+    box-shadow: var(--shadow-sm);
   }
   
-  .gradient-secondary {
-    background: var(--gradient-secondary);
+  .shadow-md {
+    box-shadow: var(--shadow-md);
   }
   
-  .gradient-success {
-    background: var(--gradient-success);
+  .shadow-lg {
+    box-shadow: var(--shadow-lg);
   }
 
-  .gradient-accent {
-    background: var(--gradient-accent);
+  .shadow-xl {
+    box-shadow: var(--shadow-xl);
   }
   
-  .shadow-primary {
-    box-shadow: var(--shadow-primary);
+  /* Smooth interactions */
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+
+  .transition-spring {
+    transition: var(--transition-spring);
   }
   
-  .shadow-secondary {
-    box-shadow: var(--shadow-secondary);
-  }
-
-  .shadow-success {
-    box-shadow: var(--shadow-success);
-  }
-  
-  .shadow-card {
-    box-shadow: var(--shadow-card);
-  }
-
-  .shadow-hover {
-    box-shadow: var(--shadow-hover);
-  }
-  
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-  
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
-  }
-  
-  .animate-gradient {
-    background-size: 200% 200%;
-    animation: gradient 4s ease infinite;
-  }
-  
-  @keyframes gradient {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-  }
-
-  .animate-bounce-slow {
-    animation: bounce 2s ease-in-out infinite;
-  }
-
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
-  }
-
-  .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse-glow {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.05); }
-  }
-
-  .glass-effect {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
+  /* Card hover effect */
   .card-hover {
     transition: var(--transition-smooth);
   }
 
   .card-hover:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
   }
+
+  /* Button press effect */
+  .btn-press:active {
+    transform: scale(0.98);
+  }
+}
+  
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
 }
