@@ -226,11 +226,47 @@ All colors MUST be HSL.
     box-shadow: var(--shadow-lg);
   }
   
-  /* Glass Effect */
-  .glass-effect {
-    background: hsl(var(--background) / 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--border) / 0.5);
+  /* Liquid Glass Effect - Apple Inspired */
+  .glass-card {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--background) / 0.7) 0%,
+      hsl(var(--background) / 0.5) 100%
+    );
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid hsl(var(--border) / 0.3);
+    box-shadow: 
+      0 8px 32px 0 hsl(0 0% 0% / 0.08),
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.1);
+  }
+  
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.1),
+      hsl(var(--secondary) / 0.05),
+      transparent
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  
+  .dark .glass-card {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--background) / 0.6) 0%,
+      hsl(var(--background) / 0.4) 100%
+    );
+    box-shadow: 
+      0 8px 32px 0 hsl(0 0% 0% / 0.3),
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.05);
   }
 }

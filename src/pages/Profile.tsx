@@ -151,7 +151,7 @@ const Profile = () => {
         </div>
 
         {/* Profile Card */}
-        <Card className="shadow-card border-2 card-hover overflow-hidden">
+        <Card className="card-hover">
           <div className="h-32 gradient-primary"></div>
           <CardHeader className="-mt-16 relative">
             <div className="flex flex-col sm:flex-row items-center sm:items-end gap-6">
@@ -261,7 +261,7 @@ const Profile = () => {
         </Card>
 
         {/* Additional Info Card */}
-        <Card className="shadow-card border-2">
+        <Card>
           <CardHeader>
             <CardTitle className="text-xl">About LinkUp</CardTitle>
           </CardHeader>

@@ -278,7 +278,7 @@ const Habits = () => {
             <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent"></div>
           </div>
         ) : habits.length === 0 ? (
-          <Card className="shadow-lg border">
+          <Card>
             <CardContent className="flex flex-col items-center justify-center py-24 text-center">
               <div className="w-20 h-20 rounded-2xl gradient-primary flex items-center justify-center mb-6 shadow-primary">
                 <Target className="w-10 h-10 text-white" />
@@ -294,7 +294,7 @@ const Habits = () => {
             {habits.map((habit) => (
               <Card
                 key={habit.id}
-                className="shadow-md border card-hover overflow-hidden bg-gradient-to-br from-background to-muted/20"
+                className="card-hover"
               >
                 <div className="h-1 gradient-primary"></div>
                 <CardHeader className="pb-4">
@@ -310,7 +310,7 @@ const Habits = () => {
                                 <MoreVertical className="w-4 h-4" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="bg-card">
+                            <DropdownMenuContent align="end" className="glass-card border-0">
                               <DropdownMenuItem onClick={() => openEditDialog(habit)}>
                                 <Pencil className="w-4 h-4 mr-2" />
                                 Edit
@@ -337,7 +337,7 @@ const Habits = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl">
+                  <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl backdrop-blur-sm">
                     <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                       {t('habits.bestStreak')}
                     </span>

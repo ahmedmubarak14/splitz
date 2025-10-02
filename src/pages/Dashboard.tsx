@@ -122,7 +122,7 @@ export default function Dashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          <Card className="border shadow-md card-hover bg-gradient-to-br from-background to-muted/30">
+          <Card className="card-hover">
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Active Habits
@@ -136,7 +136,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border shadow-md card-hover bg-gradient-to-br from-background to-muted/30">
+          <Card className="card-hover">
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Longest Streak
@@ -151,7 +151,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border shadow-md card-hover bg-gradient-to-br from-background to-muted/30">
+          <Card className="card-hover">
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Active Challenges
@@ -165,7 +165,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border shadow-md card-hover bg-gradient-to-br from-background to-muted/30">
+          <Card className="card-hover">
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Pending Expenses
