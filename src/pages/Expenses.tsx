@@ -277,7 +277,7 @@ const Expenses = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background pb-24 md:pb-8">
+    <div className="min-h-screen bg-background pb-24 md:pb-8">
       <LanguageToggle />
       
       <div className="max-w-6xl mx-auto p-6 space-y-8">
@@ -285,11 +285,11 @@ const Expenses = () => {
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl gradient-secondary flex items-center justify-center shadow-secondary animate-pulse-glow">
-                <DollarSign className="w-7 h-7 text-foreground" />
+              <div className="w-14 h-14 rounded-2xl bg-foreground flex items-center justify-center shadow-card">
+                <DollarSign className="w-7 h-7 text-background" />
               </div>
               <div>
-                <h1 className="font-display text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                <h1 className="font-display text-5xl md:text-6xl font-extrabold text-foreground">
                   {t('expenses.title')}
                 </h1>
                 <p className="text-muted-foreground mt-1 flex items-center gap-2">
@@ -302,7 +302,7 @@ const Expenses = () => {
           
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" variant="gradient" className="text-lg">
+              <Button size="lg" className="text-lg bg-foreground text-background hover:bg-foreground/90">
                 <Plus className="w-5 h-5 mr-2" />
                 {t('expenses.createGroup')}
               </Button>
@@ -338,8 +338,7 @@ const Expenses = () => {
                 </div>
                 <Button 
                   onClick={createGroup} 
-                  className="w-full h-12 text-base"
-                  variant="gradient"
+                  className="w-full h-12 text-base bg-foreground text-background hover:bg-foreground/90"
                 >
                   Create Group
                 </Button>
@@ -356,8 +355,8 @@ const Expenses = () => {
         ) : expenses.length === 0 ? (
           <Card className="shadow-card border-2">
             <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-20 h-20 rounded-3xl gradient-secondary flex items-center justify-center mb-6 animate-bounce-slow">
-                <Users className="w-10 h-10 text-foreground" />
+              <div className="w-20 h-20 rounded-3xl bg-foreground flex items-center justify-center mb-6 shadow-card">
+                <Users className="w-10 h-10 text-background" />
               </div>
               <h3 className="text-2xl font-bold mb-2">No Expense Groups Yet</h3>
               <p className="text-lg text-muted-foreground max-w-md">
@@ -411,8 +410,7 @@ const Expenses = () => {
             </div>
             <Button 
               onClick={addExpenseToGroup} 
-              className="w-full h-12 text-base"
-              variant="gradient"
+              className="w-full h-12 text-base bg-foreground text-background hover:bg-foreground/90"
             >
               Add Expense
             </Button>

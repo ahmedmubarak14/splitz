@@ -184,7 +184,7 @@ export default function Dashboard() {
               <Button
                 key={action.title}
                 onClick={action.action}
-                className={`h-24 bg-gradient-to-br ${action.gradient} hover:opacity-90 transition-opacity`}
+                className="h-24 bg-foreground text-background hover:bg-foreground/90"
                 size="lg"
               >
                 <action.icon className="h-6 w-6 mr-3" />

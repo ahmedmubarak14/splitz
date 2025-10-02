@@ -195,7 +195,7 @@ const Habits = () => {
   const emojiOptions = ['🔥', '💪', '🎯', '📚', '🏃', '🧘', '💧', '🌱', '⭐', '🎨'];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background pb-24 md:pb-8">
+    <div className="min-h-screen bg-background pb-24 md:pb-8">
       <LanguageToggle />
       
       <div className="max-w-6xl mx-auto p-6 space-y-8">
@@ -203,11 +203,11 @@ const Habits = () => {
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl gradient-success flex items-center justify-center shadow-success animate-pulse-glow">
-                <Target className="w-7 h-7 text-white" />
+              <div className="w-14 h-14 rounded-2xl bg-foreground flex items-center justify-center shadow-card">
+                <Target className="w-7 h-7 text-background" />
               </div>
               <div>
-                <h1 className="font-display text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                <h1 className="font-display text-5xl md:text-6xl font-extrabold text-foreground">
                   {t('habits.title')}
                 </h1>
                 <p className="text-muted-foreground mt-1 flex items-center gap-2">
@@ -222,8 +222,7 @@ const Habits = () => {
             <DialogTrigger asChild>
               <Button 
                 size="lg"
-                variant="gradient"
-                className="text-lg"
+                className="text-lg bg-foreground text-background hover:bg-foreground/90"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 {t('habits.createNew')}
@@ -263,8 +262,7 @@ const Habits = () => {
                 />
                 <Button 
                   onClick={createHabit} 
-                  className="w-full h-12 text-base"
-                  variant="gradient"
+                  className="w-full h-12 text-base bg-foreground text-background hover:bg-foreground/90"
                 >
                   {t('common.add')}
                 </Button>
@@ -281,8 +279,8 @@ const Habits = () => {
         ) : habits.length === 0 ? (
           <Card className="shadow-card border-2">
             <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-20 h-20 rounded-3xl gradient-primary flex items-center justify-center mb-6 animate-bounce-slow shadow-primary">
-                <Target className="w-10 h-10 text-white" />
+              <div className="w-20 h-20 rounded-3xl bg-foreground flex items-center justify-center mb-6 shadow-card">
+                <Target className="w-10 h-10 text-background" />
               </div>
               <h3 className="text-2xl font-bold mb-2">Start Your Journey!</h3>
               <p className="text-lg text-muted-foreground max-w-md">
@@ -295,9 +293,9 @@ const Habits = () => {
             {habits.map((habit) => (
               <Card
                 key={habit.id}
-                className="shadow-card border-2 hover:border-primary card-hover overflow-hidden"
+                className="shadow-card border hover:border-foreground card-hover overflow-hidden"
               >
-                <div className="h-2 gradient-primary"></div>
+                <div className="h-2 bg-foreground"></div>
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 flex-1">
@@ -349,8 +347,7 @@ const Habits = () => {
                   </div>
                   <Button
                     onClick={() => checkInHabit(habit.id)}
-                    className="w-full h-11"
-                    variant="success"
+                    className="w-full h-11 bg-foreground text-background hover:bg-foreground/90"
                   >
                     {t('habits.checkIn')} ✓
                   </Button>
@@ -398,8 +395,7 @@ const Habits = () => {
             <div className="flex gap-2">
               <Button 
                 onClick={updateHabit} 
-                className="flex-1 h-12 text-base"
-                variant="gradient"
+                className="flex-1 h-12 text-base bg-foreground text-background hover:bg-foreground/90"
               >
                 Update Habit
               </Button>
