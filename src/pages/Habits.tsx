@@ -195,22 +195,22 @@ const Habits = () => {
   const emojiOptions = ['🔥', '💪', '🎯', '📚', '🏃', '🧘', '💧', '🌱', '⭐', '🎨'];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background pb-24 md:pb-8">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 p-6 animate-slide-up">
       <LanguageToggle />
       
-      <div className="max-w-6xl mx-auto p-6 space-y-8">
+      <div className="max-w-6xl mx-auto space-y-8">
         {/* Header Section */}
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl gradient-success flex items-center justify-center shadow-success animate-pulse-glow">
-                <Target className="w-7 h-7 text-white" />
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center shadow-primary">
+                <Target className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="font-display text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                <h1 className="text-5xl md:text-6xl font-bold text-foreground tracking-tight">
                   {t('habits.title')}
                 </h1>
-                <p className="text-muted-foreground mt-1 flex items-center gap-2">
+                <p className="text-lg text-muted-foreground mt-1 flex items-center gap-2">
                   <TrendingUp className="w-4 h-4" />
                   {t('habits.myHabits')}
                 </p>
@@ -223,20 +223,19 @@ const Habits = () => {
               <Button 
                 size="lg"
                 variant="gradient"
-                className="text-lg"
               >
-                <Plus className="w-5 h-5 mr-2" />
+                <Plus className="w-5 h-5" />
                 {t('habits.createNew')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle className="text-2xl">{t('habits.createNew')}</DialogTitle>
+                <DialogTitle className="text-2xl font-bold">{t('habits.createNew')}</DialogTitle>
                 <DialogDescription className="text-base">
                   Create a new habit to track your progress
                 </DialogDescription>
               </DialogHeader>
-              <div className="space-y-6 pt-4">
+              <div className="space-y-5 pt-4">
                 <div>
                   <label className="text-sm font-semibold mb-3 block">Choose an emoji</label>
                   <div className="flex gap-2 flex-wrap">
@@ -244,10 +243,10 @@ const Habits = () => {
                       <button
                         key={emoji}
                         onClick={() => setNewHabitIcon(emoji)}
-                        className={`text-4xl p-3 rounded-2xl transition-all hover:scale-110 ${
+                        className={`text-4xl p-3 rounded-xl transition-all hover:scale-110 ${
                           newHabitIcon === emoji 
-                            ? 'bg-primary/20 scale-110 ring-2 ring-primary' 
-                            : 'bg-muted hover:bg-muted/70'
+                            ? 'bg-primary/10 scale-110 ring-2 ring-primary shadow-md' 
+                            : 'bg-muted/50 hover:bg-muted'
                         }`}
                       >
                         {emoji}
@@ -263,7 +262,7 @@ const Habits = () => {
                 />
                 <Button 
                   onClick={createHabit} 
-                  className="w-full h-12 text-base"
+                  className="w-full h-12"
                   variant="gradient"
                 >
                   {t('common.add')}
@@ -279,39 +278,39 @@ const Habits = () => {
             <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent"></div>
           </div>
         ) : habits.length === 0 ? (
-          <Card className="shadow-card border-2">
-            <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-20 h-20 rounded-3xl gradient-primary flex items-center justify-center mb-6 animate-bounce-slow shadow-primary">
+          <Card className="shadow-lg border">
+            <CardContent className="flex flex-col items-center justify-center py-24 text-center">
+              <div className="w-20 h-20 rounded-2xl gradient-primary flex items-center justify-center mb-6 shadow-primary">
                 <Target className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-2xl font-bold mb-2">Start Your Journey!</h3>
+              <h3 className="text-3xl font-bold mb-3">Start Your Journey!</h3>
               <p className="text-lg text-muted-foreground max-w-md">
                 {t('habits.noHabits')}
               </p>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {habits.map((habit) => (
               <Card
                 key={habit.id}
-                className="shadow-card border-2 hover:border-primary card-hover overflow-hidden"
+                className="shadow-md border card-hover overflow-hidden bg-gradient-to-br from-background to-muted/20"
               >
-                <div className="h-2 gradient-primary"></div>
+                <div className="h-1 gradient-primary"></div>
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4 flex-1">
-                      <div className="text-5xl animate-pulse-glow">{habit.icon || '🔥'}</div>
+                      <div className="text-5xl">{habit.icon || '🔥'}</div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <CardTitle className="text-xl mb-1">{habit.name}</CardTitle>
+                          <CardTitle className="text-xl font-bold">{habit.name}</CardTitle>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="icon" className="h-8 w-8">
                                 <MoreVertical className="w-4 h-4" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
+                            <DropdownMenuContent align="end" className="bg-card">
                               <DropdownMenuItem onClick={() => openEditDialog(habit)}>
                                 <Pencil className="w-4 h-4 mr-2" />
                                 Edit
@@ -326,9 +325,9 @@ const Habits = () => {
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
-                        <CardDescription className="flex items-center gap-2">
-                          <Flame className="w-5 h-5 text-orange-500 animate-bounce" />
-                          <span className="font-bold text-xl text-orange-500">
+                        <CardDescription className="flex items-center gap-2 mt-1">
+                          <Flame className="w-5 h-5 text-accent" />
+                          <span className="font-bold text-xl text-accent">
                             {habit.streak_count ?? 0}
                           </span>
                           <span className="text-sm">{t('habits.days')}</span>
@@ -338,18 +337,18 @@ const Habits = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-muted rounded-xl">
-                    <span className="text-sm font-medium text-muted-foreground">
+                  <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl">
+                    <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                       {t('habits.bestStreak')}
                     </span>
                     <span className="font-bold text-lg flex items-center gap-1">
                       <span className="text-primary">{habit.best_streak ?? 0}</span>
-                      {t('habits.days')}
+                      <span className="text-sm text-muted-foreground">{t('habits.days')}</span>
                     </span>
                   </div>
                   <Button
                     onClick={() => checkInHabit(habit.id)}
-                    className="w-full h-11"
+                    className="w-full"
                     variant="success"
                   >
                     {t('habits.checkIn')} ✓

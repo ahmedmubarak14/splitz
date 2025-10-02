@@ -32,21 +32,21 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className={isCollapsed ? 'w-14' : 'w-60'}
+      className={`${isCollapsed ? 'w-14' : 'w-64'} border-r shadow-sm`}
       collapsible="icon"
     >
-      <SidebarContent>
+      <SidebarContent className="py-6">
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 py-6">
+          <SidebarGroupLabel className="px-4 py-4 mb-2">
             {isCollapsed ? null : (
-              <Link to="/">
-                <img src={logo} alt="LinkUp" className="h-6 w-auto cursor-pointer hover:opacity-80 transition-opacity" />
+              <Link to="/" className="flex items-center">
+                <img src={logo} alt="LinkUp" className="h-7 w-auto cursor-pointer hover:opacity-80 transition-opacity" />
               </Link>
             )}
           </SidebarGroupLabel>
           
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-1 px-2">
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <SidebarMenuButton asChild>
@@ -55,12 +55,12 @@ export function AppSidebar() {
                       end
                       className={({ isActive }) =>
                         isActive
-                          ? 'bg-primary/10 text-primary font-semibold rounded-xl'
-                          : 'hover:bg-muted/70 rounded-xl'
+                          ? 'bg-primary/10 text-primary font-semibold rounded-xl h-11 px-3 transition-all shadow-sm'
+                          : 'hover:bg-muted rounded-xl h-11 px-3 transition-all text-muted-foreground hover:text-foreground'
                       }
                     >
                       <item.icon className="h-5 w-5" />
-                      {!isCollapsed && <span>{t(item.labelKey)}</span>}
+                      {!isCollapsed && <span className="text-sm font-medium">{t(item.labelKey)}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

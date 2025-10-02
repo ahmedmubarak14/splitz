@@ -9,14 +9,14 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary hover:shadow-lg hover:scale-105",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-md hover:shadow-lg hover:scale-105",
-        outline: "border-2 border-primary bg-background text-primary hover:bg-primary hover:text-primary-foreground shadow-sm hover:shadow-md hover:scale-105",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-secondary hover:shadow-lg hover:scale-105",
-        ghost: "hover:bg-accent hover:text-accent-foreground hover:scale-105",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg hover:scale-[1.02]",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-md hover:shadow-lg hover:scale-[1.02]",
+        outline: "border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-sm hover:shadow-md",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-md hover:shadow-lg hover:scale-[1.02]",
+        ghost: "hover:bg-accent/10 hover:text-accent",
         link: "text-primary underline-offset-4 hover:underline",
-        gradient: "bg-gradient-to-r from-primary to-secondary text-white shadow-primary hover:shadow-lg hover:scale-105 animate-gradient bg-[length:200%_200%]",
-        success: "bg-gradient-to-r from-[hsl(150,80%,45%)] to-[hsl(170,85%,50%)] text-white shadow-md hover:shadow-lg hover:scale-105",
+        gradient: "gradient-primary text-white shadow-primary hover:shadow-xl hover:scale-[1.02]",
+        success: "bg-success text-success-foreground hover:bg-success/90 shadow-success hover:shadow-lg hover:scale-[1.02]",
       },
       size: {
         default: "h-11 px-6 py-2",
