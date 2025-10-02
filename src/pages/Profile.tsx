@@ -64,8 +64,7 @@ const Profile = () => {
       };
       const { error } = await supabase
         .from('profiles')
-        .update(update)
-        .eq('id', user.id);
+        .upsert({ id: user.id, ...update }, { onConflict: 'id' });
 
       if (error) throw error;
 
@@ -101,8 +100,7 @@ const Profile = () => {
 
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ avatar_url: publicUrl } as TablesUpdate<'profiles'>)
-        .eq('id', user.id);
+        .upsert({ id: user.id, avatar_url: publicUrl }, { onConflict: 'id' });
       if (updateError) throw updateError;
 
       setProfile((prev) => prev ? ({ ...prev, avatar_url: publicUrl }) as Tables<'profiles'> : prev);
