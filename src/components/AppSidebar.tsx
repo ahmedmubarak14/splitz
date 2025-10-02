@@ -40,7 +40,7 @@ export function AppSidebar() {
           <SidebarGroupLabel className="px-4 py-6">
             {isCollapsed ? null : (
               <Link to="/">
-                <img src={logo} alt="LinkUp" className="h-12 w-auto cursor-pointer hover:opacity-80 transition-opacity" />
+                <img src={logo} alt="LinkUp" className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity" />
               </Link>
             )}
           </SidebarGroupLabel>

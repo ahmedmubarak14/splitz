@@ -71,7 +71,7 @@ const Index = () => {
             <img
               src={logo}
               alt="LinkUp"
-              className="h-14 w-auto rounded-none cursor-pointer hover:opacity-80 transition-opacity"
+              className="h-10 w-auto rounded-none cursor-pointer hover:opacity-80 transition-opacity"
             />
           </Link>
 
