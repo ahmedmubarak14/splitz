@@ -83,7 +83,7 @@ const JoinInvite = () => {
   };
 
   const joinResource = async () => {
-    if (!invitation || !resourceDetails) return;
+    if (!invitation) return;
 
     setJoining(true);
     try {

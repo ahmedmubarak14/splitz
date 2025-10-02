@@ -287,6 +287,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      can_join_via_invite: {
+        Args: { _invite_type: string; _resource_id: string; _user_id: string }
+        Returns: boolean
+      }
       habit_checkin_date: {
         Args: { checked_in_at: string }
         Returns: string
