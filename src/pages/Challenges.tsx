@@ -5,6 +5,7 @@ import type { Tables, TablesInsert } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -15,6 +16,7 @@ import Navigation from '@/components/Navigation';
 import LanguageToggle from '@/components/LanguageToggle';
 import ChallengeCard from '@/components/ChallengeCard';
 import ChallengeDetailsDialog from '@/components/ChallengeDetailsDialog';
+import EditChallengeDialog from '@/components/EditChallengeDialog';
 
 type Challenge = Tables<'challenges'> & {
   participant_count?: number;
@@ -35,8 +37,12 @@ const Challenges = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+  const [deletingChallenge, setDeletingChallenge] = useState<Challenge | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'joined'>('all');
+  const [currentUserId, setCurrentUserId] = useState<string>('');
   
   // Form state
   const [name, setName] = useState('');
@@ -63,6 +69,8 @@ const Challenges = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+
+      setCurrentUserId(user.id);
 
       const { data: challengesData, error: challengesError } = await supabase
         .from('challenges')
@@ -228,6 +236,73 @@ const Challenges = () => {
     }
   };
 
+  const openEditDialog = (challenge: Challenge) => {
+    setSelectedChallenge(challenge);
+    setEditDialogOpen(true);
+  };
+
+  const updateChallenge = async (id: string, name: string, description: string, startDate: string, endDate: string) => {
+    if (!name.trim() || !startDate || !endDate) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (new Date(endDate) <= new Date(startDate)) {
+      toast.error('End date must be after start date');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('challenges')
+        .update({
+          name: name.trim(),
+          description: description.trim() || null,
+          start_date: startDate,
+          end_date: endDate,
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success('Challenge updated! ✓');
+      setEditDialogOpen(false);
+      fetchChallenges();
+    } catch (error) {
+      console.error('Error updating challenge:', error);
+      toast.error('Failed to update challenge');
+    }
+  };
+
+  const openDeleteDialog = (challengeId: string) => {
+    const challenge = challenges.find(c => c.id === challengeId);
+    if (challenge) {
+      setDeletingChallenge(challenge);
+      setDeleteDialogOpen(true);
+    }
+  };
+
+  const deleteChallenge = async () => {
+    if (!deletingChallenge) return;
+
+    try {
+      const { error } = await supabase
+        .from('challenges')
+        .delete()
+        .eq('id', deletingChallenge.id);
+
+      if (error) throw error;
+
+      toast.success('Challenge deleted');
+      setDeleteDialogOpen(false);
+      setDeletingChallenge(null);
+      fetchChallenges();
+    } catch (error) {
+      console.error('Error deleting challenge:', error);
+      toast.error('Failed to delete challenge');
+    }
+  };
+
   const filteredChallenges = activeTab === 'joined' 
     ? challenges.filter(c => c.is_participant)
     : challenges;
@@ -359,6 +434,9 @@ const Challenges = () => {
                     onJoin={joinChallenge}
                     onLeave={leaveChallenge}
                     onViewDetails={viewDetails}
+                    onEdit={openEditDialog}
+                    onDelete={openDeleteDialog}
+                    currentUserId={currentUserId}
                   />
                 ))}
               </div>
@@ -375,6 +453,30 @@ const Challenges = () => {
         onLeave={leaveChallenge}
         onUpdateProgress={updateProgress}
       />
+
+      <EditChallengeDialog
+        challenge={selectedChallenge}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onSave={updateChallenge}
+      />
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Challenge</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{deletingChallenge?.name}"? This will also delete all participant data. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={deleteChallenge} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Navigation />
     </div>

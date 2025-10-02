@@ -1,7 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, Users, Calendar, TrendingUp } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Trophy, Users, Calendar, TrendingUp, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -17,13 +18,17 @@ interface ChallengeCardProps {
   onJoin?: (id: string) => void;
   onLeave?: (id: string) => void;
   onViewDetails?: (id: string) => void;
+  onEdit?: (challenge: Challenge) => void;
+  onDelete?: (id: string) => void;
+  currentUserId?: string;
 }
 
-const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails }: ChallengeCardProps) => {
+const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDelete, currentUserId }: ChallengeCardProps) => {
   const { t } = useTranslation();
 
   const isActive = new Date(challenge.end_date) >= new Date();
   const daysLeft = Math.ceil((new Date(challenge.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  const isCreator = challenge.creator_id === currentUserId;
 
   return (
     <Card className="shadow-card border-2 hover:border-primary card-hover overflow-hidden">
@@ -38,6 +43,28 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails }: ChallengeC
               <Badge variant={isActive ? "default" : "secondary"}>
                 {isActive ? t('challenges.active') : 'Ended'}
               </Badge>
+              {isCreator && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 ml-auto">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onEdit?.(challenge)}>
+                      <Pencil className="w-4 h-4 mr-2" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => onDelete?.(challenge.id)}
+                      className="text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
             <CardTitle className="text-xl mb-1">{challenge.name}</CardTitle>
             <CardDescription className="line-clamp-2">

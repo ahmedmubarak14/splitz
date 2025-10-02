@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import type { Tables, TablesInsert } from '@/integrations/supabase/types';
+import type { Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import { Flame, Plus, Target, TrendingUp } from 'lucide-react';
+import { Flame, Plus, Target, TrendingUp, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -26,6 +28,17 @@ const Habits = () => {
   const [newHabitTitle, setNewHabitTitle] = useState('');
   const [newHabitIcon, setNewHabitIcon] = useState('🔥');
   const [dialogOpen, setDialogOpen] = useState(false);
+  
+  // Edit state
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editIcon, setEditIcon] = useState('🔥');
+  
+  // Delete state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingHabit, setDeletingHabit] = useState<Habit | null>(null);
+  
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -116,6 +129,65 @@ const Habits = () => {
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to check in';
+      toast.error(message);
+    }
+  };
+
+  const openEditDialog = (habit: Habit) => {
+    setEditingHabit(habit);
+    setEditTitle(habit.name);
+    setEditIcon(habit.icon || '🔥');
+    setEditDialogOpen(true);
+  };
+
+  const updateHabit = async () => {
+    if (!editingHabit || !editTitle.trim()) return;
+
+    try {
+      const payload: TablesUpdate<'habits'> = {
+        name: editTitle.trim(),
+        icon: editIcon,
+      };
+
+      const { error } = await supabase
+        .from('habits')
+        .update(payload)
+        .eq('id', editingHabit.id);
+
+      if (error) throw error;
+
+      toast.success('Habit updated! ✓');
+      setEditDialogOpen(false);
+      setEditingHabit(null);
+      fetchHabits();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to update habit';
+      toast.error(message);
+    }
+  };
+
+  const openDeleteDialog = (habit: Habit) => {
+    setDeletingHabit(habit);
+    setDeleteDialogOpen(true);
+  };
+
+  const deleteHabit = async () => {
+    if (!deletingHabit) return;
+
+    try {
+      const { error } = await supabase
+        .from('habits')
+        .delete()
+        .eq('id', deletingHabit.id);
+
+      if (error) throw error;
+
+      toast.success('Habit deleted');
+      setDeleteDialogOpen(false);
+      setDeletingHabit(null);
+      fetchHabits();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to delete habit';
       toast.error(message);
     }
   };
@@ -228,10 +300,32 @@ const Habits = () => {
                 <div className="h-2 gradient-primary"></div>
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 flex-1">
                       <div className="text-5xl animate-pulse-glow">{habit.icon || '🔥'}</div>
-                      <div>
-                        <CardTitle className="text-xl mb-1">{habit.name}</CardTitle>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-xl mb-1">{habit.name}</CardTitle>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreVertical className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => openEditDialog(habit)}>
+                                <Pencil className="w-4 h-4 mr-2" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => openDeleteDialog(habit)}
+                                className="text-destructive"
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                         <CardDescription className="flex items-center gap-2">
                           <Flame className="w-5 h-5 text-orange-500 animate-bounce" />
                           <span className="font-bold text-xl text-orange-500">
@@ -266,6 +360,78 @@ const Habits = () => {
           </div>
         )}
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Edit Habit</DialogTitle>
+            <DialogDescription className="text-base">
+              Update your habit details
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 pt-4">
+            <div>
+              <label className="text-sm font-semibold mb-3 block">Choose an emoji</label>
+              <div className="flex gap-2 flex-wrap">
+                {emojiOptions.map((emoji) => (
+                  <button
+                    key={emoji}
+                    onClick={() => setEditIcon(emoji)}
+                    className={`text-4xl p-3 rounded-2xl transition-all hover:scale-110 ${
+                      editIcon === emoji 
+                        ? 'bg-primary/20 scale-110 ring-2 ring-primary' 
+                        : 'bg-muted hover:bg-muted/70'
+                    }`}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <Input
+              placeholder="Habit name"
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              className="h-12 text-base"
+            />
+            <div className="flex gap-2">
+              <Button 
+                onClick={updateHabit} 
+                className="flex-1 h-12 text-base"
+                variant="gradient"
+              >
+                Update Habit
+              </Button>
+              <Button 
+                onClick={() => setEditDialogOpen(false)} 
+                variant="outline"
+                className="h-12"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Habit</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{deletingHabit?.name}"? This will also delete all check-in history. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={deleteHabit} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Navigation />
     </div>
