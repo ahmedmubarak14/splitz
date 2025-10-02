@@ -33,9 +33,16 @@ const JoinInvite = () => {
         .from('invitations')
         .select('*')
         .eq('invite_code', inviteCode)
-        .single();
+        .maybeSingle();
 
-      if (inviteError || !inviteData) {
+      if (inviteError) {
+        console.error('Error fetching invitation:', inviteError);
+        toast.error('Failed to load invitation');
+        navigate('/');
+        return;
+      }
+
+      if (!inviteData) {
         toast.error('Invalid or expired invitation');
         navigate('/');
         return;
