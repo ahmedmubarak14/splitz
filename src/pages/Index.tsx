@@ -519,13 +519,13 @@ const Index = () => {
       {/* Footer */}
       <footer className="relative px-6 py-12 border-t border-border bg-background/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
+          <Link to="/" className="flex items-center justify-center gap-3 mb-4">
             <img
-              src="/logo.png"
+              src={logo}
               alt="LinkUp"
-              className="h-10 w-auto"
+              className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
             />
-          </div>
+          </Link>
           <p className="text-muted-foreground mb-4">{t('footer.tagline')}</p>
           <p className="text-sm text-muted-foreground">© 2025 LinkUp. {t('footer.rights')}</p>
         </div>
