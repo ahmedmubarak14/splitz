@@ -8,7 +8,7 @@ const Navigation = () => {
   const { t } = useTranslation();
 
   const navItems = [
-    { path: '/', icon: Home, label: t('nav.home') },
+    { path: '/dashboard', icon: Home, label: t('nav.dashboard') },
     { path: '/habits', icon: Target, label: t('nav.habits') },
     { path: '/expenses', icon: DollarSign, label: t('nav.expenses') },
     { path: '/challenges', icon: Trophy, label: t('nav.challenges') },

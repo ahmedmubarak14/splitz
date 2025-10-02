@@ -6,6 +6,8 @@ const resources = {
   en: {
     translation: {
       nav: {
+        home: 'Home',
+        dashboard: 'Dashboard',
         habits: 'Habits',
         expenses: 'Expenses',
         challenges: 'Challenges',
@@ -16,6 +18,10 @@ const resources = {
         faq: 'FAQ',
         login: 'Login',
         getStarted: 'Get Started',
+      },
+      dashboard: {
+        welcome: 'Welcome back!',
+        subtitle: 'Here\'s an overview of your habits, challenges, and expenses',
       },
       common: {
         save: 'Save',
@@ -161,6 +167,8 @@ const resources = {
   ar: {
     translation: {
       nav: {
+        home: 'الرئيسية',
+        dashboard: 'لوحة التحكم',
         habits: 'العادات',
         expenses: 'المصاريف',
         challenges: 'التحديات',
@@ -171,6 +179,10 @@ const resources = {
         faq: 'الأسئلة',
         login: 'تسجيل الدخول',
         getStarted: 'ابدأ الآن',
+      },
+      dashboard: {
+        welcome: 'مرحباً بعودتك!',
+        subtitle: 'إليك نظرة عامة على عاداتك وتحدياتك ومصاريفك',
       },
       common: {
         save: 'حفظ',

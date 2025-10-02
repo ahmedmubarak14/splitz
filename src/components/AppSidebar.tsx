@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/sidebar';
 
 const navItems = [
-  { path: '/', icon: Home, labelKey: 'nav.home' },
+  { path: '/dashboard', icon: Home, labelKey: 'nav.dashboard' },
   { path: '/habits', icon: Target, labelKey: 'nav.habits' },
   { path: '/expenses', icon: DollarSign, labelKey: 'nav.expenses' },
   { path: '/challenges', icon: Trophy, labelKey: 'nav.challenges' },

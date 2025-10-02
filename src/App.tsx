@@ -8,6 +8,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import Navigation from "@/components/Navigation";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
 import Habits from "./pages/Habits";
 import Expenses from "./pages/Expenses";
 import Challenges from "./pages/Challenges";
@@ -27,6 +28,7 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/habits" element={<Habits />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/challenges" element={<Challenges />} />
@@ -47,6 +49,7 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/habits" element={<Habits />} />
             <Route path="/expenses" element={<Expenses />} />
             <Route path="/challenges" element={<Challenges />} />
