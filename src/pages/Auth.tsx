@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import logo from '@/assets/logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -72,11 +73,13 @@ const Auth = () => {
       
       <Card className="w-full max-w-md shadow-card border-2 relative z-10">
         <CardHeader className="space-y-4 text-center pb-6">
-          <div className="flex justify-center">
-            <div className="w-20 h-20 rounded-3xl gradient-primary flex items-center justify-center shadow-primary animate-pulse-glow">
-              <Sparkles className="w-10 h-10 text-white" />
-            </div>
-          </div>
+          <Link to="/" className="flex justify-center">
+            <img
+              src={logo}
+              alt="LinkUp"
+              className="h-16 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+            />
+          </Link>
           <div>
             <CardTitle className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               {isLogin ? t('home.login') : t('home.signup')}
