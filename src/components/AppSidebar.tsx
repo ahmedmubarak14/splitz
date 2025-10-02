@@ -32,13 +32,19 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className={`${isCollapsed ? 'w-14' : 'w-64'} border-r shadow-sm`}
+      className={`${isCollapsed ? 'w-14' : 'w-64'} border-r shadow-sm transition-all duration-300`}
       collapsible="icon"
     >
       <SidebarContent className="py-6">
         <SidebarGroup>
           <SidebarGroupLabel className="px-4 py-4 mb-2">
-            {isCollapsed ? null : (
+            {isCollapsed ? (
+              <div className="flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">L</span>
+                </div>
+              </div>
+            ) : (
               <Link to="/" className="flex items-center">
                 <img src={logo} alt="LinkUp" className="h-7 w-auto cursor-pointer hover:opacity-80 transition-opacity" />
               </Link>
