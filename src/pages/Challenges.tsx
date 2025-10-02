@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Trophy } from 'lucide-react';
+import { Trophy, ArrowUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -158,9 +158,25 @@ const Challenges = () => {
                   </div>
                   <Button variant="outline" onClick={() => joinChallenge(c.id)}>Join</Button>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
                   {c.challenge_participants?.length ? (
-                    <div className="text-sm text-muted-foreground">Participants: {c.challenge_participants.length}</div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Leaderboard</div>
+                      {[...c.challenge_participants]
+                        .sort((a, b) => (b.progress || 0) - (a.progress || 0))
+                        .map((p, idx) => (
+                          <div key={p.id} className="flex items-center justify-between p-2 rounded-xl bg-muted mb-1">
+                            <div className="text-sm">
+                              <span className="font-semibold mr-2">#{idx + 1}</span>
+                              <span>{p.user_id}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm">
+                              <ArrowUp className="w-4 h-4" />
+                              <span>{p.progress ?? 0}</span>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
                   ) : (
                     <div className="text-sm text-muted-foreground">No participants yet.</div>
                   )}

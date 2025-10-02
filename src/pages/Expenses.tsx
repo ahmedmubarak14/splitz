@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { DollarSign, Users } from 'lucide-react';
+import { DollarSign, Users, Trash2, Edit3, Equal } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -129,6 +129,38 @@ const Expenses = () => {
     }
   };
 
+  const deleteMember = async (memberId: string) => {
+    try {
+      const { error } = await supabase.from('expense_members').delete().eq('id', memberId);
+      if (error) throw error;
+      await fetchExpenses();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to remove member';
+      toast.error(message);
+    }
+  };
+
+  const equalSplit = async (expenseId: string) => {
+    try {
+      const exp = expenses.find((e) => e.id === expenseId);
+      if (!exp) return;
+      const members = exp.expense_members || [];
+      if (members.length === 0) {
+        toast.error('Add members first');
+        return;
+      }
+      const share = Number(exp.total_amount) / members.length;
+      const updates = members.map((m) => ({ id: m.id, amount_owed: share }));
+      const { error } = await supabase.from('expense_members').upsert(updates, { onConflict: 'id' });
+      if (error) throw error;
+      toast.success('Split equally');
+      await fetchExpenses();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to split equally';
+      toast.error(message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-8">
       <LanguageToggle />
@@ -181,7 +213,12 @@ const Expenses = () => {
                   </div>
                   <Dialog open={memberOpenFor === exp.id} onOpenChange={(o) => setMemberOpenFor(o ? exp.id : null)}>
                     <DialogTrigger asChild>
-                      <Button variant="outline">Add Member</Button>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline">Add Member</Button>
+                        <Button variant="secondary" onClick={() => equalSplit(exp.id)}>
+                          <Equal className="w-4 h-4 mr-2" /> Equal split
+                        </Button>
+                      </div>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-md">
                       <DialogHeader>
@@ -211,6 +248,9 @@ const Expenses = () => {
                             </span>
                             <Button size="sm" variant="outline" onClick={() => markSettled(m.id, !m.is_settled)}>
                               {m.is_settled ? 'Mark Unsettled' : 'Mark Settled'}
+                            </Button>
+                            <Button size="sm" variant="destructive" onClick={() => deleteMember(m.id)}>
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
