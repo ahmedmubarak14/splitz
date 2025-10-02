@@ -141,66 +141,27 @@ export type Database = {
         }
         Relationships: []
       }
-      habits: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: string
-          last_completed_at: string | null
-          name: string
-          streak_count: number | null
-          icon: string | null
-          best_streak: number | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          last_completed_at?: string | null
-          name: string
-          streak_count?: number | null
-          icon?: string | null
-          best_streak?: number | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          last_completed_at?: string | null
-          name?: string
-          streak_count?: number | null
-          icon?: string | null
-          best_streak?: number | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       habit_check_ins: {
         Row: {
-          id: string
-          habit_id: string
-          user_id: string
-          checked_at: string
+          checked_in_at: string
           created_at: string
+          habit_id: string
+          id: string
+          user_id: string
         }
         Insert: {
-          id?: string
-          habit_id: string
-          user_id: string
-          checked_at?: string
+          checked_in_at?: string
           created_at?: string
+          habit_id: string
+          id?: string
+          user_id: string
         }
         Update: {
-          id?: string
-          habit_id?: string
-          user_id?: string
-          checked_at?: string
+          checked_in_at?: string
           created_at?: string
+          habit_id?: string
+          id?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -212,29 +173,68 @@ export type Database = {
           },
         ]
       }
+      habits: {
+        Row: {
+          best_streak: number | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          last_completed_at: string | null
+          name: string
+          streak_count: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          best_streak?: number | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          last_completed_at?: string | null
+          name: string
+          streak_count?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          best_streak?: number | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          last_completed_at?: string | null
+          name?: string
+          streak_count?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
-          id: string
-          full_name: string | null
-          preferred_language: string | null
           avatar_url: string | null
           created_at: string
+          full_name: string | null
+          id: string
+          preferred_language: string | null
           updated_at: string
         }
         Insert: {
-          id: string
-          full_name?: string | null
-          preferred_language?: string | null
           avatar_url?: string | null
           created_at?: string
+          full_name?: string | null
+          id: string
+          preferred_language?: string | null
           updated_at?: string
         }
         Update: {
-          id?: string
-          full_name?: string | null
-          preferred_language?: string | null
           avatar_url?: string | null
           created_at?: string
+          full_name?: string | null
+          id?: string
+          preferred_language?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -244,7 +244,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_challenge_member: {
+        Args: { _challenge_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_expense_member: {
+        Args: { _expense_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
