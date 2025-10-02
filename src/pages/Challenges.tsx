@@ -139,8 +139,18 @@ const Challenges = () => {
         end_date: endDate,
       };
 
-      const { error } = await supabase.from('challenges').insert(payload);
+      const { data: created, error } = await supabase.from('challenges').insert(payload).select('id').single();
       if (error) throw error;
+
+      // Add creator as initial participant
+      const { error: participantError } = await supabase
+        .from('challenge_participants')
+        .insert({
+          challenge_id: created.id,
+          user_id: user.id,
+          progress: 0,
+        });
+      if (participantError) throw participantError;
 
       toast.success('Challenge created! 🎉');
       setName('');

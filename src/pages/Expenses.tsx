@@ -145,11 +145,6 @@ const Expenses = () => {
       .map(e => e.trim())
       .filter(e => e.length > 0);
 
-    if (emails.length === 0) {
-      toast.error('Please add at least one member email');
-      return;
-    }
-
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
@@ -169,34 +164,50 @@ const Expenses = () => {
 
       if (expenseError) throw expenseError;
 
-      // Lookup users by email in profiles
-      const { data: foundProfiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, email, full_name')
-        .in('email', emails);
-
-      if (profilesError) throw profilesError;
-
-      const foundEmails = new Set((foundProfiles || []).map((p: any) => (p.email || '').toLowerCase()));
-      const notFound = emails.filter(e => !foundEmails.has(e.toLowerCase()));
-
-      // Insert expense members for found users (exclude creator)
-      const membersToInsert = (foundProfiles || [])
-        .filter((p: any) => p.id !== user.id)
-        .map((p: any) => ({
+      // Add creator as initial member
+      const { error: addCreatorError } = await supabase
+        .from('expense_members')
+        .insert({
           expense_id: newExpense!.id,
-          user_id: p.id,
+          user_id: user.id,
           amount_owed: 0,
-        }));
+        });
+      if (addCreatorError) throw addCreatorError;
 
-      if (membersToInsert.length > 0) {
-        const { error: membersInsertError } = await supabase
-          .from('expense_members')
-          .insert(membersToInsert as TablesInsert<'expense_members'>[]);
-        if (membersInsertError) throw membersInsertError;
+
+      let addedCount = 0;
+      let notFound: string[] = [];
+
+      if (emails.length > 0) {
+        // Lookup users by email in profiles
+        const { data: foundProfiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, email, full_name')
+          .in('email', emails);
+        if (profilesError) throw profilesError;
+
+        const foundEmails = new Set((foundProfiles || []).map((p: any) => (p.email || '').toLowerCase()));
+        notFound = emails.filter(e => !foundEmails.has(e.toLowerCase()));
+
+        // Insert expense members for found users (exclude creator)
+        const membersToInsert = (foundProfiles || [])
+          .filter((p: any) => p.id !== user.id)
+          .map((p: any) => ({
+            expense_id: newExpense!.id,
+            user_id: p.id,
+            amount_owed: 0,
+          }));
+
+        if (membersToInsert.length > 0) {
+          const { error: membersInsertError } = await supabase
+            .from('expense_members')
+            .insert(membersToInsert as TablesInsert<'expense_members'>[]);
+          if (membersInsertError) throw membersInsertError;
+          addedCount = membersToInsert.length;
+        }
       }
 
-      toast.success(`Group created! Added ${membersToInsert.length} member(s).${notFound.length ? ` ${notFound.length} email(s) not found.` : ''}`);
+      toast.success(`Group created! Added ${addedCount} member(s).${notFound.length ? ` ${notFound.length} email(s) not found.` : ''}`);
       
       setGroupName('');
       setMemberEmails('');
