@@ -8,96 +8,102 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Professional Black & White Design System */
-    --background: 0 0% 99%; /* Off-white for reduced eye strain */
-    --foreground: 0 0% 9%; /* Rich black */
+    /* Color palette: Cheviot, Grape Mist, Pacific Panorama, Isotonic Water, Neptune's Wrath, Midnight Dreams */
+    --background: 45 38% 94%; /* Cheviot #F6F2E8 */
+    --foreground: 200 100% 10%; /* Midnight Dreams #002233 */
 
-    --card: 0 0% 100%; /* Pure white cards */
-    --card-foreground: 0 0% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 200 100% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
+    --popover-foreground: 200 100% 10%;
 
-    /* Primary - Black with subtle variations */
-    --primary: 0 0% 9%;
-    --primary-glow: 0 0% 15%;
+    /* Neptune's Wrath - dark teal */
+    --primary: 201 69% 22%; /* #11425D */
+    --primary-glow: 201 69% 32%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Subtle gray */
-    --secondary: 0 0% 97%;
-    --secondary-glow: 0 0% 98%;
-    --secondary-foreground: 0 0% 9%;
+    /* Pacific Panorama - light blue */
+    --secondary: 206 49% 83%; /* #C0D6EA */
+    --secondary-glow: 206 49% 88%;
+    --secondary-foreground: 200 100% 10%;
 
-    /* Success - Medium gray */
-    --success: 0 0% 20%;
+    /* Success - Pacific Panorama for positive actions */
+    --success: 206 49% 70%;
     --success-foreground: 0 0% 100%;
 
-    /* Muted - Light gray backgrounds */
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    /* Muted - Grape Mist */
+    --muted: 270 12% 90%;
+    --muted-foreground: 270 12% 40%;
 
-    /* Accent - Strong black for emphasis */
-    --accent: 0 0% 5%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent - Isotonic Water lime green */
+    --accent: 68 100% 67%; /* #DDFF55 */
+    --accent-foreground: 200 100% 10%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 90% 65%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 92%; /* Subtle borders */
-    --input: 0 0% 96%;
-    --ring: 0 0% 9%;
+    --border: 270 12% 85%;
+    --input: 270 12% 90%;
+    --ring: 201 69% 22%;
 
-    --radius: 0.75rem; /* Slightly rounded for modern feel */
+    --radius: 1.25rem;
 
-    /* Professional shadows - layered for depth */
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.08), 0 2px 4px -1px hsl(0 0% 0% / 0.04);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.08), 0 4px 6px -2px hsl(0 0% 0% / 0.04);
-    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.08), 0 10px 10px -5px hsl(0 0% 0% / 0.02);
+    /* Custom gradients using new palette */
+    --gradient-primary: linear-gradient(135deg, hsl(201, 69%, 22%), hsl(201, 69%, 35%));
+    --gradient-secondary: linear-gradient(135deg, hsl(206, 49%, 83%), hsl(206, 49%, 70%));
+    --gradient-success: linear-gradient(135deg, hsl(206, 49%, 70%), hsl(206, 49%, 60%));
+    --gradient-accent: linear-gradient(135deg, hsl(68, 100%, 67%), hsl(68, 100%, 75%));
+    
+    /* Shadows with color */
+    --shadow-primary: 0 20px 50px -15px hsl(201 69% 22% / 0.4);
+    --shadow-secondary: 0 20px 50px -15px hsl(206 49% 70% / 0.3);
+    --shadow-success: 0 15px 40px -10px hsl(206 49% 70% / 0.3);
+    --shadow-card: 0 8px 30px -8px hsl(200 100% 10% / 0.08);
+    --shadow-hover: 0 15px 40px -10px hsl(200 100% 10% / 0.15);
     
     /* Smooth transitions */
-    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-spring: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
   .dark {
-    --background: 0 0% 9%;
-    --foreground: 0 0% 98%;
+    --background: 200 100% 10%; /* Midnight Dreams #002233 */
+    --foreground: 45 38% 94%;
 
-    --card: 0 0% 11%;
-    --card-foreground: 0 0% 98%;
+    --card: 200 100% 12%;
+    --card-foreground: 45 38% 94%;
 
-    --popover: 0 0% 11%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 200 100% 12%;
+    --popover-foreground: 45 38% 94%;
 
-    --primary: 0 0% 98%;
-    --primary-glow: 0 0% 85%;
-    --primary-foreground: 0 0% 9%;
+    --primary: 201 69% 35%;
+    --primary-glow: 201 69% 45%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 14%;
-    --secondary-glow: 0 0% 18%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 206 49% 60%;
+    --secondary-glow: 206 49% 70%;
+    --secondary-foreground: 0 0% 100%;
 
-    --success: 0 0% 80%;
-    --success-foreground: 0 0% 9%;
+    --success: 206 49% 60%;
+    --success-foreground: 0 0% 100%;
 
-    --muted: 0 0% 14%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 200 100% 15%;
+    --muted-foreground: 270 12% 65%;
 
-    --accent: 0 0% 95%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 68 100% 67%;
+    --accent-foreground: 200 100% 10%;
 
     --destructive: 0 85% 65%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 16%;
-    --input: 0 0% 14%;
-    --ring: 0 0% 90%;
+    --border: 200 100% 18%;
+    --input: 200 100% 18%;
+    --ring: 201 69% 35%;
 
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.3), 0 2px 4px -1px hsl(0 0% 0% / 0.2);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.3), 0 4px 6px -2px hsl(0 0% 0% / 0.2);
-    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.4), 0 10px 10px -5px hsl(0 0% 0% / 0.1);
+    --shadow-primary: 0 10px 30px -10px hsl(201 69% 35% / 0.4);
+    --shadow-secondary: 0 10px 30px -10px hsl(206 49% 60% / 0.3);
+    --shadow-card: 0 4px 20px -4px hsl(0 0% 0% / 0.4);
   }
 }
 
@@ -117,53 +123,91 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
-  /* Shadow utilities */
-  .shadow-sm {
-    box-shadow: var(--shadow-sm);
+  .gradient-primary {
+    background: var(--gradient-primary);
   }
   
-  .shadow-md {
-    box-shadow: var(--shadow-md);
+  .gradient-secondary {
+    background: var(--gradient-secondary);
   }
   
-  .shadow-lg {
-    box-shadow: var(--shadow-lg);
+  .gradient-success {
+    background: var(--gradient-success);
   }
 
-  .shadow-xl {
-    box-shadow: var(--shadow-xl);
+  .gradient-accent {
+    background: var(--gradient-accent);
   }
   
-  /* Smooth interactions */
-  .transition-smooth {
-    transition: var(--transition-smooth);
+  .shadow-primary {
+    box-shadow: var(--shadow-primary);
+  }
+  
+  .shadow-secondary {
+    box-shadow: var(--shadow-secondary);
   }
 
-  .transition-spring {
-    transition: var(--transition-spring);
+  .shadow-success {
+    box-shadow: var(--shadow-success);
   }
   
-  /* Card hover effect */
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-hover {
+    box-shadow: var(--shadow-hover);
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+  }
+  
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 4s ease infinite;
+  }
+  
+  @keyframes gradient {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .animate-bounce-slow {
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+  }
+
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
   .card-hover {
     transition: var(--transition-smooth);
   }
 
   .card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-hover);
   }
-
-  /* Button press effect */
-  .btn-press:active {
-    transform: scale(0.98);
-  }
-}
-  
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
 }
