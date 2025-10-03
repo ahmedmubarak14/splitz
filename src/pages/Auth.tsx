@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import logo from '@/assets/logo.png';
+import splitzLogo from '@/assets/splitz-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -75,7 +75,7 @@ const Auth = () => {
         <CardHeader className="space-y-4 text-center pb-6">
           <Link to="/" className="flex justify-center">
             <img
-              src={logo}
+              src={splitzLogo}
               alt="LinkUp"
               className="h-16 w-auto cursor-pointer hover:opacity-80 transition-opacity"
             />

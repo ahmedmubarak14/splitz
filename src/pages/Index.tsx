@@ -10,7 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '@/components/LanguageToggle';
 import { supabase } from '@/integrations/supabase/client';
-import logo from '@/assets/logo.png';
+import splitzLogo from '@/assets/splitz-logo.png';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -69,7 +69,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <img
-              src={logo}
+              src={splitzLogo}
               alt="LinkUp"
               className="h-8 w-auto rounded-none cursor-pointer hover:opacity-80 transition-opacity"
             />
@@ -521,7 +521,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto text-center">
           <Link to="/" className="flex items-center justify-center gap-3 mb-4">
             <img
-              src={logo}
+              src={splitzLogo}
               alt="LinkUp"
               className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
             />

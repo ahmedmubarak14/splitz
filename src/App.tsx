@@ -8,6 +8,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { HeaderActions } from "@/components/HeaderActions";
 import Navigation from "@/components/Navigation";
 import { Home } from "lucide-react";
+import splitzLogo from "@/assets/splitz-logo.png";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -69,12 +70,9 @@ const AppContent = () => {
                 <SidebarTrigger className="hover:bg-muted rounded-md p-1.5 transition-colors" />
                 <button 
                   onClick={handleLogoClick}
-                  className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                  className="flex items-center hover:opacity-80 transition-opacity"
                 >
-                  <div className="h-8 w-8 rounded-lg bg-foreground text-background flex items-center justify-center font-bold text-sm">
-                    L
-                  </div>
-                  <span className="text-sm font-semibold">LinkUp</span>
+                  <img src={splitzLogo} alt="Splitz" className="h-8" />
                 </button>
               </div>
               <HeaderActions />
