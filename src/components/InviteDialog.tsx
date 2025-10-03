@@ -89,11 +89,6 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
       return;
     }
 
-    if (!inviteLink) {
-      toast.error('Please generate an invite link first');
-      return;
-    }
-
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(recipientEmail)) {
@@ -103,10 +98,32 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
 
     setSendingEmail(true);
     try {
+      // Generate invite link if not already generated
+      let linkToSend = inviteLink;
+      if (!linkToSend) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Not authenticated');
+
+        const inviteCode = `${resourceType}_${Math.random().toString(36).substring(2, 15)}`;
+        
+        const { error: inviteError } = await supabase.from('invitations').insert({
+          invite_code: inviteCode,
+          invite_type: resourceType,
+          resource_id: resourceId,
+          created_by: user.id,
+          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        });
+
+        if (inviteError) throw inviteError;
+        
+        linkToSend = `${window.location.origin}/join/${inviteCode}`;
+        setInviteLink(linkToSend);
+      }
+
       const { error } = await supabase.functions.invoke('send-invite', {
         body: {
           recipientEmail: recipientEmail.trim(),
-          inviteLink,
+          inviteLink: linkToSend,
           resourceType,
           resourceName,
           inviterName: inviterName || 'A friend',
@@ -144,59 +161,59 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
         </DialogHeader>
 
         <div className="space-y-4 pt-4">
+          <div>
+            <Label className="text-sm font-semibold mb-2">Send via Email</Label>
+            <div className="flex gap-2 mt-2">
+              <div className="relative flex-1">
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  type="email"
+                  placeholder="friend@example.com"
+                  value={recipientEmail}
+                  onChange={(e) => setRecipientEmail(e.target.value)}
+                  className="h-12 pl-10"
+                />
+              </div>
+              <Button
+                onClick={sendInviteEmail}
+                disabled={sendingEmail}
+                className="h-12 px-6"
+              >
+                {sendingEmail ? (
+                  <>Sending...</>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 mr-2" />
+                    Send
+                  </>
+                )}
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              They'll receive an email with the invitation link
+            </p>
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">Or share link</span>
+            </div>
+          </div>
+
           {!inviteLink ? (
             <Button
               onClick={generateInviteLink}
               disabled={loading}
               className="w-full h-12"
-              variant="gradient"
+              variant="outline"
             >
               {loading ? 'Generating...' : 'Generate Invite Link'}
             </Button>
           ) : (
             <>
-              <div>
-                <Label className="text-sm font-semibold mb-2">Send via Email</Label>
-                <div className="flex gap-2 mt-2">
-                  <div className="relative flex-1">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      type="email"
-                      placeholder="friend@example.com"
-                      value={recipientEmail}
-                      onChange={(e) => setRecipientEmail(e.target.value)}
-                      className="h-12 pl-10"
-                    />
-                  </div>
-                  <Button
-                    onClick={sendInviteEmail}
-                    disabled={sendingEmail}
-                    className="h-12 px-6"
-                  >
-                    {sendingEmail ? (
-                      <>Sending...</>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-2" />
-                        Send
-                      </>
-                    )}
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  They'll receive an email with the invitation link
-                </p>
-              </div>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">Or share link</span>
-                </div>
-              </div>
-
               <div>
                 <Label className="text-sm font-semibold mb-2">Invite Link</Label>
                 <div className="flex gap-2 mt-2">
