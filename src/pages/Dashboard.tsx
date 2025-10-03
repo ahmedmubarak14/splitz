@@ -2,9 +2,22 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Target, Trophy, DollarSign, TrendingUp, CheckCircle2 } from 'lucide-react';
+import { 
+  FileText, 
+  Clock, 
+  Gift, 
+  CheckCircle, 
+  ShoppingCart, 
+  TrendingUp, 
+  Timer, 
+  Target,
+  Eye,
+  MessageSquare,
+  AlertTriangle,
+  Plus
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Dashboard() {
@@ -77,178 +90,233 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-foreground border-t-transparent"></div>
       </div>
     );
   }
 
+  const statCards = [
+    { 
+      label: 'Total Habits',
+      value: stats.activeHabits,
+      subtitle: 'Active tracking',
+      icon: FileText,
+      color: 'text-pink-500'
+    },
+    { 
+      label: 'Active Challenges',
+      value: stats.activeChallenges,
+      subtitle: 'Currently in progress',
+      icon: Clock,
+      color: 'text-purple-500'
+    },
+    { 
+      label: 'Pending Expenses',
+      value: stats.pendingExpenses,
+      subtitle: 'Awaiting settlement',
+      icon: Gift,
+      color: 'text-orange-500'
+    },
+    { 
+      label: 'Longest Streak',
+      value: stats.longestStreak,
+      subtitle: 'Days maintained',
+      icon: CheckCircle,
+      color: 'text-green-500'
+    },
+  ];
+
+  const secondaryStats = [
+    { 
+      label: 'Total Owed',
+      value: `SAR ${stats.totalOwed.toFixed(2)}`,
+      subtitle: 'Pending settlements',
+      icon: ShoppingCart,
+      color: 'text-pink-500'
+    },
+    { 
+      label: 'Success Rate',
+      value: '0%',
+      subtitle: 'Habit completion rate',
+      icon: TrendingUp,
+      color: 'text-green-500'
+    },
+    { 
+      label: 'Average Response',
+      value: '24h',
+      subtitle: 'Settlement time',
+      icon: Timer,
+      color: 'text-orange-500'
+    },
+    { 
+      label: 'Goals Achieved',
+      value: stats.activeChallenges,
+      subtitle: 'Challenge completions',
+      icon: Target,
+      color: 'text-purple-500'
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-background p-6 md:p-8 pb-24 md:pb-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-semibold text-foreground">
-            {t('dashboard.welcome')}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {t('dashboard.subtitle')}
-          </p>
-        </div>
-
-        {/* Stats Grid */}
+    <div className="min-h-screen bg-muted/30 p-6 pb-24 md:pb-6">
+      <div className="max-w-[1400px] mx-auto space-y-6">
+        
+        {/* Stats Grid - Top */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border border-border hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Active Habits
-                </CardTitle>
-                <Target className="h-4 w-4 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-semibold text-foreground">{stats.activeHabits}</div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Longest Streak
-                </CardTitle>
-                <TrendingUp className="h-4 w-4 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-semibold text-foreground">{stats.longestStreak}</div>
-              <p className="text-xs text-muted-foreground mt-1">days</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Active Challenges
-                </CardTitle>
-                <Trophy className="h-4 w-4 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-semibold text-foreground">{stats.activeChallenges}</div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-border hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Pending Expenses
-                </CardTitle>
-                <DollarSign className="h-4 w-4 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-semibold text-foreground">{stats.pendingExpenses}</div>
-              {stats.totalOwed > 0 && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  SAR {stats.totalOwed.toFixed(2)} owed
-                </p>
-              )}
-            </CardContent>
-          </Card>
+          {statCards.map((stat, idx) => (
+            <Card key={idx} className="bg-background border border-border/40">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                      {stat.label}
+                    </p>
+                  </div>
+                  <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-3xl font-bold text-foreground">{stat.value}</div>
+                  <p className="text-xs text-muted-foreground">{stat.subtitle}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
-        {/* Quick Actions */}
-        <div>
-          <h2 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <Button
-              onClick={() => navigate('/habits')}
-              variant="outline"
-              className="h-24 flex-col gap-2 hover:border-primary hover:bg-accent transition-colors"
-            >
-              <Target className="h-6 w-6 text-primary" />
-              <span className="font-medium">New Habit</span>
-            </Button>
-            <Button
-              onClick={() => navigate('/challenges')}
-              variant="outline"
-              className="h-24 flex-col gap-2 hover:border-primary hover:bg-accent transition-colors"
-            >
-              <Trophy className="h-6 w-6 text-primary" />
-              <span className="font-medium">New Challenge</span>
-            </Button>
-            <Button
-              onClick={() => navigate('/expenses')}
-              variant="outline"
-              className="h-24 flex-col gap-2 hover:border-primary hover:bg-accent transition-colors"
-            >
-              <DollarSign className="h-6 w-6 text-primary" />
-              <span className="font-medium">Split Expense</span>
-            </Button>
-          </div>
+        {/* Stats Grid - Bottom */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {secondaryStats.map((stat, idx) => (
+            <Card key={idx} className="bg-background border border-border/40">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                      {stat.label}
+                    </p>
+                  </div>
+                  <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                </div>
+                <div className="space-y-1">
+                  <div className="text-3xl font-bold text-foreground">{stat.value}</div>
+                  <p className="text-xs text-muted-foreground">{stat.subtitle}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card className="border border-border">
-            <CardHeader>
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-primary" />
-                Today's Progress
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {stats.activeHabits > 0 ? (
-                <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    {stats.activeHabits} active habit{stats.activeHabits > 1 ? 's' : ''} to check in
-                  </p>
-                  <Button onClick={() => navigate('/habits')} variant="outline" size="sm" className="w-full">
-                    View Habits
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* Action Required */}
+          <Card className="bg-background border border-border/40">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <AlertTriangle className="h-5 w-5 text-orange-500" />
+                <h3 className="text-base font-semibold">Action Required</h3>
+              </div>
+              
+              <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/40 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Active Habits</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{stats.activeHabits} habits in progress</p>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => navigate('/habits')}
+                    className="text-xs"
+                  >
+                    Monitor
                   </Button>
                 </div>
-              ) : (
-                <div className="text-center py-6">
-                  <CheckCircle2 className="h-10 w-10 text-muted mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">All caught up!</p>
-                </div>
-              )}
+              </div>
             </CardContent>
           </Card>
 
-          <Card className="border border-border">
-            <CardHeader>
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-primary" />
-                Pending Settlements
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {stats.pendingExpenses > 0 ? (
-                <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    {stats.pendingExpenses} expense{stats.pendingExpenses > 1 ? 's' : ''} awaiting settlement
-                  </p>
-                  <p className="text-base font-semibold text-foreground">
-                    Total: SAR {stats.totalOwed.toFixed(2)}
-                  </p>
-                  <Button onClick={() => navigate('/expenses')} variant="outline" size="sm" className="w-full">
-                    View Expenses
-                  </Button>
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <CheckCircle2 className="h-10 w-10 text-muted mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">All settled!</p>
-                </div>
-              )}
+          {/* Quick Actions */}
+          <Card className="bg-background border border-border/40">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="h-5 w-5 text-green-500" />
+                <h3 className="text-base font-semibold">Quick Actions</h3>
+              </div>
+              
+              <div className="space-y-2">
+                <Button
+                  onClick={() => navigate('/habits')}
+                  className="w-full justify-start h-auto py-3 bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  <Plus className="h-4 w-4 mr-3" />
+                  <div className="text-left">
+                    <div className="text-sm font-medium">Create New Habit</div>
+                    <div className="text-xs opacity-90">Start a new habit tracker</div>
+                  </div>
+                </Button>
+                
+                <button
+                  onClick={() => navigate('/challenges')}
+                  className="w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors text-left"
+                >
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <div className="text-sm font-medium">Browse Challenges</div>
+                    <div className="text-xs text-muted-foreground">Find active challenges</div>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => navigate('/expenses')}
+                  className="w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors text-left"
+                >
+                  <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <div className="text-sm font-medium">Manage Expenses</div>
+                    <div className="text-xs text-muted-foreground">Track and split expenses</div>
+                  </div>
+                </button>
+              </div>
             </CardContent>
           </Card>
+
         </div>
+
+        {/* Performance Section */}
+        <Card className="bg-background border border-border/40">
+          <CardContent className="p-6">
+            <div className="mb-4">
+              <h3 className="text-base font-semibold">Activity Performance</h3>
+              <p className="text-xs text-muted-foreground mt-1">Your activity overview</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <div className="text-xs text-muted-foreground mb-2">Habit Success Rate</div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-foreground" style={{ width: '0%' }}></div>
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">0%</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground mb-2">Challenge Completion</div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-foreground" style={{ width: '0%' }}></div>
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">0%</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground mb-2">Settlement Rate</div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-foreground" style={{ width: '0%' }}></div>
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">0%</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
       </div>
     </div>
   );
