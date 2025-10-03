@@ -120,7 +120,7 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
         setInviteLink(linkToSend);
       }
 
-      const { error } = await supabase.functions.invoke('send-invite', {
+      const { data, error } = await supabase.functions.invoke('send-invite', {
         body: {
           recipientEmail: recipientEmail.trim(),
           inviteLink: linkToSend,
@@ -130,7 +130,26 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
         },
       });
 
-      if (error) throw error;
+      // Handle Resend 403/Test-mode gracefully (error can be in either `error` or `data.error`)
+      const serverMsg = (data as any)?.error || (error as any)?.message || '';
+      if (error || serverMsg) {
+        const msg = String(serverMsg);
+        const isResendBlocked = msg.includes('testing emails') || msg.includes('Resend API error 403') || msg.includes('403');
+        if (isResendBlocked) {
+          try {
+            await navigator.clipboard.writeText(linkToSend);
+          } catch {}
+          toast.info('Email sending is disabled. Link copied — send manually or use WhatsApp.');
+
+          const subject = `Join my ${resourceType} on LinkUp`;
+          const body = `${inviterName || 'A friend'} invited you to the ${resourceType} "${resourceName}". Use this link: ${linkToSend}`;
+          const mailto = `mailto:${encodeURIComponent(recipientEmail.trim())}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+          window.open(mailto, '_self');
+          setRecipientEmail('');
+          return;
+        }
+        throw new Error(msg || 'Failed to send');
+      }
 
       toast.success(`Invitation sent to ${recipientEmail}!`);
       setRecipientEmail('');
@@ -140,14 +159,12 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
       const ctx = (error as any)?.context ? JSON.stringify((error as any).context) : '';
       const combined = `${errMsg} ${ctx}`;
 
-      // Graceful fallback for Resend test-mode/domain not verified
+      // Secondary safety net
       if (combined.includes('testing emails') || combined.includes('Resend API error 403') || combined.includes('403')) {
         try {
           if (inviteLink) await navigator.clipboard.writeText(inviteLink);
         } catch {}
         toast.info('Email sending is disabled. Link copied — send manually or use WhatsApp.');
-
-        // Open user's email client as a fallback
         const subject = `Join my ${resourceType} on LinkUp`;
         const body = `${inviterName || 'A friend'} invited you to the ${resourceType} "${resourceName}". Use this link: ${inviteLink}`;
         const mailto = `mailto:${encodeURIComponent(recipientEmail.trim())}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
