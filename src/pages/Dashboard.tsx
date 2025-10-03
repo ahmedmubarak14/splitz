@@ -7,12 +7,8 @@ import { Button } from '@/components/ui/button';
 import { 
   FileText, 
   Clock, 
-  Gift, 
   CheckCircle, 
-  ShoppingCart, 
-  TrendingUp, 
-  Timer, 
-  Target,
+  ShoppingCart,
   Eye,
   MessageSquare,
   AlertTriangle,
@@ -112,49 +108,18 @@ export default function Dashboard() {
       color: 'text-purple-500'
     },
     { 
-      label: 'Pending Expenses',
-      value: stats.pendingExpenses,
-      subtitle: 'Awaiting settlement',
-      icon: Gift,
-      color: 'text-orange-500'
-    },
-    { 
       label: 'Longest Streak',
       value: stats.longestStreak,
       subtitle: 'Days maintained',
       icon: CheckCircle,
       color: 'text-green-500'
     },
-  ];
-
-  const secondaryStats = [
     { 
       label: 'Total Owed',
       value: `SAR ${stats.totalOwed.toFixed(2)}`,
       subtitle: 'Pending settlements',
       icon: ShoppingCart,
-      color: 'text-pink-500'
-    },
-    { 
-      label: 'Success Rate',
-      value: '0%',
-      subtitle: 'Habit completion rate',
-      icon: TrendingUp,
-      color: 'text-green-500'
-    },
-    { 
-      label: 'Average Response',
-      value: '24h',
-      subtitle: 'Settlement time',
-      icon: Timer,
       color: 'text-orange-500'
-    },
-    { 
-      label: 'Goals Achieved',
-      value: stats.activeChallenges,
-      subtitle: 'Challenge completions',
-      icon: Target,
-      color: 'text-purple-500'
     },
   ];
 
@@ -162,31 +127,9 @@ export default function Dashboard() {
     <div className="min-h-screen bg-muted/20 p-6 pb-24 md:pb-6">
       <div className="max-w-[1400px] mx-auto space-y-6">
         
-        {/* Stats Grid - Top */}
+        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {statCards.map((stat, idx) => (
-            <Card key={idx} className="bg-background border border-border/40">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
-                      {stat.label}
-                    </p>
-                  </div>
-                  <stat.icon className={`h-5 w-5 ${stat.color}`} />
-                </div>
-                <div className="space-y-1">
-                  <div className="text-3xl font-bold text-foreground">{stat.value}</div>
-                  <p className="text-xs text-muted-foreground">{stat.subtitle}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Stats Grid - Bottom */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {secondaryStats.map((stat, idx) => (
             <Card key={idx} className="bg-background border border-border/40">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
@@ -209,7 +152,6 @@ export default function Dashboard() {
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
-          {/* Action Required */}
           <Card className="bg-background border border-border/40">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
@@ -217,30 +159,39 @@ export default function Dashboard() {
                 <h3 className="text-base font-semibold">Action Required</h3>
               </div>
               
-              <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/40 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Active Habits</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{stats.activeHabits} habits in progress</p>
+              {stats.pendingExpenses > 0 ? (
+                <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/40 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Pending Expenses</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{stats.pendingExpenses} expenses awaiting settlement</p>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => navigate('/expenses')}
+                      className="text-xs"
+                    >
+                      Review
+                    </Button>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => navigate('/habits')}
-                    className="text-xs"
-                  >
-                    Monitor
-                  </Button>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-muted/30 border border-border/30 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">All Clear</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">No pending actions</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
-
-          {/* Quick Actions */}
           <Card className="bg-background border border-border/40">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="h-5 w-5 text-green-500" />
+                <CheckCircle className="h-5 w-5 text-green-500" />
                 <h3 className="text-base font-semibold">Quick Actions</h3>
               </div>
               
@@ -283,39 +234,6 @@ export default function Dashboard() {
 
         </div>
 
-        {/* Performance Section */}
-        <Card className="bg-background border border-border/40">
-          <CardContent className="p-6">
-            <div className="mb-4">
-              <h3 className="text-base font-semibold">Activity Performance</h3>
-              <p className="text-xs text-muted-foreground mt-1">Your activity overview</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <div className="text-xs text-muted-foreground mb-2">Habit Success Rate</div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-foreground" style={{ width: '0%' }}></div>
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">0%</div>
-              </div>
-              <div>
-                <div className="text-xs text-muted-foreground mb-2">Challenge Completion</div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-foreground" style={{ width: '0%' }}></div>
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">0%</div>
-              </div>
-              <div>
-                <div className="text-xs text-muted-foreground mb-2">Settlement Rate</div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-foreground" style={{ width: '0%' }}></div>
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">0%</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
       </div>
     </div>
