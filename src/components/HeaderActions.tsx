@@ -18,17 +18,25 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
-import { Search, Bell, Sun, Moon, LogOut, User, Settings } from 'lucide-react';
+import { Search, Bell, Sun, Moon, LogOut, User, Settings, Globe, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTheme } from 'next-themes';
+import { useTranslation } from 'react-i18next';
 
 export function HeaderActions() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const { i18n } = useTranslation();
   const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null; email: string | null } | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    // Set HTML dir attribute based on language
+    document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -57,6 +65,11 @@ export function HeaderActions() {
       navigate('/auth');
       toast.success('Signed out successfully');
     }
+  };
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'en' ? 'ar' : 'en';
+    i18n.changeLanguage(newLang);
   };
 
   const toggleTheme = () => {
@@ -115,6 +128,28 @@ export function HeaderActions() {
           <div className="p-4 text-sm text-muted-foreground text-center">
             No new notifications
           </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Language Toggle */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="rounded-lg h-9 w-9">
+            <Globe className="h-[18px] w-[18px]" />
+            <span className="sr-only">Change language</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Language</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => i18n.changeLanguage('en')}>
+            {i18n.language === 'en' && <Check className="mr-2 h-4 w-4" />}
+            <span className={i18n.language !== 'en' ? 'ml-6' : ''}>English</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => i18n.changeLanguage('ar')}>
+            {i18n.language === 'ar' && <Check className="mr-2 h-4 w-4" />}
+            <span className={i18n.language !== 'ar' ? 'ml-6' : ''}>العربية</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

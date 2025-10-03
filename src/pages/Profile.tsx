@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import { LogOut, User as UserIcon, Mail, Calendar, Globe, Image as ImageIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
-import LanguageToggle from '@/components/LanguageToggle';
 import type { Tables, TablesUpdate } from '@/integrations/supabase/types';
 import type { User } from '@supabase/supabase-js';
 
@@ -126,7 +125,6 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-8">
-      <LanguageToggle />
       
       <div className="max-w-4xl mx-auto p-6 space-y-6">
         {/* Header */}

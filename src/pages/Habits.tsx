@@ -12,7 +12,6 @@ import { toast } from 'sonner';
 import { Plus, Target, TrendingUp, MoreVertical, Pencil, Trash2, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
-import LanguageToggle from '@/components/LanguageToggle';
 
 type Habit = {
   id: string;
@@ -184,7 +183,6 @@ const Habits = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-8 p-6">
-      <LanguageToggle />
       
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}

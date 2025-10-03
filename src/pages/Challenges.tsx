@@ -13,7 +13,6 @@ import { toast } from 'sonner';
 import { Trophy, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
-import LanguageToggle from '@/components/LanguageToggle';
 import ChallengeCard from '@/components/ChallengeCard';
 import ChallengeDetailsDialog from '@/components/ChallengeDetailsDialog';
 import EditChallengeDialog from '@/components/EditChallengeDialog';
@@ -316,7 +315,6 @@ const Challenges = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-8 p-6">
-      <LanguageToggle />
       
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}

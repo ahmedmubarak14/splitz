@@ -11,7 +11,6 @@ import { toast } from 'sonner';
 import { DollarSign, Plus, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
-import LanguageToggle from '@/components/LanguageToggle';
 import ExpenseCard from '@/components/ExpenseCard';
 import ExpenseDetailsDialog from '@/components/ExpenseDetailsDialog';
 import { InviteDialog } from '@/components/InviteDialog';
@@ -269,7 +268,6 @@ const Expenses = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-8 p-6">
-      <LanguageToggle />
       
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
