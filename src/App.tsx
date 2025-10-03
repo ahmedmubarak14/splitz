@@ -5,9 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Link, useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { HeaderActions } from "@/components/HeaderActions";
 import Navigation from "@/components/Navigation";
-import { Button } from "@/components/ui/button";
-import { Search, Bell, Sun, Home } from "lucide-react";
+import { Home } from "lucide-react";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -77,21 +77,7 @@ const AppContent = () => {
                   <span className="text-sm font-semibold">LinkUp</span>
                 </button>
               </div>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="rounded-md h-9 w-9">
-                  <Search className="h-[18px] w-[18px]" />
-                </Button>
-                <Button variant="ghost" size="icon" className="relative rounded-md h-9 w-9">
-                  <Bell className="h-[18px] w-[18px]" />
-                  <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-destructive" />
-                </Button>
-                <Button variant="ghost" size="icon" className="rounded-md h-9 w-9">
-                  <Sun className="h-[18px] w-[18px]" />
-                </Button>
-                <div className="h-8 w-8 rounded-full bg-foreground text-background flex items-center justify-center text-xs font-semibold ml-1">
-                  M
-                </div>
-              </div>
+              <HeaderActions />
             </div>
           </header>
           <div className="bg-background border-b border-border/30 px-6 py-3">
