@@ -136,7 +136,25 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
       setRecipientEmail('');
     } catch (error) {
       console.error('Error sending invite email:', error);
-      toast.error('Failed to send invitation email');
+      const errMsg = (error as any)?.message?.toString?.() || '';
+      const ctx = (error as any)?.context ? JSON.stringify((error as any).context) : '';
+      const combined = `${errMsg} ${ctx}`;
+
+      // Graceful fallback for Resend test-mode/domain not verified
+      if (combined.includes('testing emails') || combined.includes('Resend API error 403') || combined.includes('403')) {
+        try {
+          if (inviteLink) await navigator.clipboard.writeText(inviteLink);
+        } catch {}
+        toast.info('Email sending is disabled. Link copied — send manually or use WhatsApp.');
+
+        // Open user's email client as a fallback
+        const subject = `Join my ${resourceType} on LinkUp`;
+        const body = `${inviterName || 'A friend'} invited you to the ${resourceType} "${resourceName}". Use this link: ${inviteLink}`;
+        const mailto = `mailto:${encodeURIComponent(recipientEmail.trim())}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.open(mailto, '_self');
+      } else {
+        toast.error('Failed to send invitation email');
+      }
     } finally {
       setSendingEmail(false);
     }
@@ -190,7 +208,7 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              They'll receive an email with the invitation link
+              They'll receive an email with the invitation link. If email sending is unavailable, we’ll copy the link and open your email app.
             </p>
           </div>
 
