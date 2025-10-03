@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import { Flame, Plus, Target, TrendingUp, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Target, TrendingUp, MoreVertical, Pencil, Trash2, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -28,14 +28,10 @@ const Habits = () => {
   const [newHabitTitle, setNewHabitTitle] = useState('');
   const [newHabitIcon, setNewHabitIcon] = useState('🔥');
   const [dialogOpen, setDialogOpen] = useState(false);
-  
-  // Edit state
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editIcon, setEditIcon] = useState('🔥');
-  
-  // Delete state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingHabit, setDeletingHabit] = useState<Habit | null>(null);
   
@@ -49,9 +45,7 @@ const Habits = () => {
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/auth');
-    }
+    if (!session) navigate('/auth');
   };
 
   const fetchHabits = async () => {
@@ -73,8 +67,7 @@ const Habits = () => {
 
       setHabits(mapped);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to load habits';
-      toast.error(message);
+      toast.error(error instanceof Error ? error.message : 'Failed to load habits');
     } finally {
       setLoading(false);
     }
@@ -93,17 +86,15 @@ const Habits = () => {
         icon: newHabitIcon,
       };
       const { error } = await supabase.from('habits').insert(payload);
-
       if (error) throw error;
 
-      toast.success('Habit created! 🎉');
+      toast.success('Habit created');
       setNewHabitTitle('');
       setNewHabitIcon('🔥');
       setDialogOpen(false);
       fetchHabits();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to create habit';
-      toast.error(message);
+      toast.error(error instanceof Error ? error.message : 'Failed to create habit');
     }
   };
 
@@ -119,17 +110,16 @@ const Habits = () => {
 
       if (error) {
         if (error.code === '23505') {
-          toast.error('Already checked in today!');
+          toast.error('Already checked in today');
         } else {
           throw error;
         }
       } else {
-        toast.success('Streak updated! 🔥');
+        toast.success('Checked in');
         fetchHabits();
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to check in';
-      toast.error(message);
+      toast.error(error instanceof Error ? error.message : 'Failed to check in');
     }
   };
 
@@ -156,13 +146,12 @@ const Habits = () => {
 
       if (error) throw error;
 
-      toast.success('Habit updated! ✓');
+      toast.success('Habit updated');
       setEditDialogOpen(false);
       setEditingHabit(null);
       fetchHabits();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to update habit';
-      toast.error(message);
+      toast.error(error instanceof Error ? error.message : 'Failed to update habit');
     }
   };
 
@@ -187,66 +176,55 @@ const Habits = () => {
       setDeletingHabit(null);
       fetchHabits();
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to delete habit';
-      toast.error(message);
+      toast.error(error instanceof Error ? error.message : 'Failed to delete habit');
     }
   };
 
   const emojiOptions = ['🔥', '💪', '🎯', '📚', '🏃', '🧘', '💧', '🌱', '⭐', '🎨'];
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 p-6 animate-slide-up">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 p-6">
       <LanguageToggle />
       
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header Section */}
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center shadow-primary">
-                <Target className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-5xl md:text-6xl font-bold text-foreground tracking-tight">
-                  {t('habits.title')}
-                </h1>
-                <p className="text-lg text-muted-foreground mt-1 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4" />
-                  {t('habits.myHabits')}
-                </p>
-              </div>
-            </div>
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h1 className="text-3xl md:text-4xl font-semibold text-foreground">
+              {t('habits.title')}
+            </h1>
+            <p className="text-sm text-muted-foreground flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" />
+              {t('habits.myHabits')}
+            </p>
           </div>
           
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button 
-                size="lg"
-                variant="gradient"
-              >
-                <Plus className="w-5 h-5" />
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
                 {t('habits.createNew')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-bold">{t('habits.createNew')}</DialogTitle>
-                <DialogDescription className="text-base">
+                <DialogTitle>{t('habits.createNew')}</DialogTitle>
+                <DialogDescription>
                   Create a new habit to track your progress
                 </DialogDescription>
               </DialogHeader>
-              <div className="space-y-5 pt-4">
+              <div className="space-y-4 pt-4">
                 <div>
-                  <label className="text-sm font-semibold mb-3 block">Choose an emoji</label>
+                  <label className="text-sm font-medium mb-2 block">Choose an emoji</label>
                   <div className="flex gap-2 flex-wrap">
                     {emojiOptions.map((emoji) => (
                       <button
                         key={emoji}
                         onClick={() => setNewHabitIcon(emoji)}
-                        className={`text-4xl p-3 rounded-xl transition-all hover:scale-110 ${
+                        className={`text-3xl p-2 rounded-lg transition-all ${
                           newHabitIcon === emoji 
-                            ? 'bg-primary/10 scale-110 ring-2 ring-primary shadow-md' 
-                            : 'bg-muted/50 hover:bg-muted'
+                            ? 'bg-accent' 
+                            : 'bg-muted hover:bg-accent'
                         }`}
                       >
                         {emoji}
@@ -258,13 +236,8 @@ const Habits = () => {
                   placeholder="Habit name (e.g., Morning workout)"
                   value={newHabitTitle}
                   onChange={(e) => setNewHabitTitle(e.target.value)}
-                  className="h-12 text-base"
                 />
-                <Button 
-                  onClick={createHabit} 
-                  className="w-full h-12"
-                  variant="gradient"
-                >
+                <Button onClick={createHabit} className="w-full">
                   {t('common.add')}
                 </Button>
               </div>
@@ -275,83 +248,67 @@ const Habits = () => {
         {/* Content */}
         {loading ? (
           <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent"></div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
           </div>
         ) : habits.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="w-20 h-20 rounded-2xl gradient-primary flex items-center justify-center mb-6 shadow-primary">
-                <Target className="w-10 h-10 text-white" />
-              </div>
-              <h3 className="text-3xl font-bold mb-3">Start Your Journey!</h3>
-              <p className="text-lg text-muted-foreground max-w-md">
+          <Card className="border border-border">
+            <CardContent className="flex flex-col items-center justify-center py-20 text-center">
+              <Target className="w-16 h-16 text-muted mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Start Your Journey</h3>
+              <p className="text-sm text-muted-foreground max-w-md">
                 {t('habits.noHabits')}
               </p>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {habits.map((habit) => (
-              <Card
-                key={habit.id}
-                className="card-hover"
-              >
-                <div className="h-1 gradient-primary"></div>
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="text-5xl">{habit.icon || '🔥'}</div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <CardTitle className="text-xl font-bold">{habit.name}</CardTitle>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <MoreVertical className="w-4 h-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="glass-card border-0">
-                              <DropdownMenuItem onClick={() => openEditDialog(habit)}>
-                                <Pencil className="w-4 h-4 mr-2" />
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem 
-                                onClick={() => openDeleteDialog(habit)}
-                                className="text-destructive"
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                        <CardDescription className="flex items-center gap-2 mt-1">
-                          <Flame className="w-5 h-5 text-accent" />
-                          <span className="font-bold text-xl text-accent">
-                            {habit.streak_count ?? 0}
-                          </span>
-                          <span className="text-sm">{t('habits.days')}</span>
-                        </CardDescription>
+              <Card key={habit.id} className="border border-border hover:shadow-md transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="text-4xl">{habit.icon || '🔥'}</div>
+                      <div>
+                        <CardTitle className="text-base font-semibold">{habit.name}</CardTitle>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {habit.streak_count ?? 0} day streak
+                        </p>
                       </div>
                     </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreVertical className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-background">
+                        <DropdownMenuItem onClick={() => openEditDialog(habit)}>
+                          <Pencil className="w-4 h-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => openDeleteDialog(habit)}
+                          className="text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl backdrop-blur-sm">
-                    <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                      {t('habits.bestStreak')}
-                    </span>
-                    <span className="font-bold text-lg flex items-center gap-1">
-                      <span className="text-primary">{habit.best_streak ?? 0}</span>
-                      <span className="text-sm text-muted-foreground">{t('habits.days')}</span>
-                    </span>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-accent rounded-lg">
+                    <span className="text-xs font-medium text-muted-foreground">Best Streak</span>
+                    <span className="font-semibold">{habit.best_streak ?? 0} days</span>
                   </div>
                   <Button
                     onClick={() => checkInHabit(habit.id)}
                     className="w-full"
-                    variant="success"
+                    size="sm"
                   >
-                    {t('habits.checkIn')} ✓
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    {t('habits.checkIn')}
                   </Button>
                 </CardContent>
               </Card>
@@ -364,23 +321,19 @@ const Habits = () => {
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-2xl">Edit Habit</DialogTitle>
-            <DialogDescription className="text-base">
-              Update your habit details
-            </DialogDescription>
+            <DialogTitle>Edit Habit</DialogTitle>
+            <DialogDescription>Update your habit details</DialogDescription>
           </DialogHeader>
-          <div className="space-y-6 pt-4">
+          <div className="space-y-4 pt-4">
             <div>
-              <label className="text-sm font-semibold mb-3 block">Choose an emoji</label>
+              <label className="text-sm font-medium mb-2 block">Choose an emoji</label>
               <div className="flex gap-2 flex-wrap">
                 {emojiOptions.map((emoji) => (
                   <button
                     key={emoji}
                     onClick={() => setEditIcon(emoji)}
-                    className={`text-4xl p-3 rounded-2xl transition-all hover:scale-110 ${
-                      editIcon === emoji 
-                        ? 'bg-primary/20 scale-110 ring-2 ring-primary' 
-                        : 'bg-muted hover:bg-muted/70'
+                    className={`text-3xl p-2 rounded-lg transition-all ${
+                      editIcon === emoji ? 'bg-accent' : 'bg-muted hover:bg-accent'
                     }`}
                   >
                     {emoji}
@@ -392,21 +345,12 @@ const Habits = () => {
               placeholder="Habit name"
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
-              className="h-12 text-base"
             />
             <div className="flex gap-2">
-              <Button 
-                onClick={updateHabit} 
-                className="flex-1 h-12 text-base"
-                variant="gradient"
-              >
+              <Button onClick={updateHabit} className="flex-1">
                 Update Habit
               </Button>
-              <Button 
-                onClick={() => setEditDialogOpen(false)} 
-                variant="outline"
-                className="h-12"
-              >
+              <Button onClick={() => setEditDialogOpen(false)} variant="outline">
                 Cancel
               </Button>
             </div>
@@ -414,13 +358,13 @@ const Habits = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Habit</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{deletingHabit?.name}"? This will also delete all check-in history. This action cannot be undone.
+              Are you sure you want to delete "{deletingHabit?.name}"? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
