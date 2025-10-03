@@ -1,1 +1,7 @@
 project_id = "laidjslcmowodlqxggil"
+
+[functions.send-invite]
+verify_jwt = true
+
+[functions.create-expense-group]
+verify_jwt = true

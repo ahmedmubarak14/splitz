@@ -199,120 +199,27 @@ const Expenses = () => {
       return;
     }
 
-    const emails = memberEmails.split(',').map(e => e.trim()).filter(e => e.length > 0);
+    const emails = memberEmails
+      .split(',')
+      .map((e) => e.trim())
+      .filter((e) => e.length > 0);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const { data, error } = await supabase.functions.invoke('create-expense-group', {
+        body: {
+          groupName: groupName.trim(),
+          emails,
+        },
+      });
 
-      // Create group
-      const { data: newGroup, error: groupError } = await supabase
-        .from('expense_groups')
-        .insert({
-          name: groupName.trim(),
-          created_by: user.id,
-        })
-        .select()
-        .single();
+      if (error) throw error;
 
-      if (groupError) throw groupError;
+      const added = data?.addedCount || 0;
+      const invites = data?.invitationsCreated || 0;
 
-      // Add creator as member
-      const { error: creatorError } = await supabase
-        .from('expense_group_members')
-        .insert({
-          group_id: newGroup.id,
-          user_id: user.id,
-        });
-
-      if (creatorError) throw creatorError;
-
-      // Add other members and send invitations
-      let addedCount = 0;
-      let invitationsSent = 0;
-      let notFound: string[] = [];
-
-      if (emails.length > 0) {
-        const { data: foundProfiles, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, email')
-          .in('email', emails);
-
-        if (profilesError) throw profilesError;
-
-        const foundEmails = new Set((foundProfiles || []).map((p: any) => (p.email || '').toLowerCase()));
-        notFound = emails.filter(e => !foundEmails.has(e.toLowerCase()));
-
-        // Add existing users as members
-        const membersToInsert = (foundProfiles || [])
-          .filter((p: any) => p.id !== user.id)
-          .map((p: any) => ({
-            group_id: newGroup.id,
-            user_id: p.id,
-          }));
-
-        if (membersToInsert.length > 0) {
-          const { error: membersError } = await supabase
-            .from('expense_group_members')
-            .insert(membersToInsert);
-
-          if (membersError) throw membersError;
-          addedCount = membersToInsert.length;
-        }
-
-        // Send invitation emails to non-users
-        if (notFound.length > 0) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('full_name')
-            .eq('id', user.id)
-            .single();
-
-          const inviterName = profile?.full_name || 'A friend';
-
-          for (const email of notFound) {
-            try {
-              // Create invitation code
-              const inviteCode = `expense_${Math.random().toString(36).substring(2, 15)}`;
-              
-              const { error: inviteError } = await supabase
-                .from('invitations')
-                .insert({
-                  invite_code: inviteCode,
-                  invite_type: 'expense',
-                  resource_id: newGroup.id,
-                  created_by: user.id,
-                  expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
-                });
-
-              if (inviteError) throw inviteError;
-
-              const inviteLink = `${window.location.origin}/join/${inviteCode}`;
-
-              // Send invitation email
-              const { error: emailError } = await supabase.functions.invoke('send-invite', {
-                body: {
-                  recipientEmail: email,
-                  inviteLink,
-                  resourceType: 'expense',
-                  resourceName: groupName.trim(),
-                  inviterName,
-                },
-              });
-
-              if (!emailError) {
-                invitationsSent++;
-              }
-            } catch (err) {
-              console.error(`Failed to send invitation to ${email}:`, err);
-            }
-          }
-        }
-      }
-
-      const message = `Group created! ${addedCount ? `Added ${addedCount} member(s). ` : ''}${invitationsSent ? `Sent ${invitationsSent} invitation(s) via email.` : ''}`;
+      const message = `Group created! ${added ? `Added ${added} member(s). ` : ''}${invites ? `Created ${invites} invitation(s).` : ''}`;
       toast.success(message);
-      
+
       setGroupName('');
       setMemberEmails('');
       setCreateDialogOpen(false);
