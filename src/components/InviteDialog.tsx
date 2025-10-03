@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Share2, Copy, Check } from 'lucide-react';
+import { Share2, Copy, Check, Mail, Send } from 'lucide-react';
 
 interface InviteDialogProps {
   open: boolean;
@@ -19,6 +19,30 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
   const [inviteLink, setInviteLink] = useState('');
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [recipientEmail, setRecipientEmail] = useState('');
+  const [inviterName, setInviterName] = useState('');
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
+          .single();
+        
+        if (data?.full_name) {
+          setInviterName(data.full_name);
+        }
+      }
+    };
+    
+    if (open) {
+      fetchProfile();
+    }
+  }, [open]);
 
   const generateInviteLink = async () => {
     setLoading(true);
@@ -59,6 +83,48 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const sendInviteEmail = async () => {
+    if (!recipientEmail.trim()) {
+      toast.error('Please enter an email address');
+      return;
+    }
+
+    if (!inviteLink) {
+      toast.error('Please generate an invite link first');
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(recipientEmail)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      const { error } = await supabase.functions.invoke('send-invite', {
+        body: {
+          recipientEmail: recipientEmail.trim(),
+          inviteLink,
+          resourceType,
+          resourceName,
+          inviterName: inviterName || 'A friend',
+        },
+      });
+
+      if (error) throw error;
+
+      toast.success(`Invitation sent to ${recipientEmail}!`);
+      setRecipientEmail('');
+    } catch (error) {
+      console.error('Error sending invite email:', error);
+      toast.error('Failed to send invitation email');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
   const shareViaWhatsApp = () => {
     const message = `Join my ${resourceType} "${resourceName}"! Click here: ${inviteLink}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
@@ -89,6 +155,48 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
             </Button>
           ) : (
             <>
+              <div>
+                <Label className="text-sm font-semibold mb-2">Send via Email</Label>
+                <div className="flex gap-2 mt-2">
+                  <div className="relative flex-1">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      type="email"
+                      placeholder="friend@example.com"
+                      value={recipientEmail}
+                      onChange={(e) => setRecipientEmail(e.target.value)}
+                      className="h-12 pl-10"
+                    />
+                  </div>
+                  <Button
+                    onClick={sendInviteEmail}
+                    disabled={sendingEmail}
+                    className="h-12 px-6"
+                  >
+                    {sendingEmail ? (
+                      <>Sending...</>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Send
+                      </>
+                    )}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  They'll receive an email with the invitation link
+                </p>
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">Or share link</span>
+                </div>
+              </div>
+
               <div>
                 <Label className="text-sm font-semibold mb-2">Invite Link</Label>
                 <div className="flex gap-2 mt-2">
