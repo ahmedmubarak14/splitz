@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Link, useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import Navigation from "@/components/Navigation";
@@ -23,8 +23,24 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isLandingPage = location.pathname === '/';
   const isAuthPage = location.pathname === '/auth';
+
+  const handleLogoClick = () => {
+    const now = Date.now();
+    const lastClick = parseInt(sessionStorage.getItem('lastLogoClick') || '0');
+    
+    if (now - lastClick < 500) {
+      // Double click - go to home
+      navigate('/');
+      sessionStorage.removeItem('lastLogoClick');
+    } else {
+      // Single click - go to dashboard
+      navigate('/dashboard');
+      sessionStorage.setItem('lastLogoClick', now.toString());
+    }
+  };
 
   if (isLandingPage || isAuthPage) {
     return (
@@ -51,10 +67,15 @@ const AppContent = () => {
             <div className="h-16 flex items-center justify-between px-6">
               <div className="flex items-center gap-4">
                 <SidebarTrigger className="hover:bg-muted rounded-md p-1.5 transition-colors" />
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-muted-foreground">MWRD Dashboard</span>
-                  <span className="text-xs text-muted-foreground/60 font-normal">Client Portal</span>
-                </div>
+                <button 
+                  onClick={handleLogoClick}
+                  className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                >
+                  <div className="h-8 w-8 rounded-lg bg-foreground text-background flex items-center justify-center font-bold text-sm">
+                    L
+                  </div>
+                  <span className="text-sm font-semibold">LinkUp</span>
+                </button>
               </div>
               <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" className="rounded-md h-9 w-9">
