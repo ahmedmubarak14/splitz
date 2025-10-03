@@ -120,6 +120,28 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
         setInviteLink(linkToSend);
       }
 
+      // If email belongs to an existing user and this is a challenge, add directly
+      if (resourceType === 'challenge') {
+        const { data: existingUser } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', recipientEmail.trim())
+          .maybeSingle();
+
+        if (existingUser?.id) {
+          const { error: addErr } = await supabase
+            .from('challenge_participants')
+            .insert({ challenge_id: resourceId, user_id: existingUser.id });
+
+          if (!addErr || (addErr as any)?.code === '23505') {
+            toast.success('Member added to the challenge!');
+            setRecipientEmail('');
+            return;
+          }
+          // If adding fails for another reason, continue to email flow
+        }
+      }
+
       const { data, error } = await supabase.functions.invoke('send-invite', {
         body: {
           recipientEmail: recipientEmail.trim(),
@@ -141,7 +163,7 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
           } catch {}
           toast.info('Email sending is disabled. Link copied — send manually or use WhatsApp.');
 
-          const subject = `Join my ${resourceType} on LinkUp`;
+          const subject = `Join my ${resourceType} on Splitz`;
           const body = `${inviterName || 'A friend'} invited you to the ${resourceType} "${resourceName}". Use this link: ${linkToSend}`;
           const mailto = `mailto:${encodeURIComponent(recipientEmail.trim())}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
           window.open(mailto, '_self');
@@ -165,7 +187,7 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
           if (inviteLink) await navigator.clipboard.writeText(inviteLink);
         } catch {}
         toast.info('Email sending is disabled. Link copied — send manually or use WhatsApp.');
-        const subject = `Join my ${resourceType} on LinkUp`;
+        const subject = `Join my ${resourceType} on Splitz`;
         const body = `${inviterName || 'A friend'} invited you to the ${resourceType} "${resourceName}". Use this link: ${inviteLink}`;
         const mailto = `mailto:${encodeURIComponent(recipientEmail.trim())}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.open(mailto, '_self');

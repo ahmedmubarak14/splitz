@@ -13,6 +13,7 @@ const JoinInvite = () => {
   const [joining, setJoining] = useState(false);
   const [invitation, setInvitation] = useState<any>(null);
   const [resourceDetails, setResourceDetails] = useState<any>(null);
+  const [autoJoinTried, setAutoJoinTried] = useState(false);
 
   useEffect(() => {
     fetchInvitation();
@@ -81,6 +82,14 @@ const JoinInvite = () => {
       setLoading(false);
     }
   };
+
+  // Auto-join once the user is authenticated and invitation is loaded
+  useEffect(() => {
+    if (!loading && invitation && !autoJoinTried) {
+      setAutoJoinTried(true);
+      joinResource();
+    }
+  }, [loading, invitation, autoJoinTried]);
 
   const joinResource = async () => {
     if (!invitation) return;

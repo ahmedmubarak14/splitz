@@ -72,14 +72,14 @@ const handler = async (req: Request): Promise<Response> => {
         </head>
         <body>
           <div class="container">
-            <h1 style="margin: 0; font-size: 28px;">You're Invited to LinkUp!</h1>
+            <h1 style="margin: 0; font-size: 28px;">You're Invited to Splitz!</h1>
             <p style="margin-top: 10px; opacity: 0.9;">Join ${inviterName}'s ${resourceType}</p>
           </div>
           
           <div class="content">
             <h2 style="color: #667eea; margin-top: 0;">${resourceName}</h2>
             <p style="font-size: 16px;">
-              <strong>${inviterName}</strong> has invited you to join their ${resourceType} on LinkUp - 
+              <strong>${inviterName}</strong> has invited you to join their ${resourceType} on Splitz - 
               the platform for tracking habits, splitting expenses, and competing in challenges with friends!
             </p>
             
@@ -117,9 +117,9 @@ const handler = async (req: Request): Promise<Response> => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'LinkUp <onboarding@resend.dev>',
+        from: 'Splitz <onboarding@resend.dev>',
         to: [recipientEmail],
-        subject: `${inviterName} invited you to join "${resourceName}" on LinkUp`,
+        subject: `${inviterName} invited you to join "${resourceName}" on Splitz`,
         html: emailHtml,
       })
     });
