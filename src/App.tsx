@@ -47,37 +47,35 @@ const AppContent = () => {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <main className="flex-1 w-full bg-muted/30">
-          <header className="sticky top-0 z-40 bg-background/95 border-b border-border/20 backdrop-blur supports-[backdrop-filter]:backdrop-blur">
+          <header className="sticky top-0 z-40 bg-background border-b border-border/20">
             <div className="h-16 flex items-center justify-between px-6">
               <div className="flex items-center gap-4">
-                <SidebarTrigger className="hover:bg-muted rounded-xl p-2.5 transition-all" />
-                <div className="flex flex-col">
-                  <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Link to="/dashboard" className="hover:text-foreground">Dashboard</Link>
-                    <span>›</span>
-                    <span className="text-foreground font-medium capitalize">{(location.pathname.split('/')[1] || 'dashboard').replace(/(^.|-.)/g, s => s.replace('-', '').toUpperCase())}</span>
-                  </nav>
-                  <h1 className="text-lg font-semibold tracking-tight capitalize">{(location.pathname.split('/')[1] || 'dashboard').replace(/(^.|-.)/g, s => s.replace('-', '').toUpperCase())}</h1>
+                <SidebarTrigger className="hover:bg-muted rounded-lg p-2 transition-colors" />
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-foreground text-background flex items-center justify-center font-bold text-sm">
+                    L
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
+                      <span>›</span>
+                      <span className="text-foreground font-medium capitalize">
+                        {location.pathname.split('/')[1] || 'Dashboard'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Search className="h-5 w-5" />
-                  <span className="sr-only">Search</span>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="rounded-lg h-9 w-9">
+                  <Search className="h-[18px] w-[18px]" />
                 </Button>
-                <Button variant="ghost" size="icon" className="relative rounded-full">
-                  <Bell className="h-5 w-5" />
-                  <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] leading-none flex items-center justify-center">2</span>
-                  <span className="sr-only">Notifications</span>
+                <Button variant="ghost" size="icon" className="relative rounded-lg h-9 w-9">
+                  <Bell className="h-[18px] w-[18px]" />
+                  <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive ring-1 ring-background" />
                 </Button>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Sun className="h-5 w-5" />
-                  <span className="sr-only">Toggle theme</span>
-                </Button>
-                <Button variant="outline" className="h-9 rounded-full px-3">
-                  <span className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium mr-2">M</span>
-                  <span className="hidden sm:inline text-sm">Account</span>
-                  <ChevronDown className="ml-2 h-4 w-4" />
+                <Button variant="ghost" size="icon" className="rounded-lg h-9 w-9">
+                  <Sun className="h-[18px] w-[18px]" />
                 </Button>
               </div>
             </div>
