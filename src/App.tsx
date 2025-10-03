@@ -44,10 +44,14 @@ const AppContent = () => {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <main className="flex-1 w-full">
-          <header className="sticky top-0 z-40 border-b glass-card h-14 flex items-center px-4 md:px-6 gap-3">
-            <SidebarTrigger className="hover:bg-muted rounded-lg p-2 transition-colors" />
-            <div className="flex-1" />
+        <main className="flex-1 w-full bg-muted/30">
+          <header className="sticky top-0 z-40 bg-background border-b border-border/40 h-14 flex items-center px-6 gap-4">
+            <SidebarTrigger className="hover:bg-muted rounded-md p-1.5 transition-colors -ml-2" />
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>LinkUp</span>
+              <span>›</span>
+              <span className="text-foreground font-medium">{location.pathname.split('/')[1] || 'Dashboard'}</span>
+            </div>
           </header>
           <Routes>
             <Route path="/" element={<Index />} />

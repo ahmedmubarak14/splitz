@@ -32,27 +32,30 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className={`${isCollapsed ? 'w-14' : 'w-64'} border-r shadow-sm transition-all duration-300`}
+      className={`${isCollapsed ? 'w-16' : 'w-64'} bg-background border-r border-border/40 transition-all duration-300`}
       collapsible="icon"
     >
-      <SidebarContent className="py-6">
+      <SidebarContent className="py-4">
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 py-4 mb-2">
+          <SidebarGroupLabel className={`${isCollapsed ? 'px-0 justify-center' : 'px-4'} py-3 mb-4`}>
             {isCollapsed ? (
               <div className="flex items-center justify-center">
-                <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">L</span>
+                <div className="w-9 h-9 rounded-lg bg-foreground flex items-center justify-center">
+                  <span className="text-background font-bold text-base">L</span>
                 </div>
               </div>
             ) : (
-              <Link to="/" className="flex items-center">
-                <img src={logo} alt="LinkUp" className="h-7 w-auto cursor-pointer hover:opacity-80 transition-opacity" />
+              <Link to="/" className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-lg bg-foreground flex items-center justify-center">
+                  <span className="text-background font-bold text-base">L</span>
+                </div>
+                <span className="font-semibold text-base">LinkUp</span>
               </Link>
             )}
           </SidebarGroupLabel>
           
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1 px-2">
+            <SidebarMenu className="gap-0.5 px-2">
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.path}>
                   <SidebarMenuButton asChild>
@@ -60,13 +63,17 @@ export function AppSidebar() {
                       to={item.path}
                       end
                       className={({ isActive }) =>
-                        isActive
-                          ? 'bg-primary/10 text-primary font-semibold rounded-xl h-11 px-3 transition-all shadow-sm'
-                          : 'hover:bg-muted rounded-xl h-11 px-3 transition-all text-muted-foreground hover:text-foreground'
+                        `flex items-center gap-3 h-10 px-3 rounded-lg transition-all ${
+                          isCollapsed ? 'justify-center' : ''
+                        } ${
+                          isActive
+                            ? 'bg-muted text-foreground font-medium'
+                            : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                        }`
                       }
                     >
-                      <item.icon className="h-5 w-5" />
-                      {!isCollapsed && <span className="text-sm font-medium">{t(item.labelKey)}</span>}
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      {!isCollapsed && <span className="text-sm">{t(item.labelKey)}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
