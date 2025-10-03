@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { DollarSign, Plus, Users, TrendingUp } from 'lucide-react';
+import { DollarSign, Plus, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -39,12 +39,8 @@ const Expenses = () => {
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<ExpenseWithDetails | null>(null);
-  
-  // Create group form state
   const [groupName, setGroupName] = useState('');
   const [memberEmails, setMemberEmails] = useState('');
-  
-  // Add expense form state
   const [expenseName, setExpenseName] = useState('');
   const [expenseAmount, setExpenseAmount] = useState('');
   
@@ -58,9 +54,7 @@ const Expenses = () => {
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/auth');
-    }
+    if (!session) navigate('/auth');
   };
 
   const fetchExpenses = async () => {
@@ -68,7 +62,6 @@ const Expenses = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Fetch all expenses where user is creator or member
       const { data: expensesData, error: expensesError } = await supabase
         .from('expenses')
         .select('*')
@@ -76,17 +69,14 @@ const Expenses = () => {
 
       if (expensesError) throw expensesError;
 
-      // Fetch all expense members
       const { data: allMembers } = await supabase
         .from('expense_members')
         .select('*');
 
-      // Fetch profiles for member names
       const { data: profiles } = await supabase
         .from('profiles')
         .select('id, full_name');
 
-      // Filter and process expenses where user is involved
       const processedExpenses: ExpenseWithDetails[] = (expensesData || [])
         .filter(expense => {
           const members = allMembers?.filter(m => m.expense_id === expense.id) || [];
@@ -95,19 +85,12 @@ const Expenses = () => {
         .map((expense) => {
           const members = allMembers?.filter(m => m.expense_id === expense.id) || [];
           const isCreator = expense.user_id === user.id;
-          
           const userMember = members.find(m => m.user_id === user.id);
           const totalOwed = userMember && !userMember.is_settled ? Number(userMember.amount_owed) : 0;
-          
-          // Calculate total received (if creator and others owe money)
           const totalReceived = isCreator 
-            ? members
-                .filter(m => m.user_id !== user.id && !m.is_settled)
-                .reduce((sum, m) => sum + Number(m.amount_owed), 0)
+            ? members.filter(m => m.user_id !== user.id && !m.is_settled).reduce((sum, m) => sum + Number(m.amount_owed), 0)
             : 0;
-
           const settledCount = members.filter(m => m.is_settled).length;
-
           const membersWithNames = members.map(m => ({
             ...m,
             amount_owed: Number(m.amount_owed),
@@ -140,16 +123,12 @@ const Expenses = () => {
       return;
     }
 
-    const emails = memberEmails
-      .split(',')
-      .map(e => e.trim())
-      .filter(e => e.length > 0);
+    const emails = memberEmails.split(',').map(e => e.trim()).filter(e => e.length > 0);
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Create the expense group
       const payload: TablesInsert<'expenses'> = {
         user_id: user.id,
         name: groupName.trim(),
@@ -164,7 +143,6 @@ const Expenses = () => {
 
       if (expenseError) throw expenseError;
 
-      // Add creator as initial member
       const { error: addCreatorError } = await supabase
         .from('expense_members')
         .insert({
@@ -174,12 +152,10 @@ const Expenses = () => {
         });
       if (addCreatorError) throw addCreatorError;
 
-
       let addedCount = 0;
       let notFound: string[] = [];
 
       if (emails.length > 0) {
-        // Lookup users by email in profiles
         const { data: foundProfiles, error: profilesError } = await supabase
           .from('profiles')
           .select('id, email, full_name')
@@ -189,7 +165,6 @@ const Expenses = () => {
         const foundEmails = new Set((foundProfiles || []).map((p: any) => (p.email || '').toLowerCase()));
         notFound = emails.filter(e => !foundEmails.has(e.toLowerCase()));
 
-        // Insert expense members for found users (exclude creator)
         const membersToInsert = (foundProfiles || [])
           .filter((p: any) => p.id !== user.id)
           .map((p: any) => ({
@@ -235,7 +210,6 @@ const Expenses = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Update total amount
       const newTotal = Number(selectedExpense.total_amount) + amount;
       const { error: updateError } = await supabase
         .from('expenses')
@@ -244,19 +218,7 @@ const Expenses = () => {
 
       if (updateError) throw updateError;
 
-      // Calculate split amount per member (equal split for now)
-      const memberCount = selectedExpense.member_count || 1;
-      const splitAmount = newTotal / memberCount;
-
-      // Update all members with new split amount
-      const { error: membersError } = await supabase
-        .from('expense_members')
-        .update({ amount_owed: splitAmount })
-        .eq('expense_id', selectedExpense.id);
-
-      if (membersError) throw membersError;
-
-      toast.success('Expense added! 💰');
+      toast.success('Expense added');
       setExpenseName('');
       setExpenseAmount('');
       setAddExpenseDialogOpen(false);
@@ -276,15 +238,12 @@ const Expenses = () => {
 
       if (error) throw error;
 
-      toast.success(currentStatus ? 'Marked as unpaid' : 'Marked as paid ✓');
+      toast.success(currentStatus ? 'Marked as unpaid' : 'Marked as paid');
       fetchExpenses();
       
-      // Update selected expense if details dialog is open
       if (selectedExpense) {
         const updated = expenses.find(e => e.id === selectedExpense.id);
-        if (updated) {
-          setSelectedExpense(updated);
-        }
+        if (updated) setSelectedExpense(updated);
       }
     } catch (error) {
       console.error('Error toggling settlement:', error);
@@ -309,70 +268,58 @@ const Expenses = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background pb-24 md:pb-8">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 p-6">
       <LanguageToggle />
       
-      <div className="max-w-6xl mx-auto p-6 space-y-8">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl gradient-secondary flex items-center justify-center shadow-secondary animate-pulse-glow">
-                <DollarSign className="w-7 h-7 text-foreground" />
-              </div>
-              <div>
-                <h1 className="font-display text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                  {t('expenses.title')}
-                </h1>
-                <p className="text-muted-foreground mt-1 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4" />
-                  Split expenses fairly
-                </p>
-              </div>
-            </div>
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h1 className="text-3xl md:text-4xl font-semibold text-foreground">
+              {t('expenses.title')}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Split expenses fairly
+            </p>
           </div>
           
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" variant="gradient" className="text-lg">
-                <Plus className="w-5 h-5 mr-2" />
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
                 {t('expenses.createGroup')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle className="text-2xl">{t('expenses.createGroup')}</DialogTitle>
-                <DialogDescription className="text-base">
+                <DialogTitle>{t('expenses.createGroup')}</DialogTitle>
+                <DialogDescription>
                   Create a new expense group and add members
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div>
-                  <Label className="text-sm font-semibold mb-2">Group Name *</Label>
+                  <Label className="text-sm font-medium mb-2">Group Name</Label>
                   <Input
                     placeholder="e.g., Weekend Trip"
                     value={groupName}
                     onChange={(e) => setGroupName(e.target.value)}
-                    className="h-12 mt-2"
+                    className="mt-2"
                   />
                 </div>
                 <div>
-                  <Label className="text-sm font-semibold mb-2">Member Emails (comma-separated)</Label>
+                  <Label className="text-sm font-medium mb-2">Member Emails (comma-separated)</Label>
                   <Input
                     placeholder="john@example.com, jane@example.com"
                     value={memberEmails}
                     onChange={(e) => setMemberEmails(e.target.value)}
-                    className="h-12 mt-2"
+                    className="mt-2"
                   />
                   <p className="text-xs text-muted-foreground mt-2">
-                    Note: Members must have profiles in the system
+                    Members must have profiles in the system
                   </p>
                 </div>
-                <Button 
-                  onClick={createGroup} 
-                  className="w-full h-12 text-base"
-                  variant="gradient"
-                >
+                <Button onClick={createGroup} className="w-full">
                   Create Group
                 </Button>
               </div>
@@ -383,22 +330,20 @@ const Expenses = () => {
         {/* Content */}
         {loading ? (
           <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent"></div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
           </div>
         ) : expenses.length === 0 ? (
-          <Card className="shadow-card border-2">
+          <Card className="border border-border">
             <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-20 h-20 rounded-3xl gradient-secondary flex items-center justify-center mb-6 animate-bounce-slow">
-                <Users className="w-10 h-10 text-foreground" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2">No Expense Groups Yet</h3>
-              <p className="text-lg text-muted-foreground max-w-md">
+              <Users className="w-16 h-16 text-muted mb-4" />
+              <h3 className="text-xl font-semibold mb-2">No Expense Groups Yet</h3>
+              <p className="text-sm text-muted-foreground max-w-md">
                 {t('expenses.noGroups')}
               </p>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {expenses.map((expense) => (
               <div key={expense.id} className="relative">
                 <ExpenseCard
@@ -427,37 +372,33 @@ const Expenses = () => {
       <Dialog open={addExpenseDialogOpen} onOpenChange={setAddExpenseDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-2xl">{t('expenses.addExpense')}</DialogTitle>
-            <DialogDescription className="text-base">
+            <DialogTitle>{t('expenses.addExpense')}</DialogTitle>
+            <DialogDescription>
               Add a new expense to {selectedExpense?.name}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
-              <Label className="text-sm font-semibold mb-2">Expense Description *</Label>
+              <Label className="text-sm font-medium mb-2">Expense Description</Label>
               <Input
                 placeholder="e.g., Dinner at restaurant"
                 value={expenseName}
                 onChange={(e) => setExpenseName(e.target.value)}
-                className="h-12 mt-2"
+                className="mt-2"
               />
             </div>
             <div>
-              <Label className="text-sm font-semibold mb-2">Amount (SAR) *</Label>
+              <Label className="text-sm font-medium mb-2">Amount (SAR)</Label>
               <Input
                 type="number"
                 step="0.01"
                 placeholder="0.00"
                 value={expenseAmount}
                 onChange={(e) => setExpenseAmount(e.target.value)}
-                className="h-12 mt-2"
+                className="mt-2"
               />
             </div>
-            <Button 
-              onClick={addExpenseToGroup} 
-              className="w-full h-12 text-base"
-              variant="gradient"
-            >
+            <Button onClick={addExpenseToGroup} className="w-full">
               Add Expense
             </Button>
           </div>

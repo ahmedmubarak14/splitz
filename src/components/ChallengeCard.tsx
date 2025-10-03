@@ -31,91 +31,92 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
   const isCreator = challenge.creator_id === currentUserId;
 
   return (
-    <Card className="shadow-card border-2 hover:border-primary card-hover overflow-hidden">
-      <div className={`h-2 ${isActive ? 'gradient-accent' : 'bg-muted'}`}></div>
-      <CardHeader className="pb-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-10 h-10 rounded-xl gradient-accent flex items-center justify-center">
-                <Trophy className="w-5 h-5 text-foreground" />
-              </div>
-              <Badge variant={isActive ? "default" : "secondary"}>
-                {isActive ? t('challenges.active') : 'Ended'}
-              </Badge>
-              {isCreator && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 ml-auto">
-                      <MoreVertical className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onEdit?.(challenge)}>
-                      <Pencil className="w-4 h-4 mr-2" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => onDelete?.(challenge.id)}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
+    <Card className="border border-border hover:shadow-md transition-shadow">
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
+              <Trophy className="w-5 h-5 text-primary" />
             </div>
-            <CardTitle className="text-xl mb-1">{challenge.name}</CardTitle>
-            <CardDescription className="line-clamp-2">
-              {challenge.description || 'No description provided'}
-            </CardDescription>
+            <div className="flex-1">
+              <CardTitle className="text-base font-semibold">{challenge.name}</CardTitle>
+              <CardDescription className="text-xs line-clamp-1 mt-1">
+                {challenge.description || 'No description'}
+              </CardDescription>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant={isActive ? "default" : "secondary"} className="text-xs">
+              {isActive ? t('challenges.active') : 'Ended'}
+            </Badge>
+            {isCreator && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-background">
+                  <DropdownMenuItem onClick={() => onEdit?.(challenge)}>
+                    <Pencil className="w-4 h-4 mr-2" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => onDelete?.(challenge.id)}
+                    className="text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3">
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="p-3 rounded-xl bg-muted/50">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="p-3 rounded-lg bg-accent border border-border">
             <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
               <Users className="w-3 h-3" />
               Participants
             </div>
-            <div className="text-lg font-bold">{challenge.participant_count || 0}</div>
+            <div className="text-base font-semibold">{challenge.participant_count || 0}</div>
           </div>
           
-          <div className="p-3 rounded-xl bg-muted/50">
+          <div className="p-3 rounded-lg bg-accent border border-border">
             <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
               <Calendar className="w-3 h-3" />
               {isActive ? 'Days Left' : 'Ended'}
             </div>
-            <div className="text-lg font-bold">
+            <div className="text-base font-semibold">
               {isActive ? `${daysLeft}d` : '—'}
             </div>
           </div>
         </div>
 
-        {/* Progress (if participant) */}
+        {/* Progress */}
         {challenge.is_participant && (
-          <div className="p-3 rounded-xl bg-primary/10 border-2 border-primary/20">
-            <div className="flex items-center gap-2 text-sm font-medium text-primary mb-2">
-              <TrendingUp className="w-4 h-4" />
+          <div className="p-3 rounded-lg bg-accent border border-border">
+            <div className="flex items-center gap-2 text-xs font-medium mb-2">
+              <TrendingUp className="w-3 h-3 text-primary" />
               Your Progress
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+              <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                 <div 
-                  className="h-full gradient-primary transition-all duration-500"
+                  className="h-full bg-primary transition-all duration-500"
                   style={{ width: `${Math.min((challenge.user_progress || 0), 100)}%` }}
                 />
               </div>
-              <span className="text-sm font-bold">{challenge.user_progress || 0}%</span>
+              <span className="text-xs font-semibold">{challenge.user_progress || 0}%</span>
             </div>
           </div>
         )}
 
-        {/* Creator info */}
+        {/* Creator */}
         <div className="text-xs text-muted-foreground">
           Created by {challenge.creator_name || 'Unknown'}
         </div>
@@ -127,14 +128,15 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
               <Button
                 onClick={() => onViewDetails?.(challenge.id)}
                 className="flex-1"
-                variant="gradient"
+                size="sm"
               >
-                View Details
+                Details
               </Button>
               {isActive && (
                 <Button
                   onClick={() => onLeave?.(challenge.id)}
                   variant="outline"
+                  size="sm"
                 >
                   Leave
                 </Button>
@@ -145,6 +147,7 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
               <Button
                 onClick={() => onViewDetails?.(challenge.id)}
                 variant="outline"
+                size="sm"
                 className="flex-1"
               >
                 Details
@@ -152,7 +155,7 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
               {isActive && (
                 <Button
                   onClick={() => onJoin?.(challenge.id)}
-                  variant="gradient"
+                  size="sm"
                 >
                   {t('challenges.join')}
                 </Button>
