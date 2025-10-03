@@ -86,7 +86,8 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       fontFamily: {
-        display: ["Cairo", "system-ui", "sans-serif"],
+        sans: ["Inter", "system-ui", "sans-serif"],
+        display: ["Inter", "Cairo", "system-ui", "sans-serif"],
         arabic: ["Noto Sans Arabic", "Cairo", "sans-serif"],
       },
     },
