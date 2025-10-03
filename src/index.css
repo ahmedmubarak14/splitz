@@ -8,62 +8,62 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Clean Minimal Design - PANTONE Italian Plum Theme */
-    --background: 0 0% 100%; /* Pure white */
-    --foreground: 293 15% 20%; /* Deep plum for text */
+    /* PANTONE Italian Plum Color Palette */
+    --background: 0 0% 100%; /* #FFFFFF */
+    --foreground: 274 85% 11%; /* #1F0433 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 293 15% 20%;
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 274 85% 11%; /* #1F0433 */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 293 15% 20%;
+    --popover: 0 0% 100%; /* #FFFFFF */
+    --popover-foreground: 274 85% 11%; /* #1F0433 */
 
-    /* Primary - PANTONE Italian Plum */
-    --primary: 293 30% 45%; /* Italian Plum #5F4B66 */
-    --primary-glow: 293 30% 55%;
-    --primary-foreground: 0 0% 100%;
+    /* Primary - Deep Plum */
+    --primary: 274 85% 11%; /* #1F0433 */
+    --primary-glow: 274 70% 25%;
+    --primary-foreground: 0 0% 100%; /* #FFFFFF */
 
-    /* Secondary - Lighter Plum */
-    --secondary: 293 25% 65%;
-    --secondary-glow: 293 25% 75%;
-    --secondary-foreground: 293 15% 20%;
+    /* Secondary - Medium Plum */
+    --secondary: 274 40% 50%;
+    --secondary-glow: 274 40% 60%;
+    --secondary-foreground: 0 0% 100%;
 
     /* Success - Muted Green */
     --success: 142 40% 45%;
     --success-foreground: 0 0% 100%;
 
-    /* Muted - Subtle Plum Grays */
-    --muted: 293 10% 96%;
-    --muted-foreground: 293 8% 50%;
+    /* Muted - Light Gray Purple */
+    --muted: 270 11% 96%; /* #F5F4F6 */
+    --muted-foreground: 274 10% 45%;
 
-    /* Accent - Soft Plum */
-    --accent: 293 35% 85%;
-    --accent-foreground: 293 15% 20%;
+    /* Accent - Light Purple Gray */
+    --accent: 274 13% 91%; /* #E8E4EB */
+    --accent-foreground: 274 85% 11%; /* #1F0433 */
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 293 10% 92%;
-    --input: 293 10% 94%;
-    --ring: 293 30% 45%;
+    --border: 274 13% 91%; /* #E8E4EB */
+    --input: 274 13% 91%; /* #E8E4EB */
+    --ring: 274 85% 11%; /* #1F0433 */
 
     --radius: 0.875rem;
 
     /* Minimal Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(293, 30%, 45%), hsl(293, 25%, 55%));
-    --gradient-secondary: linear-gradient(135deg, hsl(293, 25%, 65%), hsl(293, 20%, 75%));
+    --gradient-primary: linear-gradient(135deg, hsl(274, 85%, 11%), hsl(274, 70%, 25%));
+    --gradient-secondary: linear-gradient(135deg, hsl(274, 40%, 50%), hsl(274, 40%, 60%));
     --gradient-success: linear-gradient(135deg, hsl(142, 40%, 45%), hsl(142, 35%, 55%));
-    --gradient-accent: linear-gradient(135deg, hsl(293, 35%, 85%), hsl(293, 30%, 90%));
+    --gradient-accent: linear-gradient(135deg, hsl(274, 13%, 91%), hsl(270, 11%, 96%));
     
     /* Subtle Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(293 10% 0% / 0.04);
-    --shadow-md: 0 2px 8px -2px hsl(293 10% 0% / 0.08);
-    --shadow-lg: 0 4px 16px -4px hsl(293 10% 0% / 0.12);
-    --shadow-xl: 0 8px 32px -8px hsl(293 10% 0% / 0.16);
-    --shadow-primary: 0 4px 16px -4px hsl(293 30% 45% / 0.15);
-    --shadow-secondary: 0 4px 16px -4px hsl(293 25% 65% / 0.12);
+    --shadow-sm: 0 1px 2px 0 hsl(274 10% 0% / 0.04);
+    --shadow-md: 0 2px 8px -2px hsl(274 10% 0% / 0.08);
+    --shadow-lg: 0 4px 16px -4px hsl(274 10% 0% / 0.12);
+    --shadow-xl: 0 8px 32px -8px hsl(274 10% 0% / 0.16);
+    --shadow-primary: 0 4px 16px -4px hsl(274 85% 11% / 0.15);
+    --shadow-secondary: 0 4px 16px -4px hsl(274 40% 50% / 0.12);
     --shadow-success: 0 4px 16px -4px hsl(142 40% 45% / 0.12);
-    --shadow-accent: 0 2px 8px -2px hsl(293 35% 85% / 0.1);
+    --shadow-accent: 0 2px 8px -2px hsl(274 13% 91% / 0.1);
     
     /* Smooth Transitions */
     --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -71,45 +71,45 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 293 20% 8%; /* Deep plum */
-    --foreground: 0 0% 98%;
+    --background: 274 85% 11%; /* #1F0433 */
+    --foreground: 0 0% 100%; /* #FFFFFF */
 
-    --card: 293 18% 10%;
-    --card-foreground: 0 0% 98%;
+    --card: 274 70% 15%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 293 18% 10%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 274 70% 15%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 293 30% 55%;
-    --primary-glow: 293 30% 65%;
+    --primary: 274 70% 35%;
+    --primary-glow: 274 60% 45%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 293 25% 75%;
-    --secondary-glow: 293 25% 85%;
-    --secondary-foreground: 293 15% 15%;
+    --secondary: 274 40% 60%;
+    --secondary-glow: 274 40% 70%;
+    --secondary-foreground: 0 0% 100%;
 
     --success: 142 40% 55%;
     --success-foreground: 0 0% 100%;
 
-    --muted: 293 12% 15%;
-    --muted-foreground: 293 8% 60%;
+    --muted: 274 50% 18%;
+    --muted-foreground: 274 10% 70%;
 
-    --accent: 293 35% 25%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 274 40% 25%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 70%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 293 12% 18%;
-    --input: 293 12% 20%;
-    --ring: 293 30% 55%;
+    --border: 274 40% 20%;
+    --input: 274 40% 22%;
+    --ring: 274 70% 35%;
 
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
     --shadow-md: 0 2px 8px -2px hsl(0 0% 0% / 0.4);
     --shadow-lg: 0 4px 16px -4px hsl(0 0% 0% / 0.5);
     --shadow-xl: 0 8px 32px -8px hsl(0 0% 0% / 0.6);
-    --shadow-primary: 0 4px 16px -4px hsl(293 30% 55% / 0.3);
-    --shadow-secondary: 0 4px 16px -4px hsl(293 25% 75% / 0.2);
+    --shadow-primary: 0 4px 16px -4px hsl(274 70% 35% / 0.3);
+    --shadow-secondary: 0 4px 16px -4px hsl(274 40% 60% / 0.2);
   }
 }
 
