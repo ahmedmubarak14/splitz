@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import type { Tables, TablesInsert } from '@/integrations/supabase/types';
+import type { TablesInsert } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -9,51 +9,46 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { DollarSign, Plus, Users } from 'lucide-react';
+import { DollarSign, Plus, Users, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
-import ExpenseCard from '@/components/ExpenseCard';
-import ExpenseDetailsDialog from '@/components/ExpenseDetailsDialog';
 import { InviteDialog } from '@/components/InviteDialog';
 
-type ExpenseWithDetails = Tables<'expenses'> & {
-  member_count?: number;
-  total_owed?: number;
-  total_received?: number;
-  settled_count?: number;
-  is_creator?: boolean;
-  creator_name?: string;
-  members?: Array<{
-    id: string;
-    user_id: string;
-    amount_owed: number;
-    is_settled: boolean;
-    user_name?: string;
-  }>;
+type ExpenseGroup = {
+  id: string;
+  name: string;
+  created_by: string;
+  created_at: string;
+  member_count: number;
+  total_expenses: number;
+  net_balance: number;
+  settlement_summary?: {
+    from: string;
+    to: string;
+    amount: number;
+  }[];
 };
 
 const Expenses = () => {
-  const [expenses, setExpenses] = useState<ExpenseWithDetails[]>([]);
+  const [groups, setGroups] = useState<ExpenseGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
-  const [selectedExpense, setSelectedExpense] = useState<ExpenseWithDetails | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<ExpenseGroup | null>(null);
   const [groupName, setGroupName] = useState('');
   const [memberEmails, setMemberEmails] = useState('');
-  const [expenseName, setExpenseName] = useState('');
+  const [expenseDescription, setExpenseDescription] = useState('');
   const [expenseAmount, setExpenseAmount] = useState('');
-  const [splitMethod, setSplitMethod] = useState<'equal' | 'custom' | 'full'>('equal');
-  const [customSplits, setCustomSplits] = useState<Record<string, string>>({});
-  const [selectedPayer, setSelectedPayer] = useState<string>('');
+  const [paidBy, setPaidBy] = useState<string>('');
+  const [groupMembers, setGroupMembers] = useState<Array<{ id: string; name: string }>>([]);
   
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   useEffect(() => {
     checkAuth();
-    fetchExpenses();
+    fetchGroups();
   }, []);
 
   const checkAuth = async () => {
@@ -61,65 +56,140 @@ const Expenses = () => {
     if (!session) navigate('/auth');
   };
 
-  const fetchExpenses = async () => {
+  const fetchGroups = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: expensesData, error: expensesError } = await supabase
-        .from('expenses')
+      // Fetch all groups
+      const { data: groupsData, error: groupsError } = await supabase
+        .from('expense_groups')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (expensesError) throw expensesError;
+      if (groupsError) throw groupsError;
 
-      const { data: allMembers } = await supabase
-        .from('expense_members')
-        .select('*');
+      // Fetch all members
+      const { data: membersData } = await supabase
+        .from('expense_group_members')
+        .select('group_id, user_id');
 
+      // Fetch all expenses
+      const { data: expensesData } = await supabase
+        .from('expenses')
+        .select('group_id, total_amount, paid_by, user_id');
+
+      // Fetch profiles for names
       const { data: profiles } = await supabase
         .from('profiles')
         .select('id, full_name');
 
-      const processedExpenses: ExpenseWithDetails[] = (expensesData || [])
-        .filter(expense => {
-          const members = allMembers?.filter(m => m.expense_id === expense.id) || [];
-          return expense.user_id === user.id || members.some(m => m.user_id === user.id);
-        })
-        .map((expense) => {
-          const members = allMembers?.filter(m => m.expense_id === expense.id) || [];
-          const isCreator = expense.user_id === user.id;
-          const userMember = members.find(m => m.user_id === user.id);
-          const totalOwed = userMember && !userMember.is_settled ? Number(userMember.amount_owed) : 0;
-          const totalReceived = isCreator 
-            ? members.filter(m => m.user_id !== user.id && !m.is_settled).reduce((sum, m) => sum + Number(m.amount_owed), 0)
-            : 0;
-          const settledCount = members.filter(m => m.is_settled).length;
-          const creatorProfile = profiles?.find(p => p.id === expense.user_id);
-          const membersWithNames = members.map(m => ({
-            ...m,
-            amount_owed: Number(m.amount_owed),
-            user_name: profiles?.find(p => p.id === m.user_id)?.full_name || 'Unknown User',
-          }));
+      // Process groups
+      const processedGroups: ExpenseGroup[] = (groupsData || []).map((group) => {
+        const members = membersData?.filter(m => m.group_id === group.id) || [];
+        const groupExpenses = expensesData?.filter(e => e.group_id === group.id) || [];
+        
+        // Calculate net balance for current user
+        let netBalance = 0;
+        const memberBalances: Record<string, number> = {};
 
-          return {
-            ...expense,
-            member_count: members.length,
-            total_owed: totalOwed,
-            total_received: totalReceived,
-            settled_count: settledCount,
-            is_creator: isCreator,
-            creator_name: creatorProfile?.full_name || 'Unknown',
-            members: membersWithNames,
-          };
+        // Initialize all members with 0 balance
+        members.forEach(m => {
+          memberBalances[m.user_id] = 0;
         });
 
-      setExpenses(processedExpenses);
+        // Calculate balances based on expenses
+        groupExpenses.forEach(expense => {
+          const amount = Number(expense.total_amount);
+          const payer = expense.paid_by || expense.user_id;
+          const splitAmount = amount / (members.length || 1);
+
+          // Payer gets positive balance
+          memberBalances[payer] = (memberBalances[payer] || 0) + amount;
+
+          // Everyone owes their split
+          members.forEach(m => {
+            memberBalances[m.user_id] = (memberBalances[m.user_id] || 0) - splitAmount;
+          });
+        });
+
+        netBalance = memberBalances[user.id] || 0;
+
+        // Calculate settlement summary
+        const settlement_summary: { from: string; to: string; amount: number }[] = [];
+        const debtors: { id: string; amount: number; name: string }[] = [];
+        const creditors: { id: string; amount: number; name: string }[] = [];
+
+        Object.entries(memberBalances).forEach(([userId, balance]) => {
+          const userName = profiles?.find(p => p.id === userId)?.full_name || 'Unknown';
+          if (balance < -0.01) {
+            debtors.push({ id: userId, amount: Math.abs(balance), name: userName });
+          } else if (balance > 0.01) {
+            creditors.push({ id: userId, amount: balance, name: userName });
+          }
+        });
+
+        // Simplified settlement: match debtors with creditors
+        debtors.sort((a, b) => b.amount - a.amount);
+        creditors.sort((a, b) => b.amount - a.amount);
+
+        let di = 0, ci = 0;
+        while (di < debtors.length && ci < creditors.length) {
+          const debtor = debtors[di];
+          const creditor = creditors[ci];
+          const amount = Math.min(debtor.amount, creditor.amount);
+
+          if (amount > 0.01) {
+            settlement_summary.push({
+              from: debtor.name,
+              to: creditor.name,
+              amount: Math.round(amount * 100) / 100,
+            });
+          }
+
+          debtor.amount -= amount;
+          creditor.amount -= amount;
+
+          if (debtor.amount < 0.01) di++;
+          if (creditor.amount < 0.01) ci++;
+        }
+
+        return {
+          id: group.id,
+          name: group.name,
+          created_by: group.created_by,
+          created_at: group.created_at,
+          member_count: members.length,
+          total_expenses: groupExpenses.reduce((sum, e) => sum + Number(e.total_amount), 0),
+          net_balance: Math.round(netBalance * 100) / 100,
+          settlement_summary,
+        };
+      });
+
+      setGroups(processedGroups);
     } catch (error) {
-      console.error('Error fetching expenses:', error);
-      toast.error('Failed to load expenses');
+      console.error('Error fetching groups:', error);
+      toast.error('Failed to load expense groups');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchGroupMembers = async (groupId: string) => {
+    try {
+      const { data: membersData } = await supabase
+        .from('expense_group_members')
+        .select('user_id')
+        .eq('group_id', groupId);
+
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', membersData?.map(m => m.user_id) || []);
+
+      setGroupMembers(profiles?.map(p => ({ id: p.id, name: p.full_name || 'Unknown' })) || []);
+    } catch (error) {
+      console.error('Error fetching members:', error);
     }
   };
 
@@ -135,37 +205,38 @@ const Expenses = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const payload: TablesInsert<'expenses'> = {
-        user_id: user.id,
-        name: groupName.trim(),
-        total_amount: 0,
-      };
-
-      const { data: newExpense, error: expenseError } = await supabase
-        .from('expenses')
-        .insert(payload)
+      // Create group
+      const { data: newGroup, error: groupError } = await supabase
+        .from('expense_groups')
+        .insert({
+          name: groupName.trim(),
+          created_by: user.id,
+        })
         .select()
         .single();
 
-      if (expenseError) throw expenseError;
+      if (groupError) throw groupError;
 
-      const { error: addCreatorError } = await supabase
-        .from('expense_members')
+      // Add creator as member
+      const { error: creatorError } = await supabase
+        .from('expense_group_members')
         .insert({
-          expense_id: newExpense!.id,
+          group_id: newGroup.id,
           user_id: user.id,
-          amount_owed: 0,
         });
-      if (addCreatorError) throw addCreatorError;
 
+      if (creatorError) throw creatorError;
+
+      // Add other members
       let addedCount = 0;
       let notFound: string[] = [];
 
       if (emails.length > 0) {
         const { data: foundProfiles, error: profilesError } = await supabase
           .from('profiles')
-          .select('id, email, full_name')
+          .select('id, email')
           .in('email', emails);
+
         if (profilesError) throw profilesError;
 
         const foundEmails = new Set((foundProfiles || []).map((p: any) => (p.email || '').toLowerCase()));
@@ -174,16 +245,16 @@ const Expenses = () => {
         const membersToInsert = (foundProfiles || [])
           .filter((p: any) => p.id !== user.id)
           .map((p: any) => ({
-            expense_id: newExpense!.id,
+            group_id: newGroup.id,
             user_id: p.id,
-            amount_owed: 0,
           }));
 
         if (membersToInsert.length > 0) {
-          const { error: membersInsertError } = await supabase
-            .from('expense_members')
-            .insert(membersToInsert as TablesInsert<'expense_members'>[]);
-          if (membersInsertError) throw membersInsertError;
+          const { error: membersError } = await supabase
+            .from('expense_group_members')
+            .insert(membersToInsert);
+
+          if (membersError) throw membersError;
           addedCount = membersToInsert.length;
         }
       }
@@ -193,15 +264,15 @@ const Expenses = () => {
       setGroupName('');
       setMemberEmails('');
       setCreateDialogOpen(false);
-      fetchExpenses();
+      fetchGroups();
     } catch (error) {
       console.error('Error creating group:', error);
       toast.error('Failed to create group');
     }
   };
 
-  const addExpenseToGroup = async () => {
-    if (!selectedExpense || !expenseName.trim() || !expenseAmount) {
+  const addExpense = async () => {
+    if (!selectedGroup || !expenseDescription.trim() || !expenseAmount || !paidBy) {
       toast.error('Please fill in all fields');
       return;
     }
@@ -216,107 +287,38 @@ const Expenses = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const newTotal = Number(selectedExpense.total_amount) + amount;
-      
-      // Update total amount
-      const { error: updateError } = await supabase
-        .from('expenses')
-        .update({ total_amount: newTotal })
-        .eq('id', selectedExpense.id);
+      const { error } = await supabase.from('expenses').insert({
+        group_id: selectedGroup.id,
+        name: expenseDescription.trim(),
+        description: expenseDescription.trim(),
+        total_amount: amount,
+        paid_by: paidBy,
+        user_id: user.id,
+      });
 
-      if (updateError) throw updateError;
+      if (error) throw error;
 
-      // Handle different split methods
-      if (splitMethod === 'equal') {
-        // Database trigger will automatically recalculate equal splits
-        toast.success('Expense added and split equally');
-      } else if (splitMethod === 'custom') {
-        // Update custom amounts for each member
-        const members = selectedExpense.members || [];
-        for (const member of members) {
-          const customAmount = parseFloat(customSplits[member.user_id] || '0');
-          if (customAmount > 0) {
-            const { error: memberError } = await supabase
-              .from('expense_members')
-              .update({ amount_owed: Number(member.amount_owed) + customAmount })
-              .eq('id', member.id);
-            
-            if (memberError) throw memberError;
-          }
-        }
-        toast.success('Expense added with custom splits');
-      } else if (splitMethod === 'full') {
-        // One person pays full amount
-        if (!selectedPayer) {
-          toast.error('Please select who owes the full amount');
-          return;
-        }
-        
-        const payerMember = selectedExpense.members?.find(m => m.user_id === selectedPayer);
-        if (payerMember) {
-          const { error: memberError } = await supabase
-            .from('expense_members')
-            .update({ amount_owed: Number(payerMember.amount_owed) + amount })
-            .eq('id', payerMember.id);
-          
-          if (memberError) throw memberError;
-        }
-        toast.success('Expense added - full amount assigned');
-      }
-
-      setExpenseName('');
+      toast.success('Expense added successfully');
+      setExpenseDescription('');
       setExpenseAmount('');
-      setSplitMethod('equal');
-      setCustomSplits({});
-      setSelectedPayer('');
+      setPaidBy('');
       setAddExpenseDialogOpen(false);
-      fetchExpenses();
+      fetchGroups();
     } catch (error) {
       console.error('Error adding expense:', error);
       toast.error('Failed to add expense');
     }
   };
 
-  const toggleSettlement = async (memberId: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('expense_members')
-        .update({ is_settled: !currentStatus })
-        .eq('id', memberId);
-
-      if (error) throw error;
-
-      toast.success(currentStatus ? 'Marked as unpaid' : 'Marked as paid');
-      fetchExpenses();
-      
-      if (selectedExpense) {
-        const updated = expenses.find(e => e.id === selectedExpense.id);
-        if (updated) setSelectedExpense(updated);
-      }
-    } catch (error) {
-      console.error('Error toggling settlement:', error);
-      toast.error('Failed to update settlement status');
-    }
-  };
-
-  const viewDetails = (expenseId: string) => {
-    const expense = expenses.find(e => e.id === expenseId);
-    if (expense) {
-      setSelectedExpense(expense);
-      setDetailsDialogOpen(true);
-    }
-  };
-
-  const openAddExpense = (expenseId: string) => {
-    const expense = expenses.find(e => e.id === expenseId);
-    if (expense) {
-      setSelectedExpense(expense);
-      setAddExpenseDialogOpen(true);
-    }
+  const openAddExpense = async (group: ExpenseGroup) => {
+    setSelectedGroup(group);
+    await fetchGroupMembers(group.id);
+    setAddExpenseDialogOpen(true);
   };
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-8 p-6">
+      <Navigation />
       
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
@@ -334,12 +336,12 @@ const Expenses = () => {
             <DialogTrigger asChild>
               <Button>
                 <Plus className="w-4 h-4 mr-2" />
-                {t('expenses.createGroup')}
+                Create Group
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>{t('expenses.createGroup')}</DialogTitle>
+                <DialogTitle>Create Expense Group</DialogTitle>
                 <DialogDescription>
                   Create a new expense group and add members
                 </DialogDescription>
@@ -379,37 +381,85 @@ const Expenses = () => {
           <div className="text-center py-20">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
           </div>
-        ) : expenses.length === 0 ? (
+        ) : groups.length === 0 ? (
           <Card className="border border-border">
             <CardContent className="flex flex-col items-center justify-center py-20 text-center">
               <Users className="w-16 h-16 text-muted mb-4" />
               <h3 className="text-xl font-semibold mb-2">No Expense Groups Yet</h3>
               <p className="text-sm text-muted-foreground max-w-md">
-                {t('expenses.noGroups')}
+                Create your first expense group to start tracking and splitting expenses with friends
               </p>
             </CardContent>
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {expenses.map((expense) => (
-              <div key={expense.id} className="relative">
-                <ExpenseCard
-                  expense={expense}
-                  onViewDetails={viewDetails}
-                  onAddExpense={openAddExpense}
-                />
-                <Button
-                  onClick={() => {
-                    setSelectedExpense(expense);
-                    setInviteDialogOpen(true);
-                  }}
-                  variant="outline"
-                  size="sm"
-                  className="absolute top-4 right-4"
-                >
-                  Invite
-                </Button>
-              </div>
+            {groups.map((group) => (
+              <Card key={group.id} className="border border-border hover:border-primary/50 transition-colors">
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="font-semibold text-lg">{group.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {group.member_count} member{group.member_count !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        setSelectedGroup(group);
+                        setInviteDialogOpen(true);
+                      }}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Invite
+                    </Button>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Total Expenses</span>
+                      <span className="font-medium">{group.total_expenses.toFixed(2)} SAR</span>
+                    </div>
+
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Your Balance</span>
+                      <span className={`font-medium ${group.net_balance > 0 ? 'text-green-600' : group.net_balance < 0 ? 'text-red-600' : ''}`}>
+                        {group.net_balance > 0 ? '+' : ''}{group.net_balance.toFixed(2)} SAR
+                      </span>
+                    </div>
+
+                    {group.settlement_summary && group.settlement_summary.length > 0 && (
+                      <div className="pt-3 border-t border-border">
+                        <p className="text-xs font-medium text-muted-foreground mb-2">Who Owes Whom</p>
+                        <div className="space-y-1">
+                          {group.settlement_summary.slice(0, 2).map((settlement, idx) => (
+                            <div key={idx} className="flex items-center justify-between text-xs">
+                              <div className="flex items-center gap-1">
+                                <span>{settlement.from}</span>
+                                <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                                <span>{settlement.to}</span>
+                              </div>
+                              <span className="font-medium">{settlement.amount.toFixed(2)} SAR</span>
+                            </div>
+                          ))}
+                          {group.settlement_summary.length > 2 && (
+                            <p className="text-xs text-muted-foreground">+{group.settlement_summary.length - 2} more</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <Button
+                    onClick={() => openAddExpense(group)}
+                    className="w-full mt-4"
+                    variant="outline"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Expense
+                  </Button>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}
@@ -419,18 +469,18 @@ const Expenses = () => {
       <Dialog open={addExpenseDialogOpen} onOpenChange={setAddExpenseDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{t('expenses.addExpense')}</DialogTitle>
+            <DialogTitle>Add Expense</DialogTitle>
             <DialogDescription>
-              Add a new expense to {selectedExpense?.name}
+              Add a new expense to {selectedGroup?.name}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
-              <Label className="text-sm font-medium mb-2">Expense Description</Label>
+              <Label className="text-sm font-medium mb-2">Description</Label>
               <Input
                 placeholder="e.g., Dinner at restaurant"
-                value={expenseName}
-                onChange={(e) => setExpenseName(e.target.value)}
+                value={expenseDescription}
+                onChange={(e) => setExpenseDescription(e.target.value)}
                 className="mt-2"
               />
             </div>
@@ -445,87 +495,38 @@ const Expenses = () => {
                 className="mt-2"
               />
             </div>
-
             <div>
-              <Label className="text-sm font-medium mb-2">Split Method</Label>
-              <Select value={splitMethod} onValueChange={(value: 'equal' | 'custom' | 'full') => setSplitMethod(value)}>
-                <SelectTrigger className="mt-2 bg-background">
-                  <SelectValue placeholder="Select split method" />
+              <Label className="text-sm font-medium mb-2">Paid By</Label>
+              <Select value={paidBy} onValueChange={setPaidBy}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Select who paid" />
                 </SelectTrigger>
-                <SelectContent className="bg-background border border-border z-50">
-                  <SelectItem value="equal">Equal Split (Divide equally among all)</SelectItem>
-                  <SelectItem value="custom">Custom Split (Specify amounts)</SelectItem>
-                  <SelectItem value="full">Full Amount (One person pays all)</SelectItem>
+                <SelectContent>
+                  {groupMembers.map((member) => (
+                    <SelectItem key={member.id} value={member.id}>
+                      {member.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-
-            {splitMethod === 'custom' && selectedExpense?.members && (
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Custom Amounts per Member</Label>
-                {selectedExpense.members
-                  .filter(m => m.user_id !== selectedExpense.user_id)
-                  .map((member) => (
-                    <div key={member.user_id} className="flex items-center gap-2">
-                      <span className="text-sm flex-1">{member.user_name}</span>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        value={customSplits[member.user_id] || ''}
-                        onChange={(e) => setCustomSplits(prev => ({ ...prev, [member.user_id]: e.target.value }))}
-                        className="w-32"
-                      />
-                    </div>
-                  ))}
-              </div>
-            )}
-
-            {splitMethod === 'full' && selectedExpense?.members && (
-              <div>
-                <Label className="text-sm font-medium mb-2">Who owes the full amount?</Label>
-                <Select value={selectedPayer} onValueChange={setSelectedPayer}>
-                  <SelectTrigger className="mt-2 bg-background">
-                    <SelectValue placeholder="Select member" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background border border-border z-50">
-                    {selectedExpense.members
-                      .filter(m => m.user_id !== selectedExpense.user_id)
-                      .map((member) => (
-                        <SelectItem key={member.user_id} value={member.user_id}>
-                          {member.user_name}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            <Button onClick={addExpenseToGroup} className="w-full">
+            <Button onClick={addExpense} className="w-full">
               Add Expense
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      <ExpenseDetailsDialog
-        expense={selectedExpense}
-        open={detailsDialogOpen}
-        onOpenChange={setDetailsDialogOpen}
-        onToggleSettlement={toggleSettlement}
-      />
-
-      {selectedExpense && (
+      {/* Invite Dialog */}
+      {selectedGroup && (
         <InviteDialog
           open={inviteDialogOpen}
           onOpenChange={setInviteDialogOpen}
-          resourceId={selectedExpense.id}
+          resourceId={selectedGroup.id}
           resourceType="expense"
-          resourceName={selectedExpense.name}
+          resourceName={selectedGroup.name}
         />
       )}
-
-      <Navigation />
     </div>
   );
 };

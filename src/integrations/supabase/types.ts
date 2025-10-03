@@ -79,6 +79,59 @@ export type Database = {
         }
         Relationships: []
       }
+      expense_group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "expense_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expense_groups: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       expense_members: {
         Row: {
           amount_owed: number
@@ -117,29 +170,46 @@ export type Database = {
       expenses: {
         Row: {
           created_at: string
+          description: string | null
+          group_id: string | null
           id: string
           name: string
+          paid_by: string | null
           total_amount: number
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          description?: string | null
+          group_id?: string | null
           id?: string
           name: string
+          paid_by?: string | null
           total_amount: number
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          description?: string | null
+          group_id?: string | null
           id?: string
           name?: string
+          paid_by?: string | null
           total_amount?: number
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expenses_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "expense_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       habit_check_ins: {
         Row: {
@@ -301,6 +371,10 @@ export type Database = {
       }
       is_expense_member: {
         Args: { _expense_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_group_member: {
+        Args: { _group_id: string; _user_id: string }
         Returns: boolean
       }
       recalc_expense_split: {
