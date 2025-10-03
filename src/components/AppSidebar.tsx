@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Target, DollarSign, Trophy, User, Settings, HelpCircle, BarChart2 } from 'lucide-react';
+import { Home, Target, DollarSign, Trophy, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -17,7 +17,6 @@ import {
 
 const overviewItems = [
   { path: '/dashboard', icon: Home, labelKey: 'nav.dashboard', label: 'Dashboard' },
-  { path: '/analytics', icon: BarChart2, label: 'Analytics' },
 ];
 
 const workspaceItems = [
@@ -28,8 +27,6 @@ const workspaceItems = [
 
 const accountItems = [
   { path: '/profile', icon: User, labelKey: 'nav.profile', label: 'Profile' },
-  { path: '/profile', icon: Settings, label: 'Settings' },
-  { path: '/profile', icon: HelpCircle, label: 'Support' },
 ];
 
 export function AppSidebar() {
