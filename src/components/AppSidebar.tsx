@@ -29,30 +29,28 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className={`${isCollapsed ? 'w-16' : 'w-64'} bg-background border-r border-border/10 transition-all duration-300`}
+      className={`${isCollapsed ? 'w-20' : 'w-72'} transition-all duration-300`}
       collapsible="icon"
     >
-      <SidebarContent className="py-6">
+      <SidebarContent className="py-8">
         <SidebarGroup>
-          <div className={`${isCollapsed ? 'px-0 justify-center' : 'px-6'} mb-8`}>
+          <div className={`${isCollapsed ? 'px-0 justify-center flex' : 'px-8'} mb-12`}>
             {isCollapsed ? (
-              <div className="flex items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-foreground flex items-center justify-center">
-                  <span className="text-background font-bold text-lg">L</span>
-                </div>
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-foreground to-foreground/80 flex items-center justify-center shadow-sm">
+                <span className="text-background font-bold text-xl">L</span>
               </div>
             ) : (
-              <Link to="/" className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-foreground flex items-center justify-center">
-                  <span className="text-background font-bold text-lg">L</span>
+              <Link to="/" className="flex items-center gap-3 group">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-foreground to-foreground/80 flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
+                  <span className="text-background font-bold text-xl">L</span>
                 </div>
-                <span className="font-semibold text-xl tracking-tight">LinkUp</span>
+                <span className="font-bold text-2xl tracking-tight">LinkUp</span>
               </Link>
             )}
           </div>
           
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1 px-3">
+            <SidebarMenu className="gap-2 px-4">
               {navItems.map((item) => {
                 const isActive = location.pathname === item.path;
                 return (
@@ -61,16 +59,16 @@ export function AppSidebar() {
                       <NavLink
                         to={item.path}
                         end
-                        className={`flex items-center gap-3 h-11 px-4 rounded-xl transition-all ${
+                        className={`flex items-center gap-4 h-12 px-4 rounded-2xl transition-all ${
                           isCollapsed ? 'justify-center' : ''
                         } ${
                           isActive
-                            ? 'bg-foreground text-background font-medium'
-                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                            ? 'bg-foreground text-background shadow-sm'
+                            : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                         }`}
                       >
                         <item.icon className="h-5 w-5 flex-shrink-0" />
-                        {!isCollapsed && <span className="text-sm">{t(item.labelKey)}</span>}
+                        {!isCollapsed && <span className="text-sm font-medium">{t(item.labelKey)}</span>}
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

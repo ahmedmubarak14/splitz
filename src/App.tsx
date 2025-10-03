@@ -45,8 +45,8 @@ const AppContent = () => {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <main className="flex-1 w-full bg-muted/30">
-          <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-sm border-b border-border/10 h-16 flex items-center px-6">
-            <SidebarTrigger className="hover:bg-muted rounded-lg p-2 transition-colors" />
+          <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md h-20 flex items-center px-8">
+            <SidebarTrigger className="hover:bg-muted/50 rounded-xl p-2.5 transition-all hover:scale-105" />
           </header>
           <Routes>
             <Route path="/" element={<Index />} />
