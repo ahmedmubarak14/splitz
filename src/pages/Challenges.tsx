@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Trophy, Plus, TrendingUp } from 'lucide-react';
+import { Trophy, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -40,12 +40,11 @@ const Challenges = () => {
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
   const [deletingChallenge, setDeletingChallenge] = useState<Challenge | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'joined'>('all');
   const [currentUserId, setCurrentUserId] = useState<string>('');
-  
-  // Form state
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -61,9 +60,7 @@ const Challenges = () => {
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate('/auth');
-    }
+    if (!session) navigate('/auth');
   };
 
   const fetchChallenges = async () => {
@@ -142,7 +139,6 @@ const Challenges = () => {
       const { data: created, error } = await supabase.from('challenges').insert(payload).select('id').single();
       if (error) throw error;
 
-      // Add creator as initial participant
       const { error: participantError } = await supabase
         .from('challenge_participants')
         .insert({
@@ -152,7 +148,7 @@ const Challenges = () => {
         });
       if (participantError) throw participantError;
 
-      toast.success('Challenge created! 🎉');
+      toast.success('Challenge created');
       setName('');
       setDescription('');
       setStartDate('');
@@ -178,12 +174,12 @@ const Challenges = () => {
 
       if (error) {
         if (error.code === '23505') {
-          toast.error('Already joined this challenge!');
+          toast.error('Already joined this challenge');
         } else {
           throw error;
         }
       } else {
-        toast.success('Joined challenge! 🎯');
+        toast.success('Joined challenge');
         fetchChallenges();
       }
     } catch (error) {
@@ -226,7 +222,7 @@ const Challenges = () => {
 
       if (error) throw error;
 
-      toast.success('Progress updated! 🎯');
+      toast.success('Progress updated');
       fetchChallenges();
       
       const updated = challenges.find(c => c.id === challengeId);
@@ -276,7 +272,7 @@ const Challenges = () => {
 
       if (error) throw error;
 
-      toast.success('Challenge updated! ✓');
+      toast.success('Challenge updated');
       setEditDialogOpen(false);
       fetchChallenges();
     } catch (error) {
@@ -319,55 +315,46 @@ const Challenges = () => {
     : challenges;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background pb-24 md:pb-8">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 p-6">
       <LanguageToggle />
       
-      <div className="max-w-6xl mx-auto p-6 space-y-8">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-14 h-14 rounded-2xl gradient-accent flex items-center justify-center shadow-success animate-pulse-glow">
-                <Trophy className="w-7 h-7 text-foreground" />
-              </div>
-              <div>
-                <h1 className="font-display text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                  {t('challenges.title')}
-                </h1>
-                <p className="text-muted-foreground mt-1 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4" />
-                  Compete and grow together
-                </p>
-              </div>
-            </div>
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h1 className="text-3xl md:text-4xl font-semibold text-foreground">
+              {t('challenges.title')}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Compete and grow together
+            </p>
           </div>
           
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" variant="gradient" className="text-lg">
-                <Plus className="w-5 h-5 mr-2" />
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
                 {t('challenges.createChallenge')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle className="text-2xl">{t('challenges.createChallenge')}</DialogTitle>
-                <DialogDescription className="text-base">
+                <DialogTitle>{t('challenges.createChallenge')}</DialogTitle>
+                <DialogDescription>
                   Create a new challenge and invite friends to compete
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div>
-                  <label className="text-sm font-semibold mb-2 block">Challenge Name *</label>
+                  <label className="text-sm font-medium mb-2 block">Challenge Name</label>
                   <Input
                     placeholder="e.g., 30-Day Fitness Challenge"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="h-12"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-semibold mb-2 block">Description</label>
+                  <label className="text-sm font-medium mb-2 block">Description</label>
                   <Textarea
                     placeholder="What's this challenge about?"
                     value={description}
@@ -377,29 +364,23 @@ const Challenges = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-semibold mb-2 block">Start Date *</label>
+                    <label className="text-sm font-medium mb-2 block">Start Date</label>
                     <Input
                       type="date"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className="h-12"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-semibold mb-2 block">End Date *</label>
+                    <label className="text-sm font-medium mb-2 block">End Date</label>
                     <Input
                       type="date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="h-12"
                     />
                   </div>
                 </div>
-                <Button 
-                  onClick={createChallenge} 
-                  className="w-full h-12 text-base"
-                  variant="gradient"
-                >
+                <Button onClick={createChallenge} className="w-full">
                   Create Challenge
                 </Button>
               </div>
@@ -417,18 +398,16 @@ const Challenges = () => {
           <TabsContent value={activeTab} className="mt-6">
             {loading ? (
               <div className="text-center py-20">
-                <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent"></div>
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
               </div>
             ) : filteredChallenges.length === 0 ? (
-              <Card className="shadow-card border-2">
+              <Card className="border border-border">
                 <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-                  <div className="w-20 h-20 rounded-3xl gradient-accent flex items-center justify-center mb-6 animate-bounce-slow">
-                    <Trophy className="w-10 h-10 text-foreground" />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-2">
+                  <Trophy className="w-16 h-16 text-muted mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">
                     {activeTab === 'joined' ? 'No Joined Challenges' : 'No Challenges Yet'}
                   </h3>
-                  <p className="text-lg text-muted-foreground max-w-md">
+                  <p className="text-sm text-muted-foreground max-w-md">
                     {activeTab === 'joined' 
                       ? 'Join a challenge to start competing!'
                       : t('challenges.noChallenges')
@@ -437,18 +416,32 @@ const Challenges = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {filteredChallenges.map((challenge) => (
-                  <ChallengeCard
-                    key={challenge.id}
-                    challenge={challenge}
-                    onJoin={joinChallenge}
-                    onLeave={leaveChallenge}
-                    onViewDetails={viewDetails}
-                    onEdit={openEditDialog}
-                    onDelete={openDeleteDialog}
-                    currentUserId={currentUserId}
-                  />
+                  <div key={challenge.id} className="relative">
+                    <ChallengeCard
+                      challenge={challenge}
+                      onJoin={joinChallenge}
+                      onLeave={leaveChallenge}
+                      onViewDetails={viewDetails}
+                      onEdit={openEditDialog}
+                      onDelete={openDeleteDialog}
+                      currentUserId={currentUserId}
+                    />
+                    {challenge.creator_id === currentUserId && (
+                      <Button
+                        onClick={() => {
+                          setSelectedChallenge(challenge);
+                          setInviteDialogOpen(true);
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="absolute top-4 right-4"
+                      >
+                        Invite
+                      </Button>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
@@ -477,7 +470,7 @@ const Challenges = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Challenge</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{deletingChallenge?.name}"? This will also delete all participant data. This action cannot be undone.
+              Are you sure you want to delete "{deletingChallenge?.name}"? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -488,6 +481,16 @@ const Challenges = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {selectedChallenge && (
+        <InviteDialog
+          open={inviteDialogOpen}
+          onOpenChange={setInviteDialogOpen}
+          resourceId={selectedChallenge.id}
+          resourceType="challenge"
+          resourceName={selectedChallenge.name}
+        />
+      )}
 
       <Navigation />
     </div>
