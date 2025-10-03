@@ -159,7 +159,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-muted/30 p-6 pb-24 md:pb-6">
+    <div className="min-h-screen bg-muted/20 p-6 pb-24 md:pb-6">
       <div className="max-w-[1400px] mx-auto space-y-6">
         
         {/* Stats Grid - Top */}
