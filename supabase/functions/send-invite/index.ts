@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "https://esm.sh/resend@3.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY") as string);
+// Using direct HTTP call to Resend API to avoid bundling issues
+const resendApiKey = Deno.env.get("RESEND_API_KEY") as string;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -106,19 +105,32 @@ const handler = async (req: Request): Promise<Response> => {
       </html>
     `;
 
-    const { data, error } = await resend.emails.send({
-      from: "LinkUp <onboarding@resend.dev>",
-      to: [recipientEmail],
-      subject: `${inviterName} invited you to join "${resourceName}" on LinkUp`,
-      html: emailHtml,
-    });
-
-    if (error) {
-      console.error("Resend error:", error);
-      throw error;
+    // Send using Resend REST API
+    if (!resendApiKey) {
+      throw new Error("Missing RESEND_API_KEY secret");
     }
 
-    console.log("Email sent successfully:", data);
+    const apiRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'LinkUp <onboarding@resend.dev>',
+        to: [recipientEmail],
+        subject: `${inviterName} invited you to join "${resourceName}" on LinkUp`,
+        html: emailHtml,
+      })
+    });
+
+    if (!apiRes.ok) {
+      const errText = await apiRes.text();
+      console.error('Resend API error:', apiRes.status, errText);
+      throw new Error(`Resend API error ${apiRes.status}`);
+    }
+
+    const data = await apiRes.json();
 
     return new Response(
       JSON.stringify({ success: true, data }),
