@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { DollarSign, Plus, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -43,6 +44,9 @@ const Expenses = () => {
   const [memberEmails, setMemberEmails] = useState('');
   const [expenseName, setExpenseName] = useState('');
   const [expenseAmount, setExpenseAmount] = useState('');
+  const [splitMethod, setSplitMethod] = useState<'equal' | 'custom' | 'full'>('equal');
+  const [customSplits, setCustomSplits] = useState<Record<string, string>>({});
+  const [selectedPayer, setSelectedPayer] = useState<string>('');
   
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -213,6 +217,8 @@ const Expenses = () => {
       if (!user) throw new Error('Not authenticated');
 
       const newTotal = Number(selectedExpense.total_amount) + amount;
+      
+      // Update total amount
       const { error: updateError } = await supabase
         .from('expenses')
         .update({ total_amount: newTotal })
@@ -220,9 +226,49 @@ const Expenses = () => {
 
       if (updateError) throw updateError;
 
-      toast.success('Expense added');
+      // Handle different split methods
+      if (splitMethod === 'equal') {
+        // Database trigger will automatically recalculate equal splits
+        toast.success('Expense added and split equally');
+      } else if (splitMethod === 'custom') {
+        // Update custom amounts for each member
+        const members = selectedExpense.members || [];
+        for (const member of members) {
+          const customAmount = parseFloat(customSplits[member.user_id] || '0');
+          if (customAmount > 0) {
+            const { error: memberError } = await supabase
+              .from('expense_members')
+              .update({ amount_owed: Number(member.amount_owed) + customAmount })
+              .eq('id', member.id);
+            
+            if (memberError) throw memberError;
+          }
+        }
+        toast.success('Expense added with custom splits');
+      } else if (splitMethod === 'full') {
+        // One person pays full amount
+        if (!selectedPayer) {
+          toast.error('Please select who owes the full amount');
+          return;
+        }
+        
+        const payerMember = selectedExpense.members?.find(m => m.user_id === selectedPayer);
+        if (payerMember) {
+          const { error: memberError } = await supabase
+            .from('expense_members')
+            .update({ amount_owed: Number(payerMember.amount_owed) + amount })
+            .eq('id', payerMember.id);
+          
+          if (memberError) throw memberError;
+        }
+        toast.success('Expense added - full amount assigned');
+      }
+
       setExpenseName('');
       setExpenseAmount('');
+      setSplitMethod('equal');
+      setCustomSplits({});
+      setSelectedPayer('');
       setAddExpenseDialogOpen(false);
       fetchExpenses();
     } catch (error) {
@@ -399,6 +445,62 @@ const Expenses = () => {
                 className="mt-2"
               />
             </div>
+
+            <div>
+              <Label className="text-sm font-medium mb-2">Split Method</Label>
+              <Select value={splitMethod} onValueChange={(value: 'equal' | 'custom' | 'full') => setSplitMethod(value)}>
+                <SelectTrigger className="mt-2 bg-background">
+                  <SelectValue placeholder="Select split method" />
+                </SelectTrigger>
+                <SelectContent className="bg-background border border-border z-50">
+                  <SelectItem value="equal">Equal Split (Divide equally among all)</SelectItem>
+                  <SelectItem value="custom">Custom Split (Specify amounts)</SelectItem>
+                  <SelectItem value="full">Full Amount (One person pays all)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {splitMethod === 'custom' && selectedExpense?.members && (
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Custom Amounts per Member</Label>
+                {selectedExpense.members
+                  .filter(m => m.user_id !== selectedExpense.user_id)
+                  .map((member) => (
+                    <div key={member.user_id} className="flex items-center gap-2">
+                      <span className="text-sm flex-1">{member.user_name}</span>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        value={customSplits[member.user_id] || ''}
+                        onChange={(e) => setCustomSplits(prev => ({ ...prev, [member.user_id]: e.target.value }))}
+                        className="w-32"
+                      />
+                    </div>
+                  ))}
+              </div>
+            )}
+
+            {splitMethod === 'full' && selectedExpense?.members && (
+              <div>
+                <Label className="text-sm font-medium mb-2">Who owes the full amount?</Label>
+                <Select value={selectedPayer} onValueChange={setSelectedPayer}>
+                  <SelectTrigger className="mt-2 bg-background">
+                    <SelectValue placeholder="Select member" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border border-border z-50">
+                    {selectedExpense.members
+                      .filter(m => m.user_id !== selectedExpense.user_id)
+                      .map((member) => (
+                        <SelectItem key={member.user_id} value={member.user_id}>
+                          {member.user_name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <Button onClick={addExpenseToGroup} className="w-full">
               Add Expense
             </Button>
