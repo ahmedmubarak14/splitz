@@ -21,6 +21,7 @@ type ExpenseWithDetails = Tables<'expenses'> & {
   total_received?: number;
   settled_count?: number;
   is_creator?: boolean;
+  creator_name?: string;
   members?: Array<{
     id: string;
     user_id: string;
@@ -90,6 +91,7 @@ const Expenses = () => {
             ? members.filter(m => m.user_id !== user.id && !m.is_settled).reduce((sum, m) => sum + Number(m.amount_owed), 0)
             : 0;
           const settledCount = members.filter(m => m.is_settled).length;
+          const creatorProfile = profiles?.find(p => p.id === expense.user_id);
           const membersWithNames = members.map(m => ({
             ...m,
             amount_owed: Number(m.amount_owed),
@@ -103,6 +105,7 @@ const Expenses = () => {
             total_received: totalReceived,
             settled_count: settledCount,
             is_creator: isCreator,
+            creator_name: creatorProfile?.full_name || 'Unknown',
             members: membersWithNames,
           };
         });

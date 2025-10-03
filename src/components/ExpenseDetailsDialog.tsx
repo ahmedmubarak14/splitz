@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { DollarSign, Users, Calendar, CheckCircle2, XCircle } from 'lucide-react';
+import { DollarSign, Users, Calendar, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -17,6 +17,7 @@ type ExpenseMember = {
 type ExpenseWithDetails = Tables<'expenses'> & {
   members?: ExpenseMember[];
   is_creator?: boolean;
+  creator_name?: string;
 };
 
 interface ExpenseDetailsDialogProps {
@@ -122,11 +123,11 @@ const ExpenseDetailsDialog = ({
             </CardContent>
           </Card>
 
-          {/* Members List */}
+          {/* Who Owes Whom */}
           <div>
             <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
-              <Users className="w-5 h-5 text-secondary" />
-              Members & Amounts
+              <ArrowRight className="w-5 h-5 text-primary" />
+              Who Owes Whom
             </h3>
             <div className="space-y-2">
               {expense.members && expense.members.length === 0 ? (
@@ -136,50 +137,59 @@ const ExpenseDetailsDialog = ({
                   </CardContent>
                 </Card>
               ) : (
-                expense.members?.map((member) => (
-                  <Card 
-                    key={member.id}
-                    className={member.is_settled ? 'border-2 border-success/30 bg-success/5' : ''}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                          member.is_settled 
-                            ? 'bg-success text-white' 
-                            : 'bg-muted text-muted-foreground'
-                        }`}>
-                          {member.is_settled ? (
-                            <CheckCircle2 className="w-5 h-5" />
-                          ) : (
-                            <XCircle className="w-5 h-5" />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <div className="font-medium">
-                            {member.user_name || 'Unknown User'}
+                expense.members
+                  ?.filter(member => member.user_id !== expense.user_id)
+                  ?.map((member) => (
+                    <Card 
+                      key={member.id}
+                      className={member.is_settled ? 'border-2 border-green-500/30 bg-green-50 dark:bg-green-950/20' : 'border-2 border-orange-500/30 bg-orange-50 dark:bg-orange-950/20'}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            member.is_settled 
+                              ? 'bg-green-500 text-white' 
+                              : 'bg-orange-500 text-white'
+                          }`}>
+                            {member.is_settled ? (
+                              <CheckCircle2 className="w-5 h-5" />
+                            ) : (
+                              <XCircle className="w-5 h-5" />
+                            )}
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            {member.is_settled ? 'Settled' : 'Pending'}
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 font-medium">
+                              <span className="text-foreground">{member.user_name || 'Unknown User'}</span>
+                              <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-foreground">{expense.creator_name || 'Creator'}</span>
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {member.user_name} owes SAR {Number(member.amount_owed).toFixed(2)} to {expense.creator_name}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="text-right">
+                              <div className="text-lg font-bold text-foreground">
+                                SAR {Number(member.amount_owed).toFixed(2)}
+                              </div>
+                              <div className={`text-xs font-medium ${member.is_settled ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                                {member.is_settled ? 'Settled' : 'Pending'}
+                              </div>
+                            </div>
+                            {expense.is_creator && (
+                              <Button
+                                size="sm"
+                                variant={member.is_settled ? "outline" : "default"}
+                                onClick={() => onToggleSettlement?.(member.id, member.is_settled)}
+                              >
+                                {member.is_settled ? 'Unpaid' : 'Paid'}
+                              </Button>
+                            )}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-xl font-bold text-primary">
-                            SAR {Number(member.amount_owed).toFixed(2)}
-                          </div>
-                        </div>
-                        {expense.is_creator && (
-                          <Button
-                            size="sm"
-                            variant={member.is_settled ? "outline" : "default"}
-                            onClick={() => onToggleSettlement?.(member.id, member.is_settled)}
-                          >
-                            {member.is_settled ? 'Mark Unpaid' : 'Mark Paid'}
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
+                      </CardContent>
+                    </Card>
+                  ))
               )}
             </div>
           </div>
