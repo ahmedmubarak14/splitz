@@ -189,11 +189,11 @@ const Auth = () => {
                 {loading ? (
                   <span className="flex items-center gap-2">
                     <div className="h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                    {t('common.loading')}
+                    Loading...
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    {isLogin ? t('home.login') : t('home.signup')}
+                    {isLogin ? 'Sign In' : 'Create Account'}
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </span>
                 )}
