@@ -12,10 +12,11 @@ interface EditExpenseDialogProps {
     name: string;
     total_amount: number;
     paid_by: string;
+    category?: string;
   } | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (id: string, name: string, amount: number, paidBy: string) => void;
+  onSave: (id: string, name: string, amount: number, paidBy: string, category: string) => void;
   groupMembers: Array<{ id: string; name: string }>;
 }
 
@@ -24,12 +25,14 @@ const EditExpenseDialog = ({ expense, open, onOpenChange, onSave, groupMembers }
   const [name, setName] = React.useState('');
   const [amount, setAmount] = React.useState('');
   const [paidBy, setPaidBy] = React.useState('');
+  const [category, setCategory] = React.useState('other');
 
   React.useEffect(() => {
     if (expense) {
       setName(expense.name);
       setAmount(expense.total_amount.toString());
       setPaidBy(expense.paid_by);
+      setCategory(expense.category || 'other');
     }
   }, [expense]);
 
@@ -37,10 +40,21 @@ const EditExpenseDialog = ({ expense, open, onOpenChange, onSave, groupMembers }
     if (expense && name.trim() && amount && paidBy) {
       const parsedAmount = parseFloat(amount);
       if (!isNaN(parsedAmount) && parsedAmount > 0) {
-        onSave(expense.id, name.trim(), parsedAmount, paidBy);
+        onSave(expense.id, name.trim(), parsedAmount, paidBy, category);
       }
     }
   };
+
+  const categories = [
+    { value: 'food', label: '🍔 Food', icon: '🍔' },
+    { value: 'transport', label: '🚗 Transport', icon: '🚗' },
+    { value: 'entertainment', label: '🎬 Entertainment', icon: '🎬' },
+    { value: 'utilities', label: '⚡ Utilities', icon: '⚡' },
+    { value: 'shopping', label: '🛍️ Shopping', icon: '🛍️' },
+    { value: 'health', label: '💊 Health', icon: '💊' },
+    { value: 'education', label: '📚 Education', icon: '📚' },
+    { value: 'other', label: '📦 Other', icon: '📦' },
+  ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -82,6 +96,21 @@ const EditExpenseDialog = ({ expense, open, onOpenChange, onSave, groupMembers }
                 {groupMembers.map((member) => (
                   <SelectItem key={member.id} value={member.id}>
                     {member.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-sm font-semibold mb-2">Category *</Label>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="h-12 mt-2">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.value} value={cat.value}>
+                    {cat.label}
                   </SelectItem>
                 ))}
               </SelectContent>

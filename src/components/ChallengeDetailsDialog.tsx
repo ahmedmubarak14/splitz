@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Trophy, Users, Calendar, Target, TrendingUp, Crown, Share2 } from 'lucide-react';
+import { Trophy, Users, Calendar, Target, TrendingUp, Crown, Share2, Award } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Tables } from '@/integrations/supabase/types';
 import { InviteDialog } from './InviteDialog';
+import ChallengeProgressChart from './ChallengeProgressChart';
+import { supabase } from '@/integrations/supabase/client';
 
 type ChallengeParticipant = {
   id: string;
@@ -41,6 +43,28 @@ const ChallengeDetailsDialog = ({
 }: ChallengeDetailsDialogProps) => {
   const { t } = useTranslation();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [milestones, setMilestones] = useState<{ level: number; reached: boolean }[]>([]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) setCurrentUserId(user.id);
+    };
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    if (challenge && challenge.is_participant) {
+      const userProgress = challenge.participants?.find(p => p.user_id === currentUserId)?.progress || 0;
+      setMilestones([
+        { level: 25, reached: userProgress >= 25 },
+        { level: 50, reached: userProgress >= 50 },
+        { level: 75, reached: userProgress >= 75 },
+        { level: 100, reached: userProgress >= 100 },
+      ]);
+    }
+  }, [challenge, currentUserId]);
 
   if (!challenge) return null;
 
@@ -169,6 +193,42 @@ const ChallengeDetailsDialog = ({
                 )}
               </CardContent>
             </Card>
+          )}
+
+          {/* Milestones */}
+          {challenge.is_participant && milestones.length > 0 && (
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="font-bold mb-3 flex items-center gap-2">
+                  <Award className="w-5 h-5 text-accent" />
+                  Milestones
+                </h3>
+                <div className="grid grid-cols-4 gap-2">
+                  {milestones.map((milestone) => (
+                    <div
+                      key={milestone.level}
+                      className={`p-3 rounded-lg border-2 text-center transition-all ${
+                        milestone.reached
+                          ? 'border-accent bg-accent/10'
+                          : 'border-muted bg-muted/20'
+                      }`}
+                    >
+                      <div className={`text-2xl font-bold ${milestone.reached ? 'text-accent' : 'text-muted-foreground'}`}>
+                        {milestone.level}%
+                      </div>
+                      <div className="text-xs mt-1">
+                        {milestone.reached ? '🏆 Reached' : 'Locked'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Progress History Chart */}
+          {challenge.is_participant && currentUserId && (
+            <ChallengeProgressChart challengeId={challenge.id} userId={currentUserId} />
           )}
 
           {/* Leaderboard */}

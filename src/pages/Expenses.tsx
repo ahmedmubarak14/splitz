@@ -50,6 +50,7 @@ const Expenses = () => {
   const [expenseDescription, setExpenseDescription] = useState('');
   const [expenseAmount, setExpenseAmount] = useState('');
   const [paidBy, setPaidBy] = useState<string>('');
+  const [category, setCategory] = useState<string>('other');
   const [groupMembers, setGroupMembers] = useState<Array<{ id: string; name: string }>>([]);
   
   const navigate = useNavigate();
@@ -262,6 +263,7 @@ const Expenses = () => {
         total_amount: amount,
         paid_by: paidBy,
         user_id: user.id,
+        category: category as any,
       });
 
       if (error) throw error;
@@ -270,6 +272,7 @@ const Expenses = () => {
       setExpenseDescription('');
       setExpenseAmount('');
       setPaidBy('');
+      setCategory('other');
       setAddExpenseDialogOpen(false);
       fetchGroups();
     } catch (error) {
@@ -336,7 +339,7 @@ const Expenses = () => {
     setEditExpenseDialogOpen(true);
   };
 
-  const updateExpense = async (id: string, name: string, amount: number, paidBy: string) => {
+  const updateExpense = async (id: string, name: string, amount: number, paidBy: string, category: string) => {
     try {
       const { error } = await supabase
         .from('expenses')
@@ -344,6 +347,7 @@ const Expenses = () => {
           name,
           total_amount: amount,
           paid_by: paidBy,
+          category: category as any,
         })
         .eq('id', id);
 
@@ -607,6 +611,24 @@ const Expenses = () => {
                       {member.name}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-sm font-medium mb-2">Category</Label>
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="food">🍔 Food</SelectItem>
+                  <SelectItem value="transport">🚗 Transport</SelectItem>
+                  <SelectItem value="entertainment">🎬 Entertainment</SelectItem>
+                  <SelectItem value="utilities">⚡ Utilities</SelectItem>
+                  <SelectItem value="shopping">🛍️ Shopping</SelectItem>
+                  <SelectItem value="health">💊 Health</SelectItem>
+                  <SelectItem value="education">📚 Education</SelectItem>
+                  <SelectItem value="other">📦 Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>

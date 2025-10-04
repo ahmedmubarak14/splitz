@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import Navigation from '@/components/Navigation';
 import { SkeletonList } from '@/components/ui/skeleton-card';
 import HabitCalendar from '@/components/HabitCalendar';
+import HabitStatistics from '@/components/HabitStatistics';
 
 type Habit = {
   id: string;
@@ -37,6 +38,7 @@ const Habits = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingHabit, setDeletingHabit] = useState<Habit | null>(null);
   const [calendarDialogOpen, setCalendarDialogOpen] = useState(false);
+  const [statsDialogOpen, setStatsDialogOpen] = useState(false);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   
   const navigate = useNavigate();
@@ -292,6 +294,13 @@ const Habits = () => {
                           <Calendar className="w-4 h-4 mr-2" />
                           View Calendar
                         </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          setSelectedHabit(habit);
+                          setStatsDialogOpen(true);
+                        }}>
+                          <TrendingUp className="w-4 h-4 mr-2" />
+                          View Statistics
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => openEditDialog(habit)}>
                           <Pencil className="w-4 h-4 mr-2" />
                           Edit
@@ -391,12 +400,20 @@ const Habits = () => {
       </AlertDialog>
 
       {selectedHabit && (
-        <HabitCalendar
-          habitId={selectedHabit.id}
-          habitName={selectedHabit.name}
-          open={calendarDialogOpen}
-          onOpenChange={setCalendarDialogOpen}
-        />
+        <>
+          <HabitCalendar
+            habitId={selectedHabit.id}
+            habitName={selectedHabit.name}
+            open={calendarDialogOpen}
+            onOpenChange={setCalendarDialogOpen}
+          />
+          <HabitStatistics
+            habitId={selectedHabit.id}
+            habitName={selectedHabit.name}
+            open={statsDialogOpen}
+            onOpenChange={setStatsDialogOpen}
+          />
+        </>
       )}
 
       <Navigation />
