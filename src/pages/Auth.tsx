@@ -3,12 +3,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import splitzLogo from '@/assets/splitz-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { PasswordInput } from '@/components/PasswordInput';
 import { toast } from 'sonner';
-import { Mail, Lock, User, ArrowRight, Sparkles, Shield } from 'lucide-react';
+import { Mail, User, ArrowRight, Sparkles, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Auth = () => {
@@ -160,19 +161,12 @@ const Auth = () => {
                 <Label htmlFor="password" className="text-sm font-medium">
                   Password
                 </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    className="h-12 pl-10 text-base"
-                  />
-                </div>
+                <PasswordInput
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="h-12 text-base"
+                />
                 {!isLogin && (
                   <p className="text-xs text-muted-foreground">
                     Must be at least 6 characters

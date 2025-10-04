@@ -27,13 +27,7 @@ const Index = () => {
     });
   }, [navigate]);
 
-  // Auto-switch tabs every 5s
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveTab(prev => prev === 'users' ? 'friends' : 'users');
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  // Manual tab switching only - removed auto-switch for better UX
 
   const navLinks = [
     { label: t('nav.features'), href: '#features' },

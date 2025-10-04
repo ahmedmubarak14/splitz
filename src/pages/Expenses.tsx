@@ -467,23 +467,23 @@ const Expenses = () => {
 
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Your Balance</span>
-                      <span className={`font-medium ${group.net_balance > 0 ? 'text-green-600' : group.net_balance < 0 ? 'text-red-600' : ''}`}>
+                      <span className={`font-medium ${group.net_balance > 0 ? 'text-success' : group.net_balance < 0 ? 'text-destructive' : ''}`}>
                         {group.net_balance > 0 ? '+' : ''}{group.net_balance.toFixed(2)} SAR
                       </span>
                     </div>
 
                     {group.settlement_summary && group.settlement_summary.length > 0 && (
                       <div className="pt-3 border-t border-border">
-                        <p className="text-xs font-medium text-muted-foreground mb-2">Who Owes Whom</p>
-                        <div className="space-y-1">
+                        <p className="text-xs font-semibold text-foreground mb-2">Who Owes Whom</p>
+                        <div className="space-y-2">
                           {group.settlement_summary.slice(0, 2).map((settlement, idx) => (
-                            <div key={idx} className="flex items-center justify-between text-xs">
-                              <div className="flex items-center gap-1">
-                                <span>{settlement.from}</span>
-                                <ArrowRight className="w-3 h-3 text-muted-foreground" />
-                                <span>{settlement.to}</span>
+                            <div key={idx} className="flex items-center justify-between text-sm p-2 rounded-md bg-muted/30">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{settlement.from}</span>
+                                <ArrowRight className="w-4 h-4 text-primary" />
+                                <span className="font-medium">{settlement.to}</span>
                               </div>
-                              <span className="font-medium">{settlement.amount.toFixed(2)} SAR</span>
+                              <span className="text-foreground font-semibold">{settlement.amount.toFixed(2)} SAR</span>
                             </div>
                           ))}
                           {group.settlement_summary.length > 2 && (

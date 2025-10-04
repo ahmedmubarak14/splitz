@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { LogOut, User as UserIcon, Mail, Calendar, Globe, Image as ImageIcon } from 'lucide-react';
+import { LogOut, Mail, Calendar, Globe, Image as ImageIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import type { Tables, TablesUpdate } from '@/integrations/supabase/types';
@@ -175,38 +178,48 @@ const Profile = () => {
               </div>
 
               <div className="p-4 rounded-lg bg-accent border border-border">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-2">
                   <Globe className="w-4 h-4 text-primary" />
                   <span className="text-xs font-medium text-muted-foreground">Language</span>
                 </div>
-                <select
-                  value={preferredLanguage}
-                  onChange={(e) => setPreferredLanguage(e.target.value)}
-                  className="text-sm font-semibold bg-transparent border-none outline-none"
-                >
-                  <option value="en">English</option>
-                  <option value="ar">العربية</option>
-                </select>
+                <Select value={preferredLanguage} onValueChange={setPreferredLanguage}>
+                  <SelectTrigger className="h-8 text-sm font-semibold border-none bg-transparent p-0">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="ar">العربية</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
             {/* Form */}
             <div className="space-y-4">
               <div>
-                <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border cursor-pointer hover:bg-accent transition-colors">
+                <Label className="text-sm font-medium mb-2 block">Profile Picture</Label>
+                <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border cursor-pointer hover:bg-accent transition-colors">
                   <ImageIcon className="w-4 h-4" />
-                  <span className="text-sm">{uploading ? 'Uploading...' : 'Upload Avatar'}</span>
-                  <input type="file" accept="image/*" onChange={uploadAvatar} className="hidden" />
+                  <span className="text-sm font-medium">
+                    {uploading ? (
+                      <span className="flex items-center gap-2">
+                        <div className="h-3 w-3 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
+                        Uploading...
+                      </span>
+                    ) : (
+                      'Choose Avatar'
+                    )}
+                  </span>
+                  <input type="file" accept="image/*" onChange={uploadAvatar} className="hidden" disabled={uploading} />
                 </label>
               </div>
               
               <div>
-                <label className="text-sm font-medium text-muted-foreground mb-2 block">Full Name</label>
-                <input
+                <Label className="text-sm font-medium mb-2 block">Full Name</Label>
+                <Input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm"
                   placeholder="Your name"
                 />
               </div>

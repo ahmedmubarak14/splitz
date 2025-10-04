@@ -98,28 +98,28 @@ export default function Dashboard() {
       value: stats.activeHabits,
       subtitle: 'Active tracking',
       icon: FileText,
-      color: 'text-pink-500'
+      color: 'text-primary'
     },
     { 
       label: 'Active Challenges',
       value: stats.activeChallenges,
       subtitle: 'Currently in progress',
       icon: Clock,
-      color: 'text-purple-500'
+      color: 'text-secondary'
     },
     { 
       label: 'Longest Streak',
       value: stats.longestStreak,
       subtitle: 'Days maintained',
       icon: CheckCircle,
-      color: 'text-green-500'
+      color: 'text-success'
     },
     { 
       label: 'Total Owed',
       value: `SAR ${stats.totalOwed.toFixed(2)}`,
       subtitle: 'Pending settlements',
       icon: ShoppingCart,
-      color: 'text-orange-500'
+      color: 'text-accent-foreground'
     },
   ];
 
@@ -198,7 +198,8 @@ export default function Dashboard() {
               <div className="space-y-2">
                 <Button
                   onClick={() => navigate('/habits')}
-                  className="w-full justify-start h-auto py-3 bg-purple-600 hover:bg-purple-700 text-primary-foreground"
+                  variant="default"
+                  className="w-full justify-start h-auto py-3"
                 >
                   <Plus className="h-4 w-4 mr-3" />
                   <div className="text-left">

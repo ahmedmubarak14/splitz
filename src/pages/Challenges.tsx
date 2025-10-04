@@ -389,9 +389,9 @@ const Challenges = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'all' | 'joined')} className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="all">All Challenges</TabsTrigger>
-            <TabsTrigger value="joined">My Challenges</TabsTrigger>
+          <TabsList className="grid w-full max-w-md grid-cols-2 bg-muted p-1">
+            <TabsTrigger value="all" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">All Challenges</TabsTrigger>
+            <TabsTrigger value="joined" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">My Challenges</TabsTrigger>
           </TabsList>
           
           <TabsContent value={activeTab} className="mt-6">
