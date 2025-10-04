@@ -38,7 +38,7 @@ const resources = {
       hero: {
         badge: 'Habits · Challenges · Expense Splitter',
         title: 'Build habits together. Split life fairly.',
-        subtitle: 'Nudges via Push & WhatsApp. No email. No spam.',
+        subtitle: 'Smart nudges. Zero inbox spam.',
       },
       cta: {
         start: 'Start Free',
@@ -279,7 +279,7 @@ const resources = {
       hero: {
         badge: 'عادات · تحديات · تقسيم المصاريف',
         title: 'ابنِ العادات معاً. واقسم المصاريف بعدل.',
-        subtitle: 'تنبيهات عبر الإشعارات وواتساب فقط. بلا بريد إلكتروني أو إزعاج.',
+        subtitle: 'تنبيهات ذكية. صفر إزعاج بالبريد.',
       },
       cta: {
         start: 'ابدأ مجاناً',
