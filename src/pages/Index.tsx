@@ -146,7 +146,7 @@ const Index = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-16 md:pb-20 px-4 md:px-6">
+      <section className={`relative pt-32 pb-16 md:pb-20 px-4 md:px-6 ${isRTL ? 'rtl' : 'ltr'}`}>
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-2 px-3 md:px-4 py-2 rounded-full bg-secondary/50 border border-primary/20 mb-6 md:mb-8 animate-fade-in">
             <span className="text-xs md:text-sm font-medium text-primary">{t('hero.badge')}</span>
@@ -182,7 +182,7 @@ const Index = () => {
       </section>
 
       {/* Social Features Section - Redesigned */}
-      <section className="relative px-6 pb-20">
+      <section className={`relative px-6 pb-20 ${isRTL ? 'rtl' : 'ltr'}`}>
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className={`text-center mb-12 max-w-3xl mx-auto ${isRTL ? 'rtl' : ''}`}>
@@ -300,7 +300,7 @@ const Index = () => {
 
 
       {/* Live Activity Cards - Professional Redesign */}
-      <section className="relative px-6 pb-20">
+      <section className={`relative px-6 pb-20 ${isRTL ? 'rtl' : 'ltr'}`}>
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className={`text-center mb-12 ${isRTL ? 'rtl' : ''}`}>
@@ -468,7 +468,7 @@ const Index = () => {
       </section>
 
       {/* Features Grid */}
-      <section id="features" className="relative px-6 pb-20">
+      <section id="features" className={`relative px-6 pb-20 ${isRTL ? 'rtl' : 'ltr'}`}>
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold mb-4 text-primary">
@@ -530,7 +530,7 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section id="how" className="relative px-6 pb-20">
+      <section id="how" className={`relative px-6 pb-20 ${isRTL ? 'rtl' : 'ltr'}`}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold mb-4 text-primary">
@@ -568,7 +568,7 @@ const Index = () => {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="relative px-6 pb-20">
+      <section id="pricing" className={`relative px-6 pb-20 ${isRTL ? 'rtl' : 'ltr'}`}>
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold mb-4 text-primary">
@@ -616,7 +616,7 @@ const Index = () => {
       </section>
 
       {/* Final CTA - Redesigned */}
-      <section className="relative px-6 pb-32">
+      <section className={`relative px-6 pb-32 ${isRTL ? 'rtl' : 'ltr'}`}>
         <div className="max-w-5xl mx-auto">
           <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
               <div className={`px-8 py-12 md:p-16 text-center ${isRTL ? 'rtl' : ''}`}>
@@ -658,7 +658,7 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="relative px-6 py-12 border-t border-border bg-background/50 backdrop-blur-sm">
+      <footer className={`relative px-6 py-12 border-t border-border bg-background/50 backdrop-blur-sm ${isRTL ? 'rtl' : 'ltr'}`}>
         <div className="max-w-7xl mx-auto text-center">
           <Link to="/" className="flex items-center justify-center gap-3 mb-4">
             <img
