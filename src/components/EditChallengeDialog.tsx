@@ -88,7 +88,7 @@ const EditChallengeDialog = ({ challenge, open, onOpenChange, onSave }: EditChal
             <Button 
               onClick={handleSave} 
               className="flex-1 h-12 text-base"
-              variant="gradient"
+              variant="default"
             >
               {t('dialogs.saveChanges')}
             </Button>

@@ -91,7 +91,7 @@ const EditExpenseDialog = ({ expense, open, onOpenChange, onSave, groupMembers }
             <Button 
               onClick={handleSave} 
               className="flex-1 h-12 text-base"
-              variant="gradient"
+              variant="default"
             >
               {t('dialogs.saveChanges')}
             </Button>

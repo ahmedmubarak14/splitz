@@ -82,7 +82,7 @@ const ExpenseGroupDetailsDialog = ({
               </Card>
               <Card className="p-4 border border-border">
                 <p className="text-sm text-muted-foreground mb-1">Your Balance</p>
-                <p className={`text-2xl font-semibold ${group.net_balance > 0 ? 'text-green-600' : group.net_balance < 0 ? 'text-red-600' : ''}`}>
+                <p className={`text-2xl font-semibold ${group.net_balance > 0 ? 'text-success' : group.net_balance < 0 ? 'text-destructive' : ''}`}>
                   {group.net_balance > 0 ? '+' : ''}{group.net_balance.toFixed(2)} SAR
                 </p>
               </Card>

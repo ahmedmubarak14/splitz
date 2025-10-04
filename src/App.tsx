@@ -79,7 +79,7 @@ const AppContent = () => {
           <header className="sticky top-0 z-40 bg-background border-b border-border/30">
             <div className="h-16 flex items-center justify-between px-6">
               <div className="flex items-center gap-4">
-                <SidebarTrigger className="hover:bg-muted rounded-md p-1.5 transition-colors" />
+                <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm" />
                 <button 
                   onClick={handleLogoClick}
                   className="flex items-center hover:opacity-80 transition-opacity"
@@ -90,17 +90,6 @@ const AppContent = () => {
               <HeaderActions />
             </div>
           </header>
-          <div className="bg-background border-b border-border/30 px-6 py-3">
-            <nav className="flex items-center gap-2 text-sm">
-              <Link to="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
-                <Home className="h-4 w-4" />
-              </Link>
-              <span className="text-muted-foreground/40">›</span>
-              <span className="text-foreground font-medium capitalize">
-                {location.pathname.split('/')[1] || 'Dashboard'}
-              </span>
-            </nav>
-          </div>
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />

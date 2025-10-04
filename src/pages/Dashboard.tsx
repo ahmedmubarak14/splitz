@@ -155,12 +155,12 @@ export default function Dashboard() {
           <Card className="bg-background border border-border/40">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <AlertTriangle className="h-5 w-5 text-orange-500" />
+                <AlertTriangle className="h-5 w-5 text-destructive" />
                 <h3 className="text-base font-semibold">Action Required</h3>
               </div>
               
               {stats.pendingExpenses > 0 ? (
-                <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/40 rounded-lg p-4">
+                <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-foreground">Pending Expenses</p>
@@ -191,7 +191,7 @@ export default function Dashboard() {
           <Card className="bg-background border border-border/40">
             <CardContent className="p-6">
               <div className="flex items-center gap-2 mb-4">
-                <CheckCircle className="h-5 w-5 text-green-500" />
+                <CheckCircle className="h-5 w-5 text-success" />
                 <h3 className="text-base font-semibold">Quick Actions</h3>
               </div>
               

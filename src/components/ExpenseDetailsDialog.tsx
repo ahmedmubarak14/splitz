@@ -142,14 +142,14 @@ const ExpenseDetailsDialog = ({
                   ?.map((member) => (
                     <Card 
                       key={member.id}
-                      className={member.is_settled ? 'border-2 border-green-500/30 bg-green-50 dark:bg-green-950/20' : 'border-2 border-orange-500/30 bg-orange-50 dark:bg-orange-950/20'}
+                      className={member.is_settled ? 'border-2 border-success/30 bg-success/10' : 'border-2 border-destructive/30 bg-destructive/10'}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                             member.is_settled 
-                              ? 'bg-green-500 text-primary-foreground' 
-                              : 'bg-orange-500 text-primary-foreground'
+                              ? 'bg-success text-success-foreground' 
+                              : 'bg-destructive text-destructive-foreground'
                           }`}>
                             {member.is_settled ? (
                               <CheckCircle2 className="w-5 h-5" />
@@ -172,7 +172,7 @@ const ExpenseDetailsDialog = ({
                               <div className="text-lg font-bold text-foreground">
                                 SAR {Number(member.amount_owed).toFixed(2)}
                               </div>
-                              <div className={`text-xs font-medium ${member.is_settled ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                              <div className={`text-xs font-medium ${member.is_settled ? 'text-success' : 'text-destructive'}`}>
                                 {member.is_settled ? 'Settled' : 'Pending'}
                               </div>
                             </div>
@@ -198,7 +198,7 @@ const ExpenseDetailsDialog = ({
           <div className="flex gap-3 pt-2">
             <Button
               onClick={() => onOpenChange(false)}
-              variant="gradient"
+              variant="default"
               className="flex-1"
             >
               Close

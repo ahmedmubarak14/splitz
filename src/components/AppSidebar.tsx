@@ -88,7 +88,7 @@ export function AppSidebar() {
                     {getInitials(profile?.full_name || null)}
                   </div>
                 )}
-                <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-green-500 ring-2 ring-card" />
+                <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-success ring-2 ring-card" />
               </div>
             </div>
           ) : (
@@ -105,7 +105,7 @@ export function AppSidebar() {
                     {getInitials(profile?.full_name || null)}
                   </div>
                 )}
-                <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-green-500 ring-2 ring-card" />
+                <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-success ring-2 ring-card" />
               </div>
               <div className="flex flex-col min-w-0 flex-1">
                 <span className="text-sm font-semibold truncate">{profile?.full_name || 'User'}</span>

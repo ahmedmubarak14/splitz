@@ -73,9 +73,9 @@ const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps)
         {/* Balance */}
         <div className={`p-3 rounded-lg border ${
           netBalance > 0 
-            ? 'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900' 
+            ? 'bg-success/10 border-success/30' 
             : netBalance < 0
-            ? 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900'
+            ? 'bg-destructive/10 border-destructive/30'
             : 'bg-accent border-border'
         }`}>
           <div className="flex items-center gap-2 text-xs font-medium mb-1">

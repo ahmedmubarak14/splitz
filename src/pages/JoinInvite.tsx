@@ -202,7 +202,7 @@ const JoinInvite = () => {
             onClick={joinResource}
             disabled={joining}
             className="w-full h-12 text-lg"
-            variant="gradient"
+            variant="default"
           >
             {joining ? (
               <>

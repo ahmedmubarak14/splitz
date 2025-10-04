@@ -152,7 +152,7 @@ const ChallengeDetailsDialog = ({
                     <Button 
                       size="sm" 
                       onClick={() => onUpdateProgress?.(challenge.id, Math.min(userParticipant.progress + 10, 100))}
-                      variant="gradient"
+                      variant="default"
                       className="flex-1"
                     >
                       +10% Progress
@@ -251,7 +251,7 @@ const ChallengeDetailsDialog = ({
                     onJoin?.(challenge.id);
                     onOpenChange(false);
                   }}
-                  variant="gradient"
+                  variant="default"
                   className="flex-1"
                 >
                   {t('challenges.join')}
@@ -260,7 +260,7 @@ const ChallengeDetailsDialog = ({
             )}
             <Button
               onClick={() => onOpenChange(false)}
-              variant={challenge.is_participant ? "gradient" : "outline"}
+              variant={challenge.is_participant ? "default" : "outline"}
               className="flex-1"
             >
               Close

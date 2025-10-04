@@ -75,7 +75,7 @@ const Index = () => {
               <a 
                 key={link.href}
                 href={link.href} 
-                className="text-gray-700 hover:text-violet-700 transition-colors font-medium"
+                className="text-foreground hover:text-primary transition-colors font-medium"
               >
                 {link.label}
               </a>
@@ -93,7 +93,7 @@ const Index = () => {
               {t('nav.login')}
             </Button>
             <Button 
-              variant="gradient" 
+              variant="default" 
               onClick={() => navigate('/auth')}
               className="hidden sm:inline-flex"
             >
@@ -117,12 +117,34 @@ const Index = () => {
               <a 
                 key={link.href}
                 href={link.href} 
-                className="block text-gray-700 hover:text-violet-700 transition-colors font-medium py-2"
+                className="block text-foreground hover:text-primary transition-colors font-medium py-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.label}
               </a>
             ))}
+            <div className="pt-4 border-t border-border flex gap-3">
+              <Button 
+                variant="ghost" 
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate('/auth');
+                }}
+                className="flex-1"
+              >
+                {t('nav.login')}
+              </Button>
+              <Button 
+                variant="default" 
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate('/auth');
+                }}
+                className="flex-1"
+              >
+                {t('nav.getStarted')}
+              </Button>
+            </div>
           </div>
         )}
       </header>
@@ -146,7 +168,7 @@ const Index = () => {
             <Button
               onClick={() => navigate('/auth')}
               size="lg"
-              variant="gradient"
+              variant="default"
               className="text-base md:text-lg px-8 md:px-10 py-6 md:py-7 h-auto shadow-xl hover:shadow-2xl"
             >
               {t('cta.start')} 🚀
@@ -242,31 +264,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Trust Stats */}
-      <section className="relative px-6 pb-20">
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-          <Card className="rounded-2xl border border-border shadow-md text-center p-6 card-hover">
-            <Star className="w-8 h-8 text-accent mx-auto mb-3" />
-            <div className="text-3xl font-bold text-foreground">4.9/5</div>
-            <div className="text-sm text-muted-foreground">{t('trust.rating')}</div>
-          </Card>
-          <Card className="rounded-2xl border border-border shadow-md text-center p-6 card-hover">
-            <Zap className="w-8 h-8 text-accent mx-auto mb-3" />
-            <div className="text-3xl font-bold text-foreground">&lt; 2s</div>
-            <div className="text-sm text-muted-foreground">{t('trust.load')}</div>
-          </Card>
-          <Card className="rounded-2xl border border-border shadow-md text-center p-6 card-hover">
-            <TrendingUp className="w-8 h-8 text-success mx-auto mb-3" />
-            <div className="text-3xl font-bold text-foreground">99.9%</div>
-            <div className="text-sm text-muted-foreground">{t('trust.uptime')}</div>
-          </Card>
-          <Card className="rounded-2xl border border-border shadow-md text-center p-6 card-hover">
-            <Shield className="w-8 h-8 text-primary mx-auto mb-3" />
-            <div className="text-3xl font-bold text-foreground">100%</div>
-            <div className="text-sm text-muted-foreground">{t('trust.privacy')}</div>
-          </Card>
-        </div>
-      </section>
 
       {/* Live Cards */}
       <section className="relative px-6 pb-20">
@@ -444,7 +441,7 @@ const Index = () => {
                 <p className="text-muted-foreground">{t('pricing.free.desc')}</p>
               </div>
               <Button 
-                variant="gradient" 
+                variant="default" 
                 className="w-full text-lg py-6"
                 onClick={() => navigate('/auth')}
               >
@@ -478,7 +475,7 @@ const Index = () => {
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_70%)]"></div>
               <div className="relative">
                 <div className="inline-flex items-center gap-3 mb-6">
-                  <div className="w-16 h-16 rounded-2xl bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center animate-bounce-slow">
+                  <div className="w-16 h-16 rounded-2xl bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center">
                     <Sparkles className="w-8 h-8 text-primary-foreground" />
                   </div>
                 </div>
