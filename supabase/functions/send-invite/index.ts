@@ -117,7 +117,7 @@ const handler = async (req: Request): Promise<Response> => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Splitz <onboarding@resend.dev>',
+        from: 'Splitz <noreply@splitz.live>',
         to: [recipientEmail],
         subject: `${inviterName} invited you to join "${resourceName}" on Splitz`,
         html: emailHtml,
