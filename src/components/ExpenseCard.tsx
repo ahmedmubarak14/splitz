@@ -4,6 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { DollarSign, Users, Calendar, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Tables } from '@/integrations/supabase/types';
+import { useIsRTL } from '@/lib/rtl-utils';
+import { formatCurrency } from '@/lib/formatters';
 
 type ExpenseWithDetails = Tables<'expenses'> & {
   member_count?: number;
@@ -21,6 +23,7 @@ interface ExpenseCardProps {
 
 const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps) => {
   const { t } = useTranslation();
+  const isRTL = useIsRTL();
 
   const totalOwed = expense.total_owed || 0;
   const totalReceived = expense.total_received || 0;
@@ -36,14 +39,14 @@ const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps)
               <DollarSign className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-base font-semibold">{expense.name}</CardTitle>
-              <p className="text-xs text-muted-foreground mt-1">
-                Total: SAR {Number(expense.total_amount || 0).toFixed(2)}
+              <CardTitle className={`text-base font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{expense.name}</CardTitle>
+              <p className={`text-xs text-muted-foreground mt-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                {t('components.expenseCard.total')}: {formatCurrency(Number(expense.total_amount || 0))}
               </p>
             </div>
           </div>
           <Badge variant={allSettled ? "default" : "secondary"} className="text-xs">
-            {allSettled ? 'Settled' : 'Active'}
+            {allSettled ? t('components.expenseCard.settled') : t('components.expenseCard.active')}
           </Badge>
         </div>
       </CardHeader>
@@ -52,19 +55,19 @@ const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps)
         {/* Stats */}
         <div className="grid grid-cols-2 gap-2">
           <div className="p-3 rounded-lg bg-accent border border-border">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+            <div className={`flex items-center gap-2 text-xs text-muted-foreground mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <Users className="w-3 h-3" />
-              Members
+              {t('components.expenseCard.members')}
             </div>
-            <div className="text-base font-semibold">{expense.member_count || 0}</div>
+            <div className={`text-base font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{expense.member_count || 0}</div>
           </div>
           
           <div className="p-3 rounded-lg bg-accent border border-border">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+            <div className={`flex items-center gap-2 text-xs text-muted-foreground mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <Calendar className="w-3 h-3" />
-              Created
+              {t('components.expenseCard.created')}
             </div>
-            <div className="text-xs font-semibold">
+            <div className={`text-xs font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>
               {new Date(expense.created_at).toLocaleDateString()}
             </div>
           </div>
@@ -78,17 +81,17 @@ const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps)
             ? 'bg-destructive/10 border-destructive/30'
             : 'bg-accent border-border'
         }`}>
-          <div className="flex items-center gap-2 text-xs font-medium mb-1">
+          <div className={`flex items-center gap-2 text-xs font-medium mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <TrendingUp className="w-3 h-3" />
-            Your Balance
+            {t('components.expenseCard.yourBalance')}
           </div>
-          <div className="flex items-center justify-between">
-            <div className="text-lg font-semibold">
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={`text-lg font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>
               {netBalance > 0 && '+'}
-              SAR {Math.abs(netBalance).toFixed(2)}
+              {formatCurrency(Math.abs(netBalance))}
             </div>
-            <div className="text-xs text-muted-foreground">
-              {netBalance > 0 ? 'You receive' : netBalance < 0 ? 'You owe' : 'Settled'}
+            <div className={`text-xs text-muted-foreground ${isRTL ? 'text-left' : 'text-right'}`}>
+              {netBalance > 0 ? t('components.expenseCard.youReceive') : netBalance < 0 ? t('components.expenseCard.youOwe') : t('components.expenseCard.settled')}
             </div>
           </div>
         </div>
@@ -96,13 +99,13 @@ const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps)
         {/* Settlement progress */}
         {!allSettled && (
           <div>
-            <div className="flex justify-between text-xs text-muted-foreground mb-2">
-              <span>Settlement</span>
+            <div className={`flex justify-between text-xs text-muted-foreground mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <span>{t('components.expenseCard.settlement')}</span>
               <span>{expense.settled_count || 0} / {expense.member_count || 0}</span>
             </div>
             <div className="h-1.5 bg-accent rounded-full overflow-hidden">
               <div 
-                className="h-full bg-primary transition-all duration-500"
+                className={`h-full bg-primary transition-all duration-500 ${isRTL ? 'ml-auto' : ''}`}
                 style={{ 
                   width: `${((expense.settled_count || 0) / (expense.member_count || 1)) * 100}%` 
                 }}
@@ -112,13 +115,13 @@ const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps)
         )}
 
         {/* Actions */}
-        <div className="flex gap-2 pt-2">
+        <div className={`flex gap-2 pt-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <Button
             onClick={() => onViewDetails?.(expense.id)}
             className="flex-1"
             size="sm"
           >
-            View Details
+            {t('components.expenseCard.viewDetails')}
           </Button>
           {expense.is_creator && (
             <Button
@@ -126,7 +129,7 @@ const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps)
               variant="outline"
               size="sm"
             >
-              Add
+              {t('components.expenseCard.add')}
             </Button>
           )}
         </div>

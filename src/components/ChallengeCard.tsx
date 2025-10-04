@@ -5,6 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Trophy, Users, Calendar, TrendingUp, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Tables } from '@/integrations/supabase/types';
+import { useIsRTL } from '@/lib/rtl-utils';
 
 type Challenge = Tables<'challenges'> & {
   participant_count?: number;
@@ -26,6 +27,7 @@ interface ChallengeCardProps {
 
 const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDelete, onInvite, currentUserId }: ChallengeCardProps) => {
   const { t } = useTranslation();
+  const isRTL = useIsRTL();
 
   const isActive = new Date(challenge.end_date) >= new Date();
   const daysLeft = Math.ceil((new Date(challenge.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
@@ -46,9 +48,9 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
               </CardDescription>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <Badge variant={isActive ? "default" : "secondary"} className="text-xs">
-              {isActive ? t('challenges.active') : 'Ended'}
+              {isActive ? t('components.challengeCard.active') : t('components.challengeCard.ended')}
             </Badge>
             {isCreator && (
               <DropdownMenu>
@@ -57,17 +59,17 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
                     <MoreVertical className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-background">
+                <DropdownMenuContent align={isRTL ? 'start' : 'end'} className="bg-background">
                   <DropdownMenuItem onClick={() => onEdit?.(challenge)}>
-                    <Pencil className="w-4 h-4 mr-2" />
-                    Edit
+                    <Pencil className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                    {t('components.challengeCard.edit')}
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => onDelete?.(challenge.id)}
                     className="text-destructive"
                   >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete
+                    <Trash2 className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                    {t('components.challengeCard.delete')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -80,19 +82,19 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
         {/* Stats */}
         <div className="grid grid-cols-2 gap-2">
           <div className="p-3 rounded-lg bg-accent border border-border">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+            <div className={`flex items-center gap-2 text-xs text-muted-foreground mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <Users className="w-3 h-3" />
-              Participants
+              {t('components.challengeCard.participants')}
             </div>
-            <div className="text-base font-semibold">{challenge.participant_count || 0}</div>
+            <div className={`text-base font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{challenge.participant_count || 0}</div>
           </div>
           
           <div className="p-3 rounded-lg bg-accent border border-border">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+            <div className={`flex items-center gap-2 text-xs text-muted-foreground mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <Calendar className="w-3 h-3" />
-              {isActive ? 'Days Left' : 'Ended'}
+              {isActive ? t('components.challengeCard.daysLeft') : t('components.challengeCard.ended')}
             </div>
-            <div className="text-base font-semibold">
+            <div className={`text-base font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>
               {isActive ? `${daysLeft}d` : '—'}
             </div>
           </div>
@@ -101,14 +103,14 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
         {/* Progress */}
         {challenge.is_participant && (
           <div className="p-3 rounded-lg bg-accent border border-border">
-            <div className="flex items-center gap-2 text-xs font-medium mb-2">
+            <div className={`flex items-center gap-2 text-xs font-medium mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <TrendingUp className="w-3 h-3 text-primary" />
-              Your Progress
+              {t('components.challengeCard.yourProgress')}
             </div>
-            <div className="flex items-center gap-3">
+            <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-primary transition-all duration-500"
+                  className={`h-full bg-primary transition-all duration-500 ${isRTL ? 'ml-auto' : ''}`}
                   style={{ width: `${Math.min((challenge.user_progress || 0), 100)}%` }}
                 />
               </div>
@@ -118,12 +120,12 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
         )}
 
         {/* Creator */}
-        <div className="text-xs text-muted-foreground">
-          Created by {challenge.creator_name || 'Unknown'}
+        <div className={`text-xs text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
+          {t('components.challengeCard.createdBy')} {challenge.creator_name || 'Unknown'}
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2 pt-2">
+        <div className={`flex gap-2 pt-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
           {challenge.is_participant ? (
             <>
               <Button
@@ -131,7 +133,7 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
                 className="flex-1"
                 size="sm"
               >
-                Details
+                {t('components.challengeCard.details')}
               </Button>
               {isCreator && (
                 <Button
@@ -139,7 +141,7 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
                   variant="outline"
                   size="sm"
                 >
-                  Invite
+                  {t('components.challengeCard.invite')}
                 </Button>
               )}
               {isActive && !isCreator && (
@@ -148,7 +150,7 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
                   variant="outline"
                   size="sm"
                 >
-                  Leave
+                  {t('components.challengeCard.leave')}
                 </Button>
               )}
             </>
@@ -160,14 +162,14 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
                 size="sm"
                 className="flex-1"
               >
-                Details
+                {t('components.challengeCard.details')}
               </Button>
               {isActive && (
                 <Button
                   onClick={() => onJoin?.(challenge.id)}
                   size="sm"
                 >
-                  {t('challenges.join')}
+                  {t('components.challengeCard.join')}
                 </Button>
               )}
             </>

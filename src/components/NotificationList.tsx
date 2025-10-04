@@ -6,6 +6,8 @@ import { Trophy, Target, DollarSign, Check, Trash2, Bell } from 'lucide-react';
 import { formatDateTime } from '@/lib/timezone';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
+import { useIsRTL } from '@/lib/rtl-utils';
 
 interface Notification {
   id: string;
@@ -25,6 +27,8 @@ const NotificationList = ({ onRead }: NotificationListProps) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const isRTL = useIsRTL();
 
   useEffect(() => {
     fetchNotifications();
@@ -80,10 +84,10 @@ const NotificationList = ({ onRead }: NotificationListProps) => {
 
       setNotifications(notifications.filter(n => n.id !== id));
       onRead?.();
-      toast.success('Notification deleted');
+      toast.success(t('components.notificationList.deleted'));
     } catch (error) {
       console.error('Error deleting notification:', error);
-      toast.error('Failed to delete notification');
+      toast.error(t('components.notificationList.deleteFailed'));
     }
   };
 
@@ -118,7 +122,7 @@ const NotificationList = ({ onRead }: NotificationListProps) => {
   if (loading) {
     return (
       <div className="p-4 text-center text-muted-foreground">
-        Loading notifications...
+        {t('components.notificationList.loading')}
       </div>
     );
   }
@@ -127,13 +131,13 @@ const NotificationList = ({ onRead }: NotificationListProps) => {
     return (
       <div className="p-8 text-center text-muted-foreground">
         <Bell className="w-12 h-12 mx-auto mb-2 opacity-50" />
-        <p>No notifications yet</p>
+        <p>{t('components.notificationList.empty')}</p>
       </div>
     );
   }
 
   return (
-    <div className="divide-y divide-border">
+    <div className="divide-y divide-border" dir={isRTL ? 'rtl' : 'ltr'}>
       {notifications.map((notification) => (
         <div
           key={notification.id}
@@ -141,27 +145,27 @@ const NotificationList = ({ onRead }: NotificationListProps) => {
             notification.is_read ? 'bg-background' : 'bg-primary/5'
           }`}
         >
-          <div className="flex gap-3">
+          <div className={`flex gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <div className="flex-shrink-0 mt-1">
               {getIcon(notification.type)}
             </div>
             <div className="flex-1 min-w-0">
               <button
                 onClick={() => handleClick(notification)}
-                className="text-left w-full"
+                className={`w-full ${isRTL ? 'text-right' : 'text-left'}`}
               >
-                <h4 className="font-semibold text-sm mb-1">
+                <h4 className={`font-semibold text-sm mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
                   {notification.title}
                 </h4>
-                <p className="text-sm text-muted-foreground line-clamp-2">
+                <p className={`text-sm text-muted-foreground line-clamp-2 ${isRTL ? 'text-right' : 'text-left'}`}>
                   {notification.message}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className={`text-xs text-muted-foreground mt-1 ${isRTL ? 'text-right' : 'text-left'}`}>
                   {formatDateTime(notification.created_at)}
                 </p>
               </button>
             </div>
-            <div className="flex-shrink-0 flex gap-1">
+            <div className={`flex-shrink-0 flex gap-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
               {!notification.is_read && (
                 <Button
                   variant="ghost"

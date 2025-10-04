@@ -11,6 +11,8 @@ import { PasswordInput } from '@/components/PasswordInput';
 import { toast } from 'sonner';
 import { Mail, User, ArrowRight, Sparkles, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useIsRTL } from '@/lib/rtl-utils';
+import { responsiveText, responsiveSpacing } from '@/lib/responsive-utils';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -20,6 +22,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const isRTL = useIsRTL();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -91,10 +94,10 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Left Side - Auth Form */}
       <div className="flex-1 flex items-center justify-center p-6 md:p-8 bg-background">
-        <div className="w-full max-w-md space-y-6 md:space-y-8">
+        <div className={`w-full max-w-md ${responsiveSpacing.sectionGap}`}>
           {/* Logo */}
           <Link to="/" className="flex justify-center">
             <img
@@ -106,13 +109,13 @@ const Auth = () => {
 
           {/* Welcome Text */}
           <div className="text-center space-y-2">
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              {isLogin ? 'Welcome back' : 'Create your account'}
+            <h1 className={`${responsiveText.sectionTitle} font-bold text-foreground`}>
+              {isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}
             </h1>
-            <p className="text-sm md:text-base text-muted-foreground">
+            <p className={`${responsiveText.body} text-muted-foreground`}>
               {isLogin 
-                ? 'Sign in to continue to Splitz' 
-                : 'Start tracking habits, challenges & expenses'}
+                ? t('auth.signInSubtitle')
+                : t('auth.signUpSubtitle')}
             </p>
           </div>
 
@@ -121,11 +124,11 @@ const Auth = () => {
             <form onSubmit={handleAuth} className="space-y-5">
               {!isLogin && (
                 <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-sm font-medium">
-                    Full Name
+                  <Label htmlFor="fullName" className={`text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {t('auth.fullName')}
                   </Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <User className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground`} />
                     <Input
                       id="fullName"
                       type="text"
@@ -133,18 +136,18 @@ const Auth = () => {
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       required={!isLogin}
-                      className="h-12 pl-10 text-base"
+                      className={`h-12 ${isRTL ? 'pr-10' : 'pl-10'} text-base`}
                     />
                   </div>
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  Email
+                <Label htmlFor="email" className={`text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                  {t('auth.email')}
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Mail className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground`} />
                   <Input
                     id="email"
                     type="email"
@@ -152,14 +155,14 @@ const Auth = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-12 pl-10 text-base"
+                    className={`h-12 ${isRTL ? 'pr-10' : 'pl-10'} text-base`}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium">
-                  Password
+                <Label htmlFor="password" className={`text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                  {t('auth.password')}
                 </Label>
                 <PasswordInput
                   value={password}
@@ -168,8 +171,8 @@ const Auth = () => {
                   className="h-12 text-base"
                 />
                 {!isLogin && (
-                  <p className="text-xs text-muted-foreground">
-                    Must be at least 6 characters
+                  <p className={`text-xs text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {t('auth.passwordRequirement')}
                   </p>
                 )}
               </div>
@@ -183,12 +186,12 @@ const Auth = () => {
                 {loading ? (
                   <span className="flex items-center gap-2">
                     <div className="h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                    Loading...
+                    {t('auth.loading')}
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    {isLogin ? 'Sign In' : 'Create Account'}
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    {isLogin ? t('auth.signIn') : t('auth.createAccountBtn')}
+                    <ArrowRight className={`h-4 w-4 group-hover:${isRTL ? '-translate-x-1' : 'translate-x-1'} transition-transform ${isRTL ? 'rotate-180' : ''}`} />
                   </span>
                 )}
               </Button>
@@ -198,7 +201,7 @@ const Auth = () => {
               <Separator className="my-6" />
               <div className="text-center">
                 <p className="text-sm text-muted-foreground mb-2">
-                  {isLogin ? "Don't have an account?" : 'Already have an account?'}
+                  {isLogin ? t('auth.noAccount') : t('auth.haveAccount')}
                 </p>
                 <Button
                   type="button"
@@ -211,7 +214,7 @@ const Auth = () => {
                   }}
                   className="w-full h-11 font-medium"
                 >
-                  {isLogin ? 'Create account' : 'Sign in instead'}
+                  {isLogin ? t('auth.createAccountLink') : t('auth.signInLink')}
                 </Button>
               </div>
             </div>
@@ -220,7 +223,7 @@ const Auth = () => {
           {/* Security Badge */}
           <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
             <Shield className="h-4 w-4" />
-            <span>Secure authentication powered by Lovable Cloud</span>
+            <span>{t('auth.securityBadge')}</span>
           </div>
         </div>
       </div>
@@ -237,33 +240,33 @@ const Auth = () => {
               <Sparkles className="h-6 w-6 text-primary" />
             </div>
             <h2 className="text-3xl font-bold text-foreground">
-              Everything in one place
+              {t('auth.showcase.title')}
             </h2>
           </div>
 
           <div className="space-y-6">
             <FeatureItem 
               emoji="🔥"
-              title="Track Habits"
-              description="Build consistency with daily habit tracking and streak counting"
+              title={t('auth.showcase.trackHabits')}
+              description={t('auth.showcase.trackHabitsDesc')}
             />
             <FeatureItem 
               emoji="🏆"
-              title="Join Challenges"
-              description="Compete with friends and stay motivated together"
+              title={t('auth.showcase.joinChallenges')}
+              description={t('auth.showcase.joinChallengesDesc')}
             />
             <FeatureItem 
               emoji="💰"
-              title="Split Expenses"
-              description="Manage group expenses and settle balances effortlessly"
+              title={t('auth.showcase.splitExpenses')}
+              description={t('auth.showcase.splitExpensesDesc')}
             />
           </div>
 
           <div className="pt-8 border-t border-border">
             <p className="text-sm text-muted-foreground italic">
-              "Splitz helped me stay accountable and reach my goals faster than ever!"
+              {t('auth.showcase.testimonial')}
             </p>
-            <p className="text-sm font-medium text-foreground mt-2">— Sarah K.</p>
+            <p className="text-sm font-medium text-foreground mt-2">{t('auth.showcase.testimonialAuthor')}</p>
           </div>
         </div>
       </div>
