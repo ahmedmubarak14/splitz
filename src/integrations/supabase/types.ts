@@ -46,6 +46,45 @@ export type Database = {
           },
         ]
       }
+      challenge_progress_history: {
+        Row: {
+          challenge_id: string | null
+          id: string
+          progress: number
+          recorded_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          challenge_id?: string | null
+          id?: string
+          progress: number
+          recorded_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          challenge_id?: string | null
+          id?: string
+          progress?: number
+          recorded_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_progress_history_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "challenge_progress_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenges: {
         Row: {
           created_at: string
@@ -139,6 +178,7 @@ export type Database = {
           expense_id: string
           id: string
           is_settled: boolean | null
+          paid_at: string | null
           user_id: string
         }
         Insert: {
@@ -147,6 +187,7 @@ export type Database = {
           expense_id: string
           id?: string
           is_settled?: boolean | null
+          paid_at?: string | null
           user_id: string
         }
         Update: {
@@ -155,6 +196,7 @@ export type Database = {
           expense_id?: string
           id?: string
           is_settled?: boolean | null
+          paid_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -169,6 +211,7 @@ export type Database = {
       }
       expenses: {
         Row: {
+          category: Database["public"]["Enums"]["expense_category"] | null
           created_at: string
           description: string | null
           group_id: string | null
@@ -180,6 +223,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          category?: Database["public"]["Enums"]["expense_category"] | null
           created_at?: string
           description?: string | null
           group_id?: string | null
@@ -191,6 +235,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          category?: Database["public"]["Enums"]["expense_category"] | null
           created_at?: string
           description?: string | null
           group_id?: string | null
@@ -246,6 +291,7 @@ export type Database = {
       habits: {
         Row: {
           best_streak: number | null
+          completion_date: string | null
           created_at: string
           description: string | null
           icon: string | null
@@ -253,11 +299,13 @@ export type Database = {
           last_completed_at: string | null
           name: string
           streak_count: number | null
+          target_days: number | null
           updated_at: string
           user_id: string
         }
         Insert: {
           best_streak?: number | null
+          completion_date?: string | null
           created_at?: string
           description?: string | null
           icon?: string | null
@@ -265,11 +313,13 @@ export type Database = {
           last_completed_at?: string | null
           name: string
           streak_count?: number | null
+          target_days?: number | null
           updated_at?: string
           user_id: string
         }
         Update: {
           best_streak?: number | null
+          completion_date?: string | null
           created_at?: string
           description?: string | null
           icon?: string | null
@@ -277,6 +327,7 @@ export type Database = {
           last_completed_at?: string | null
           name?: string
           streak_count?: number | null
+          target_days?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -317,6 +368,48 @@ export type Database = {
           resource_id?: string
         }
         Relationships: []
+      }
+      payment_confirmations: {
+        Row: {
+          amount: number
+          confirmed_at: string | null
+          confirmed_by: string | null
+          expense_member_id: string | null
+          id: string
+          notes: string | null
+        }
+        Insert: {
+          amount: number
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          expense_member_id?: string | null
+          id?: string
+          notes?: string | null
+        }
+        Update: {
+          amount?: number
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          expense_member_id?: string | null
+          id?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_confirmations_confirmed_by_fkey"
+            columns: ["confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_confirmations_expense_member_id_fkey"
+            columns: ["expense_member_id"]
+            isOneToOne: false
+            referencedRelation: "expense_members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -383,7 +476,15 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      expense_category:
+        | "food"
+        | "transport"
+        | "entertainment"
+        | "utilities"
+        | "shopping"
+        | "health"
+        | "education"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -510,6 +611,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      expense_category: [
+        "food",
+        "transport",
+        "entertainment",
+        "utilities",
+        "shopping",
+        "health",
+        "education",
+        "other",
+      ],
+    },
   },
 } as const

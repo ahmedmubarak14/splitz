@@ -15,6 +15,7 @@ import Navigation from '@/components/Navigation';
 import { InviteDialog } from '@/components/InviteDialog';
 import EditExpenseDialog from '@/components/EditExpenseDialog';
 import ExpenseGroupDetailsDialog from '@/components/ExpenseGroupDetailsDialog';
+import ExpenseDetailsDialog from '@/components/ExpenseDetailsDialog';
 import { SkeletonList } from '@/components/ui/skeleton-card';
 
 type ExpenseGroup = {
@@ -43,6 +44,7 @@ const Expenses = () => {
   const [selectedGroup, setSelectedGroup] = useState<ExpenseGroup | null>(null);
   const [selectedExpense, setSelectedExpense] = useState<any>(null);
   const [groupExpenses, setGroupExpenses] = useState<any[]>([]);
+  const [expenseDetailsDialogOpen, setExpenseDetailsDialogOpen] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [memberEmails, setMemberEmails] = useState('');
   const [expenseDescription, setExpenseDescription] = useState('');
@@ -294,9 +296,26 @@ const Expenses = () => {
         .from('profiles')
         .select('id, full_name');
 
+      const { data: { user } } = await supabase.auth.getUser();
+
+      // Fetch expense members with settlement status
+      const expenseIds = expensesData?.map(e => e.id) || [];
+      const { data: membersData } = await supabase
+        .from('expense_members')
+        .select('*')
+        .in('expense_id', expenseIds);
+
       const processedExpenses = (expensesData || []).map(expense => ({
         ...expense,
         paid_by_name: profiles?.find(p => p.id === expense.paid_by)?.full_name || 'Unknown',
+        creator_name: profiles?.find(p => p.id === expense.user_id)?.full_name || 'Unknown',
+        is_creator: expense.user_id === user?.id,
+        members: membersData
+          ?.filter(m => m.expense_id === expense.id)
+          .map(m => ({
+            ...m,
+            user_name: profiles?.find(p => p.id === m.user_id)?.full_name || 'Unknown'
+          })) || []
       }));
 
       setGroupExpenses(processedExpenses);
@@ -359,6 +378,35 @@ const Expenses = () => {
     } catch (error) {
       console.error('Error deleting expense:', error);
       toast.error('Failed to delete expense');
+    }
+  };
+
+  const toggleSettlement = async (memberId: string, currentStatus: boolean) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const newStatus = !currentStatus;
+      const paidAt = newStatus ? new Date().toISOString() : null;
+
+      const { error } = await supabase
+        .from('expense_members')
+        .update({ 
+          is_settled: newStatus,
+          paid_at: paidAt
+        })
+        .eq('id', memberId);
+
+      if (error) throw error;
+
+      toast.success(newStatus ? 'Marked as paid' : 'Marked as unpaid');
+      
+      if (selectedGroup) {
+        await fetchGroupExpenses(selectedGroup.id);
+      }
+    } catch (error) {
+      console.error('Error toggling settlement:', error);
+      toast.error('Failed to update settlement status');
     }
   };
 
@@ -591,19 +639,31 @@ const Expenses = () => {
             }}
             onEditExpense={openEditExpense}
             onDeleteExpense={deleteExpense}
+            onViewExpenseDetails={(expense) => {
+              setSelectedExpense(expense);
+              setExpenseDetailsDialogOpen(true);
+            }}
             currentUserId=""
           />
         </>
       )}
 
       {selectedExpense && (
-        <EditExpenseDialog
-          expense={selectedExpense}
-          open={editExpenseDialogOpen}
-          onOpenChange={setEditExpenseDialogOpen}
-          onSave={updateExpense}
-          groupMembers={groupMembers}
-        />
+        <>
+          <EditExpenseDialog
+            expense={selectedExpense}
+            open={editExpenseDialogOpen}
+            onOpenChange={setEditExpenseDialogOpen}
+            onSave={updateExpense}
+            groupMembers={groupMembers}
+          />
+          <ExpenseDetailsDialog
+            expense={selectedExpense}
+            open={expenseDetailsDialogOpen}
+            onOpenChange={setExpenseDetailsDialogOpen}
+            onToggleSettlement={toggleSettlement}
+          />
+        </>
       )}
 
       <Navigation />

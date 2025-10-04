@@ -9,11 +9,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import { Plus, Target, TrendingUp, MoreVertical, Pencil, Trash2, CheckCircle2 } from 'lucide-react';
+import { Plus, Target, TrendingUp, MoreVertical, Pencil, Trash2, CheckCircle2, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import Navigation from '@/components/Navigation';
 import { SkeletonList } from '@/components/ui/skeleton-card';
+import HabitCalendar from '@/components/HabitCalendar';
 
 type Habit = {
   id: string;
@@ -35,6 +36,8 @@ const Habits = () => {
   const [editIcon, setEditIcon] = useState('🔥');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingHabit, setDeletingHabit] = useState<Habit | null>(null);
+  const [calendarDialogOpen, setCalendarDialogOpen] = useState(false);
+  const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -282,6 +285,13 @@ const Habits = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-background">
+                        <DropdownMenuItem onClick={() => {
+                          setSelectedHabit(habit);
+                          setCalendarDialogOpen(true);
+                        }}>
+                          <Calendar className="w-4 h-4 mr-2" />
+                          View Calendar
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => openEditDialog(habit)}>
                           <Pencil className="w-4 h-4 mr-2" />
                           Edit
@@ -379,6 +389,15 @@ const Habits = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {selectedHabit && (
+        <HabitCalendar
+          habitId={selectedHabit.id}
+          habitName={selectedHabit.name}
+          open={calendarDialogOpen}
+          onOpenChange={setCalendarDialogOpen}
+        />
+      )}
 
       <Navigation />
     </div>

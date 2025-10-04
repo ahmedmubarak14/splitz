@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowRight, Edit, Trash2, Plus } from 'lucide-react';
+import { ArrowRight, Edit, Trash2, Plus, Eye } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import * as React from 'react';
 
@@ -32,6 +32,7 @@ interface ExpenseGroupDetailsDialogProps {
   onAddExpense: () => void;
   onEditExpense: (expense: Expense) => void;
   onDeleteExpense: (expenseId: string) => void;
+  onViewExpenseDetails?: (expense: any) => void;
   currentUserId: string;
 }
 
@@ -43,6 +44,7 @@ const ExpenseGroupDetailsDialog = ({
   onAddExpense,
   onEditExpense,
   onDeleteExpense,
+  onViewExpenseDetails,
 }: ExpenseGroupDetailsDialogProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [expenseToDelete, setExpenseToDelete] = React.useState<string | null>(null);
@@ -138,6 +140,16 @@ const ExpenseGroupDetailsDialog = ({
                           <span className="font-semibold text-lg mr-2">
                             {Number(expense.total_amount).toFixed(2)} SAR
                           </span>
+                          {onViewExpenseDetails && (
+                            <Button
+                              onClick={() => onViewExpenseDetails(expense)}
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          )}
                           <Button
                             onClick={() => onEditExpense(expense)}
                             size="icon"

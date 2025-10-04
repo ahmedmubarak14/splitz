@@ -18,6 +18,7 @@ import ChallengeDetailsDialog from '@/components/ChallengeDetailsDialog';
 import EditChallengeDialog from '@/components/EditChallengeDialog';
 import { InviteDialog } from '@/components/InviteDialog';
 import { SkeletonList } from '@/components/ui/skeleton-card';
+import ChallengeCompletionDialog from '@/components/ChallengeCompletionDialog';
 
 type Challenge = Tables<'challenges'> & {
   participant_count?: number;
@@ -49,6 +50,8 @@ const Challenges = () => {
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [completionDialogOpen, setCompletionDialogOpen] = useState(false);
+  const [completedChallengeName, setCompletedChallengeName] = useState('');
   
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -214,6 +217,15 @@ const Challenges = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // Save progress to history
+      await supabase
+        .from('challenge_progress_history')
+        .insert({
+          challenge_id: challengeId,
+          user_id: user.id,
+          progress: newProgress
+        });
+
       const { error } = await supabase
         .from('challenge_participants')
         .update({ progress: newProgress })
@@ -221,6 +233,13 @@ const Challenges = () => {
         .eq('user_id', user.id);
 
       if (error) throw error;
+
+      // Check if challenge completed
+      const challenge = challenges.find(c => c.id === challengeId);
+      if (newProgress >= 100 && challenge) {
+        setCompletedChallengeName(challenge.name);
+        setCompletionDialogOpen(true);
+      }
 
       toast.success('Progress updated');
       fetchChallenges();
@@ -478,6 +497,12 @@ const Challenges = () => {
           resourceName={selectedChallenge.name}
         />
       )}
+
+      <ChallengeCompletionDialog
+        open={completionDialogOpen}
+        onOpenChange={setCompletionDialogOpen}
+        challengeName={completedChallengeName}
+      />
 
       <Navigation />
     </div>
