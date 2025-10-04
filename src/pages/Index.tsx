@@ -205,61 +205,64 @@ const Index = () => {
           {/* Feature Grid */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             {/* Group Challenges Card */}
-            <Card className="relative overflow-hidden border-2 border-border hover:border-primary/50 transition-all duration-300 group">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-primary-glow"></div>
-              <CardContent className="p-6 pt-8">
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Trophy className="w-7 h-7 text-primary" />
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                  <Trophy className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground">
+                <h3 className="text-lg font-semibold text-foreground mb-1">
                   {t('showcase.friends.feature1')}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed mb-4">
+              </div>
+              <CardContent className="p-5">
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                   Challenge your friends to build healthy habits together. Track progress, celebrate wins, and stay accountable as a team.
                 </p>
-                <div className="flex items-center gap-2 text-sm text-primary font-semibold">
+                <div className="flex items-center gap-2 text-xs text-primary font-semibold">
                   <span>Start a Challenge</span>
-                  <Rocket className="w-4 h-4" />
+                  <Rocket className="w-3.5 h-3.5" />
                 </div>
               </CardContent>
             </Card>
 
             {/* Leaderboards Card */}
-            <Card className="relative overflow-hidden border-2 border-border hover:border-secondary/50 transition-all duration-300 group">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary to-secondary-glow"></div>
-              <CardContent className="p-6 pt-8">
-                <div className="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <TrendingUp className="w-7 h-7 text-secondary" />
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center mb-3">
+                  <TrendingUp className="w-5 h-5 text-secondary" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground">
+                <h3 className="text-lg font-semibold text-foreground mb-1">
                   {t('showcase.friends.feature2')}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed mb-4">
+              </div>
+              <CardContent className="p-5">
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                   See how you stack up against your friends on habit streaks and challenge scores. Friendly competition keeps you motivated!
                 </p>
-                <div className="flex items-center gap-2 text-sm text-secondary font-semibold">
+                <div className="flex items-center gap-2 text-xs text-secondary font-semibold">
                   <span>View Rankings</span>
-                  <Star className="w-4 h-4" />
+                  <Star className="w-3.5 h-3.5" />
                 </div>
               </CardContent>
             </Card>
 
             {/* Expense Settle-up Card */}
-            <Card className="relative overflow-hidden border-2 border-border hover:border-accent/50 transition-all duration-300 group">
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent to-primary/30"></div>
-              <CardContent className="p-6 pt-8">
-                <div className="w-14 h-14 rounded-2xl bg-accent/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <DollarSign className="w-7 h-7 text-accent-foreground" />
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center mb-3">
+                  <DollarSign className="w-5 h-5 text-accent-foreground" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-foreground">
+                <h3 className="text-lg font-semibold text-foreground mb-1">
                   {t('showcase.friends.feature3')}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed mb-4">
+              </div>
+              <CardContent className="p-5">
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                   Easily track shared expenses and settle up with friends. No more awkward calculations or forgotten debts.
                 </p>
-                <div className="flex items-center gap-2 text-sm text-accent-foreground font-semibold">
+                <div className="flex items-center gap-2 text-xs text-accent-foreground font-semibold">
                   <span>Split an Expense</span>
-                  <CheckCircle2 className="w-4 h-4" />
+                  <CheckCircle2 className="w-3.5 h-3.5" />
                 </div>
               </CardContent>
             </Card>
@@ -267,20 +270,20 @@ const Index = () => {
 
           {/* CTA Section */}
           <div className="text-center">
-            <Card className="inline-block rounded-3xl border-2 border-primary/30 shadow-xl overflow-hidden">
+            <Card className="inline-block rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
               <CardContent className="p-8 md:p-12">
                 <div className="max-w-2xl mx-auto">
                   <h3 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
                     Ready to Connect with Friends?
                   </h3>
-                  <p className="text-muted-foreground mb-6 text-lg">
+                  <p className="text-muted-foreground mb-6 text-base">
                     Join users building better habits and managing finances together
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button
                       onClick={() => navigate('/auth')}
                       size="lg"
-                      className="text-lg px-8 py-6 h-auto"
+                      className="text-base px-8 py-6 h-auto"
                     >
                       <Users className="w-5 h-5 mr-2" />
                       {t('cta.start')}
@@ -289,7 +292,7 @@ const Index = () => {
                       onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
                       variant="outline"
                       size="lg"
-                      className="text-lg px-8 py-6 h-auto"
+                      className="text-base px-8 py-6 h-auto"
                     >
                       {t('cta.learnMore')}
                     </Button>
@@ -467,48 +470,52 @@ const Index = () => {
             <p className="text-xl text-muted-foreground">{t('features.subtitle')}</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="rounded-3xl border-2 border-border shadow-lg card-hover overflow-hidden">
-              <div className="h-2 bg-primary"></div>
-              <CardContent className="p-8">
-                <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mb-6 shadow-lg">
-                  <Target className="w-8 h-8 text-primary-foreground" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Target className="w-5 h-5 text-primary" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-foreground">{t('features.streaks.title')}</h3>
-                <p className="text-muted-foreground leading-relaxed">{t('features.streaks.desc')}</p>
+              </div>
+              <CardContent className="p-5">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.streaks.title')}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.streaks.desc')}</p>
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-2 border-border shadow-lg card-hover overflow-hidden">
-              <div className="h-2 bg-accent"></div>
-              <CardContent className="p-8">
-                <div className="w-16 h-16 rounded-2xl bg-accent flex items-center justify-center mb-6 shadow-lg">
-                  <Trophy className="w-8 h-8 text-foreground" />
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
+                  <Trophy className="w-5 h-5 text-accent-foreground" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-foreground">{t('features.challenges.title')}</h3>
-                <p className="text-muted-foreground leading-relaxed">{t('features.challenges.desc')}</p>
+              </div>
+              <CardContent className="p-5">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.challenges.title')}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.challenges.desc')}</p>
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-2 border-border shadow-lg card-hover overflow-hidden">
-              <div className="h-2 bg-secondary"></div>
-              <CardContent className="p-8">
-                <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center mb-6 shadow-lg">
-                  <DollarSign className="w-8 h-8 text-foreground" />
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 text-secondary" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-foreground">{t('features.splitter.title')}</h3>
-                <p className="text-muted-foreground leading-relaxed">{t('features.splitter.desc')}</p>
+              </div>
+              <CardContent className="p-5">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.splitter.title')}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.splitter.desc')}</p>
               </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-2 border-border shadow-lg card-hover overflow-hidden">
-              <div className="h-2 bg-success"></div>
-              <CardContent className="p-8">
-                <div className="w-16 h-16 rounded-2xl bg-success flex items-center justify-center mb-6 shadow-lg">
-                  <MessageCircle className="w-8 h-8 text-success-foreground" />
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
+                  <MessageCircle className="w-5 h-5 text-success" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-foreground">{t('features.reminders.title')}</h3>
-                <p className="text-muted-foreground leading-relaxed">{t('features.reminders.desc')}</p>
+              </div>
+              <CardContent className="p-5">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.reminders.title')}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.reminders.desc')}</p>
               </CardContent>
             </Card>
           </div>
@@ -525,7 +532,7 @@ const Index = () => {
             <p className="text-xl text-muted-foreground">{t('howItWorks.subtitle')}</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {[
               { icon: Users, title: t('howItWorks.step1.title'), desc: t('howItWorks.step1.desc'), color: 'primary' },
               { icon: Trophy, title: t('howItWorks.step2.title'), desc: t('howItWorks.step2.desc'), color: 'secondary' },
@@ -533,15 +540,19 @@ const Index = () => {
             ].map((step, idx) => {
               const Icon = step.icon;
               return (
-                <Card key={idx} className="rounded-3xl border-2 border-border shadow-lg text-center p-8 card-hover">
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-muted flex items-center justify-center">
-                    <Icon className="w-10 h-10 text-primary" />
+                <Card key={idx} className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+                  <div className="px-5 py-6 border-b border-border bg-muted/30 text-center">
+                    <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <Icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary text-primary-foreground font-bold text-sm">
+                      {idx + 1}
+                    </div>
                   </div>
-                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-bold mb-4">
-                    {idx + 1}
-                  </div>
-                  <h3 className="text-2xl font-bold mb-3 text-foreground">{step.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{step.desc}</p>
+                  <CardContent className="p-5 text-center">
+                    <h3 className="text-lg font-semibold mb-2 text-foreground">{step.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+                  </CardContent>
                 </Card>
               );
             })}
@@ -559,35 +570,39 @@ const Index = () => {
             <p className="text-xl text-muted-foreground">{t('pricing.subtitle')}</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-            <Card className="rounded-3xl border-2 border-primary/50 shadow-xl p-8 card-hover">
-              <div className="text-center mb-8">
-                <h3 className="text-3xl font-bold mb-2 text-foreground">{t('pricing.free.title')}</h3>
-                <div className="text-5xl font-extrabold text-primary mb-2">{t('pricing.free.price')}</div>
-                <p className="text-muted-foreground">{t('pricing.free.desc')}</p>
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            <Card className="rounded-2xl border-2 border-primary/30 bg-card shadow-sm overflow-hidden">
+              <div className="px-6 py-5 border-b border-border bg-muted/30 text-center">
+                <h3 className="text-2xl font-bold text-foreground mb-1">{t('pricing.free.title')}</h3>
+                <div className="text-4xl font-extrabold text-primary">{t('pricing.free.price')}</div>
               </div>
-              <Button 
-                variant="default" 
-                className="w-full text-lg py-6"
-                onClick={() => navigate('/auth')}
-              >
-                {t('pricing.free.cta')}
-              </Button>
+              <CardContent className="p-6">
+                <p className="text-center text-sm text-muted-foreground mb-6">{t('pricing.free.desc')}</p>
+                <Button 
+                  variant="default" 
+                  className="w-full"
+                  onClick={() => navigate('/auth')}
+                >
+                  {t('pricing.free.cta')}
+                </Button>
+              </CardContent>
             </Card>
 
-            <Card className="rounded-3xl border-2 border-border shadow-xl p-8 opacity-60">
-              <div className="text-center mb-8">
-                <h3 className="text-3xl font-bold mb-2 text-foreground">{t('pricing.pro.title')}</h3>
-                <div className="text-5xl font-extrabold text-muted-foreground mb-2">{t('pricing.pro.price')}</div>
-                <p className="text-muted-foreground">{t('pricing.pro.desc')}</p>
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden opacity-60">
+              <div className="px-6 py-5 border-b border-border bg-muted/30 text-center">
+                <h3 className="text-2xl font-bold text-foreground mb-1">{t('pricing.pro.title')}</h3>
+                <div className="text-4xl font-extrabold text-muted-foreground">{t('pricing.pro.price')}</div>
               </div>
-              <Button 
-                variant="outline" 
-                className="w-full text-lg py-6"
-                disabled
-              >
-                {t('pricing.pro.cta')}
-              </Button>
+              <CardContent className="p-6">
+                <p className="text-center text-sm text-muted-foreground mb-6">{t('pricing.pro.desc')}</p>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  disabled
+                >
+                  {t('pricing.pro.cta')}
+                </Button>
+              </CardContent>
             </Card>
           </div>
         </div>
