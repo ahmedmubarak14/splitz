@@ -87,6 +87,7 @@ const Index = () => {
             <LanguageToggle />
             <Button 
               variant="ghost" 
+              size="sm"
               onClick={() => navigate('/auth')}
               className="hidden sm:inline-flex"
             >
@@ -94,6 +95,7 @@ const Index = () => {
             </Button>
             <Button 
               variant="default" 
+              size="sm"
               onClick={() => navigate('/auth')}
               className="hidden sm:inline-flex"
             >
@@ -125,7 +127,8 @@ const Index = () => {
             ))}
             <div className="pt-4 border-t border-border flex gap-3">
               <Button 
-                variant="ghost" 
+                variant="ghost"
+                size="sm"
                 onClick={() => {
                   setMobileMenuOpen(false);
                   navigate('/auth');
@@ -135,7 +138,8 @@ const Index = () => {
                 {t('nav.login')}
               </Button>
               <Button 
-                variant="default" 
+                variant="default"
+                size="sm"
                 onClick={() => {
                   setMobileMenuOpen(false);
                   navigate('/auth');
@@ -169,7 +173,7 @@ const Index = () => {
               onClick={() => navigate('/auth')}
               size="lg"
               variant="default"
-              className="text-base md:text-lg px-8 md:px-10 py-6 md:py-7 h-auto shadow-xl hover:shadow-2xl"
+              className="h-12 px-8 text-base font-semibold"
             >
               {t('cta.start')} 🚀
             </Button>
@@ -177,7 +181,7 @@ const Index = () => {
               onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })}
               variant="outline"
               size="lg"
-              className="text-base md:text-lg px-8 md:px-10 py-6 md:py-7 h-auto border-2"
+              className="h-12 px-8 text-base font-semibold"
             >
               {t('cta.how')}
             </Button>
@@ -282,17 +286,15 @@ const Index = () => {
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button
                       onClick={() => navigate('/auth')}
-                      size="lg"
-                      className="text-base px-8 py-6 h-auto"
+                      className="h-11 px-6 text-sm font-semibold"
                     >
-                      <Users className="w-5 h-5 mr-2" />
+                      <Users className="w-4 h-4 mr-2" />
                       {t('cta.start')}
                     </Button>
                     <Button
                       onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
                       variant="outline"
-                      size="lg"
-                      className="text-base px-8 py-6 h-auto"
+                      className="h-11 px-6 text-sm font-semibold"
                     >
                       {t('cta.learnMore')}
                     </Button>
@@ -580,7 +582,7 @@ const Index = () => {
                 <p className="text-center text-sm text-muted-foreground mb-6">{t('pricing.free.desc')}</p>
                 <Button 
                   variant="default" 
-                  className="w-full"
+                  className="w-full h-11 text-sm font-semibold"
                   onClick={() => navigate('/auth')}
                 >
                   {t('pricing.free.cta')}
@@ -597,7 +599,7 @@ const Index = () => {
                 <p className="text-center text-sm text-muted-foreground mb-6">{t('pricing.pro.desc')}</p>
                 <Button 
                   variant="outline" 
-                  className="w-full"
+                  className="w-full h-11 text-sm font-semibold"
                   disabled
                 >
                   {t('pricing.pro.cta')}
@@ -630,14 +632,15 @@ const Index = () => {
                   <Button
                     onClick={() => navigate('/auth')}
                     size="lg"
-                    className="text-xl px-14 py-8 bg-background text-primary hover:bg-background/95 shadow-2xl h-auto font-bold"
+                    className="h-14 px-10 text-base font-bold bg-background text-primary hover:bg-background/95"
                   >
                     {t('cta.start')} 🚀
                   </Button>
                   <Button
                     onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                    variant="outline"
                     size="lg"
-                    className="text-xl px-14 py-8 bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 border-2 border-primary-foreground/50 h-auto font-bold"
+                    className="h-14 px-10 text-base font-bold bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 border-2 border-primary-foreground/50"
                   >
                     {t('cta.learnMore')}
                   </Button>
