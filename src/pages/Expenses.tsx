@@ -17,6 +17,9 @@ import EditExpenseDialog from '@/components/EditExpenseDialog';
 import ExpenseGroupDetailsDialog from '@/components/ExpenseGroupDetailsDialog';
 import ExpenseDetailsDialog from '@/components/ExpenseDetailsDialog';
 import { SkeletonList } from '@/components/ui/skeleton-card';
+import { useIsRTL } from '@/lib/rtl-utils';
+import { responsiveText, responsiveSpacing } from '@/lib/responsive-utils';
+import { formatCurrency } from '@/lib/formatters';
 
 type ExpenseGroup = {
   id: string;
@@ -56,6 +59,7 @@ const Expenses = () => {
   
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const isRTL = useIsRTL();
 
   useEffect(() => {
     checkAuth();
@@ -420,59 +424,59 @@ const Expenses = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 p-4 md:p-6">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 p-4 md:p-6" dir={isRTL ? 'rtl' : 'ltr'}>
       <Navigation />
       
-      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
+      <div className={`max-w-7xl mx-auto ${responsiveSpacing.sectionGap}`}>
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
           <div className="space-y-1">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground">
+            <h1 className={`${responsiveText.pageTitle} font-semibold text-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
               {t('expenses.title')}
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Split expenses fairly
+            <p className={`text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
+              {t('expenses.subtitle')}
             </p>
           </div>
           
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Create Group
+                <Plus className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                {t('expenses.createGroup')}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Create Expense Group</DialogTitle>
-                <DialogDescription>
-                  Create a new expense group and add members
+                <DialogTitle className={isRTL ? 'text-right' : 'text-left'}>{t('expenses.createExpenseGroup')}</DialogTitle>
+                <DialogDescription className={isRTL ? 'text-right' : 'text-left'}>
+                  {t('expenses.createNewGroup')}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div>
-                  <Label className="text-sm font-medium mb-2">Group Name</Label>
+                  <Label className={`text-sm font-medium mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{t('expenses.groupName')}</Label>
                   <Input
-                    placeholder="e.g., Weekend Trip"
+                    placeholder={t('expenses.groupNamePlaceholder')}
                     value={groupName}
                     onChange={(e) => setGroupName(e.target.value)}
                     className="mt-2"
                   />
                 </div>
                 <div>
-                  <Label className="text-sm font-medium mb-2">Member Emails (comma-separated, optional)</Label>
+                  <Label className={`text-sm font-medium mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{t('expenses.memberEmails')}</Label>
                   <Input
-                    placeholder="john@example.com, jane@example.com"
+                    placeholder={t('expenses.memberEmailsPlaceholder')}
                     value={memberEmails}
                     onChange={(e) => setMemberEmails(e.target.value)}
                     className="mt-2"
                   />
-                  <p className="text-xs text-muted-foreground mt-2">
-                    People will receive email invitations to join
+                  <p className={`text-xs text-muted-foreground mt-2 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {t('expenses.emailInviteInfo')}
                   </p>
                 </div>
                 <Button onClick={createGroup} className="w-full">
-                  Create Group
+                  {t('expenses.createGroup')}
                 </Button>
               </div>
             </DialogContent>
@@ -486,9 +490,9 @@ const Expenses = () => {
           <Card className="border border-border">
             <CardContent className="flex flex-col items-center justify-center py-20 text-center">
               <Users className="w-16 h-16 text-muted mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No Expense Groups Yet</h3>
-              <p className="text-sm text-muted-foreground max-w-md">
-                Create your first expense group to start tracking and splitting expenses with friends
+              <h3 className={`text-xl font-semibold mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{t('expenses.noExpenseGroups')}</h3>
+              <p className={`text-sm text-muted-foreground max-w-md ${isRTL ? 'text-right' : 'text-left'}`}>
+                {t('expenses.createFirstGroup')}
               </p>
             </CardContent>
           </Card>
@@ -497,11 +501,11 @@ const Expenses = () => {
             {groups.map((group) => (
               <Card key={group.id} className="border border-border hover:border-primary/50 transition-colors">
                 <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-4">
+                  <div className={`flex justify-between items-start mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <div>
-                      <h3 className="font-semibold text-lg">{group.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {group.member_count} member{group.member_count !== 1 ? 's' : ''}
+                      <h3 className={`font-semibold text-lg ${isRTL ? 'text-right' : 'text-left'}`}>{group.name}</h3>
+                      <p className={`text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
+                        {group.member_count} {group.member_count !== 1 ? t('expenses.members') : t('expenses.member')}
                       </p>
                     </div>
                     <Button
@@ -512,59 +516,59 @@ const Expenses = () => {
                       variant="outline"
                       size="sm"
                     >
-                      Invite
+                      {t('expenses.invite')}
                     </Button>
                   </div>
 
                   <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Total Expenses</span>
-                      <span className="font-medium">{group.total_expenses.toFixed(2)} SAR</span>
+                    <div className={`flex justify-between text-sm ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      <span className="text-muted-foreground">{t('expenses.totalExpenses')}</span>
+                      <span className="font-medium">{formatCurrency(group.total_expenses)}</span>
                     </div>
 
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Your Balance</span>
+                    <div className={`flex justify-between text-sm ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      <span className="text-muted-foreground">{t('expenses.yourBalance')}</span>
                       <span className={`font-medium ${group.net_balance > 0 ? 'text-success' : group.net_balance < 0 ? 'text-destructive' : ''}`}>
-                        {group.net_balance > 0 ? '+' : ''}{group.net_balance.toFixed(2)} SAR
+                        {group.net_balance > 0 ? '+' : ''}{formatCurrency(group.net_balance)}
                       </span>
                     </div>
 
                     {group.settlement_summary && group.settlement_summary.length > 0 && (
                       <div className="pt-3 border-t border-border">
-                        <p className="text-xs font-semibold text-foreground mb-2">Who Owes Whom</p>
+                        <p className={`text-xs font-semibold text-foreground mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{t('expenses.whoOwesWhom')}</p>
                         <div className="space-y-2">
                           {group.settlement_summary.slice(0, 2).map((settlement, idx) => (
-                            <div key={idx} className="flex items-center justify-between text-sm p-2 rounded-md bg-muted/30">
-                              <div className="flex items-center gap-2">
+                            <div key={idx} className={`flex items-center justify-between text-sm p-2 rounded-md bg-muted/30 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                              <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                                 <span className="font-medium">{settlement.from}</span>
-                                <ArrowRight className="w-4 h-4 text-primary" />
+                                <ArrowRight className={`w-4 h-4 text-primary ${isRTL ? 'rotate-180' : ''}`} />
                                 <span className="font-medium">{settlement.to}</span>
                               </div>
-                              <span className="text-foreground font-semibold">{settlement.amount.toFixed(2)} SAR</span>
+                              <span className="text-foreground font-semibold">{formatCurrency(settlement.amount)}</span>
                             </div>
                           ))}
                           {group.settlement_summary.length > 2 && (
-                            <p className="text-xs text-muted-foreground">+{group.settlement_summary.length - 2} more</p>
+                            <p className={`text-xs text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>+{group.settlement_summary.length - 2} {t('expenses.more')}</p>
                           )}
                         </div>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex gap-2 mt-4">
+                  <div className={`flex gap-2 mt-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <Button
                       onClick={() => openAddExpense(group)}
                       className="flex-1"
                       variant="outline"
                     >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Expense
+                      <Plus className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                      {t('expenses.addExpense')}
                     </Button>
                     <Button
                       onClick={() => openGroupDetails(group)}
                       className="flex-1"
                     >
-                      View Details
+                      {t('expenses.viewDetails')}
                     </Button>
                   </div>
                 </CardContent>
@@ -578,37 +582,37 @@ const Expenses = () => {
       <Dialog open={addExpenseDialogOpen} onOpenChange={setAddExpenseDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add Expense</DialogTitle>
-            <DialogDescription>
-              Add a new expense to {selectedGroup?.name}
+            <DialogTitle className={isRTL ? 'text-right' : 'text-left'}>{t('expenses.addExpenseTitle')}</DialogTitle>
+            <DialogDescription className={isRTL ? 'text-right' : 'text-left'}>
+              {t('expenses.addExpenseTo')} {selectedGroup?.name}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
-              <Label className="text-sm font-medium mb-2">Description</Label>
+              <Label className={`text-sm font-medium mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{t('expenses.description')}</Label>
               <Input
-                placeholder="e.g., Dinner at restaurant"
+                placeholder={t('expenses.descriptionPlaceholder')}
                 value={expenseDescription}
                 onChange={(e) => setExpenseDescription(e.target.value)}
                 className="mt-2"
               />
             </div>
             <div>
-              <Label className="text-sm font-medium mb-2">Amount (SAR)</Label>
+              <Label className={`text-sm font-medium mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{t('expenses.amount')}</Label>
               <Input
                 type="number"
                 step="0.01"
-                placeholder="0.00"
+                placeholder={t('expenses.amountPlaceholder')}
                 value={expenseAmount}
                 onChange={(e) => setExpenseAmount(e.target.value)}
                 className="mt-2"
               />
             </div>
             <div>
-              <Label className="text-sm font-medium mb-2">Paid By</Label>
+              <Label className={`text-sm font-medium mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{t('expenses.paidBy')}</Label>
               <Select value={paidBy} onValueChange={setPaidBy}>
                 <SelectTrigger className="mt-2">
-                  <SelectValue placeholder="Select who paid" />
+                  <SelectValue placeholder={t('expenses.selectWhoPaid')} />
                 </SelectTrigger>
                 <SelectContent>
                   {groupMembers.map((member) => (
@@ -620,25 +624,25 @@ const Expenses = () => {
               </Select>
             </div>
             <div>
-              <Label className="text-sm font-medium mb-2">Category</Label>
+              <Label className={`text-sm font-medium mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{t('expenses.category')}</Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger className="mt-2">
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder={t('expenses.selectCategory')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="food">🍔 Food</SelectItem>
-                  <SelectItem value="transport">🚗 Transport</SelectItem>
-                  <SelectItem value="entertainment">🎬 Entertainment</SelectItem>
-                  <SelectItem value="utilities">⚡ Utilities</SelectItem>
-                  <SelectItem value="shopping">🛍️ Shopping</SelectItem>
-                  <SelectItem value="health">💊 Health</SelectItem>
-                  <SelectItem value="education">📚 Education</SelectItem>
-                  <SelectItem value="other">📦 Other</SelectItem>
+                  <SelectItem value="food">{t('expenses.categories.food')}</SelectItem>
+                  <SelectItem value="transport">{t('expenses.categories.transport')}</SelectItem>
+                  <SelectItem value="entertainment">{t('expenses.categories.entertainment')}</SelectItem>
+                  <SelectItem value="utilities">{t('expenses.categories.utilities')}</SelectItem>
+                  <SelectItem value="shopping">{t('expenses.categories.shopping')}</SelectItem>
+                  <SelectItem value="health">{t('expenses.categories.health')}</SelectItem>
+                  <SelectItem value="education">{t('expenses.categories.education')}</SelectItem>
+                  <SelectItem value="other">{t('expenses.categories.other')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <Button onClick={addExpense} className="w-full">
-              Add Expense
+              {t('expenses.addExpense')}
             </Button>
           </div>
         </DialogContent>
