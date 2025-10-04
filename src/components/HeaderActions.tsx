@@ -18,11 +18,12 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
-import { Search, Bell, Sun, Moon, LogOut, User, Settings, Globe, Check } from 'lucide-react';
+import { Search, Sun, Moon, LogOut, User, Settings, Globe, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTheme } from 'next-themes';
 import { useTranslation } from 'react-i18next';
+import NotificationBell from './NotificationBell';
 
 export function HeaderActions() {
   const navigate = useNavigate();
@@ -114,22 +115,7 @@ export function HeaderActions() {
       </Sheet>
 
       {/* Notifications */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative rounded-lg h-9 w-9">
-            <Bell className="h-[18px] w-[18px]" />
-            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive" />
-            <span className="sr-only">Notifications</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-80">
-          <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <div className="p-4 text-sm text-muted-foreground text-center">
-            No new notifications
-          </div>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <NotificationBell />
 
       {/* Language Toggle */}
       <DropdownMenu>
@@ -197,9 +183,9 @@ export function HeaderActions() {
             <User className="mr-2 h-4 w-4" />
             Profile
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/profile')}>
+          <DropdownMenuItem onClick={() => navigate('/profile?tab=notifications')}>
             <Settings className="mr-2 h-4 w-4" />
-            Settings
+            Notification Settings
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut} className="text-destructive">

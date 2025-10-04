@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,16 +11,19 @@ import { toast } from 'sonner';
 import { LogOut, Mail, Calendar, Globe, Image as ImageIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
+import NotificationPreferences from '@/components/NotificationPreferences';
 import type { Tables, TablesUpdate } from '@/integrations/supabase/types';
 import type { User } from '@supabase/supabase-js';
 
 const Profile = () => {
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Tables<'profiles'> | null>(null);
   const [fullName, setFullName] = useState<string>('');
   const [preferredLanguage, setPreferredLanguage] = useState<string>('en');
   const [saving, setSaving] = useState<boolean>(false);
   const [uploading, setUploading] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'profile');
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 

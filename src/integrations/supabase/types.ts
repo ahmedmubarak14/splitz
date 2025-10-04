@@ -369,6 +369,78 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          challenge_updates: boolean
+          created_at: string
+          email_notifications: boolean
+          expense_alerts: boolean
+          habit_reminders: boolean
+          id: string
+          push_notifications: boolean
+          reminder_time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_updates?: boolean
+          created_at?: string
+          email_notifications?: boolean
+          expense_alerts?: boolean
+          habit_reminders?: boolean
+          id?: string
+          push_notifications?: boolean
+          reminder_time?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_updates?: boolean
+          created_at?: string
+          email_notifications?: boolean
+          expense_alerts?: boolean
+          habit_reminders?: boolean
+          id?: string
+          push_notifications?: boolean
+          reminder_time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          resource_id: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          resource_id?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          resource_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payment_confirmations: {
         Row: {
           amount: number
@@ -453,6 +525,16 @@ export type Database = {
       can_join_via_invite: {
         Args: { _invite_type: string; _resource_id: string; _user_id: string }
         Returns: boolean
+      }
+      create_notification: {
+        Args: {
+          p_message: string
+          p_resource_id?: string
+          p_title: string
+          p_type: string
+          p_user_id: string
+        }
+        Returns: string
       }
       habit_checkin_date: {
         Args: { checked_in_at: string }
