@@ -38,7 +38,7 @@ const resources = {
       hero: {
         badge: 'Habits · Challenges · Expense Splitter',
         title: 'Build habits together. Split life fairly.',
-        subtitle: 'Smart nudges. Zero inbox spam.',
+        subtitle: 'Grow stronger as a team. Settle up effortlessly.',
       },
       cta: {
         start: 'Start Free',
@@ -279,7 +279,7 @@ const resources = {
       hero: {
         badge: 'عادات · تحديات · تقسيم المصاريف',
         title: 'ابنِ العادات معاً. واقسم المصاريف بعدل.',
-        subtitle: 'تنبيهات ذكية. صفر إزعاج بالبريد.',
+        subtitle: 'تقدّم أقوى كفريق. سوّي بسهولة.',
       },
       cta: {
         start: 'ابدأ مجاناً',
