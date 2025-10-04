@@ -65,7 +65,7 @@ const Index = () => {
       </div>
 
       {/* Fixed Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <img
@@ -118,7 +118,7 @@ const Index = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-xl border-t border-gray-200/50 px-6 py-4 space-y-3">
+          <div className="md:hidden bg-background/95 backdrop-blur-xl border-t border-border px-6 py-4 space-y-3">
             {navLinks.map(link => (
               <a 
                 key={link.href}
@@ -280,7 +280,7 @@ const Index = () => {
           {/* Live Streaks */}
           <Card className="rounded-3xl border-2 border-border shadow-xl overflow-hidden">
             <div className="bg-primary p-6">
-              <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+              <h3 className="text-2xl font-bold text-primary-foreground flex items-center gap-3">
                 <Target className="w-7 h-7" />
                 {t('live.streaks')}
               </h3>
@@ -355,7 +355,7 @@ const Index = () => {
               <div className="h-2 bg-primary"></div>
               <CardContent className="p-8">
                 <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mb-6 shadow-lg">
-                  <Target className="w-8 h-8 text-white" />
+                  <Target className="w-8 h-8 text-primary-foreground" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-foreground">{t('features.streaks.title')}</h3>
                 <p className="text-muted-foreground leading-relaxed">{t('features.streaks.desc')}</p>
@@ -388,7 +388,7 @@ const Index = () => {
               <div className="h-2 bg-success"></div>
               <CardContent className="p-8">
                 <div className="w-16 h-16 rounded-2xl bg-success flex items-center justify-center mb-6 shadow-lg">
-                  <MessageCircle className="w-8 h-8 text-white" />
+                  <MessageCircle className="w-8 h-8 text-success-foreground" />
                 </div>
                 <h3 className="text-2xl font-bold mb-3 text-foreground">{t('features.reminders.title')}</h3>
                 <p className="text-muted-foreground leading-relaxed">{t('features.reminders.desc')}</p>
@@ -484,14 +484,14 @@ const Index = () => {
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_70%)]"></div>
               <div className="relative">
                 <div className="inline-flex items-center gap-3 mb-6">
-                  <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center animate-bounce-slow">
-                    <Sparkles className="w-8 h-8 text-white" />
+                  <div className="w-16 h-16 rounded-2xl bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center animate-bounce-slow">
+                    <Sparkles className="w-8 h-8 text-primary-foreground" />
                   </div>
                 </div>
-                <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
+                <h2 className="text-4xl md:text-6xl font-bold text-primary-foreground mb-6">
                   {t('final.title')}
                 </h2>
-                <p className="text-white/90 text-xl md:text-2xl mb-10 max-w-2xl mx-auto">
+                <p className="text-primary-foreground/90 text-xl md:text-2xl mb-10 max-w-2xl mx-auto">
                   {t('final.subtitle')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface EditExpenseDialogProps {
   expense: {
@@ -19,6 +20,7 @@ interface EditExpenseDialogProps {
 }
 
 const EditExpenseDialog = ({ expense, open, onOpenChange, onSave, groupMembers }: EditExpenseDialogProps) => {
+  const { t } = useTranslation();
   const [name, setName] = React.useState('');
   const [amount, setAmount] = React.useState('');
   const [paidBy, setPaidBy] = React.useState('');
@@ -44,37 +46,37 @@ const EditExpenseDialog = ({ expense, open, onOpenChange, onSave, groupMembers }
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Edit Expense</DialogTitle>
+          <DialogTitle className="text-2xl">{t('dialogs.editExpense')}</DialogTitle>
           <DialogDescription className="text-base">
-            Update expense details
+            {t('dialogs.updateExpenseDetails')}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 pt-4">
           <div>
-            <Label className="text-sm font-semibold mb-2">Description *</Label>
+            <Label className="text-sm font-semibold mb-2">{t('dialogs.expenseDescription')} *</Label>
             <Input
-              placeholder="e.g., Dinner at restaurant"
+              placeholder={t('dialogs.expenseDescriptionPlaceholder')}
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="h-12 mt-2"
             />
           </div>
           <div>
-            <Label className="text-sm font-semibold mb-2">Amount (SAR) *</Label>
+            <Label className="text-sm font-semibold mb-2">{t('dialogs.amount')} *</Label>
             <Input
               type="number"
               step="0.01"
-              placeholder="0.00"
+              placeholder={t('dialogs.amountPlaceholder')}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               className="h-12 mt-2"
             />
           </div>
           <div>
-            <Label className="text-sm font-semibold mb-2">Paid By *</Label>
+            <Label className="text-sm font-semibold mb-2">{t('dialogs.paidBy')} *</Label>
             <Select value={paidBy} onValueChange={setPaidBy}>
               <SelectTrigger className="h-12 mt-2">
-                <SelectValue placeholder="Select who paid" />
+                <SelectValue placeholder={t('dialogs.selectWhoPaid')} />
               </SelectTrigger>
               <SelectContent>
                 {groupMembers.map((member) => (
@@ -91,14 +93,14 @@ const EditExpenseDialog = ({ expense, open, onOpenChange, onSave, groupMembers }
               className="flex-1 h-12 text-base"
               variant="gradient"
             >
-              Save Changes
+              {t('dialogs.saveChanges')}
             </Button>
             <Button 
               onClick={() => onOpenChange(false)} 
               variant="outline"
               className="h-12"
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
           </div>
         </div>
