@@ -185,82 +185,139 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Toggle Showcase Card */}
+      {/* Social Features Section - Redesigned */}
       <section className="relative px-6 pb-20">
-        <div className="max-w-3xl mx-auto">
-          <Card className="rounded-3xl border-2 border-gray-200/50 shadow-2xl overflow-hidden card-hover">
-            <div className="p-8">
-              {/* Tabs */}
-              <div className="flex gap-3 mb-8 relative">
-                <button
-                  onClick={() => setActiveTab('users')}
-                  className={`flex-1 py-4 px-6 rounded-2xl font-semibold transition-all ${
-                    activeTab === 'users'
-                      ? 'bg-primary text-primary-foreground shadow-lg'
-                      : 'bg-muted text-foreground hover:bg-muted/80'
-                  }`}
-                >
-                  {t('tabs.users')}
-                </button>
-                <button
-                  onClick={() => setActiveTab('friends')}
-                  className={`flex-1 py-4 px-6 rounded-2xl font-semibold transition-all ${
-                    activeTab === 'friends'
-                      ? 'bg-primary text-primary-foreground shadow-lg'
-                      : 'bg-muted text-foreground hover:bg-muted/80'
-                  }`}
-                >
-                  {t('tabs.friends')}
-                </button>
-                {/* Progress dots */}
-                <div className="absolute -top-4 right-0 flex gap-2">
-                  <div className={`w-2 h-2 rounded-full transition-colors ${activeTab === 'users' ? 'bg-primary' : 'bg-muted'}`}></div>
-                  <div className={`w-2 h-2 rounded-full transition-colors ${activeTab === 'friends' ? 'bg-primary' : 'bg-muted'}`}></div>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="space-y-6">
-                {activeTab === 'users' ? (
-                  <div className="animate-fade-in">
-                    <h3 className="text-2xl font-bold mb-4 text-foreground">{t('showcase.users.title')}</h3>
-                    <ul className="space-y-3">
-                      <li className="flex items-center gap-3 text-lg text-muted-foreground">
-                        <CheckCircle2 className="w-6 h-6 text-primary" />
-                        {t('showcase.users.feature1')}
-                      </li>
-                      <li className="flex items-center gap-3 text-lg text-muted-foreground">
-                        <CheckCircle2 className="w-6 h-6 text-primary" />
-                        {t('showcase.users.feature2')}
-                      </li>
-                      <li className="flex items-center gap-3 text-lg text-muted-foreground">
-                        <CheckCircle2 className="w-6 h-6 text-primary" />
-                        {t('showcase.users.feature3')}
-                      </li>
-                    </ul>
-                  </div>
-                ) : (
-                  <div className="animate-fade-in">
-                    <h3 className="text-2xl font-bold mb-4 text-foreground">{t('showcase.friends.title')}</h3>
-                    <ul className="space-y-3">
-                      <li className="flex items-center gap-3 text-lg text-muted-foreground">
-                        <CheckCircle2 className="w-6 h-6 text-primary" />
-                        {t('showcase.friends.feature1')}
-                      </li>
-                      <li className="flex items-center gap-3 text-lg text-muted-foreground">
-                        <CheckCircle2 className="w-6 h-6 text-primary" />
-                        {t('showcase.friends.feature2')}
-                      </li>
-                      <li className="flex items-center gap-3 text-lg text-muted-foreground">
-                        <CheckCircle2 className="w-6 h-6 text-primary" />
-                        {t('showcase.friends.feature3')}
-                      </li>
-                    </ul>
-                  </div>
-                )}
-              </div>
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center mb-12 max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
+              <Users className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-primary">Better Together</span>
             </div>
-          </Card>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-primary">
+              {t('showcase.social.title') || 'Achieve More with Friends'}
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              {t('showcase.social.subtitle') || 'Leverage our social features to stay motivated, challenge each other, and manage shared expenses effortlessly'}
+            </p>
+          </div>
+
+          {/* Feature Grid */}
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            {/* Group Challenges Card */}
+            <Card className="relative overflow-hidden border-2 border-border hover:border-primary/50 transition-all duration-300 group">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-primary-glow"></div>
+              <CardContent className="p-6 pt-8">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Trophy className="w-7 h-7 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-foreground">
+                  {t('showcase.friends.challenge.title') || 'Group Challenges'}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  {t('showcase.friends.challenge.desc') || 'Challenge your friends to build healthy habits together. Track progress, celebrate wins, and stay accountable as a team.'}
+                </p>
+                <div className="flex items-center gap-2 text-sm text-primary font-semibold">
+                  <span>Start a Challenge</span>
+                  <Rocket className="w-4 h-4" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Leaderboards Card */}
+            <Card className="relative overflow-hidden border-2 border-border hover:border-secondary/50 transition-all duration-300 group">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary to-secondary-glow"></div>
+              <CardContent className="p-6 pt-8">
+                <div className="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <TrendingUp className="w-7 h-7 text-secondary" />
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-foreground">
+                  {t('showcase.friends.leaderboard.title') || 'Leaderboards'}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  {t('showcase.friends.leaderboard.desc') || 'See how you stack up against your friends on habit streaks and challenge scores. Friendly competition keeps you going!'}
+                </p>
+                <div className="flex items-center gap-2 text-sm text-secondary font-semibold">
+                  <span>View Rankings</span>
+                  <Star className="w-4 h-4" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Expense Settle-up Card */}
+            <Card className="relative overflow-hidden border-2 border-border hover:border-accent/50 transition-all duration-300 group">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent to-primary/30"></div>
+              <CardContent className="p-6 pt-8">
+                <div className="w-14 h-14 rounded-2xl bg-accent/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <DollarSign className="w-7 h-7 text-accent-foreground" />
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-foreground">
+                  {t('showcase.friends.expenses.title') || 'Expense Settle-up'}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  {t('showcase.friends.expenses.desc') || 'Easily track shared expenses and settle up with friends. No more awkward calculations or forgotten debts.'}
+                </p>
+                <div className="flex items-center gap-2 text-sm text-accent-foreground font-semibold">
+                  <span>Split an Expense</span>
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Social Proof Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <div className="text-center p-6 rounded-2xl bg-muted/50 border border-border">
+              <div className="text-3xl font-bold text-primary mb-1">10K+</div>
+              <div className="text-sm text-muted-foreground">{t('stats.activeUsers') || 'Active Users'}</div>
+            </div>
+            <div className="text-center p-6 rounded-2xl bg-muted/50 border border-border">
+              <div className="text-3xl font-bold text-secondary mb-1">50K+</div>
+              <div className="text-sm text-muted-foreground">{t('stats.challenges') || 'Challenges Completed'}</div>
+            </div>
+            <div className="text-center p-6 rounded-2xl bg-muted/50 border border-border">
+              <div className="text-3xl font-bold text-success mb-1">2M+</div>
+              <div className="text-sm text-muted-foreground">{t('stats.checkIns') || 'Check-ins Logged'}</div>
+            </div>
+            <div className="text-center p-6 rounded-2xl bg-muted/50 border border-border">
+              <div className="text-3xl font-bold text-accent-foreground mb-1">99%</div>
+              <div className="text-sm text-muted-foreground">{t('stats.satisfaction') || 'User Satisfaction'}</div>
+            </div>
+          </div>
+
+          {/* CTA Section */}
+          <div className="text-center">
+            <Card className="inline-block rounded-3xl border-2 border-primary/30 shadow-xl overflow-hidden">
+              <CardContent className="p-8 md:p-12">
+                <div className="max-w-2xl mx-auto">
+                  <h3 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
+                    {t('showcase.cta.title') || 'Ready to Connect with Friends?'}
+                  </h3>
+                  <p className="text-muted-foreground mb-6 text-lg">
+                    {t('showcase.cta.subtitle') || 'Join thousands of users building better habits and managing finances together'}
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Button
+                      onClick={() => navigate('/auth')}
+                      size="lg"
+                      className="text-lg px-8 py-6 h-auto"
+                    >
+                      <Users className="w-5 h-5 mr-2" />
+                      {t('cta.getStarted') || 'Get Started Free'}
+                    </Button>
+                    <Button
+                      onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                      variant="outline"
+                      size="lg"
+                      className="text-lg px-8 py-6 h-auto"
+                    >
+                      {t('cta.learnMore') || 'Learn More'}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
 
