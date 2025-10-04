@@ -23,6 +23,7 @@ type Habit = {
   icon: string | null;
   streak_count: number | null;
   best_streak: number | null;
+  target_days?: number;
 };
 
 const Habits = () => {
@@ -58,7 +59,7 @@ const Habits = () => {
     try {
       const { data, error } = await supabase
         .from('habits')
-        .select('id, name, icon, streak_count, best_streak, created_at')
+        .select('id, name, icon, streak_count, best_streak, target_days, created_at')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -69,6 +70,7 @@ const Habits = () => {
         icon: (row as any).icon ?? null,
         streak_count: row.streak_count,
         best_streak: (row as any).best_streak ?? null,
+        target_days: (row as any).target_days ?? 30,
       }));
 
       setHabits(mapped);
@@ -317,6 +319,25 @@ const Habits = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
+                  {habit.target_days && (
+                    <div className="p-3 bg-primary/10 rounded-lg space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">Goal Progress</span>
+                        <span className="font-semibold text-primary">
+                          {habit.streak_count ?? 0} / {habit.target_days} days
+                        </span>
+                      </div>
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+                          style={{ width: `${Math.min(((habit.streak_count ?? 0) / habit.target_days) * 100, 100)}%` }}
+                        />
+                      </div>
+                      <div className="text-xs text-muted-foreground text-center">
+                        {((habit.streak_count ?? 0) / habit.target_days * 100).toFixed(0)}% Complete
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between p-3 bg-accent rounded-lg">
                     <span className="text-xs font-medium text-muted-foreground">Best Streak</span>
                     <span className="font-semibold">{habit.best_streak ?? 0} days</span>

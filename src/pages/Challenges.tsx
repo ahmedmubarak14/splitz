@@ -19,6 +19,7 @@ import EditChallengeDialog from '@/components/EditChallengeDialog';
 import { InviteDialog } from '@/components/InviteDialog';
 import { SkeletonList } from '@/components/ui/skeleton-card';
 import ChallengeCompletionDialog from '@/components/ChallengeCompletionDialog';
+import MilestoneCelebration from '@/components/MilestoneCelebration';
 
 type Challenge = Tables<'challenges'> & {
   participant_count?: number;
@@ -52,6 +53,10 @@ const Challenges = () => {
   const [endDate, setEndDate] = useState('');
   const [completionDialogOpen, setCompletionDialogOpen] = useState(false);
   const [completedChallengeName, setCompletedChallengeName] = useState('');
+  const [milestoneDialogOpen, setMilestoneDialogOpen] = useState(false);
+  const [currentMilestone, setCurrentMilestone] = useState(0);
+  const [milestoneChallengeName, setMilestoneChallengeName] = useState('');
+  const [previousProgress, setPreviousProgress] = useState<Record<string, number>>({});
   
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -217,6 +222,16 @@ const Challenges = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // Get previous progress
+      const challenge = challenges.find(c => c.id === challengeId);
+      const oldProgress = challenge?.user_progress || 0;
+
+      // Check for milestone crossings
+      const milestones = [25, 50, 75];
+      const crossedMilestone = milestones.find(
+        milestone => oldProgress < milestone && newProgress >= milestone
+      );
+
       // Save progress to history
       await supabase
         .from('challenge_progress_history')
@@ -234,8 +249,14 @@ const Challenges = () => {
 
       if (error) throw error;
 
+      // Show milestone celebration
+      if (crossedMilestone && challenge) {
+        setCurrentMilestone(crossedMilestone);
+        setMilestoneChallengeName(challenge.name);
+        setMilestoneDialogOpen(true);
+      }
+
       // Check if challenge completed
-      const challenge = challenges.find(c => c.id === challengeId);
       if (newProgress >= 100 && challenge) {
         setCompletedChallengeName(challenge.name);
         setCompletionDialogOpen(true);
@@ -503,6 +524,13 @@ const Challenges = () => {
         onOpenChange={setCompletionDialogOpen}
         challengeName={completedChallengeName}
       />
+
+      {milestoneDialogOpen && (
+        <MilestoneCelebration
+          milestone={currentMilestone}
+          challengeName={milestoneChallengeName}
+        />
+      )}
 
       <Navigation />
     </div>

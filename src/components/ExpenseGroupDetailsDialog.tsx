@@ -1,9 +1,11 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowRight, Edit, Trash2, Plus, Eye } from 'lucide-react';
+import { ArrowRight, Edit, Trash2, Plus, Eye, Filter } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import * as React from 'react';
+import { formatDateShort } from '@/lib/timezone';
 
 interface Expense {
   id: string;
@@ -12,6 +14,7 @@ interface Expense {
   paid_by: string;
   paid_by_name: string;
   created_at: string;
+  category?: string;
 }
 
 interface ExpenseGroupDetailsDialogProps {
@@ -48,6 +51,23 @@ const ExpenseGroupDetailsDialog = ({
 }: ExpenseGroupDetailsDialogProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [expenseToDelete, setExpenseToDelete] = React.useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = React.useState<string>('all');
+
+  const categories = [
+    { value: 'all', label: 'All Categories', icon: '📂' },
+    { value: 'food', label: 'Food', icon: '🍔' },
+    { value: 'transport', label: 'Transport', icon: '🚗' },
+    { value: 'entertainment', label: 'Entertainment', icon: '🎬' },
+    { value: 'utilities', label: 'Utilities', icon: '⚡' },
+    { value: 'shopping', label: 'Shopping', icon: '🛍️' },
+    { value: 'health', label: 'Health', icon: '💊' },
+    { value: 'education', label: 'Education', icon: '📚' },
+    { value: 'other', label: 'Other', icon: '📦' },
+  ];
+
+  const filteredExpenses = categoryFilter === 'all' 
+    ? expenses 
+    : expenses.filter(e => e.category === categoryFilter);
 
   const handleDeleteClick = (expenseId: string) => {
     setExpenseToDelete(expenseId);
@@ -115,25 +135,49 @@ const ExpenseGroupDetailsDialog = ({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold">Expenses</h3>
-                <Button onClick={onAddExpense} size="sm" variant="outline">
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                    <SelectTrigger className="w-[180px] h-9 bg-background">
+                      <Filter className="w-4 h-4 mr-2" />
+                      <SelectValue placeholder="Filter by category" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background z-50">
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.value} value={cat.value}>
+                          {cat.icon} {cat.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button onClick={onAddExpense} size="sm" variant="outline">
+                    <Plus className="w-4 h-4 mr-1" />
+                    Add
+                  </Button>
+                </div>
               </div>
               
-              {expenses.length === 0 ? (
+              {filteredExpenses.length === 0 ? (
                 <Card className="p-8 border border-border text-center">
-                  <p className="text-muted-foreground">No expenses yet</p>
+                  <p className="text-muted-foreground">
+                    {categoryFilter === 'all' ? 'No expenses yet' : 'No expenses in this category'}
+                  </p>
                 </Card>
               ) : (
                 <div className="space-y-2">
-                  {expenses.map((expense) => (
+                  {filteredExpenses.map((expense) => (
                     <Card key={expense.id} className="p-3 border border-border">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <p className="font-medium">{expense.name}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{expense.name}</p>
+                            {expense.category && (
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                                {categories.find(c => c.value === expense.category)?.icon} {expense.category}
+                              </span>
+                            )}
+                          </div>
                           <p className="text-sm text-muted-foreground">
-                            Paid by {expense.paid_by_name}
+                            Paid by {expense.paid_by_name} • {formatDateShort(expense.created_at)}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
