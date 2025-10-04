@@ -15,6 +15,7 @@ import Navigation from '@/components/Navigation';
 import { InviteDialog } from '@/components/InviteDialog';
 import EditExpenseDialog from '@/components/EditExpenseDialog';
 import ExpenseGroupDetailsDialog from '@/components/ExpenseGroupDetailsDialog';
+import { SkeletonList } from '@/components/ui/skeleton-card';
 
 type ExpenseGroup = {
   id: string;
@@ -423,9 +424,7 @@ const Expenses = () => {
 
         {/* Content */}
         {loading ? (
-          <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
-          </div>
+          <SkeletonList count={6} />
         ) : groups.length === 0 ? (
           <Card className="border border-border">
             <CardContent className="flex flex-col items-center justify-center py-20 text-center">

@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { Plus, Target, TrendingUp, MoreVertical, Pencil, Trash2, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
+import { SkeletonList } from '@/components/ui/skeleton-card';
 
 type Habit = {
   id: string;
@@ -245,9 +246,7 @@ const Habits = () => {
 
         {/* Content */}
         {loading ? (
-          <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
-          </div>
+          <SkeletonList count={6} />
         ) : habits.length === 0 ? (
           <Card className="border border-border">
             <CardContent className="flex flex-col items-center justify-center py-20 text-center">

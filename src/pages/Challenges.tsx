@@ -17,6 +17,7 @@ import ChallengeCard from '@/components/ChallengeCard';
 import ChallengeDetailsDialog from '@/components/ChallengeDetailsDialog';
 import EditChallengeDialog from '@/components/EditChallengeDialog';
 import { InviteDialog } from '@/components/InviteDialog';
+import { SkeletonList } from '@/components/ui/skeleton-card';
 
 type Challenge = Tables<'challenges'> & {
   participant_count?: number;
@@ -395,9 +396,7 @@ const Challenges = () => {
           
           <TabsContent value={activeTab} className="mt-6">
             {loading ? (
-              <div className="text-center py-20">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
-              </div>
+              <SkeletonList count={6} />
             ) : filteredChallenges.length === 0 ? (
               <Card className="border border-border">
                 <CardContent className="flex flex-col items-center justify-center py-20 text-center">
