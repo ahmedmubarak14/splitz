@@ -125,26 +125,25 @@ const JoinInvite = () => {
           navigate('/challenges');
         }
       } else if (invitation.invite_type === 'expense') {
-        // Add user as expense member with 0 initial amount
+        // Add user as expense GROUP member
         const { error } = await supabase
-          .from('expense_members')
+          .from('expense_group_members')
           .insert({
-            expense_id: invitation.resource_id,
+            group_id: invitation.resource_id,
             user_id: user.id,
-            amount_owed: 0,
           });
 
         if (error) {
           if (error.code === '23505') {
-            toast.error('You are already a member of this expense group');
+            toast.error('You are already a member of this group');
           } else {
             throw error;
           }
         } else {
-          // Update invitation uses
+          // Update invitation uses safely
           await supabase
             .from('invitations')
-            .update({ current_uses: invitation.current_uses + 1 })
+            .update({ current_uses: (invitation.current_uses || 0) + 1 })
             .eq('id', invitation.id);
 
           toast.success('Successfully joined the expense group! 💰');
