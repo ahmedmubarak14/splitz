@@ -124,24 +124,24 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-muted/20 p-6 pb-24 md:pb-6">
-      <div className="max-w-[1400px] mx-auto space-y-6">
+    <div className="min-h-screen bg-muted/20 p-4 md:p-6 pb-24 md:pb-6">
+      <div className="max-w-[1400px] mx-auto space-y-4 md:space-y-6">
         
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {statCards.map((stat, idx) => (
             <Card key={idx} className="bg-background border border-border/40">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex items-start justify-between mb-3 md:mb-4">
                   <div className="flex-1">
                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
                       {stat.label}
                     </p>
                   </div>
-                  <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                  <stat.icon className={`h-4 w-4 md:h-5 md:w-5 ${stat.color}`} />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-3xl font-bold text-foreground">{stat.value}</div>
+                  <div className="text-2xl md:text-3xl font-bold text-foreground">{stat.value}</div>
                   <p className="text-xs text-muted-foreground">{stat.subtitle}</p>
                 </div>
               </CardContent>

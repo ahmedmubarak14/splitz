@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from 'sonner';
 import { Plus, Target, TrendingUp, MoreVertical, Pencil, Trash2, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils';
 import Navigation from '@/components/Navigation';
 import { SkeletonList } from '@/components/ui/skeleton-card';
 
@@ -183,13 +184,13 @@ const Habits = () => {
   const emojiOptions = ['🔥', '💪', '🎯', '📚', '🏃', '🧘', '💧', '🌱', '⭐', '🎨'];
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 p-6">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 p-4 md:p-6">
       
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-3xl md:text-4xl font-semibold text-foreground">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground">
               {t('habits.title')}
             </h1>
             <p className="text-sm text-muted-foreground flex items-center gap-2">
@@ -215,16 +216,18 @@ const Habits = () => {
               <div className="space-y-4 pt-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">Choose an emoji</label>
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="grid grid-cols-5 gap-2">
                     {emojiOptions.map((emoji) => (
                       <button
                         key={emoji}
+                        type="button"
                         onClick={() => setNewHabitIcon(emoji)}
-                        className={`text-3xl p-2 rounded-lg transition-all ${
+                        className={cn(
+                          "text-3xl p-3 rounded-lg transition-all aspect-square flex items-center justify-center",
                           newHabitIcon === emoji 
-                            ? 'bg-accent' 
-                            : 'bg-muted hover:bg-accent'
-                        }`}
+                            ? 'bg-primary/10 ring-2 ring-primary' 
+                            : 'bg-muted hover:bg-accent hover:scale-105'
+                        )}
                       >
                         {emoji}
                       </button>
@@ -324,14 +327,18 @@ const Habits = () => {
           <div className="space-y-4 pt-4">
             <div>
               <label className="text-sm font-medium mb-2 block">Choose an emoji</label>
-              <div className="flex gap-2 flex-wrap">
+              <div className="grid grid-cols-5 gap-2">
                 {emojiOptions.map((emoji) => (
                   <button
                     key={emoji}
+                    type="button"
                     onClick={() => setEditIcon(emoji)}
-                    className={`text-3xl p-2 rounded-lg transition-all ${
-                      editIcon === emoji ? 'bg-accent' : 'bg-muted hover:bg-accent'
-                    }`}
+                    className={cn(
+                      "text-3xl p-3 rounded-lg transition-all aspect-square flex items-center justify-center",
+                      editIcon === emoji 
+                        ? 'bg-primary/10 ring-2 ring-primary' 
+                        : 'bg-muted hover:bg-accent hover:scale-105'
+                    )}
                   >
                     {emoji}
                   </button>

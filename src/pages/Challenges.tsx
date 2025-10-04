@@ -315,13 +315,13 @@ const Challenges = () => {
     : challenges;
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 p-6">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 p-4 md:p-6">
       
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-3xl md:text-4xl font-semibold text-foreground">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground">
               {t('challenges.title')}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -415,30 +415,20 @@ const Challenges = () => {
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {filteredChallenges.map((challenge) => (
-                  <div key={challenge.id} className="relative">
-                    <ChallengeCard
-                      challenge={challenge}
-                      onJoin={joinChallenge}
-                      onLeave={leaveChallenge}
-                      onViewDetails={viewDetails}
-                      onEdit={openEditDialog}
-                      onDelete={openDeleteDialog}
-                      currentUserId={currentUserId}
-                    />
-                    {challenge.creator_id === currentUserId && (
-                      <Button
-                        onClick={() => {
-                          setSelectedChallenge(challenge);
-                          setInviteDialogOpen(true);
-                        }}
-                        variant="outline"
-                        size="sm"
-                        className="absolute top-4 right-4"
-                      >
-                        Invite
-                      </Button>
-                    )}
-                  </div>
+                  <ChallengeCard
+                    key={challenge.id}
+                    challenge={challenge}
+                    onJoin={joinChallenge}
+                    onLeave={leaveChallenge}
+                    onViewDetails={viewDetails}
+                    onEdit={openEditDialog}
+                    onDelete={openDeleteDialog}
+                    onInvite={(c) => {
+                      setSelectedChallenge(c);
+                      setInviteDialogOpen(true);
+                    }}
+                    currentUserId={currentUserId}
+                  />
                 ))}
               </div>
             )}

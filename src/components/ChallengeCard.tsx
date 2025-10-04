@@ -20,10 +20,11 @@ interface ChallengeCardProps {
   onViewDetails?: (id: string) => void;
   onEdit?: (challenge: Challenge) => void;
   onDelete?: (id: string) => void;
+  onInvite?: (challenge: Challenge) => void;
   currentUserId?: string;
 }
 
-const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDelete, currentUserId }: ChallengeCardProps) => {
+const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDelete, onInvite, currentUserId }: ChallengeCardProps) => {
   const { t } = useTranslation();
 
   const isActive = new Date(challenge.end_date) >= new Date();
@@ -132,7 +133,16 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
               >
                 Details
               </Button>
-              {isActive && (
+              {isCreator && (
+                <Button
+                  onClick={() => onInvite?.(challenge)}
+                  variant="outline"
+                  size="sm"
+                >
+                  Invite
+                </Button>
+              )}
+              {isActive && !isCreator && (
                 <Button
                   onClick={() => onLeave?.(challenge.id)}
                   variant="outline"

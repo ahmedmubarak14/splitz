@@ -91,25 +91,25 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Side - Auth Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-background">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex-1 flex items-center justify-center p-6 md:p-8 bg-background">
+        <div className="w-full max-w-md space-y-6 md:space-y-8">
           {/* Logo */}
           <Link to="/" className="flex justify-center">
             <img
               src={splitzLogo}
               alt="Splitz"
-              className="h-14 w-auto hover:opacity-80 transition-opacity"
+              className="h-12 md:h-14 w-auto hover:opacity-80 transition-opacity"
             />
           </Link>
 
           {/* Welcome Text */}
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-foreground">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
               {isLogin ? 'Welcome back' : 'Create your account'}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm md:text-base text-muted-foreground">
               {isLogin 
                 ? 'Sign in to continue to Splitz' 
                 : 'Start tracking habits, challenges & expenses'}
@@ -225,8 +225,8 @@ const Auth = () => {
         </div>
       </div>
 
-      {/* Right Side - Feature Showcase (hidden on mobile) */}
-      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary/10 via-primary/5 to-background p-12 items-center justify-center relative overflow-hidden">
+      {/* Right Side - Feature Showcase (hidden on mobile & tablet) */}
+      <div className="hidden xl:flex flex-1 bg-gradient-to-br from-primary/10 via-primary/5 to-background p-12 items-center justify-center relative overflow-hidden">
         {/* Decorative gradients */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(var(--primary)/0.15),transparent_70%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,hsl(var(--primary)/0.1),transparent_70%)]"></div>

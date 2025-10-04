@@ -363,14 +363,14 @@ const Expenses = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 p-6">
+    <div className="min-h-screen bg-background pb-24 md:pb-8 p-4 md:p-6">
       <Navigation />
       
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-3xl md:text-4xl font-semibold text-foreground">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground">
               {t('expenses.title')}
             </h1>
             <p className="text-sm text-muted-foreground">

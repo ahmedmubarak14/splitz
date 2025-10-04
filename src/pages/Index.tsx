@@ -128,26 +128,26 @@ const Index = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-6">
+      <section className="relative pt-32 pb-16 md:pb-20 px-4 md:px-6">
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/50 border border-primary/20 mb-8 animate-fade-in">
-            <span className="text-sm font-medium text-primary">{t('hero.badge')}</span>
+          <div className="inline-flex items-center gap-2 px-3 md:px-4 py-2 rounded-full bg-secondary/50 border border-primary/20 mb-6 md:mb-8 animate-fade-in">
+            <span className="text-xs md:text-sm font-medium text-primary">{t('hero.badge')}</span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold mb-6 text-primary leading-tight animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold mb-4 md:mb-6 text-primary leading-tight animate-fade-in px-4" style={{ animationDelay: '0.1s' }}>
             {t('hero.title')}
           </h1>
 
-          <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-8 md:mb-10 max-w-2xl mx-auto animate-fade-in px-4" style={{ animationDelay: '0.2s' }}>
             {t('hero.subtitle')}
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center animate-fade-in px-4" style={{ animationDelay: '0.3s' }}>
             <Button
               onClick={() => navigate('/auth')}
               size="lg"
               variant="gradient"
-              className="text-lg px-10 py-7 h-auto shadow-xl hover:shadow-2xl"
+              className="text-base md:text-lg px-8 md:px-10 py-6 md:py-7 h-auto shadow-xl hover:shadow-2xl"
             >
               {t('cta.start')} 🚀
             </Button>
@@ -155,7 +155,7 @@ const Index = () => {
               onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })}
               variant="outline"
               size="lg"
-              className="text-lg px-10 py-7 h-auto border-2"
+              className="text-base md:text-lg px-8 md:px-10 py-6 md:py-7 h-auto border-2"
             >
               {t('cta.how')}
             </Button>
