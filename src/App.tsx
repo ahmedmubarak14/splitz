@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,16 +10,25 @@ import { HeaderActions } from "@/components/HeaderActions";
 import Navigation from "@/components/Navigation";
 import { Home } from "lucide-react";
 import splitzLogo from "@/assets/splitz-logo.png";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import Habits from "./pages/Habits";
-import Expenses from "./pages/Expenses";
-import Challenges from "./pages/Challenges";
-import Profile from "./pages/Profile";
-import JoinInvite from "./pages/JoinInvite";
-import NotFound from "./pages/NotFound";
 import './i18n/config';
+
+// Lazy load page components for better performance
+const Index = lazy(() => import("./pages/Index"));
+const Auth = lazy(() => import("./pages/Auth"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Habits = lazy(() => import("./pages/Habits"));
+const Expenses = lazy(() => import("./pages/Expenses"));
+const Challenges = lazy(() => import("./pages/Challenges"));
+const Profile = lazy(() => import("./pages/Profile"));
+const JoinInvite = lazy(() => import("./pages/JoinInvite"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="min-h-screen bg-background flex items-center justify-center">
+    <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+  </div>
+);
 
 const queryClient = new QueryClient();
 
@@ -45,17 +55,19 @@ const AppContent = () => {
 
   if (isLandingPage || isAuthPage) {
     return (
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/join/:inviteCode" element={<JoinInvite />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/habits" element={<Habits />} />
-        <Route path="/expenses" element={<Expenses />} />
-        <Route path="/challenges" element={<Challenges />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/join/:inviteCode" element={<JoinInvite />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/habits" element={<Habits />} />
+          <Route path="/expenses" element={<Expenses />} />
+          <Route path="/challenges" element={<Challenges />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     );
   }
 
@@ -89,17 +101,19 @@ const AppContent = () => {
               </span>
             </nav>
           </div>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/join/:inviteCode" element={<JoinInvite />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/habits" element={<Habits />} />
-            <Route path="/expenses" element={<Expenses />} />
-            <Route path="/challenges" element={<Challenges />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/join/:inviteCode" element={<JoinInvite />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/habits" element={<Habits />} />
+              <Route path="/expenses" element={<Expenses />} />
+              <Route path="/challenges" element={<Challenges />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
           <Navigation />
         </main>
       </div>
