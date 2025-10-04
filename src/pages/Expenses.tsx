@@ -52,6 +52,7 @@ const Expenses = () => {
   const [paidBy, setPaidBy] = useState<string>('');
   const [category, setCategory] = useState<string>('other');
   const [groupMembers, setGroupMembers] = useState<Array<{ id: string; name: string }>>([]);
+  const [currentUserId, setCurrentUserId] = useState<string>('');
   
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -64,6 +65,9 @@ const Expenses = () => {
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) navigate('/auth');
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) setCurrentUserId(user.id);
   };
 
   const fetchGroups = async () => {
@@ -313,6 +317,7 @@ const Expenses = () => {
         paid_by_name: profiles?.find(p => p.id === expense.paid_by)?.full_name || 'Unknown',
         creator_name: profiles?.find(p => p.id === expense.user_id)?.full_name || 'Unknown',
         is_creator: expense.user_id === user?.id,
+        user_id: expense.user_id,
         members: membersData
           ?.filter(m => m.expense_id === expense.id)
           .map(m => ({
@@ -665,7 +670,7 @@ const Expenses = () => {
               setSelectedExpense(expense);
               setExpenseDetailsDialogOpen(true);
             }}
-            currentUserId=""
+            currentUserId={currentUserId}
           />
         </>
       )}
@@ -684,6 +689,7 @@ const Expenses = () => {
             open={expenseDetailsDialogOpen}
             onOpenChange={setExpenseDetailsDialogOpen}
             onToggleSettlement={toggleSettlement}
+            currentUserId={currentUserId}
           />
         </>
       )}

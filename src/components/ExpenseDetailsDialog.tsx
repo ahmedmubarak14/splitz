@@ -25,17 +25,21 @@ interface ExpenseDetailsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onToggleSettlement?: (memberId: string, currentStatus: boolean) => void;
+  currentUserId?: string;
 }
 
 const ExpenseDetailsDialog = ({ 
   expense, 
   open, 
   onOpenChange,
-  onToggleSettlement
+  onToggleSettlement,
+  currentUserId
 }: ExpenseDetailsDialogProps) => {
   const { t } = useTranslation();
 
   if (!expense) return null;
+
+  const isPayer = expense.paid_by === currentUserId;
 
   const totalSettled = expense.members?.filter(m => m.is_settled).length || 0;
   const allSettled = totalSettled === (expense.members?.length || 0);
@@ -172,20 +176,20 @@ const ExpenseDetailsDialog = ({
                               <div className="text-lg font-bold text-foreground">
                                 SAR {Number(member.amount_owed).toFixed(2)}
                               </div>
-                              <div className={`text-xs font-medium ${member.is_settled ? 'text-success' : 'text-destructive'}`}>
-                                {member.is_settled ? 'Settled' : 'Pending'}
-                              </div>
+                            <div className={`text-xs font-medium ${member.is_settled ? 'text-success' : 'text-destructive'}`}>
+                              {member.is_settled ? 'Settled' : 'Pending'}
                             </div>
-                            {expense.is_creator && (
-                              <Button
-                                size="sm"
-                                variant={member.is_settled ? "outline" : "default"}
-                                onClick={() => onToggleSettlement?.(member.id, member.is_settled)}
-                              >
-                                {member.is_settled ? 'Unpaid' : 'Paid'}
-                              </Button>
-                            )}
                           </div>
+                          {isPayer && (
+                            <Button
+                              size="sm"
+                              variant={member.is_settled ? "outline" : "default"}
+                              onClick={() => onToggleSettlement?.(member.id, member.is_settled)}
+                            >
+                              {member.is_settled ? 'Unpaid' : 'Paid'}
+                            </Button>
+                          )}
+                        </div>
                         </div>
                       </CardContent>
                     </Card>

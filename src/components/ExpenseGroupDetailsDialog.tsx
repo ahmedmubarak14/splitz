@@ -48,6 +48,7 @@ const ExpenseGroupDetailsDialog = ({
   onEditExpense,
   onDeleteExpense,
   onViewExpenseDetails,
+  currentUserId,
 }: ExpenseGroupDetailsDialogProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [expenseToDelete, setExpenseToDelete] = React.useState<string | null>(null);
@@ -164,56 +165,63 @@ const ExpenseGroupDetailsDialog = ({
                 </Card>
               ) : (
                 <div className="space-y-2">
-                  {filteredExpenses.map((expense) => (
-                    <Card key={expense.id} className="p-3 border border-border">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
+                  {filteredExpenses.map((expense: any) => {
+                    const isCreator = expense.user_id === currentUserId;
+                    return (
+                      <Card key={expense.id} className="p-3 border border-border">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium">{expense.name}</p>
+                              {expense.category && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                                  {categories.find(c => c.value === expense.category)?.icon} {expense.category}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              Paid by {expense.paid_by_name} • {formatDateShort(expense.created_at)}
+                            </p>
+                          </div>
                           <div className="flex items-center gap-2">
-                            <p className="font-medium">{expense.name}</p>
-                            {expense.category && (
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                                {categories.find(c => c.value === expense.category)?.icon} {expense.category}
-                              </span>
+                            <span className="font-semibold text-lg mr-2">
+                              {Number(expense.total_amount).toFixed(2)} SAR
+                            </span>
+                            {onViewExpenseDetails && (
+                              <Button
+                                onClick={() => onViewExpenseDetails(expense)}
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {isCreator && (
+                              <>
+                                <Button
+                                  onClick={() => onEditExpense(expense)}
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-8 w-8"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  onClick={() => handleDeleteClick(expense.id)}
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-8 w-8 text-destructive hover:text-destructive"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            Paid by {expense.paid_by_name} • {formatDateShort(expense.created_at)}
-                          </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-lg mr-2">
-                            {Number(expense.total_amount).toFixed(2)} SAR
-                          </span>
-                          {onViewExpenseDetails && (
-                            <Button
-                              onClick={() => onViewExpenseDetails(expense)}
-                              size="icon"
-                              variant="ghost"
-                              className="h-8 w-8"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                          )}
-                          <Button
-                            onClick={() => onEditExpense(expense)}
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            onClick={() => handleDeleteClick(expense.id)}
-                            size="icon"
-                            variant="ghost"
-                            className="h-8 w-8 text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
+                      </Card>
+                    );
+                  })}
                 </div>
               )}
             </div>
