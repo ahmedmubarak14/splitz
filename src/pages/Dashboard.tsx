@@ -198,7 +198,7 @@ export default function Dashboard() {
               <div className="space-y-2">
                 <Button
                   onClick={() => navigate('/habits')}
-                  className="w-full justify-start h-auto py-3 bg-purple-600 hover:bg-purple-700 text-white"
+                  className="w-full justify-start h-auto py-3 bg-purple-600 hover:bg-purple-700 text-primary-foreground"
                 >
                   <Plus className="h-4 w-4 mr-3" />
                   <div className="text-left">

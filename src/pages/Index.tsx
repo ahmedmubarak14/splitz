@@ -180,7 +180,7 @@ const Index = () => {
                   onClick={() => setActiveTab('users')}
                   className={`flex-1 py-4 px-6 rounded-2xl font-semibold transition-all ${
                     activeTab === 'users'
-                      ? 'bg-primary text-white shadow-lg'
+                      ? 'bg-primary text-primary-foreground shadow-lg'
                       : 'bg-muted text-foreground hover:bg-muted/80'
                   }`}
                 >
@@ -190,7 +190,7 @@ const Index = () => {
                   onClick={() => setActiveTab('friends')}
                   className={`flex-1 py-4 px-6 rounded-2xl font-semibold transition-all ${
                     activeTab === 'friends'
-                      ? 'bg-primary text-white shadow-lg'
+                      ? 'bg-primary text-primary-foreground shadow-lg'
                       : 'bg-muted text-foreground hover:bg-muted/80'
                   }`}
                 >
@@ -498,14 +498,14 @@ const Index = () => {
                   <Button
                     onClick={() => navigate('/auth')}
                     size="lg"
-                    className="text-xl px-14 py-8 bg-white text-primary hover:bg-white/95 shadow-2xl hover:shadow-white/50 h-auto font-bold"
+                    className="text-xl px-14 py-8 bg-background text-primary hover:bg-background/95 shadow-2xl h-auto font-bold"
                   >
                     {t('cta.start')} 🚀
                   </Button>
                   <Button
                     onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
                     size="lg"
-                    className="text-xl px-14 py-8 bg-white/20 text-white hover:bg-white/30 border-2 border-white/50 h-auto font-bold"
+                    className="text-xl px-14 py-8 bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 border-2 border-primary-foreground/50 h-auto font-bold"
                   >
                     {t('cta.learnMore')}
                   </Button>

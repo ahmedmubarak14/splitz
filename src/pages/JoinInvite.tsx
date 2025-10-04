@@ -171,7 +171,7 @@ const JoinInvite = () => {
       <Card className="max-w-md w-full shadow-card">
         <CardHeader className="text-center">
           <div className="w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center mx-auto mb-4 shadow-primary">
-            <UserPlus className="w-8 h-8 text-white" />
+            <UserPlus className="w-8 h-8 text-primary-foreground" />
           </div>
           <CardTitle className="text-3xl font-bold">
             {invitation?.invite_type === 'challenge' ? 'Join Challenge' : 'Join Expense Group'}

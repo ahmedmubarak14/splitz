@@ -148,8 +148,8 @@ const ExpenseDetailsDialog = ({
                         <div className="flex items-center gap-3">
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                             member.is_settled 
-                              ? 'bg-green-500 text-white' 
-                              : 'bg-orange-500 text-white'
+                              ? 'bg-green-500 text-primary-foreground' 
+                              : 'bg-orange-500 text-primary-foreground'
                           }`}>
                             {member.is_settled ? (
                               <CheckCircle2 className="w-5 h-5" />
