@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,6 +11,8 @@ import { useTranslation } from 'react-i18next';
 import LanguageToggle from '@/components/LanguageToggle';
 import { supabase } from '@/integrations/supabase/client';
 import splitzLogo from '@/assets/splitz-logo.png';
+import { formatRelativeTime, formatAmount } from '@/lib/formatters';
+import { generateLiveStreaks, generateRecentSplits } from '@/lib/sampleData';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -35,19 +37,9 @@ const Index = () => {
     { label: t('nav.pricing'), href: '#pricing' },
   ];
 
-  const liveStreaks = [
-    { user: 'Sarah M.', habit: 'Morning Run', streak: 21, lastCheckIn: '2h ago' },
-    { user: 'Ahmed K.', habit: 'Reading', streak: 45, lastCheckIn: '5h ago' },
-    { user: 'Layla T.', habit: 'Meditation', streak: 12, lastCheckIn: '1h ago' },
-    { user: 'Omar S.', habit: 'Hydration', streak: 7, lastCheckIn: '30m ago' },
-  ];
-
-  const recentSplits = [
-    { group: 'Weekend Trip', total: 450, members: [{ name: 'You', delta: '+SAR 12' }] },
-    { group: 'Dinner Party', total: 280, members: [{ name: 'You', delta: '-SAR 15' }] },
-    { group: 'Gym Membership', total: 120, members: [{ name: 'You', delta: '+SAR 40' }] },
-    { group: 'Coffee Run', total: 65, members: [{ name: 'You', delta: 'Settled' }] },
-  ];
+  // Generate localized sample data
+  const liveStreaks = useMemo(() => generateLiveStreaks(i18n.language), [i18n.language]);
+  const recentSplits = useMemo(() => generateRecentSplits(i18n.language), [i18n.language]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F6F2E8] via-[#C5C0C9]/20 to-[#C0D6EA]/30">
@@ -372,7 +364,9 @@ const Index = () => {
                             <span>{item.streak}</span>
                             <span className="text-xs text-muted-foreground font-normal">{t('live.daysLabel')}</span>
                           </div>
-                          <div className="text-xs text-muted-foreground">{item.lastCheckIn}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {formatRelativeTime(item.lastCheckIn, i18n.language)}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -418,32 +412,43 @@ const Index = () => {
               {/* Card Content */}
               <CardContent className="p-6">
                 <div className="space-y-3">
-                  {recentSplits.map((item, idx) => (
-                    <div 
-                      key={idx} 
-                      className={`flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-border ${isRTL ? 'flex-row-reverse' : ''}`}
-                    >
-                      <div className={`flex-1 min-w-0 ${isRTL ? 'ml-3 text-right' : 'mr-3'}`}>
-                        <div className="font-medium text-sm text-foreground mb-0.5">
-                          {item.group}
+                  {recentSplits.map((item, idx) => {
+                    const member = item.members[0];
+                    const delta = member.delta;
+                    const isSettled = delta === 'settled';
+                    const isPositive = typeof delta === 'number' && delta > 0;
+                    const isNegative = typeof delta === 'number' && delta < 0;
+                    
+                    return (
+                      <div 
+                        key={idx} 
+                        className={`flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-border ${isRTL ? 'flex-row-reverse' : ''}`}
+                      >
+                        <div className={`flex-1 min-w-0 ${isRTL ? 'ml-3 text-right' : 'mr-3'}`}>
+                          <div className="font-medium text-sm text-foreground mb-0.5">
+                            {item.group}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {t('live.totalLabel')}: <span className="font-semibold text-foreground">{t('common.currency')} {formatAmount(item.total, i18n.language)}</span>
+                          </div>
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {t('live.totalLabel')}: <span className="font-semibold text-foreground">{t('common.currency')} {item.total}</span>
+                        <div className="shrink-0">
+                          <div className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold border ${
+                            isSettled
+                              ? 'bg-primary/10 text-primary border-primary/20'
+                              : isPositive
+                              ? 'bg-success/10 text-success border-success/20' 
+                              : 'bg-destructive/10 text-destructive border-destructive/20'
+                          }`}>
+                            {isSettled 
+                              ? t('live.settledLabel') 
+                              : `${isPositive ? '+' : ''}${t('common.currency')} ${formatAmount(Math.abs(delta as number), i18n.language)}`
+                            }
+                          </div>
                         </div>
                       </div>
-                      <div className="shrink-0">
-                        <div className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold border ${
-                          item.members[0].delta.includes('+') 
-                            ? 'bg-success/10 text-success border-success/20' 
-                            : item.members[0].delta === 'Settled'
-                            ? 'bg-primary/10 text-primary border-primary/20'
-                            : 'bg-destructive/10 text-destructive border-destructive/20'
-                        }`}>
-                          {item.members[0].delta === 'Settled' ? t('live.settledLabel') : item.members[0].delta}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 
                 {/* Footer */}
