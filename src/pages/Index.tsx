@@ -610,29 +610,30 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Final CTA */}
+      {/* Final CTA - Redesigned */}
       <section className="relative px-6 pb-32">
         <div className="max-w-5xl mx-auto">
-          <Card className="rounded-[2.5rem] overflow-hidden border-0 shadow-2xl">
-            <div className="bg-primary p-16 text-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_70%)]"></div>
-              <div className="relative">
-                <div className="inline-flex items-center gap-3 mb-6">
-                  <div className="w-16 h-16 rounded-2xl bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center">
-                    <Sparkles className="w-8 h-8 text-primary-foreground" />
-                  </div>
+          <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+            <div className="px-8 py-12 md:p-16 text-center">
+              <div className="max-w-3xl mx-auto">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-semibold text-primary">Start Your Journey</span>
                 </div>
-                <h2 className="text-4xl md:text-6xl font-bold text-primary-foreground mb-6">
+                
+                <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
                   {t('final.title')}
                 </h2>
-                <p className="text-primary-foreground/90 text-xl md:text-2xl mb-10 max-w-2xl mx-auto">
+                
+                <p className="text-base md:text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                   {t('final.subtitle')}
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button
                     onClick={() => navigate('/auth')}
                     size="lg"
-                    className="h-14 px-10 text-base font-bold bg-background text-primary hover:bg-background/95"
+                    className="h-12 px-8 text-base font-semibold"
                   >
                     {t('cta.start')} 🚀
                   </Button>
@@ -640,7 +641,7 @@ const Index = () => {
                     onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
                     variant="outline"
                     size="lg"
-                    className="h-14 px-10 text-base font-bold bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30 border-2 border-primary-foreground/50"
+                    className="h-12 px-8 text-base font-semibold"
                   >
                     {t('cta.learnMore')}
                   </Button>
