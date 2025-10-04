@@ -195,10 +195,10 @@ const Index = () => {
               <span className="text-sm font-semibold text-primary">Better Together</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-primary">
-              {t('showcase.social.title') || 'Achieve More with Friends'}
+              Achieve More with Friends
             </h2>
             <p className="text-lg text-muted-foreground">
-              {t('showcase.social.subtitle') || 'Leverage our social features to stay motivated, challenge each other, and manage shared expenses effortlessly'}
+              Leverage social features to stay motivated, challenge each other, and manage shared expenses effortlessly
             </p>
           </div>
 
@@ -212,10 +212,10 @@ const Index = () => {
                   <Trophy className="w-7 h-7 text-primary" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">
-                  {t('showcase.friends.challenge.title') || 'Group Challenges'}
+                  {t('showcase.friends.feature1')}
                 </h3>
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  {t('showcase.friends.challenge.desc') || 'Challenge your friends to build healthy habits together. Track progress, celebrate wins, and stay accountable as a team.'}
+                  Challenge your friends to build healthy habits together. Track progress, celebrate wins, and stay accountable as a team.
                 </p>
                 <div className="flex items-center gap-2 text-sm text-primary font-semibold">
                   <span>Start a Challenge</span>
@@ -232,10 +232,10 @@ const Index = () => {
                   <TrendingUp className="w-7 h-7 text-secondary" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">
-                  {t('showcase.friends.leaderboard.title') || 'Leaderboards'}
+                  {t('showcase.friends.feature2')}
                 </h3>
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  {t('showcase.friends.leaderboard.desc') || 'See how you stack up against your friends on habit streaks and challenge scores. Friendly competition keeps you going!'}
+                  See how you stack up against your friends on habit streaks and challenge scores. Friendly competition keeps you motivated!
                 </p>
                 <div className="flex items-center gap-2 text-sm text-secondary font-semibold">
                   <span>View Rankings</span>
@@ -252,10 +252,10 @@ const Index = () => {
                   <DollarSign className="w-7 h-7 text-accent-foreground" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">
-                  {t('showcase.friends.expenses.title') || 'Expense Settle-up'}
+                  {t('showcase.friends.feature3')}
                 </h3>
                 <p className="text-muted-foreground leading-relaxed mb-4">
-                  {t('showcase.friends.expenses.desc') || 'Easily track shared expenses and settle up with friends. No more awkward calculations or forgotten debts.'}
+                  Easily track shared expenses and settle up with friends. No more awkward calculations or forgotten debts.
                 </p>
                 <div className="flex items-center gap-2 text-sm text-accent-foreground font-semibold">
                   <span>Split an Expense</span>
@@ -265,36 +265,16 @@ const Index = () => {
             </Card>
           </div>
 
-          {/* Social Proof Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-            <div className="text-center p-6 rounded-2xl bg-muted/50 border border-border">
-              <div className="text-3xl font-bold text-primary mb-1">10K+</div>
-              <div className="text-sm text-muted-foreground">{t('stats.activeUsers') || 'Active Users'}</div>
-            </div>
-            <div className="text-center p-6 rounded-2xl bg-muted/50 border border-border">
-              <div className="text-3xl font-bold text-secondary mb-1">50K+</div>
-              <div className="text-sm text-muted-foreground">{t('stats.challenges') || 'Challenges Completed'}</div>
-            </div>
-            <div className="text-center p-6 rounded-2xl bg-muted/50 border border-border">
-              <div className="text-3xl font-bold text-success mb-1">2M+</div>
-              <div className="text-sm text-muted-foreground">{t('stats.checkIns') || 'Check-ins Logged'}</div>
-            </div>
-            <div className="text-center p-6 rounded-2xl bg-muted/50 border border-border">
-              <div className="text-3xl font-bold text-accent-foreground mb-1">99%</div>
-              <div className="text-sm text-muted-foreground">{t('stats.satisfaction') || 'User Satisfaction'}</div>
-            </div>
-          </div>
-
           {/* CTA Section */}
           <div className="text-center">
             <Card className="inline-block rounded-3xl border-2 border-primary/30 shadow-xl overflow-hidden">
               <CardContent className="p-8 md:p-12">
                 <div className="max-w-2xl mx-auto">
                   <h3 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
-                    {t('showcase.cta.title') || 'Ready to Connect with Friends?'}
+                    Ready to Connect with Friends?
                   </h3>
                   <p className="text-muted-foreground mb-6 text-lg">
-                    {t('showcase.cta.subtitle') || 'Join thousands of users building better habits and managing finances together'}
+                    Join users building better habits and managing finances together
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button
@@ -303,7 +283,7 @@ const Index = () => {
                       className="text-lg px-8 py-6 h-auto"
                     >
                       <Users className="w-5 h-5 mr-2" />
-                      {t('cta.getStarted') || 'Get Started Free'}
+                      {t('cta.start')}
                     </Button>
                     <Button
                       onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
@@ -311,7 +291,7 @@ const Index = () => {
                       size="lg"
                       className="text-lg px-8 py-6 h-auto"
                     >
-                      {t('cta.learnMore') || 'Learn More'}
+                      {t('cta.learnMore')}
                     </Button>
                   </div>
                 </div>
