@@ -14,6 +14,9 @@ import Navigation from '@/components/Navigation';
 import NotificationPreferences from '@/components/NotificationPreferences';
 import type { Tables, TablesUpdate } from '@/integrations/supabase/types';
 import type { User } from '@supabase/supabase-js';
+import { useIsRTL } from '@/lib/rtl-utils';
+import { responsiveText, responsiveSpacing } from '@/lib/responsive-utils';
+import { formatDate } from '@/lib/formatters';
 
 const Profile = () => {
   const [searchParams] = useSearchParams();
@@ -26,6 +29,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'profile');
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+  const isRTL = useIsRTL();
 
   const fetchUser = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -122,24 +126,17 @@ const Profile = () => {
     navigate('/auth');
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(i18n.language, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8">
+    <div className={`min-h-screen bg-background ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
       
-      <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
+      <div className={`max-w-4xl mx-auto ${responsiveSpacing.pageContainer} ${responsiveSpacing.sectionGap}`}>
         {/* Header */}
-        <div className="space-y-1">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground">
+        <div className={`space-y-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+          <h1 className={`${responsiveText.pageTitle} font-semibold text-foreground`}>
             {t('nav.profile')}
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className={`${responsiveText.small} text-muted-foreground`}>
             Manage your account settings
           </p>
         </div>
@@ -147,7 +144,7 @@ const Profile = () => {
         {/* Profile Card */}
         <Card className="border border-border">
           <CardHeader className="pb-4">
-            <div className="flex items-center gap-4">
+            <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <div className="w-20 h-20 rounded-full overflow-hidden bg-accent flex items-center justify-center">
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
@@ -157,11 +154,11 @@ const Profile = () => {
                   </div>
                 )}
               </div>
-              <div className="flex-1">
-                <CardTitle className="text-xl font-semibold">
+              <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                <CardTitle className={`${responsiveText.sectionTitle} font-semibold`}>
                   {profile?.full_name || fullName || 'User'}
                 </CardTitle>
-                <p className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
+                <p className={`${responsiveText.small} text-muted-foreground flex items-center gap-2 mt-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Mail className="w-4 h-4" />
                   {user?.email}
                 </p>
@@ -172,25 +169,25 @@ const Profile = () => {
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-4 rounded-lg bg-accent border border-border">
-                <div className="flex items-center gap-2 mb-1">
+                <div className={`flex items-center gap-2 mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Calendar className="w-4 h-4 text-primary" />
-                  <span className="text-xs font-medium text-muted-foreground">Member Since</span>
+                  <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>Member Since</span>
                 </div>
-                <p className="text-sm font-semibold">
-                  {user?.created_at ? formatDate(user.created_at) : 'N/A'}
+                <p className={`${responsiveText.small} font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>
+                  {user?.created_at ? formatDate(user.created_at, i18n.language) : 'N/A'}
                 </p>
               </div>
 
               <div className="p-4 rounded-lg bg-accent border border-border">
-                <div className="flex items-center gap-2 mb-2">
+                <div className={`flex items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Globe className="w-4 h-4 text-primary" />
-                  <span className="text-xs font-medium text-muted-foreground">Language</span>
+                  <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>Language</span>
                 </div>
                 <Select value={preferredLanguage} onValueChange={setPreferredLanguage}>
-                  <SelectTrigger className="h-8 text-sm font-semibold border-none bg-transparent p-0">
+                  <SelectTrigger className={`h-8 ${responsiveText.small} font-semibold border-none bg-transparent p-0 ${isRTL ? 'text-right' : 'text-left'}`}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-50 bg-background">
                     <SelectItem value="en">English</SelectItem>
                     <SelectItem value="ar">العربية</SelectItem>
                   </SelectContent>

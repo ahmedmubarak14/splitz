@@ -21,6 +21,7 @@ export const formatRelativeTime = (date: Date, language: string = 'en'): string 
 
 /**
  * Format currency amount with proper localization
+ * Uses Riyadh timezone for consistency
  */
 export const formatCurrency = (
   amount: number,
@@ -35,6 +36,28 @@ export const formatCurrency = (
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(amount);
+};
+
+/**
+ * Format date with proper localization and Riyadh timezone
+ */
+export const formatDate = (
+  date: Date | string,
+  language: string = 'en',
+  options?: Intl.DateTimeFormatOptions
+): string => {
+  const locale = language === 'ar' ? 'ar-SA' : 'en-US';
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'Asia/Riyadh',
+    ...options,
+  };
+  
+  return new Intl.DateTimeFormat(locale, defaultOptions).format(dateObj);
 };
 
 /**

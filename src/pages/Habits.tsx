@@ -16,6 +16,8 @@ import Navigation from '@/components/Navigation';
 import { SkeletonList } from '@/components/ui/skeleton-card';
 import HabitCalendar from '@/components/HabitCalendar';
 import HabitStatistics from '@/components/HabitStatistics';
+import { useIsRTL } from '@/lib/rtl-utils';
+import { responsiveText, responsiveSpacing, responsiveGrid } from '@/lib/responsive-utils';
 
 type Habit = {
   id: string;
@@ -44,6 +46,7 @@ const Habits = () => {
   
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const isRTL = useIsRTL();
 
   useEffect(() => {
     checkAuth();
@@ -191,16 +194,16 @@ const Habits = () => {
   const emojiOptions = ['🔥', '💪', '🎯', '📚', '🏃', '🧘', '💧', '🌱', '⭐', '🎨'];
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 p-4 md:p-6">
+    <div className={`min-h-screen bg-background ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
       
-      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
+      <div className={`max-w-7xl mx-auto ${responsiveSpacing.sectionGap}`}>
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground">
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
+          <div className={`space-y-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+            <h1 className={`${responsiveText.pageTitle} font-semibold text-foreground`}>
               {t('habits.title')}
             </h1>
-            <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <p className={`${responsiveText.small} text-muted-foreground flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <TrendingUp className="w-4 h-4" />
               {t('habits.myHabits')}
             </p>
@@ -213,16 +216,16 @@ const Habits = () => {
                 {t('habits.createNew')}
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md" dir={isRTL ? 'rtl' : 'ltr'}>
               <DialogHeader>
-                <DialogTitle>{t('habits.createNew')}</DialogTitle>
-                <DialogDescription>
-                  Create a new habit to track your progress
+                <DialogTitle className={isRTL ? 'text-right' : 'text-left'}>{t('habits.createNew')}</DialogTitle>
+                <DialogDescription className={isRTL ? 'text-right' : 'text-left'}>
+                  {t('habits.createDescription')}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Choose an emoji</label>
+                  <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('habits.chooseEmoji')}</label>
                   <div className="grid grid-cols-5 gap-2">
                     {emojiOptions.map((emoji) => (
                       <button
@@ -242,9 +245,10 @@ const Habits = () => {
                   </div>
                 </div>
                 <Input
-                  placeholder="Habit name (e.g., Morning workout)"
+                  placeholder={t('habits.habitNamePlaceholder')}
                   value={newHabitTitle}
                   onChange={(e) => setNewHabitTitle(e.target.value)}
+                  className={isRTL ? 'text-right' : 'text-left'}
                 />
                 <Button onClick={createHabit} className="w-full">
                   {t('common.add')}
@@ -261,14 +265,14 @@ const Habits = () => {
           <Card className="border border-border">
             <CardContent className="flex flex-col items-center justify-center py-20 text-center">
               <Target className="w-16 h-16 text-muted mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Start Your Journey</h3>
-              <p className="text-sm text-muted-foreground max-w-md">
+              <h3 className={`${responsiveText.sectionTitle} font-semibold mb-2`}>{t('habits.startJourney')}</h3>
+              <p className={`${responsiveText.small} text-muted-foreground max-w-md`}>
                 {t('habits.noHabits')}
               </p>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className={`grid ${responsiveGrid.cards} ${responsiveSpacing.gridGap}`}>
             {habits.map((habit) => (
               <Card key={habit.id} className="border border-border hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
@@ -276,9 +280,9 @@ const Habits = () => {
                     <div className="flex items-center gap-3">
                       <div className="text-4xl">{habit.icon || '🔥'}</div>
                       <div>
-                        <CardTitle className="text-base font-semibold">{habit.name}</CardTitle>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {habit.streak_count ?? 0} day streak
+                        <CardTitle className={`${responsiveText.cardTitle} font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{habit.name}</CardTitle>
+                        <p className={`${responsiveText.caption} text-muted-foreground mt-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                          {habit.streak_count ?? 0} {t('habits.dayStreak')}
                         </p>
                       </div>
                     </div>
@@ -288,31 +292,31 @@ const Habits = () => {
                           <MoreVertical className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-background">
+                      <DropdownMenuContent align={isRTL ? 'start' : 'end'} className="bg-background z-50">
                         <DropdownMenuItem onClick={() => {
                           setSelectedHabit(habit);
                           setCalendarDialogOpen(true);
                         }}>
-                          <Calendar className="w-4 h-4 mr-2" />
-                          View Calendar
+                          <Calendar className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                          {t('habits.viewCalendar')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
                           setSelectedHabit(habit);
                           setStatsDialogOpen(true);
                         }}>
-                          <TrendingUp className="w-4 h-4 mr-2" />
-                          View Statistics
+                          <TrendingUp className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                          {t('habits.viewStatistics')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => openEditDialog(habit)}>
-                          <Pencil className="w-4 h-4 mr-2" />
-                          Edit
+                          <Pencil className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                          {t('common.edit')}
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                           onClick={() => openDeleteDialog(habit)}
                           className="text-destructive"
                         >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Delete
+                          <Trash2 className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                          {t('common.delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -321,26 +325,26 @@ const Habits = () => {
                 <CardContent className="space-y-3">
                   {habit.target_days && (
                     <div className="p-3 bg-primary/10 rounded-lg space-y-2">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">Goal Progress</span>
+                      <div className={`flex items-center justify-between ${responsiveText.caption} ${isRTL ? 'flex-row-reverse' : ''}`}>
+                        <span className="text-muted-foreground">{t('habits.goalProgress')}</span>
                         <span className="font-semibold text-primary">
-                          {habit.streak_count ?? 0} / {habit.target_days} days
+                          {habit.streak_count ?? 0} / {habit.target_days} {t('habits.days')}
                         </span>
                       </div>
                       <div className="h-2 bg-muted rounded-full overflow-hidden">
                         <div 
-                          className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+                          className={`h-full bg-gradient-to-r from-primary to-accent transition-all duration-500 ${isRTL ? 'float-right' : ''}`}
                           style={{ width: `${Math.min(((habit.streak_count ?? 0) / habit.target_days) * 100, 100)}%` }}
                         />
                       </div>
-                      <div className="text-xs text-muted-foreground text-center">
-                        {((habit.streak_count ?? 0) / habit.target_days * 100).toFixed(0)}% Complete
+                      <div className={`${responsiveText.caption} text-muted-foreground text-center`}>
+                        {((habit.streak_count ?? 0) / habit.target_days * 100).toFixed(0)}% {t('habits.complete')}
                       </div>
                     </div>
                   )}
-                  <div className="flex items-center justify-between p-3 bg-accent rounded-lg">
-                    <span className="text-xs font-medium text-muted-foreground">Best Streak</span>
-                    <span className="font-semibold">{habit.best_streak ?? 0} days</span>
+                  <div className={`flex items-center justify-between p-3 bg-accent rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>{t('habits.bestStreak')}</span>
+                    <span className="font-semibold">{habit.best_streak ?? 0} {t('habits.days')}</span>
                   </div>
                   <Button
                     onClick={() => checkInHabit(habit.id)}
@@ -359,14 +363,14 @@ const Habits = () => {
 
       {/* Edit Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" dir={isRTL ? 'rtl' : 'ltr'}>
           <DialogHeader>
-            <DialogTitle>Edit Habit</DialogTitle>
-            <DialogDescription>Update your habit details</DialogDescription>
+            <DialogTitle className={isRTL ? 'text-right' : 'text-left'}>{t('habits.editHabit')}</DialogTitle>
+            <DialogDescription className={isRTL ? 'text-right' : 'text-left'}>{t('habits.updateDetails')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Choose an emoji</label>
+              <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('habits.chooseEmoji')}</label>
               <div className="grid grid-cols-5 gap-2">
                 {emojiOptions.map((emoji) => (
                   <button
@@ -386,16 +390,17 @@ const Habits = () => {
               </div>
             </div>
             <Input
-              placeholder="Habit name"
+              placeholder={t('habits.habitName')}
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
+              className={isRTL ? 'text-right' : 'text-left'}
             />
-            <div className="flex gap-2">
+            <div className={`flex gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <Button onClick={updateHabit} className="flex-1">
-                Update Habit
+                {t('habits.updateHabit')}
               </Button>
               <Button onClick={() => setEditDialogOpen(false)} variant="outline">
-                Cancel
+                {t('common.cancel')}
               </Button>
             </div>
           </div>
@@ -404,17 +409,17 @@ const Habits = () => {
 
       {/* Delete Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent dir={isRTL ? 'rtl' : 'ltr'}>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Habit</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{deletingHabit?.name}"? This action cannot be undone.
+            <AlertDialogTitle className={isRTL ? 'text-right' : 'text-left'}>{t('habits.deleteHabit')}</AlertDialogTitle>
+            <AlertDialogDescription className={isRTL ? 'text-right' : 'text-left'}>
+              {t('habits.deleteConfirm').replace('"{deletingHabit?.name}"', `"${deletingHabit?.name}"`)}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className={isRTL ? 'flex-row-reverse' : ''}>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={deleteHabit} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+              {t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

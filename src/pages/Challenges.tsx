@@ -20,6 +20,8 @@ import { InviteDialog } from '@/components/InviteDialog';
 import { SkeletonList } from '@/components/ui/skeleton-card';
 import ChallengeCompletionDialog from '@/components/ChallengeCompletionDialog';
 import MilestoneCelebration from '@/components/MilestoneCelebration';
+import { useIsRTL } from '@/lib/rtl-utils';
+import { responsiveText, responsiveSpacing, responsiveGrid } from '@/lib/responsive-utils';
 
 type Challenge = Tables<'challenges'> & {
   participant_count?: number;
@@ -60,6 +62,7 @@ const Challenges = () => {
   
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const isRTL = useIsRTL();
 
   useEffect(() => {
     checkAuth();
@@ -355,17 +358,17 @@ const Challenges = () => {
     : challenges;
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 p-4 md:p-6">
+    <div className={`min-h-screen bg-background ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
       
-      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
+      <div className={`max-w-7xl mx-auto ${responsiveSpacing.sectionGap}`}>
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground">
+        <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
+          <div className={`space-y-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+            <h1 className={`${responsiveText.pageTitle} font-semibold text-foreground`}>
               {t('challenges.title')}
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Compete and grow together
+            <p className={`${responsiveText.small} text-muted-foreground`}>
+              {t('challenges.competeAndGrow')}
             </p>
           </div>
           
@@ -376,34 +379,36 @@ const Challenges = () => {
                 {t('challenges.createChallenge')}
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md" dir={isRTL ? 'rtl' : 'ltr'}>
               <DialogHeader>
-                <DialogTitle>{t('challenges.createChallenge')}</DialogTitle>
-                <DialogDescription>
-                  Create a new challenge and invite friends to compete
+                <DialogTitle className={isRTL ? 'text-right' : 'text-left'}>{t('challenges.createChallenge')}</DialogTitle>
+                <DialogDescription className={isRTL ? 'text-right' : 'text-left'}>
+                  {t('challenges.createDescription')}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Challenge Name</label>
+                  <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('challenges.challengeName')}</label>
                   <Input
-                    placeholder="e.g., 30-Day Fitness Challenge"
+                    placeholder={t('challenges.challengeNamePlaceholder')}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    className={isRTL ? 'text-right' : 'text-left'}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Description</label>
+                  <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('challenges.description')}</label>
                   <Textarea
-                    placeholder="What's this challenge about?"
+                    placeholder={t('challenges.descriptionPlaceholder')}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={3}
+                    className={isRTL ? 'text-right' : 'text-left'}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Start Date</label>
+                    <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('challenges.startDate')}</label>
                     <Input
                       type="date"
                       value={startDate}
@@ -411,7 +416,7 @@ const Challenges = () => {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">End Date</label>
+                    <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('challenges.endDate')}</label>
                     <Input
                       type="date"
                       value={endDate}
@@ -420,7 +425,7 @@ const Challenges = () => {
                   </div>
                 </div>
                 <Button onClick={createChallenge} className="w-full">
-                  Create Challenge
+                  {t('challenges.createChallenge')}
                 </Button>
               </div>
             </DialogContent>
@@ -430,8 +435,8 @@ const Challenges = () => {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'all' | 'joined')} className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-2 bg-muted p-1">
-            <TabsTrigger value="all" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">All Challenges</TabsTrigger>
-            <TabsTrigger value="joined" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">My Challenges</TabsTrigger>
+            <TabsTrigger value="all" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">{t('challenges.allChallenges')}</TabsTrigger>
+            <TabsTrigger value="joined" className="data-[state=active]:bg-background data-[state=active]:shadow-sm">{t('challenges.myChallenges')}</TabsTrigger>
           </TabsList>
           
           <TabsContent value={activeTab} className="mt-6">
@@ -441,19 +446,19 @@ const Challenges = () => {
               <Card className="border border-border">
                 <CardContent className="flex flex-col items-center justify-center py-20 text-center">
                   <Trophy className="w-16 h-16 text-muted mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">
-                    {activeTab === 'joined' ? 'No Joined Challenges' : 'No Challenges Yet'}
+                  <h3 className={`${responsiveText.sectionTitle} font-semibold mb-2`}>
+                    {activeTab === 'joined' ? t('challenges.noJoinedChallenges') : t('challenges.noChallenges').split('.')[0]}
                   </h3>
-                  <p className="text-sm text-muted-foreground max-w-md">
+                  <p className={`${responsiveText.small} text-muted-foreground max-w-md`}>
                     {activeTab === 'joined' 
-                      ? 'Join a challenge to start competing!'
+                      ? t('challenges.joinToStart')
                       : t('challenges.noChallenges')
                     }
                   </p>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              <div className={`grid ${responsiveGrid.cards} ${responsiveSpacing.gridGap}`}>
                 {filteredChallenges.map((challenge) => (
                   <ChallengeCard
                     key={challenge.id}

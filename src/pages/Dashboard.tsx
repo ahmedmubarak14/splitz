@@ -15,10 +15,14 @@ import {
   Plus
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useIsRTL } from '@/lib/rtl-utils';
+import { responsiveText, responsiveSpacing, responsiveGrid } from '@/lib/responsive-utils';
+import { formatCurrency } from '@/lib/formatters';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRTL = useIsRTL();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     activeHabits: 0,
@@ -94,55 +98,55 @@ export default function Dashboard() {
 
   const statCards = [
     { 
-      label: 'Total Habits',
+      label: t('dashboard.stats.totalHabits'),
       value: stats.activeHabits,
-      subtitle: 'Active tracking',
+      subtitle: t('dashboard.stats.activeTracking'),
       icon: FileText,
       color: 'text-primary'
     },
     { 
-      label: 'Active Challenges',
+      label: t('dashboard.stats.activeChallenges'),
       value: stats.activeChallenges,
-      subtitle: 'Currently in progress',
+      subtitle: t('dashboard.stats.inProgress'),
       icon: Clock,
       color: 'text-secondary'
     },
     { 
-      label: 'Longest Streak',
+      label: t('dashboard.stats.longestStreak'),
       value: stats.longestStreak,
-      subtitle: 'Days maintained',
+      subtitle: t('dashboard.stats.daysMaintained'),
       icon: CheckCircle,
       color: 'text-success'
     },
     { 
-      label: 'Total Owed',
-      value: `SAR ${stats.totalOwed.toFixed(2)}`,
-      subtitle: 'Pending settlements',
+      label: t('dashboard.stats.totalOwed'),
+      value: formatCurrency(stats.totalOwed, 'SAR', i18n.language),
+      subtitle: t('dashboard.stats.pendingSettlements'),
       icon: ShoppingCart,
       color: 'text-accent-foreground'
     },
   ];
 
   return (
-    <div className="min-h-screen bg-muted/20 p-4 md:p-6 pb-24 md:pb-6">
-      <div className="max-w-[1400px] mx-auto space-y-4 md:space-y-6">
+    <div className={`min-h-screen bg-muted/20 ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className={`max-w-[1400px] mx-auto ${responsiveSpacing.sectionGap}`}>
         
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div className={`grid ${responsiveGrid.stats} ${responsiveSpacing.gridGap}`}>
           {statCards.map((stat, idx) => (
             <Card key={idx} className="bg-background border border-border/40">
-              <CardContent className="p-4 md:p-6">
-                <div className="flex items-start justify-between mb-3 md:mb-4">
+              <CardContent className={responsiveSpacing.pageContainer}>
+                <div className={`flex items-start justify-between mb-3 md:mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <div className="flex-1">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+                    <p className={`text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
                       {stat.label}
                     </p>
                   </div>
-                  <stat.icon className={`h-4 w-4 md:h-5 md:w-5 ${stat.color}`} />
+                  <stat.icon className={`h-4 w-4 md:h-5 md:h-5 ${stat.color} ${isRTL ? 'ml-2' : 'mr-2'}`} />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-2xl md:text-3xl font-bold text-foreground">{stat.value}</div>
-                  <p className="text-xs text-muted-foreground">{stat.subtitle}</p>
+                  <div className={`text-2xl md:text-3xl font-bold text-foreground ${isRTL ? 'text-right' : 'text-left'}`}>{stat.value}</div>
+                  <p className={`text-xs text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>{stat.subtitle}</p>
                 </div>
               </CardContent>
             </Card>
@@ -150,21 +154,21 @@ export default function Dashboard() {
         </div>
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className={`grid ${responsiveGrid.twoColumn} gap-6`}>
           
           <Card className="bg-background border border-border/40">
             <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
+              <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <AlertTriangle className="h-5 w-5 text-destructive" />
-                <h3 className="text-base font-semibold">Action Required</h3>
+                <h3 className={`text-base font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{t('dashboard.actionRequired')}</h3>
               </div>
               
               {stats.pendingExpenses > 0 ? (
                 <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Pending Expenses</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{stats.pendingExpenses} expenses awaiting settlement</p>
+                  <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''} justify-between`}>
+                    <div className={isRTL ? 'text-right' : 'text-left'}>
+                      <p className="text-sm font-medium text-foreground">{t('dashboard.pendingExpenses')}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{stats.pendingExpenses} {t('dashboard.expensesAwaiting')}</p>
                     </div>
                     <Button 
                       variant="ghost" 
@@ -172,17 +176,15 @@ export default function Dashboard() {
                       onClick={() => navigate('/expenses')}
                       className="text-xs"
                     >
-                      Review
+                      {t('dashboard.review')}
                     </Button>
                   </div>
                 </div>
               ) : (
                 <div className="bg-muted/30 border border-border/30 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-foreground">All Clear</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">No pending actions</p>
-                    </div>
+                  <div className={isRTL ? 'text-right' : 'text-left'}>
+                    <p className="text-sm font-medium text-foreground">{t('dashboard.allClear')}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{t('dashboard.noPendingActions')}</p>
                   </div>
                 </div>
               )}
@@ -190,43 +192,43 @@ export default function Dashboard() {
           </Card>
           <Card className="bg-background border border-border/40">
             <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
+              <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <CheckCircle className="h-5 w-5 text-success" />
-                <h3 className="text-base font-semibold">Quick Actions</h3>
+                <h3 className={`text-base font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{t('dashboard.quickActions')}</h3>
               </div>
               
               <div className="space-y-2">
                 <Button
                   onClick={() => navigate('/habits')}
                   variant="default"
-                  className="w-full justify-start h-auto py-3"
+                  className={`w-full h-auto py-3 ${isRTL ? 'justify-end' : 'justify-start'}`}
                 >
-                  <Plus className="h-4 w-4 mr-3" />
-                  <div className="text-left">
-                    <div className="text-sm font-medium">Create New Habit</div>
-                    <div className="text-xs opacity-90">Start a new habit tracker</div>
+                  <Plus className={`h-4 w-4 ${isRTL ? 'ml-3' : 'mr-3'}`} />
+                  <div className={isRTL ? 'text-right' : 'text-left'}>
+                    <div className="text-sm font-medium">{t('dashboard.createNewHabit')}</div>
+                    <div className="text-xs opacity-90">{t('dashboard.startNewTracker')}</div>
                   </div>
                 </Button>
                 
                 <button
                   onClick={() => navigate('/challenges')}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors text-left"
+                  className={`w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}
                 >
                   <Eye className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <div className="text-sm font-medium">Browse Challenges</div>
-                    <div className="text-xs text-muted-foreground">Find active challenges</div>
+                    <div className="text-sm font-medium">{t('dashboard.browseChallenges')}</div>
+                    <div className="text-xs text-muted-foreground">{t('dashboard.findActiveChallenges')}</div>
                   </div>
                 </button>
 
                 <button
                   onClick={() => navigate('/expenses')}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors text-left"
+                  className={`w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}
                 >
                   <MessageSquare className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <div className="text-sm font-medium">Manage Expenses</div>
-                    <div className="text-xs text-muted-foreground">Track and split expenses</div>
+                    <div className="text-sm font-medium">{t('dashboard.manageExpenses')}</div>
+                    <div className="text-xs text-muted-foreground">{t('dashboard.trackAndSplit')}</div>
                   </div>
                 </button>
               </div>
