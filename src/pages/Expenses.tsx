@@ -13,6 +13,8 @@ import { DollarSign, Plus, Users, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import { InviteDialog } from '@/components/InviteDialog';
+import EditExpenseDialog from '@/components/EditExpenseDialog';
+import ExpenseGroupDetailsDialog from '@/components/ExpenseGroupDetailsDialog';
 
 type ExpenseGroup = {
   id: string;
@@ -34,8 +36,12 @@ const Expenses = () => {
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);
+  const [editExpenseDialogOpen, setEditExpenseDialogOpen] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<ExpenseGroup | null>(null);
+  const [selectedExpense, setSelectedExpense] = useState<any>(null);
+  const [groupExpenses, setGroupExpenses] = useState<any[]>([]);
   const [groupName, setGroupName] = useState('');
   const [memberEmails, setMemberEmails] = useState('');
   const [expenseDescription, setExpenseDescription] = useState('');
@@ -275,6 +281,86 @@ const Expenses = () => {
     setAddExpenseDialogOpen(true);
   };
 
+  const fetchGroupExpenses = async (groupId: string) => {
+    try {
+      const { data: expensesData } = await supabase
+        .from('expenses')
+        .select('*')
+        .eq('group_id', groupId)
+        .order('created_at', { ascending: false });
+
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name');
+
+      const processedExpenses = (expensesData || []).map(expense => ({
+        ...expense,
+        paid_by_name: profiles?.find(p => p.id === expense.paid_by)?.full_name || 'Unknown',
+      }));
+
+      setGroupExpenses(processedExpenses);
+    } catch (error) {
+      console.error('Error fetching expenses:', error);
+    }
+  };
+
+  const openGroupDetails = async (group: ExpenseGroup) => {
+    setSelectedGroup(group);
+    await fetchGroupMembers(group.id);
+    await fetchGroupExpenses(group.id);
+    setDetailsDialogOpen(true);
+  };
+
+  const openEditExpense = (expense: any) => {
+    setSelectedExpense(expense);
+    setEditExpenseDialogOpen(true);
+  };
+
+  const updateExpense = async (id: string, name: string, amount: number, paidBy: string) => {
+    try {
+      const { error } = await supabase
+        .from('expenses')
+        .update({
+          name,
+          total_amount: amount,
+          paid_by: paidBy,
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast.success('Expense updated successfully');
+      setEditExpenseDialogOpen(false);
+      fetchGroups();
+      if (selectedGroup) {
+        await fetchGroupExpenses(selectedGroup.id);
+      }
+    } catch (error) {
+      console.error('Error updating expense:', error);
+      toast.error('Failed to update expense');
+    }
+  };
+
+  const deleteExpense = async (expenseId: string) => {
+    try {
+      const { error } = await supabase
+        .from('expenses')
+        .delete()
+        .eq('id', expenseId);
+
+      if (error) throw error;
+
+      toast.success('Expense deleted successfully');
+      fetchGroups();
+      if (selectedGroup) {
+        await fetchGroupExpenses(selectedGroup.id);
+      }
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+      toast.error('Failed to delete expense');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-8 p-6">
       <Navigation />
@@ -409,14 +495,22 @@ const Expenses = () => {
                     )}
                   </div>
 
-                  <Button
-                    onClick={() => openAddExpense(group)}
-                    className="w-full mt-4"
-                    variant="outline"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Expense
-                  </Button>
+                  <div className="flex gap-2 mt-4">
+                    <Button
+                      onClick={() => openAddExpense(group)}
+                      className="flex-1"
+                      variant="outline"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Expense
+                    </Button>
+                    <Button
+                      onClick={() => openGroupDetails(group)}
+                      className="flex-1"
+                    >
+                      View Details
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -476,16 +570,44 @@ const Expenses = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Invite Dialog */}
+      {/* Dialogs */}
       {selectedGroup && (
-        <InviteDialog
-          open={inviteDialogOpen}
-          onOpenChange={setInviteDialogOpen}
-          resourceId={selectedGroup.id}
-          resourceType="expense"
-          resourceName={selectedGroup.name}
+        <>
+          <InviteDialog
+            open={inviteDialogOpen}
+            onOpenChange={setInviteDialogOpen}
+            resourceId={selectedGroup.id}
+            resourceType="expense"
+            resourceName={selectedGroup.name}
+          />
+
+          <ExpenseGroupDetailsDialog
+            group={selectedGroup}
+            expenses={groupExpenses}
+            open={detailsDialogOpen}
+            onOpenChange={setDetailsDialogOpen}
+            onAddExpense={() => {
+              setDetailsDialogOpen(false);
+              openAddExpense(selectedGroup);
+            }}
+            onEditExpense={openEditExpense}
+            onDeleteExpense={deleteExpense}
+            currentUserId=""
+          />
+        </>
+      )}
+
+      {selectedExpense && (
+        <EditExpenseDialog
+          expense={selectedExpense}
+          open={editExpenseDialogOpen}
+          onOpenChange={setEditExpenseDialogOpen}
+          onSave={updateExpense}
+          groupMembers={groupMembers}
         />
       )}
+
+      <Navigation />
     </div>
   );
 };
