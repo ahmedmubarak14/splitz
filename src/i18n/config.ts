@@ -32,7 +32,7 @@ const resources = {
         share: 'Share',
         close: 'Close',
         loading: 'Loading...',
-        logoAlt: 'LinkUp',
+        logoAlt: 'Splitz',
         currency: 'SAR',
       },
       hero: {
@@ -273,7 +273,7 @@ const resources = {
         share: 'مشاركة',
         close: 'إغلاق',
         loading: 'جاري التحميل...',
-        logoAlt: 'لينك أب',
+        logoAlt: 'سبليتز',
         currency: 'ريال',
       },
       hero: {

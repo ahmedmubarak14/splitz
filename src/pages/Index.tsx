@@ -670,7 +670,7 @@ const Index = () => {
             />
           </Link>
           <p className="text-muted-foreground mb-4">{t('footer.tagline')}</p>
-          <p className="text-sm text-muted-foreground">© 2025 LinkUp. {t('footer.rights')}</p>
+          <p className="text-sm text-muted-foreground">© 2025 Splitz. {t('footer.rights')}</p>
         </div>
       </footer>
     </div>
