@@ -302,69 +302,146 @@ const Index = () => {
       </section>
 
 
-      {/* Live Cards */}
+      {/* Live Activity Cards - Redesigned */}
       <section className="relative px-6 pb-20">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8">
-          {/* Live Streaks */}
-          <Card className="rounded-3xl border-2 border-border shadow-xl overflow-hidden">
-            <div className="bg-primary p-6">
-              <h3 className="text-2xl font-bold text-primary-foreground flex items-center gap-3">
-                <Target className="w-7 h-7" />
-                {t('live.streaks')}
-              </h3>
-            </div>
-            <CardContent className="p-6 space-y-4">
-              {liveStreaks.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-muted/50 hover:bg-muted transition-colors">
-                  <div className="flex-1">
-                    <div className="font-semibold text-foreground">{item.user}</div>
-                    <div className="text-sm text-muted-foreground">{item.habit}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-accent">🔥 {item.streak}d</div>
-                    <div className="text-xs text-muted-foreground">{item.lastCheckIn}</div>
-                  </div>
-                </div>
-              ))}
-              <div className="pt-4 border-t border-border text-sm text-muted-foreground flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                {t('live.avgCheckIn')}: 3m
-              </div>
-            </CardContent>
-          </Card>
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-primary">
+              See It In Action
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Real-time activity from our community of users building habits and managing expenses together
+            </p>
+          </div>
 
-          {/* Recent Splits */}
-          <Card className="rounded-3xl border-2 border-border shadow-xl overflow-hidden">
-            <div className="bg-secondary p-6">
-              <h3 className="text-2xl font-bold text-foreground flex items-center gap-3">
-                <DollarSign className="w-7 h-7" />
-                {t('live.splits')}
-              </h3>
-            </div>
-            <CardContent className="p-6 space-y-4">
-              {recentSplits.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-muted/50 hover:bg-muted transition-colors">
-                  <div className="flex-1">
-                    <div className="font-semibold text-foreground">{item.group}</div>
-                    <div className="text-sm text-muted-foreground">SAR {item.total}</div>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Live Streaks Card */}
+            <Card className="rounded-3xl border-2 border-primary/20 shadow-xl overflow-hidden hover:border-primary/40 transition-all duration-300">
+              {/* Card Header */}
+              <div className="bg-gradient-to-br from-primary via-primary to-primary-glow p-6 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_70%)]"></div>
+                <div className="relative flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center">
+                      <Target className="w-6 h-6 text-primary-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-primary-foreground">
+                        {t('live.streaks')}
+                      </h3>
+                      <p className="text-sm text-primary-foreground/80">Community Progress</p>
+                    </div>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                    item.members[0].delta.includes('+') 
-                      ? 'bg-success/20 text-success' 
-                      : item.members[0].delta === 'Settled'
-                      ? 'bg-primary/20 text-primary'
-                      : 'bg-accent/20 text-accent'
-                  }`}>
-                    {item.members[0].delta}
+                  <div className="w-3 h-3 rounded-full bg-success animate-pulse"></div>
+                </div>
+              </div>
+
+              {/* Card Content */}
+              <CardContent className="p-6 space-y-3">
+                {liveStreaks.map((item, idx) => (
+                  <div 
+                    key={idx} 
+                    className="group flex items-center justify-between p-4 rounded-2xl bg-muted/50 hover:bg-muted hover:shadow-md transition-all duration-200 border border-transparent hover:border-primary/20"
+                  >
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary border-2 border-primary/20">
+                        {item.user.charAt(0)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {item.user}
+                        </div>
+                        <div className="text-sm text-muted-foreground truncate">
+                          {item.habit}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right ml-4">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+                        <span className="text-lg">🔥</span>
+                        <span className="text-lg font-bold text-primary">{item.streak}</span>
+                        <span className="text-sm font-medium text-muted-foreground">days</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">{item.lastCheckIn}</div>
+                    </div>
+                  </div>
+                ))}
+                
+                {/* Footer Stats */}
+                <div className="pt-4 mt-2 border-t border-border">
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Clock className="w-4 h-4" />
+                      <span>{t('live.avgCheckIn')}</span>
+                    </div>
+                    <span className="font-semibold text-foreground">~3 minutes</span>
                   </div>
                 </div>
-              ))}
-              <div className="pt-4 border-t border-border text-sm text-muted-foreground flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                {t('live.avgSettle')}: 24h
+              </CardContent>
+            </Card>
+
+            {/* Recent Splits Card */}
+            <Card className="rounded-3xl border-2 border-secondary/20 shadow-xl overflow-hidden hover:border-secondary/40 transition-all duration-300">
+              {/* Card Header */}
+              <div className="bg-gradient-to-br from-secondary via-secondary to-secondary-glow p-6 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.1),transparent_70%)]"></div>
+                <div className="relative flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-secondary-foreground/20 backdrop-blur-sm flex items-center justify-center">
+                      <DollarSign className="w-6 h-6 text-secondary-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-secondary-foreground">
+                        {t('live.splits')}
+                      </h3>
+                      <p className="text-sm text-secondary-foreground/80">Group Activity</p>
+                    </div>
+                  </div>
+                  <div className="w-3 h-3 rounded-full bg-success animate-pulse"></div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+
+              {/* Card Content */}
+              <CardContent className="p-6 space-y-3">
+                {recentSplits.map((item, idx) => (
+                  <div 
+                    key={idx} 
+                    className="group flex items-center justify-between p-4 rounded-2xl bg-muted/50 hover:bg-muted hover:shadow-md transition-all duration-200 border border-transparent hover:border-secondary/20"
+                  >
+                    <div className="flex-1 min-w-0 mr-4">
+                      <div className="font-semibold text-foreground group-hover:text-secondary transition-colors">
+                        {item.group}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Total: <span className="font-semibold">SAR {item.total}</span>
+                      </div>
+                    </div>
+                    <div className={`shrink-0 px-4 py-2 rounded-full text-sm font-semibold border-2 transition-all ${
+                      item.members[0].delta.includes('+') 
+                        ? 'bg-success/10 text-success border-success/30 shadow-sm shadow-success/20' 
+                        : item.members[0].delta === 'Settled'
+                        ? 'bg-primary/10 text-primary border-primary/30 shadow-sm shadow-primary/20'
+                        : 'bg-destructive/10 text-destructive border-destructive/30 shadow-sm shadow-destructive/20'
+                    }`}>
+                      {item.members[0].delta}
+                    </div>
+                  </div>
+                ))}
+                
+                {/* Footer Stats */}
+                <div className="pt-4 mt-2 border-t border-border">
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Clock className="w-4 h-4" />
+                      <span>{t('live.avgSettle')}</span>
+                    </div>
+                    <span className="font-semibold text-foreground">~24 hours</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
 
