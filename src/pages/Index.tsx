@@ -64,13 +64,13 @@ const Index = () => {
           <Link to="/" className="flex items-center gap-3">
             <img
               src={splitzLogo}
-              alt="LinkUp"
+              alt={t('common.logoAlt')}
               className="h-8 w-auto rounded-none cursor-pointer hover:opacity-80 transition-opacity"
             />
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className={`hidden md:flex items-center gap-8 ${isRTL ? 'flex-row-reverse' : ''}`}>
             {navLinks.map(link => (
               <a 
                 key={link.href}
@@ -193,16 +193,16 @@ const Index = () => {
       <section className="relative px-6 pb-20">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-12 max-w-3xl mx-auto">
+          <div className={`text-center mb-12 max-w-3xl mx-auto ${isRTL ? 'rtl' : ''}`}>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
               <Users className="w-4 h-4 text-primary" />
-              <span className="text-sm font-semibold text-primary">Better Together</span>
+              <span className="text-sm font-semibold text-primary">{t('showcase.social.badge')}</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-primary">
-              Achieve More with Friends
+              {t('showcase.social.title')}
             </h2>
             <p className="text-lg text-muted-foreground">
-              Leverage social features to stay motivated, challenge each other, and manage shared expenses effortlessly
+              {t('showcase.social.subtitle')}
             </p>
           </div>
 
@@ -219,11 +219,11 @@ const Index = () => {
                 </h3>
               </div>
               <CardContent className="p-5">
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                  Challenge your friends to build healthy habits together. Track progress, celebrate wins, and stay accountable as a team.
+                <p className={`text-sm text-muted-foreground leading-relaxed mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                  {t('showcase.social.challengeDesc')}
                 </p>
-                <div className="flex items-center gap-2 text-xs text-primary font-semibold">
-                  <span>Start a Challenge</span>
+                <div className={`flex items-center gap-2 text-xs text-primary font-semibold ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <span>{t('showcase.social.challengeCta')}</span>
                   <Rocket className="w-3.5 h-3.5" />
                 </div>
               </CardContent>
@@ -240,11 +240,11 @@ const Index = () => {
                 </h3>
               </div>
               <CardContent className="p-5">
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                  See how you stack up against your friends on habit streaks and challenge scores. Friendly competition keeps you motivated!
+                <p className={`text-sm text-muted-foreground leading-relaxed mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                  {t('showcase.social.leaderboardDesc')}
                 </p>
-                <div className="flex items-center gap-2 text-xs text-secondary font-semibold">
-                  <span>View Rankings</span>
+                <div className={`flex items-center gap-2 text-xs text-secondary font-semibold ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <span>{t('showcase.social.leaderboardCta')}</span>
                   <Star className="w-3.5 h-3.5" />
                 </div>
               </CardContent>
@@ -261,11 +261,11 @@ const Index = () => {
                 </h3>
               </div>
               <CardContent className="p-5">
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                  Easily track shared expenses and settle up with friends. No more awkward calculations or forgotten debts.
+                <p className={`text-sm text-muted-foreground leading-relaxed mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                  {t('showcase.social.expenseDesc')}
                 </p>
-                <div className="flex items-center gap-2 text-xs text-accent-foreground font-semibold">
-                  <span>Split an Expense</span>
+                <div className={`flex items-center gap-2 text-xs text-accent-foreground font-semibold ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <span>{t('showcase.social.expenseCta')}</span>
                   <CheckCircle2 className="w-3.5 h-3.5" />
                 </div>
               </CardContent>
@@ -276,19 +276,19 @@ const Index = () => {
           <div className="text-center">
             <Card className="inline-block rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
               <CardContent className="p-8 md:p-12">
-                <div className="max-w-2xl mx-auto">
+                <div className={`max-w-2xl mx-auto ${isRTL ? 'text-right' : ''}`}>
                   <h3 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
-                    Ready to Connect with Friends?
+                    {t('showcase.social.connectTitle')}
                   </h3>
                   <p className="text-muted-foreground mb-6 text-base">
-                    Join users building better habits and managing finances together
+                    {t('showcase.social.connectSubtitle')}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button
                       onClick={() => navigate('/auth')}
                       className="h-11 px-6 text-sm font-semibold"
                     >
-                      <Users className="w-4 h-4 mr-2" />
+                      <Users className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
                       {t('cta.start')}
                     </Button>
                     <Button
@@ -311,12 +311,12 @@ const Index = () => {
       <section className="relative px-6 pb-20">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-12">
+          <div className={`text-center mb-12 ${isRTL ? 'rtl' : ''}`}>
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-primary">
-              See It In Action
+              {t('live.title')}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Real-time activity from our community
+              {t('live.subtitle')}
             </p>
           </div>
 
@@ -325,21 +325,21 @@ const Index = () => {
             <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
               {/* Card Header */}
               <div className="px-6 py-4 border-b border-border bg-muted/30">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                       <Target className="w-5 h-5 text-primary" />
                     </div>
-                    <div>
+                    <div className={isRTL ? 'text-right' : ''}>
                       <h3 className="text-lg font-semibold text-foreground">
                         {t('live.streaks')}
                       </h3>
-                      <p className="text-xs text-muted-foreground">Live updates</p>
+                      <p className="text-xs text-muted-foreground">{t('live.liveUpdates')}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
-                    <span className="text-xs font-medium text-muted-foreground">Live</span>
+                    <span className="text-xs font-medium text-muted-foreground">{t('live.liveLabel')}</span>
                   </div>
                 </div>
               </div>
@@ -350,13 +350,13 @@ const Index = () => {
                   {liveStreaks.map((item, idx) => (
                     <div 
                       key={idx} 
-                      className="flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-border"
+                      className={`flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-border ${isRTL ? 'flex-row-reverse' : ''}`}
                     >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className={`flex items-center gap-3 flex-1 min-w-0 ${isRTL ? 'flex-row-reverse' : ''}`}>
                         <div className="w-9 h-9 rounded-full bg-background flex items-center justify-center font-semibold text-sm text-primary border border-border shrink-0">
                           {item.user.charAt(0)}
                         </div>
-                        <div className="flex-1 min-w-0">
+                        <div className={`flex-1 min-w-0 ${isRTL ? 'text-right' : ''}`}>
                           <div className="font-medium text-sm text-foreground truncate">
                             {item.user}
                           </div>
@@ -365,12 +365,12 @@ const Index = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3 ml-3 shrink-0">
-                        <div className="text-right">
-                          <div className="flex items-center gap-1 text-sm font-semibold text-foreground">
+                      <div className={`flex items-center gap-3 shrink-0 ${isRTL ? 'mr-3' : 'ml-3'}`}>
+                        <div className={isRTL ? 'text-left' : 'text-right'}>
+                          <div className={`flex items-center gap-1 text-sm font-semibold text-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
                             <span>🔥</span>
                             <span>{item.streak}</span>
-                            <span className="text-xs text-muted-foreground font-normal">days</span>
+                            <span className="text-xs text-muted-foreground font-normal">{t('live.daysLabel')}</span>
                           </div>
                           <div className="text-xs text-muted-foreground">{item.lastCheckIn}</div>
                         </div>
@@ -381,12 +381,12 @@ const Index = () => {
                 
                 {/* Footer */}
                 <div className="mt-4 pt-4 border-t border-border">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <div className={`flex items-center gap-2 text-xs text-muted-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
                       <Clock className="w-3.5 h-3.5" />
                       <span>{t('live.avgCheckIn')}</span>
                     </div>
-                    <span className="text-xs font-semibold text-foreground">~3 min</span>
+                    <span className="text-xs font-semibold text-foreground">~3 {t('live.timeUnits.minutes')}</span>
                   </div>
                 </div>
               </CardContent>
@@ -396,21 +396,21 @@ const Index = () => {
             <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
               {/* Card Header */}
               <div className="px-6 py-4 border-b border-border bg-muted/30">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
                       <DollarSign className="w-5 h-5 text-secondary" />
                     </div>
-                    <div>
+                    <div className={isRTL ? 'text-right' : ''}>
                       <h3 className="text-lg font-semibold text-foreground">
                         {t('live.splits')}
                       </h3>
-                      <p className="text-xs text-muted-foreground">Recent activity</p>
+                      <p className="text-xs text-muted-foreground">{t('live.recentActivity')}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
-                    <span className="text-xs font-medium text-muted-foreground">Live</span>
+                    <span className="text-xs font-medium text-muted-foreground">{t('live.liveLabel')}</span>
                   </div>
                 </div>
               </div>
@@ -421,14 +421,14 @@ const Index = () => {
                   {recentSplits.map((item, idx) => (
                     <div 
                       key={idx} 
-                      className="flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-border"
+                      className={`flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-border ${isRTL ? 'flex-row-reverse' : ''}`}
                     >
-                      <div className="flex-1 min-w-0 mr-3">
+                      <div className={`flex-1 min-w-0 ${isRTL ? 'ml-3 text-right' : 'mr-3'}`}>
                         <div className="font-medium text-sm text-foreground mb-0.5">
                           {item.group}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          Total: <span className="font-semibold text-foreground">SAR {item.total}</span>
+                          {t('live.totalLabel')}: <span className="font-semibold text-foreground">{t('common.currency')} {item.total}</span>
                         </div>
                       </div>
                       <div className="shrink-0">
@@ -439,7 +439,7 @@ const Index = () => {
                             ? 'bg-primary/10 text-primary border-primary/20'
                             : 'bg-destructive/10 text-destructive border-destructive/20'
                         }`}>
-                          {item.members[0].delta}
+                          {item.members[0].delta === 'Settled' ? t('live.settledLabel') : item.members[0].delta}
                         </div>
                       </div>
                     </div>
@@ -448,12 +448,12 @@ const Index = () => {
                 
                 {/* Footer */}
                 <div className="mt-4 pt-4 border-t border-border">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <div className={`flex items-center gap-2 text-xs text-muted-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
                       <Clock className="w-3.5 h-3.5" />
                       <span>{t('live.avgSettle')}</span>
                     </div>
-                    <span className="text-xs font-semibold text-foreground">~24 hrs</span>
+                    <span className="text-xs font-semibold text-foreground">~24 {t('live.timeUnits.hours')}</span>
                   </div>
                 </div>
               </CardContent>
@@ -614,11 +614,11 @@ const Index = () => {
       <section className="relative px-6 pb-32">
         <div className="max-w-5xl mx-auto">
           <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
-            <div className="px-8 py-12 md:p-16 text-center">
+              <div className={`px-8 py-12 md:p-16 text-center ${isRTL ? 'rtl' : ''}`}>
               <div className="max-w-3xl mx-auto">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
                   <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-semibold text-primary">Start Your Journey</span>
+                  <span className="text-sm font-semibold text-primary">{t('final.badge')}</span>
                 </div>
                 
                 <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
@@ -658,7 +658,7 @@ const Index = () => {
           <Link to="/" className="flex items-center justify-center gap-3 mb-4">
             <img
               src={splitzLogo}
-              alt="LinkUp"
+              alt={t('common.logoAlt')}
               className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
             />
           </Link>
