@@ -76,14 +76,14 @@ const Profile = () => {
 
       if (error) throw error;
 
-      toast.success('Profile updated');
+      toast.success(t('profile.profileUpdated'));
       setProfile((prev) => prev ? { ...prev, ...update } as Tables<'profiles'> : prev);
 
       if (preferredLanguage && preferredLanguage !== i18n.language) {
         await i18n.changeLanguage(preferredLanguage);
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to update profile');
+      toast.error(err instanceof Error ? err.message : t('profile.updateFailed'));
     } finally {
       setSaving(false);
     }
@@ -111,9 +111,9 @@ const Profile = () => {
       if (updateError) throw updateError;
 
       setProfile((prev) => prev ? ({ ...prev, avatar_url: publicUrl }) as Tables<'profiles'> : prev);
-      toast.success('Avatar updated');
+      toast.success(t('profile.avatarUpdated'));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to upload avatar');
+      toast.error(err instanceof Error ? err.message : t('profile.uploadFailed'));
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -122,7 +122,7 @@ const Profile = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    toast.success('Logged out successfully');
+    toast.success(t('profile.loggedOut'));
     navigate('/auth');
   };
 
@@ -137,7 +137,7 @@ const Profile = () => {
             {t('nav.profile')}
           </h1>
           <p className={`${responsiveText.small} text-muted-foreground`}>
-            Manage your account settings
+            {t('profile.subtitle')}
           </p>
         </div>
 
@@ -171,7 +171,7 @@ const Profile = () => {
               <div className="p-4 rounded-lg bg-accent border border-border">
                 <div className={`flex items-center gap-2 mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Calendar className="w-4 h-4 text-primary" />
-                  <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>Member Since</span>
+                  <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>{t('profile.memberSince')}</span>
                 </div>
                 <p className={`${responsiveText.small} font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>
                   {user?.created_at ? formatDate(user.created_at, i18n.language) : 'N/A'}
@@ -181,7 +181,7 @@ const Profile = () => {
               <div className="p-4 rounded-lg bg-accent border border-border">
                 <div className={`flex items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Globe className="w-4 h-4 text-primary" />
-                  <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>Language</span>
+                  <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>{t('profile.language')}</span>
                 </div>
                 <Select value={preferredLanguage} onValueChange={setPreferredLanguage}>
                   <SelectTrigger className={`h-8 ${responsiveText.small} font-semibold border-none bg-transparent p-0 ${isRTL ? 'text-right' : 'text-left'}`}>
@@ -198,17 +198,17 @@ const Profile = () => {
             {/* Form */}
             <div className="space-y-4">
               <div>
-                <Label className="text-sm font-medium mb-2 block">Profile Picture</Label>
-                <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border cursor-pointer hover:bg-accent transition-colors">
+                <Label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('profile.profilePicture')}</Label>
+                <label className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border cursor-pointer hover:bg-accent transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <ImageIcon className="w-4 h-4" />
                   <span className="text-sm font-medium">
                     {uploading ? (
-                      <span className="flex items-center gap-2">
+                      <span className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                         <div className="h-3 w-3 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
-                        Uploading...
+                        {t('profile.uploading')}
                       </span>
                     ) : (
-                      'Choose Avatar'
+                      t('profile.chooseAvatar')
                     )}
                   </span>
                   <input type="file" accept="image/*" onChange={uploadAvatar} className="hidden" disabled={uploading} />
@@ -216,17 +216,18 @@ const Profile = () => {
               </div>
               
               <div>
-                <Label className="text-sm font-medium mb-2 block">Full Name</Label>
+                <Label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('profile.fullName')}</Label>
                 <Input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Your name"
+                  placeholder={t('profile.fullNamePlaceholder')}
+                  className={isRTL ? 'text-right' : 'text-left'}
                 />
               </div>
 
               <Button onClick={saveProfile} disabled={saving} className="w-full">
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? t('profile.saving') : t('profile.saveChanges')}
               </Button>
 
               <Button
@@ -234,8 +235,8 @@ const Profile = () => {
                 variant="destructive"
                 className="w-full"
               >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
+                <LogOut className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                {t('profile.logout')}
               </Button>
             </div>
           </CardContent>
@@ -244,13 +245,13 @@ const Profile = () => {
         {/* Info Card */}
         <Card className="border border-border">
           <CardHeader>
-            <CardTitle className="text-base font-semibold">About LinkUp</CardTitle>
+            <CardTitle className={`text-base font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{t('profile.aboutTitle')}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <p>🎯 Track your habits and build consistent streaks</p>
-            <p>💰 Split expenses fairly with friends and groups</p>
-            <p>🏆 Compete in challenges and climb the leaderboards</p>
-            <p className="pt-3 text-xs font-medium">Version 1.0</p>
+          <CardContent className={`space-y-2 text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
+            <p>{t('profile.aboutHabits')}</p>
+            <p>{t('profile.aboutExpenses')}</p>
+            <p>{t('profile.aboutChallenges')}</p>
+            <p className="pt-3 text-xs font-medium">{t('profile.version')}</p>
           </CardContent>
         </Card>
       </div>
