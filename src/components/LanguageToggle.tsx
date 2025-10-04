@@ -17,15 +17,17 @@ const LanguageToggle = () => {
     i18n.changeLanguage(newLang);
   };
 
+  const currentLang = i18n.language === 'en' ? 'EN' : 'AR';
+
   return (
     <Button
-      variant="outline"
-      size="icon"
+      variant="ghost"
+      size="sm"
       onClick={toggleLanguage}
-      className="fixed top-4 right-4 z-50 rounded-full shadow-card"
+      className="fixed top-4 right-4 z-50 rounded-lg border border-border bg-background/95 backdrop-blur-sm shadow-sm hover:shadow-md transition-all gap-2 min-w-[70px]"
     >
-      <Globe className="h-5 w-5" />
-      <span className="sr-only">Toggle language</span>
+      <Globe className="h-4 w-4" />
+      <span className="text-xs font-semibold">{currentLang}</span>
     </Button>
   );
 };
