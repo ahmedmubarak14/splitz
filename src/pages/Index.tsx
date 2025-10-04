@@ -317,19 +317,19 @@ const Index = () => {
             <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
               {/* Card Header */}
               <div className="px-6 py-4 border-b border-border bg-muted/30">
-                <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <div className="flex items-center justify-between" dir={isRTL ? 'rtl' : 'ltr'}>
+                  <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                       <Target className="w-5 h-5 text-primary" />
                     </div>
-                    <div className={isRTL ? 'text-right' : ''}>
+                    <div>
                       <h3 className="text-lg font-semibold text-foreground">
                         {t('live.streaks')}
                       </h3>
                       <p className="text-xs text-muted-foreground">{t('live.liveUpdates')}</p>
                     </div>
                   </div>
-                  <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
                     <span className="text-xs font-medium text-muted-foreground">{t('live.liveLabel')}</span>
                   </div>
@@ -342,13 +342,14 @@ const Index = () => {
                   {liveStreaks.map((item, idx) => (
                     <div 
                       key={idx} 
-                      className={`flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-border ${isRTL ? 'flex-row-reverse' : ''}`}
+                      className="flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-border"
+                      dir={isRTL ? 'rtl' : 'ltr'}
                     >
-                      <div className={`flex items-center gap-3 flex-1 min-w-0 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
                         <div className="w-9 h-9 rounded-full bg-background flex items-center justify-center font-semibold text-sm text-primary border border-border shrink-0">
                           {item.user.charAt(0)}
                         </div>
-                        <div className={`flex-1 min-w-0 ${isRTL ? 'text-right' : ''}`}>
+                        <div className="flex-1 min-w-0">
                           <div className="font-medium text-sm text-foreground truncate">
                             {item.user}
                           </div>
@@ -357,9 +358,9 @@ const Index = () => {
                           </div>
                         </div>
                       </div>
-                      <div className={`flex items-center gap-3 shrink-0 ${isRTL ? 'mr-3' : 'ml-3'}`}>
+                      <div className="flex items-center gap-3 shrink-0">
                         <div className={isRTL ? 'text-left' : 'text-right'}>
-                          <div className={`flex items-center gap-1 text-sm font-semibold text-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
+                          <div className="flex items-center gap-1 text-sm font-semibold text-foreground">
                             <span>🔥</span>
                             <span>{item.streak}</span>
                             <span className="text-xs text-muted-foreground font-normal">{t('live.daysLabel')}</span>
@@ -375,8 +376,8 @@ const Index = () => {
                 
                 {/* Footer */}
                 <div className="mt-4 pt-4 border-t border-border">
-                  <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <div className={`flex items-center gap-2 text-xs text-muted-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <div className="flex items-center justify-between" dir={isRTL ? 'rtl' : 'ltr'}>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Clock className="w-3.5 h-3.5" />
                       <span>{t('live.avgCheckIn')}</span>
                     </div>
@@ -390,19 +391,19 @@ const Index = () => {
             <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
               {/* Card Header */}
               <div className="px-6 py-4 border-b border-border bg-muted/30">
-                <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <div className={`flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <div className="flex items-center justify-between" dir={isRTL ? 'rtl' : 'ltr'}>
+                  <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center">
                       <DollarSign className="w-5 h-5 text-secondary" />
                     </div>
-                    <div className={isRTL ? 'text-right' : ''}>
+                    <div>
                       <h3 className="text-lg font-semibold text-foreground">
                         {t('live.splits')}
                       </h3>
                       <p className="text-xs text-muted-foreground">{t('live.recentActivity')}</p>
                     </div>
                   </div>
-                  <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
                     <span className="text-xs font-medium text-muted-foreground">{t('live.liveLabel')}</span>
                   </div>
@@ -422,9 +423,10 @@ const Index = () => {
                     return (
                       <div 
                         key={idx} 
-                        className={`flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-border ${isRTL ? 'flex-row-reverse' : ''}`}
+                        className="flex items-center justify-between p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-border"
+                        dir={isRTL ? 'rtl' : 'ltr'}
                       >
-                        <div className={`flex-1 min-w-0 ${isRTL ? 'ml-3 text-right' : 'mr-3'}`}>
+                        <div className="flex-1 min-w-0">
                           <div className="font-medium text-sm text-foreground mb-0.5">
                             {item.group}
                           </div>
@@ -453,8 +455,8 @@ const Index = () => {
                 
                 {/* Footer */}
                 <div className="mt-4 pt-4 border-t border-border">
-                  <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <div className={`flex items-center gap-2 text-xs text-muted-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <div className="flex items-center justify-between" dir={isRTL ? 'rtl' : 'ltr'}>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Clock className="w-3.5 h-3.5" />
                       <span>{t('live.avgSettle')}</span>
                     </div>
