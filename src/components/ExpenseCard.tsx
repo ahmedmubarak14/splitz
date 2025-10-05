@@ -133,7 +133,7 @@ const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps)
               onClick={() => onAddExpense?.(expense.id)}
               variant="outline"
               size="sm"
-              className="h-9 md:h-10 px-3 md:px-4"
+              className="flex-1 h-9 md:h-10"
             >
               <span className={responsiveText.small}>{t('components.expenseCard.add')}</span>
             </Button>
