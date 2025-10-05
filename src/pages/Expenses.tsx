@@ -20,6 +20,7 @@ import { SkeletonList } from '@/components/ui/skeleton-card';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing } from '@/lib/responsive-utils';
 import { formatCurrency } from '@/lib/formatters';
+import { SplitTypeSelector } from '@/components/SplitTypeSelector';
 
 type ExpenseGroup = {
   id: string;
@@ -56,6 +57,8 @@ const Expenses = () => {
   const [category, setCategory] = useState<string>('other');
   const [groupMembers, setGroupMembers] = useState<Array<{ id: string; name: string }>>([]);
   const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [splitType, setSplitType] = useState<'equal' | 'percentage' | 'custom' | 'shares'>('equal');
+  const [memberSplits, setMemberSplits] = useState<Array<{ user_id: string; name: string; split_value?: number; calculated_amount?: number }>>([]);
   
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -260,27 +263,56 @@ const Expenses = () => {
       return;
     }
 
+    // Validate splits
+    const totalSplit = memberSplits.reduce((sum, m) => sum + (m.calculated_amount || 0), 0);
+    if (Math.abs(totalSplit - amount) > 0.01) {
+      toast.error('Split amounts must equal the total expense');
+      return;
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase.from('expenses').insert({
-        group_id: selectedGroup.id,
-        name: expenseDescription.trim(),
-        description: expenseDescription.trim(),
-        total_amount: amount,
-        paid_by: paidBy,
-        user_id: user.id,
-        category: category as any,
-      });
+      // Create expense
+      const { data: expenseData, error: expenseError } = await supabase
+        .from('expenses')
+        .insert({
+          group_id: selectedGroup.id,
+          name: expenseDescription.trim(),
+          description: expenseDescription.trim(),
+          total_amount: amount,
+          paid_by: paidBy,
+          user_id: user.id,
+          category: category as any,
+          split_type: splitType,
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (expenseError) throw expenseError;
+
+      // Create expense members with custom splits
+      const membersToInsert = memberSplits.map(split => ({
+        expense_id: expenseData.id,
+        user_id: split.user_id,
+        amount_owed: split.calculated_amount || 0,
+        split_value: splitType === 'equal' ? null : split.split_value,
+      }));
+
+      const { error: membersError } = await supabase
+        .from('expense_members')
+        .insert(membersToInsert);
+
+      if (membersError) throw membersError;
 
       toast.success('Expense added successfully');
       setExpenseDescription('');
       setExpenseAmount('');
       setPaidBy('');
       setCategory('other');
+      setSplitType('equal');
+      setMemberSplits([]);
       setAddExpenseDialogOpen(false);
       fetchGroups();
     } catch (error) {
@@ -292,6 +324,8 @@ const Expenses = () => {
   const openAddExpense = async (group: ExpenseGroup) => {
     setSelectedGroup(group);
     await fetchGroupMembers(group.id);
+    setSplitType('equal');
+    setMemberSplits([]);
     setAddExpenseDialogOpen(true);
   };
 
@@ -641,6 +675,20 @@ const Expenses = () => {
                 </SelectContent>
               </Select>
             </div>
+            
+            {expenseAmount && parseFloat(expenseAmount) > 0 && groupMembers.length > 0 && (
+              <SplitTypeSelector
+                totalAmount={parseFloat(expenseAmount)}
+                members={groupMembers}
+                onSplitsChange={(type, splits) => {
+                  setSplitType(type);
+                  setMemberSplits(splits);
+                }}
+                initialSplitType={splitType}
+                initialSplits={memberSplits}
+              />
+            )}
+            
             <Button onClick={addExpense} className="w-full">
               {t('expenses.addExpense')}
             </Button>

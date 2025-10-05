@@ -179,6 +179,7 @@ export type Database = {
           id: string
           is_settled: boolean | null
           paid_at: string | null
+          split_value: number | null
           user_id: string
         }
         Insert: {
@@ -188,6 +189,7 @@ export type Database = {
           id?: string
           is_settled?: boolean | null
           paid_at?: string | null
+          split_value?: number | null
           user_id: string
         }
         Update: {
@@ -197,6 +199,7 @@ export type Database = {
           id?: string
           is_settled?: boolean | null
           paid_at?: string | null
+          split_value?: number | null
           user_id?: string
         }
         Relationships: [
@@ -218,6 +221,7 @@ export type Database = {
           id: string
           name: string
           paid_by: string | null
+          split_type: Database["public"]["Enums"]["split_type"]
           total_amount: number
           updated_at: string
           user_id: string
@@ -230,6 +234,7 @@ export type Database = {
           id?: string
           name: string
           paid_by?: string | null
+          split_type?: Database["public"]["Enums"]["split_type"]
           total_amount: number
           updated_at?: string
           user_id: string
@@ -242,6 +247,7 @@ export type Database = {
           id?: string
           name?: string
           paid_by?: string | null
+          split_type?: Database["public"]["Enums"]["split_type"]
           total_amount?: number
           updated_at?: string
           user_id?: string
@@ -567,6 +573,7 @@ export type Database = {
         | "health"
         | "education"
         | "other"
+      split_type: "equal" | "percentage" | "custom" | "shares"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -704,6 +711,7 @@ export const Constants = {
         "education",
         "other",
       ],
+      split_type: ["equal", "percentage", "custom", "shares"],
     },
   },
 } as const
