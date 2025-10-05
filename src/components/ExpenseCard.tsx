@@ -120,22 +120,22 @@ const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps)
         )}
 
         {/* Actions */}
-        <div className={`flex gap-2 pt-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <div className={`flex gap-1.5 md:gap-2 pt-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <Button
             onClick={() => onViewDetails?.(expense.id)}
-            className="flex-1 h-9 md:h-10"
+            className="flex-1 h-8 md:h-10 px-2 md:px-4 text-xs"
             size="sm"
           >
-            <span className={responsiveText.small}>{t('components.expenseCard.viewDetails')}</span>
+            {t('components.expenseCard.viewDetails')}
           </Button>
           {expense.is_creator && (
             <Button
               onClick={() => onAddExpense?.(expense.id)}
               variant="outline"
               size="sm"
-              className="flex-1 h-9 md:h-10"
+              className="flex-1 h-8 md:h-10 px-2 md:px-4 text-xs"
             >
-              <span className={responsiveText.small}>{t('components.expenseCard.add')}</span>
+              {t('components.expenseCard.add')}
             </Button>
           )}
         </div>
