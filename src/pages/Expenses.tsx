@@ -30,9 +30,11 @@ type ExpenseGroup = {
   member_count: number;
   total_expenses: number;
   net_balance: number;
-  settlement_summary?: {
-    from: string;
-    to: string;
+  simplified_debts?: {
+    from_user_id: string;
+    to_user_id: string;
+    from_name: string;
+    to_name: string;
     amount: number;
   }[];
 };
@@ -98,82 +100,56 @@ const Expenses = () => {
       // Fetch all expenses
       const { data: expensesData } = await supabase
         .from('expenses')
-        .select('group_id, total_amount, paid_by, user_id');
+        .select('id, group_id, total_amount, paid_by, user_id');
+
+      // Fetch all net balances
+      const { data: netBalancesData } = await supabase
+        .from('net_balances')
+        .select('group_id, from_user_id, to_user_id, amount');
 
       // Fetch profiles for names
       const { data: profiles } = await supabase
         .from('profiles')
         .select('id, full_name');
 
+      // Fetch expense members to calculate actual balances
+      const { data: expenseMembersData } = await supabase
+        .from('expense_members')
+        .select('expense_id, user_id, amount_owed, is_settled');
+
       // Process groups
       const processedGroups: ExpenseGroup[] = (groupsData || []).map((group) => {
         const members = membersData?.filter(m => m.group_id === group.id) || [];
         const groupExpenses = expensesData?.filter(e => e.group_id === group.id) || [];
+        const groupNetBalances = netBalancesData?.filter(nb => nb.group_id === group.id) || [];
         
-        // Calculate net balance for current user
+        // Calculate net balance for current user from expense_members
         let netBalance = 0;
-        const memberBalances: Record<string, number> = {};
 
-        // Initialize all members with 0 balance
-        members.forEach(m => {
-          memberBalances[m.user_id] = 0;
-        });
+        // What user paid
+        const userPaid = groupExpenses
+          .filter(e => e.paid_by === user.id)
+          .reduce((sum, e) => sum + Number(e.total_amount), 0);
 
-        // Calculate balances based on expenses
-        groupExpenses.forEach(expense => {
-          const amount = Number(expense.total_amount);
-          const payer = expense.paid_by || expense.user_id;
-          const splitAmount = amount / (members.length || 1);
+        // What user owes (from expense_members)
+        const userOwes = groupExpenses
+          .flatMap(expense => {
+            const expenseMembers = expenseMembersData?.filter(em => em.expense_id === expense.id) || [];
+            const userMember = expenseMembers.find(em => em.user_id === user.id);
+            return userMember && !userMember.is_settled ? Number(userMember.amount_owed) : 0;
+          })
+          .reduce((sum, amount) => sum + amount, 0);
 
-          // Payer gets positive balance
-          memberBalances[payer] = (memberBalances[payer] || 0) + amount;
+        netBalance = userPaid - userOwes;
 
-          // Everyone owes their split
-          members.forEach(m => {
-            memberBalances[m.user_id] = (memberBalances[m.user_id] || 0) - splitAmount;
-          });
-        });
-
-        netBalance = memberBalances[user.id] || 0;
-
-        // Calculate settlement summary
-        const settlement_summary: { from: string; to: string; amount: number }[] = [];
-        const debtors: { id: string; amount: number; name: string }[] = [];
-        const creditors: { id: string; amount: number; name: string }[] = [];
-
-        Object.entries(memberBalances).forEach(([userId, balance]) => {
-          const userName = profiles?.find(p => p.id === userId)?.full_name || 'Unknown';
-          if (balance < -0.01) {
-            debtors.push({ id: userId, amount: Math.abs(balance), name: userName });
-          } else if (balance > 0.01) {
-            creditors.push({ id: userId, amount: balance, name: userName });
-          }
-        });
-
-        // Simplified settlement: match debtors with creditors
-        debtors.sort((a, b) => b.amount - a.amount);
-        creditors.sort((a, b) => b.amount - a.amount);
-
-        let di = 0, ci = 0;
-        while (di < debtors.length && ci < creditors.length) {
-          const debtor = debtors[di];
-          const creditor = creditors[ci];
-          const amount = Math.min(debtor.amount, creditor.amount);
-
-          if (amount > 0.01) {
-            settlement_summary.push({
-              from: debtor.name,
-              to: creditor.name,
-              amount: Math.round(amount * 100) / 100,
-            });
-          }
-
-          debtor.amount -= amount;
-          creditor.amount -= amount;
-
-          if (debtor.amount < 0.01) di++;
-          if (creditor.amount < 0.01) ci++;
-        }
+        // Get simplified debts from net_balances table
+        const simplified_debts = groupNetBalances.map(nb => ({
+          from_user_id: nb.from_user_id,
+          to_user_id: nb.to_user_id,
+          from_name: profiles?.find(p => p.id === nb.from_user_id)?.full_name || 'Unknown',
+          to_name: profiles?.find(p => p.id === nb.to_user_id)?.full_name || 'Unknown',
+          amount: Number(nb.amount),
+        }));
 
         return {
           id: group.id,
@@ -183,7 +159,7 @@ const Expenses = () => {
           member_count: members.length,
           total_expenses: groupExpenses.reduce((sum, e) => sum + Number(e.total_amount), 0),
           net_balance: Math.round(netBalance * 100) / 100,
-          settlement_summary,
+          simplified_debts,
         };
       });
 
@@ -567,22 +543,22 @@ const Expenses = () => {
                       </span>
                     </div>
 
-                    {group.settlement_summary && group.settlement_summary.length > 0 && (
+                    {group.simplified_debts && group.simplified_debts.length > 0 && (
                       <div className="pt-3 border-t border-border">
                         <p className={`text-xs font-semibold text-foreground mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{t('expenses.whoOwesWhom')}</p>
                         <div className="space-y-2">
-                          {group.settlement_summary.slice(0, 2).map((settlement, idx) => (
+                          {group.simplified_debts.slice(0, 2).map((debt, idx) => (
                             <div key={idx} className={`flex items-center justify-between text-sm p-2 rounded-md bg-muted/30 ${isRTL ? 'flex-row-reverse' : ''}`}>
                               <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                                <span className="font-medium">{settlement.from}</span>
+                                <span className="font-medium">{debt.from_name}</span>
                                 <ArrowRight className={`w-4 h-4 text-primary ${isRTL ? 'rotate-180' : ''}`} />
-                                <span className="font-medium">{settlement.to}</span>
+                                <span className="font-medium">{debt.to_name}</span>
                               </div>
-                              <span className="text-foreground font-semibold">{formatCurrency(settlement.amount)}</span>
+                              <span className="text-foreground font-semibold">{formatCurrency(debt.amount)}</span>
                             </div>
                           ))}
-                          {group.settlement_summary.length > 2 && (
-                            <p className={`text-xs text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>+{group.settlement_summary.length - 2} {t('expenses.more')}</p>
+                          {group.simplified_debts.length > 2 && (
+                            <p className={`text-xs text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>+{group.simplified_debts.length - 2} {t('expenses.more')}</p>
                           )}
                         </div>
                       </div>

@@ -23,9 +23,11 @@ interface ExpenseGroupDetailsDialogProps {
     name: string;
     total_expenses: number;
     net_balance: number;
-    settlement_summary?: Array<{
-      from: string;
-      to: string;
+    simplified_debts?: Array<{
+      from_user_id: string;
+      to_user_id: string;
+      from_name: string;
+      to_name: string;
       amount: number;
     }>;
   } | null;
@@ -111,20 +113,20 @@ const ExpenseGroupDetailsDialog = ({
               </Card>
             </div>
 
-            {/* Settlement Summary */}
-            {group.settlement_summary && group.settlement_summary.length > 0 && (
+            {/* Simplified Debts */}
+            {group.simplified_debts && group.simplified_debts.length > 0 && (
               <div>
                 <h3 className="font-semibold mb-3">Who Owes Whom</h3>
                 <div className="space-y-2">
-                  {group.settlement_summary.map((settlement, idx) => (
+                  {group.simplified_debts.map((debt, idx) => (
                     <Card key={idx} className="p-3 border border-border">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">{settlement.from}</span>
+                          <span className="font-medium">{debt.from_name}</span>
                           <ArrowRight className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">{settlement.to}</span>
+                          <span className="font-medium">{debt.to_name}</span>
                         </div>
-                        <span className="font-semibold text-lg">{settlement.amount.toFixed(2)} SAR</span>
+                        <span className="font-semibold text-lg">{debt.amount.toFixed(2)} SAR</span>
                       </div>
                     </Card>
                   ))}

@@ -375,6 +375,44 @@ export type Database = {
         }
         Relationships: []
       }
+      net_balances: {
+        Row: {
+          amount: number
+          created_at: string
+          from_user_id: string
+          group_id: string
+          id: string
+          to_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          from_user_id: string
+          group_id: string
+          id?: string
+          to_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          from_user_id?: string
+          group_id?: string
+          id?: string
+          to_user_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "net_balances_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "expense_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           challenge_updates: boolean
@@ -560,6 +598,10 @@ export type Database = {
       }
       recalc_expense_split: {
         Args: { _expense_id: string }
+        Returns: undefined
+      }
+      recalc_net_balances: {
+        Args: { _group_id: string }
         Returns: undefined
       }
     }

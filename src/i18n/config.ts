@@ -274,6 +274,11 @@ const resources = {
         total: 'Total',
         splitMustMatchTotal: 'Split amounts must equal the total expense',
         equalSplitInfo: 'Each of {{count}} members will pay {{amount}}',
+        simplifiedDebts: 'Simplified Debts',
+        noDebts: 'All settled up!',
+        owes: 'owes',
+        recordPayment: 'Record Payment',
+        paymentRecorded: 'Payment recorded successfully',
       },
       challenges: {
         title: 'Friend Challenges',
@@ -701,6 +706,11 @@ const resources = {
         total: 'المجموع',
         splitMustMatchTotal: 'يجب أن تساوي مبالغ التقسيم إجمالي المصروف',
         equalSplitInfo: 'سيدفع كل من {{count}} أعضاء {{amount}}',
+        simplifiedDebts: 'الديون المبسطة',
+        noDebts: 'تم التسوية بالكامل!',
+        owes: 'مدين بـ',
+        recordPayment: 'تسجيل الدفع',
+        paymentRecorded: 'تم تسجيل الدفع بنجاح',
       },
       challenges: {
         title: 'تحديات الأصدقاء',
