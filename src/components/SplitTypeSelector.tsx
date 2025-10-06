@@ -135,7 +135,7 @@ export const SplitTypeSelector = ({
   return (
     <div className="space-y-4">
       <div>
-        <Label>{t('pages.expenses.splitType')}</Label>
+        <Label>{t('expenses.splitType')}</Label>
         <Select value={splitType} onValueChange={handleSplitTypeChange}>
           <SelectTrigger>
             <SelectValue />
@@ -144,25 +144,25 @@ export const SplitTypeSelector = ({
             <SelectItem value="equal">
               <div className="flex items-center gap-2">
                 <Equal className="h-4 w-4" />
-                {t('pages.expenses.equalSplit')}
+                {t('expenses.equalSplit')}
               </div>
             </SelectItem>
             <SelectItem value="percentage">
               <div className="flex items-center gap-2">
                 <Percent className="h-4 w-4" />
-                {t('pages.expenses.percentageSplit')}
+                {t('expenses.percentageSplit')}
               </div>
             </SelectItem>
             <SelectItem value="custom">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4" />
-                {t('pages.expenses.customSplit')}
+                {t('expenses.customSplit')}
               </div>
             </SelectItem>
             <SelectItem value="shares">
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                {t('pages.expenses.sharesSplit')}
+                {t('expenses.sharesSplit')}
               </div>
             </SelectItem>
           </SelectContent>
@@ -172,9 +172,9 @@ export const SplitTypeSelector = ({
       {splitType !== 'equal' && (
         <Card className="p-4 space-y-3">
           <div className="text-sm font-medium">
-            {splitType === 'percentage' ? t('pages.expenses.setPercentages') :
-             splitType === 'custom' ? t('pages.expenses.setAmounts') :
-             t('pages.expenses.setShares')}
+            {splitType === 'percentage' ? t('expenses.setPercentages') :
+             splitType === 'custom' ? t('expenses.setAmounts') :
+             t('expenses.setShares')}
           </div>
           
           {memberSplits.map((member) => {
@@ -200,7 +200,7 @@ export const SplitTypeSelector = ({
           })}
           
           <div className="pt-2 border-t flex justify-between items-center">
-            <span className="text-sm font-medium">{t('pages.expenses.total')}:</span>
+            <span className="text-sm font-medium">{t('expenses.total')}:</span>
             <span className={`text-sm font-medium ${isValid() ? 'text-primary' : 'text-destructive'}`}>
               {getTotalDisplay()}
               {!isValid() && ` / ${formatCurrency(totalAmount)}`}
@@ -209,7 +209,7 @@ export const SplitTypeSelector = ({
           
           {!isValid() && (
             <div className="text-xs text-destructive">
-              {t('pages.expenses.splitMustMatchTotal')}
+              {t('expenses.splitMustMatchTotal')}
             </div>
           )}
         </Card>
@@ -217,7 +217,7 @@ export const SplitTypeSelector = ({
       
       {splitType === 'equal' && (
         <div className="text-sm text-muted-foreground">
-          {t('pages.expenses.equalSplitInfo', { 
+          {t('expenses.equalSplitInfo', { 
             amount: formatCurrency(totalAmount / members.length),
             count: members.length 
           })}
