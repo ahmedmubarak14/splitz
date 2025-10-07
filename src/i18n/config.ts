@@ -279,6 +279,8 @@ const resources = {
         owes: 'owes',
         recordPayment: 'Record Payment',
         paymentRecorded: 'Payment recorded successfully',
+        paymentError: 'Failed to record payment',
+        noMatchingExpense: 'No matching expense found',
       },
       challenges: {
         title: 'Friend Challenges',
@@ -711,6 +713,8 @@ const resources = {
         owes: 'مدين بـ',
         recordPayment: 'تسجيل الدفع',
         paymentRecorded: 'تم تسجيل الدفع بنجاح',
+        paymentError: 'فشل تسجيل الدفع',
+        noMatchingExpense: 'لم يتم العثور على مصروف مطابق',
       },
       challenges: {
         title: 'تحديات الأصدقاء',

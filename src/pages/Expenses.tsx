@@ -404,6 +404,62 @@ const Expenses = () => {
     }
   };
 
+  const recordPayment = async (fromUserId: string, toUserId: string, amount: number) => {
+    if (!selectedGroup) return;
+
+    try {
+      // Find expense members to settle
+      const { data: expenseMembers, error: fetchError } = await supabase
+        .from('expense_members')
+        .select('id, expense_id')
+        .eq('user_id', fromUserId)
+        .eq('is_settled', false);
+
+      if (fetchError) throw fetchError;
+
+      // Find matching expenses where toUserId is the payer
+      const { data: expenses, error: expenseError } = await supabase
+        .from('expenses')
+        .select('id, paid_by')
+        .eq('group_id', selectedGroup.id)
+        .eq('paid_by', toUserId)
+        .in('id', expenseMembers?.map(em => em.expense_id) || []);
+
+      if (expenseError) throw expenseError;
+
+      if (!expenses || expenses.length === 0) {
+        toast.error(t('expenses.noMatchingExpense'));
+        return;
+      }
+
+      // Update matching expense members to settled
+      const memberIds = expenseMembers
+        ?.filter(em => expenses.some(e => e.id === em.expense_id))
+        .map(em => em.id) || [];
+
+      if (memberIds.length === 0) {
+        toast.error(t('expenses.noMatchingExpense'));
+        return;
+      }
+
+      const { error: updateError } = await supabase
+        .from('expense_members')
+        .update({ is_settled: true, paid_at: new Date().toISOString() })
+        .in('id', memberIds);
+
+      if (updateError) throw updateError;
+
+      toast.success(t('expenses.paymentRecorded'));
+      fetchGroups();
+      if (selectedGroup) {
+        await fetchGroupExpenses(selectedGroup.id);
+      }
+    } catch (error) {
+      console.error('Error recording payment:', error);
+      toast.error(t('expenses.paymentError'));
+    }
+  };
+
   const toggleSettlement = async (memberId: string, currentStatus: boolean) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -698,6 +754,7 @@ const Expenses = () => {
               setSelectedExpense(expense);
               setExpenseDetailsDialogOpen(true);
             }}
+            onRecordPayment={recordPayment}
             currentUserId={currentUserId}
           />
         </>

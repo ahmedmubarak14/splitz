@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import * as React from 'react';
 import { formatDateShort } from '@/lib/timezone';
+import { GroupBalanceDetails } from '@/components/GroupBalanceDetails';
 
 interface Expense {
   id: string;
@@ -38,6 +39,7 @@ interface ExpenseGroupDetailsDialogProps {
   onEditExpense: (expense: Expense) => void;
   onDeleteExpense: (expenseId: string) => void;
   onViewExpenseDetails?: (expense: any) => void;
+  onRecordPayment?: (fromUserId: string, toUserId: string, amount: number) => void;
   currentUserId: string;
 }
 
@@ -50,6 +52,7 @@ const ExpenseGroupDetailsDialog = ({
   onEditExpense,
   onDeleteExpense,
   onViewExpenseDetails,
+  onRecordPayment,
   currentUserId,
 }: ExpenseGroupDetailsDialogProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -113,25 +116,14 @@ const ExpenseGroupDetailsDialog = ({
               </Card>
             </div>
 
-            {/* Simplified Debts */}
+            {/* Simplified Debts - Now using GroupBalanceDetails component */}
             {group.simplified_debts && group.simplified_debts.length > 0 && (
-              <div>
-                <h3 className="font-semibold mb-3">Who Owes Whom</h3>
-                <div className="space-y-2">
-                  {group.simplified_debts.map((debt, idx) => (
-                    <Card key={idx} className="p-3 border border-border">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{debt.from_name}</span>
-                          <ArrowRight className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">{debt.to_name}</span>
-                        </div>
-                        <span className="font-semibold text-lg">{debt.amount.toFixed(2)} SAR</span>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </div>
+              <GroupBalanceDetails
+                groupId={group.id}
+                currentUserId={currentUserId}
+                debts={group.simplified_debts}
+                onRecordPayment={onRecordPayment}
+              />
             )}
 
             {/* Expenses List */}
