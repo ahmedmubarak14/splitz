@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
   FileText, 
@@ -12,7 +12,9 @@ import {
   Eye,
   MessageSquare,
   AlertTriangle,
-  Plus
+  Plus,
+  Users,
+  ArrowRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useIsRTL } from '@/lib/rtl-utils';
@@ -30,7 +32,9 @@ export default function Dashboard() {
     activeChallenges: 0,
     pendingExpenses: 0,
     totalOwed: 0,
+    totalExpenseGroups: 0,
   });
+  const [recentExpenseGroups, setRecentExpenseGroups] = useState<any[]>([]);
 
   useEffect(() => {
     checkAuth();
@@ -67,6 +71,61 @@ export default function Dashboard() {
         .eq('user_id', user.id)
         .eq('is_settled', false);
 
+      // Fetch expense groups
+      const { data: groupMemberships } = await supabase
+        .from('expense_group_members')
+        .select('group_id')
+        .eq('user_id', user.id);
+
+      const { data: createdGroups } = await supabase
+        .from('expense_groups')
+        .select('id')
+        .eq('created_by', user.id);
+
+      const allGroupIds = [
+        ...(groupMemberships?.map(m => m.group_id) || []),
+        ...(createdGroups?.map(g => g.id) || [])
+      ];
+      const uniqueGroupIds = [...new Set(allGroupIds)];
+
+      // Fetch recent expense groups with details
+      const { data: expenseGroups } = await supabase
+        .from('expense_groups')
+        .select('*')
+        .in('id', uniqueGroupIds)
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      // Get net balances for each group
+      const groupsWithBalances = await Promise.all((expenseGroups || []).map(async (group) => {
+        const { data: netBalances } = await supabase
+          .from('net_balances')
+          .select('*')
+          .eq('group_id', group.id)
+          .or(`from_user_id.eq.${user.id},to_user_id.eq.${user.id}`);
+
+        const userBalance = netBalances?.reduce((sum, nb) => {
+          if (nb.from_user_id === user.id) {
+            return sum - parseFloat(String(nb.amount || 0));
+          } else if (nb.to_user_id === user.id) {
+            return sum + parseFloat(String(nb.amount || 0));
+          }
+          return sum;
+        }, 0) || 0;
+
+        // Count members
+        const { count: memberCount } = await supabase
+          .from('expense_group_members')
+          .select('*', { count: 'exact', head: true })
+          .eq('group_id', group.id);
+
+        return {
+          ...group,
+          userBalance,
+          memberCount: (memberCount || 0) + 1 // +1 for creator
+        };
+      }));
+
       const longestStreak = habits?.reduce((max, habit) => 
         Math.max(max, habit.streak_count || 0), 0) || 0;
 
@@ -79,7 +138,9 @@ export default function Dashboard() {
         activeChallenges: challenges?.length || 0,
         pendingExpenses: expenseMembers?.length || 0,
         totalOwed,
+        totalExpenseGroups: uniqueGroupIds.length,
       });
+      setRecentExpenseGroups(groupsWithBalances);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       toast.error('Failed to load dashboard data');
@@ -237,6 +298,49 @@ export default function Dashboard() {
 
         </div>
 
+        {/* Recent Expense Groups Section */}
+        {recentExpenseGroups.length > 0 && (
+          <Card className="bg-background border border-border/40">
+            <CardHeader>
+              <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <CardTitle className="text-lg">{t('dashboard.recentExpenseGroups')}</CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/expenses')}
+                  className="text-xs"
+                >
+                  {t('dashboard.viewAll')}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {recentExpenseGroups.map((group) => (
+                <div
+                  key={group.id}
+                  onClick={() => navigate('/expenses')}
+                  className={`p-4 rounded-lg border border-border/40 bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer ${isRTL ? 'text-right' : 'text-left'}`}
+                >
+                  <div className={`flex items-center justify-between mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                      <Users className="h-4 w-4 text-primary" />
+                      <h4 className="font-semibold">{group.name}</h4>
+                    </div>
+                    <ArrowRight className={`h-4 w-4 text-muted-foreground ${isRTL ? 'rotate-180' : ''}`} />
+                  </div>
+                  <div className={`flex items-center justify-between text-sm ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <span className="text-muted-foreground">
+                      {group.memberCount} {group.memberCount === 1 ? t('expenses.member') : t('expenses.members')}
+                    </span>
+                    <span className={`font-semibold ${group.userBalance > 0 ? 'text-success' : group.userBalance < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                      {group.userBalance > 0 ? '+' : ''}{formatCurrency(group.userBalance, 'SAR', i18n.language)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
       </div>
     </div>

@@ -45,6 +45,8 @@ const resources = {
         findActiveChallenges: 'Find active challenges',
         manageExpenses: 'Manage Expenses',
         trackAndSplit: 'Track and split expenses',
+        recentExpenseGroups: 'Recent Expense Groups',
+        viewAll: 'View All',
       },
       common: {
         save: 'Save',
@@ -479,6 +481,8 @@ const resources = {
         findActiveChallenges: 'ابحث عن تحديات نشطة',
         manageExpenses: 'إدارة المصاريف',
         trackAndSplit: 'تتبع وقسّم المصاريف',
+        recentExpenseGroups: 'مجموعات المصاريف الأخيرة',
+        viewAll: 'عرض الكل',
       },
       common: {
         save: 'حفظ',
