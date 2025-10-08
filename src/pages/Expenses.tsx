@@ -129,13 +129,18 @@ const Expenses = () => {
         // Calculate net balance for current user from expense_members
         let netBalance = 0;
 
-        // What user paid
-        const userPaid = groupExpenses
+        // Only count expenses that have expense_members (to avoid orphaned expenses)
+        const expensesWithMembers = groupExpenses.filter(expense => 
+          expenseMembersData?.some(em => em.expense_id === expense.id)
+        );
+
+        // What user paid (only for expenses with members)
+        const userPaid = expensesWithMembers
           .filter(e => e.paid_by === user.id)
           .reduce((sum, e) => sum + Number(e.total_amount), 0);
 
         // What user owes (from expense_members)
-        const userOwes = groupExpenses
+        const userOwes = expensesWithMembers
           .flatMap(expense => {
             const expenseMembers = expenseMembersData?.filter(em => em.expense_id === expense.id) || [];
             const userMember = expenseMembers.find(em => em.user_id === user.id);
@@ -144,6 +149,14 @@ const Expenses = () => {
           .reduce((sum, amount) => sum + amount, 0);
 
         netBalance = userPaid - userOwes;
+        
+        // Check for orphaned expenses (expenses without members) and log warning
+        const orphanedExpenses = groupExpenses.filter(expense => 
+          !expenseMembersData?.some(em => em.expense_id === expense.id)
+        );
+        if (orphanedExpenses.length > 0) {
+          console.warn(`Group "${group.name}" has ${orphanedExpenses.length} expense(s) without members. These are excluded from balance calculations.`);
+        }
 
         // Get simplified debts from net_balances table
         const simplified_debts = groupNetBalances.map(nb => ({
@@ -160,7 +173,7 @@ const Expenses = () => {
           created_by: group.created_by,
           created_at: group.created_at,
           member_count: members.length,
-          total_expenses: groupExpenses.reduce((sum, e) => sum + Number(e.total_amount), 0),
+          total_expenses: expensesWithMembers.reduce((sum, e) => sum + Number(e.total_amount), 0),
           net_balance: Math.round(netBalance * 100) / 100,
           simplified_debts,
         };
