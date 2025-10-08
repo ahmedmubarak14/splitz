@@ -65,11 +65,11 @@ export default function Dashboard() {
         .or(`creator_id.eq.${user.id},challenge_participants.user_id.eq.${user.id}`)
         .gte('end_date', new Date().toISOString().split('T')[0]);
 
-      const { data: expenseMembers } = await supabase
-        .from('expense_members')
-        .select('*, expenses(*)')
-        .eq('user_id', user.id)
-        .eq('is_settled', false);
+      // Fetch net balances where user owes money (from_user_id = user.id)
+      const { data: netBalancesOwed } = await supabase
+        .from('net_balances')
+        .select('*')
+        .eq('from_user_id', user.id);
 
       // Fetch expense groups
       const { data: groupMemberships } = await supabase
@@ -129,14 +129,14 @@ export default function Dashboard() {
       const longestStreak = habits?.reduce((max, habit) => 
         Math.max(max, habit.streak_count || 0), 0) || 0;
 
-      const totalOwed = expenseMembers?.reduce((sum, member) => 
-        sum + parseFloat(String(member.amount_owed || 0)), 0) || 0;
+      const totalOwed = netBalancesOwed?.reduce((sum, balance) => 
+        sum + parseFloat(String(balance.amount || 0)), 0) || 0;
 
       setStats({
         activeHabits: habits?.length || 0,
         longestStreak,
         activeChallenges: challenges?.length || 0,
-        pendingExpenses: expenseMembers?.length || 0,
+        pendingExpenses: netBalancesOwed?.length || 0,
         totalOwed,
         totalExpenseGroups: uniqueGroupIds.length,
       });

@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { DollarSign, Plus, Users, ArrowRight } from 'lucide-react';
+import { DollarSign, Plus, Users, ArrowRight, Receipt, History, BarChart3 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import { InviteDialog } from '@/components/InviteDialog';
@@ -21,6 +21,9 @@ import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing } from '@/lib/responsive-utils';
 import { formatCurrency } from '@/lib/formatters';
 import { SplitTypeSelector } from '@/components/SplitTypeSelector';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import ExpenseHistory from '@/components/ExpenseHistory';
+import ExpenseAnalytics from '@/components/ExpenseAnalytics';
 
 type ExpenseGroup = {
   id: string;
