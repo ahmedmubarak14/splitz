@@ -80,7 +80,7 @@ export const GroupBalanceDetails = ({
                     <Button
                       size="sm"
                       onClick={() => onRecordPayment(debt.from_user_id, debt.to_user_id, debt.amount)}
-                      className="bg-success hover:bg-success/90 text-white"
+                      variant="secondary"
                     >
                       {t('expenses.settleUp')}
                     </Button>

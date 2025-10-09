@@ -471,6 +471,58 @@ const Expenses = () => {
     }
   };
 
+  // Allow settling directly from the group card without relying on selectedGroup state
+  const recordPaymentForGroup = async (groupId: string, fromUserId: string, toUserId: string, amount: number) => {
+    try {
+      const { data: expenseMembers, error: fetchError } = await supabase
+        .from('expense_members')
+        .select('id, expense_id')
+        .eq('user_id', fromUserId)
+        .eq('is_settled', false);
+
+      if (fetchError) throw fetchError;
+
+      const { data: expenses, error: expenseError } = await supabase
+        .from('expenses')
+        .select('id, paid_by')
+        .eq('group_id', groupId)
+        .eq('paid_by', toUserId)
+        .in('id', expenseMembers?.map(em => em.expense_id) || []);
+
+      if (expenseError) throw expenseError;
+
+      if (!expenses || expenses.length === 0) {
+        toast.error(t('expenses.noMatchingExpense'));
+        return;
+      }
+
+      const memberIds = expenseMembers
+        ?.filter(em => expenses.some(e => e.id === em.expense_id))
+        .map(em => em.id) || [];
+
+      if (memberIds.length === 0) {
+        toast.error(t('expenses.noMatchingExpense'));
+        return;
+      }
+
+      const { error: updateError } = await supabase
+        .from('expense_members')
+        .update({ is_settled: true, paid_at: new Date().toISOString() })
+        .in('id', memberIds);
+
+      if (updateError) throw updateError;
+
+      toast.success(t('expenses.paymentSettled'));
+      await fetchGroups();
+      if (selectedGroup && selectedGroup.id === groupId) {
+        await fetchGroupExpenses(groupId);
+      }
+    } catch (error) {
+      console.error('Error recording payment (card):', error);
+      toast.error(t('expenses.paymentError'));
+    }
+  };
+
   const toggleSettlement = async (memberId: string, currentStatus: boolean) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -633,6 +685,19 @@ const Expenses = () => {
                   </div>
 
                   <div className={`flex gap-2 mt-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    {/* Settle Up button if current user owes someone in this group */}
+                    {group.simplified_debts?.some((d) => d.from_user_id === currentUserId) && (
+                      <Button
+                        className="flex-1"
+                        variant="secondary"
+                        onClick={() => {
+                          const debt = group.simplified_debts!.find((d) => d.from_user_id === currentUserId)!;
+                          recordPaymentForGroup(group.id, debt.from_user_id, debt.to_user_id, debt.amount);
+                        }}
+                      >
+                        {t('expenses.settleUp')}
+                      </Button>
+                    )}
                     <Button
                       onClick={() => openAddExpense(group)}
                       className="flex-1"
