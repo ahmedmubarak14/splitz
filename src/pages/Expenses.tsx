@@ -126,29 +126,24 @@ const Expenses = () => {
         const groupExpenses = expensesData?.filter(e => e.group_id === group.id) || [];
         const groupNetBalances = netBalancesData?.filter(nb => nb.group_id === group.id) || [];
         
-        // Calculate net balance for current user from expense_members
+        // Calculate net balance for current user from net_balances table
+        // This ensures it matches the "Who Owes Whom" section
         let netBalance = 0;
-
+        
+        // Calculate from net_balances (simplified debts)
+        groupNetBalances.forEach(nb => {
+          if (nb.from_user_id === user.id) {
+            // User owes this amount
+            netBalance -= Number(nb.amount);
+          } else if (nb.to_user_id === user.id) {
+            // User is owed this amount
+            netBalance += Number(nb.amount);
+          }
+        });
         // Only count expenses that have expense_members (to avoid orphaned expenses)
         const expensesWithMembers = groupExpenses.filter(expense => 
           expenseMembersData?.some(em => em.expense_id === expense.id)
         );
-
-        // What user paid (only for expenses with members)
-        const userPaid = expensesWithMembers
-          .filter(e => e.paid_by === user.id)
-          .reduce((sum, e) => sum + Number(e.total_amount), 0);
-
-        // What user owes (from expense_members)
-        const userOwes = expensesWithMembers
-          .flatMap(expense => {
-            const expenseMembers = expenseMembersData?.filter(em => em.expense_id === expense.id) || [];
-            const userMember = expenseMembers.find(em => em.user_id === user.id);
-            return userMember && !userMember.is_settled ? Number(userMember.amount_owed) : 0;
-          })
-          .reduce((sum, amount) => sum + amount, 0);
-
-        netBalance = userPaid - userOwes;
         
         // Check for orphaned expenses (expenses without members) and log warning
         const orphanedExpenses = groupExpenses.filter(expense => 
