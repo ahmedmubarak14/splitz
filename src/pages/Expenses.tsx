@@ -465,7 +465,7 @@ const Expenses = () => {
 
       if (updateError) throw updateError;
 
-      toast.success(t('expenses.paymentRecorded'));
+      toast.success(t('expenses.paymentSettled'));
       fetchGroups();
       if (selectedGroup) {
         await fetchGroupExpenses(selectedGroup.id);

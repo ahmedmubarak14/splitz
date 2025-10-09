@@ -37,26 +37,28 @@ export const SplitTypeSelector = ({
   const [memberSplits, setMemberSplits] = useState<MemberSplit[]>([]);
 
   useEffect(() => {
-    // Initialize member splits
-    if (initialSplits.length > 0) {
+    // Initialize member splits only when members change or on initial load
+    if (initialSplits.length > 0 && memberSplits.length === 0) {
       setMemberSplits(initialSplits);
-    } else {
+    } else if (members.length > 0 && memberSplits.length === 0) {
       const defaultSplits = members.map(m => ({
         user_id: m.id,
         name: m.name,
-        split_value: splitType === 'equal' ? undefined : 
-                     splitType === 'percentage' ? (100 / members.length) :
+        split_value: splitType === 'percentage' ? (100 / members.length) :
                      splitType === 'shares' ? 1 :
-                     (totalAmount / members.length),
+                     splitType === 'custom' ? (totalAmount / members.length) :
+                     undefined,
       }));
       setMemberSplits(defaultSplits);
     }
-  }, [members, splitType]);
+  }, [members.length]);
 
   useEffect(() => {
-    // Calculate amounts and notify parent
-    const calculated = calculateAmounts();
-    onSplitsChange(splitType, calculated);
+    // Calculate amounts and notify parent only when splits or total change
+    if (memberSplits.length > 0) {
+      const calculated = calculateAmounts();
+      onSplitsChange(splitType, calculated);
+    }
   }, [memberSplits, splitType, totalAmount]);
 
   const calculateAmounts = (): MemberSplit[] => {
