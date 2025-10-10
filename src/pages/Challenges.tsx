@@ -23,7 +23,7 @@ import ChallengeCompletionDialog from '@/components/ChallengeCompletionDialog';
 import MilestoneCelebration from '@/components/MilestoneCelebration';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing, responsiveGrid } from '@/lib/responsive-utils';
-
+import { z } from 'zod';
 type Challenge = Tables<'challenges'> & {
   participant_count?: number;
   user_progress?: number;
@@ -126,13 +126,19 @@ const Challenges = () => {
   };
 
   const createChallenge = async () => {
-    if (!name.trim() || !startDate || !endDate) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
+    const validation = z.object({
+      name: z.string().trim().min(1, 'Name is required').max(100, 'Name must be under 100 characters'),
+      description: z.string().trim().max(500, 'Description must be under 500 characters').optional(),
+      startDate: z.string().min(1, 'Start date is required'),
+      endDate: z.string().min(1, 'End date is required'),
+    }).refine((data) => new Date(data.endDate) > new Date(data.startDate), {
+      message: 'End date must be after start date',
+      path: ['endDate'],
+    }).safeParse({ name, description, startDate, endDate });
 
-    if (new Date(endDate) <= new Date(startDate)) {
-      toast.error('End date must be after start date');
+    if (!validation.success) {
+      const message = validation.error.errors[0]?.message || 'Invalid input';
+      toast.error(message);
       return;
     }
 
