@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Share2, Copy, Check, Mail, Send } from 'lucide-react';
+import * as Sentry from "@sentry/react";
 
 interface InviteDialogProps {
   open: boolean;
@@ -69,8 +70,14 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
       setInviteLink(link);
       toast.success('Invite link generated!');
     } catch (error) {
-      console.error('Error generating invite:', error);
       toast.error('Failed to generate invite link');
+      
+      if (import.meta.env.PROD) {
+        Sentry.captureException(error, {
+          tags: { feature: 'invite', action: 'generate-link' },
+          extra: { resourceType, resourceId }
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -158,10 +165,16 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
       toast.success(`Invitation sent to ${recipientEmail}!`);
       setRecipientEmail('');
     } catch (error) {
-      console.error('Error sending invite email:', error);
       const errMsg = (error as any)?.message?.toString?.() || '';
       const ctx = (error as any)?.context ? JSON.stringify((error as any).context) : '';
       const combined = `${errMsg} ${ctx}`;
+      
+      if (import.meta.env.PROD) {
+        Sentry.captureException(error, {
+          tags: { feature: 'invite', action: 'send-email' },
+          extra: { recipientEmail, resourceType }
+        });
+      }
 
       // Secondary safety net
       if (combined.includes('testing emails') || combined.includes('Resend API error 403') || combined.includes('403')) {

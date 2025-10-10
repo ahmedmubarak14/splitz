@@ -13,6 +13,7 @@ import { Mail, User, ArrowRight, Sparkles, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing } from '@/lib/responsive-utils';
+import * as Sentry from "@sentry/react";
 
 // Google logo SVG component
 const GoogleLogo = () => (
@@ -99,6 +100,13 @@ const Auth = () => {
       } else {
         toast.error(error.message || t('errors.genericError'));
       }
+      
+      if (import.meta.env.PROD) {
+        Sentry.captureException(error, {
+          tags: { feature: 'auth', action: isLogin ? 'login' : 'signup' },
+          extra: { email, isLogin }
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -116,9 +124,14 @@ const Auth = () => {
       
       // Success toast will be shown after redirect by onAuthStateChange
     } catch (error: any) {
-      console.error('Google OAuth error:', error);
       toast.error(error.message || t('errors.googleAuthFailed') || 'Failed to sign in with Google');
       setGoogleLoading(false);
+      
+      if (import.meta.env.PROD) {
+        Sentry.captureException(error, {
+          tags: { feature: 'auth', action: 'google-oauth' }
+        });
+      }
     }
   };
 

@@ -23,6 +23,7 @@ import ChallengeCompletionDialog from '@/components/ChallengeCompletionDialog';
 import MilestoneCelebration from '@/components/MilestoneCelebration';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing, responsiveGrid } from '@/lib/responsive-utils';
+import * as Sentry from "@sentry/react";
 import { z } from 'zod';
 type Challenge = Tables<'challenges'> & {
   participant_count?: number;
@@ -184,6 +185,13 @@ const Challenges = () => {
         ? 'Permission denied. Please try logging in again.'
         : error.message || 'Failed to create challenge';
       toast.error(message);
+      
+      if (import.meta.env.PROD) {
+        Sentry.captureException(error, {
+          tags: { feature: 'challenges', action: 'create' },
+          extra: { challengeName: name, description }
+        });
+      }
     }
   };
 

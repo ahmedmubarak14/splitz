@@ -26,6 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ExpenseHistory from '@/components/ExpenseHistory';
 import { ExpenseAnalytics } from '@/components/ExpenseAnalytics';
 import { ReceiptUpload } from '@/components/ReceiptUpload';
+import * as Sentry from "@sentry/react";
 
 type ExpenseGroup = {
   id: string;
@@ -511,8 +512,14 @@ const Expenses = () => {
         await fetchGroupExpenses(groupId);
       }
     } catch (error) {
-      console.error('Error recording payment (card):', error);
       toast.error(t('expenses.paymentError'));
+      
+      if (import.meta.env.PROD) {
+        Sentry.captureException(error, {
+          tags: { feature: 'expenses', action: 'record-payment' },
+          extra: { groupId, fromUserId, toUserId, amount }
+        });
+      }
     }
   };
 
@@ -540,8 +547,14 @@ const Expenses = () => {
         await fetchGroupExpenses(selectedGroup.id);
       }
     } catch (error) {
-      console.error('Error toggling settlement:', error);
       toast.error('Failed to update settlement status');
+      
+      if (import.meta.env.PROD) {
+        Sentry.captureException(error, {
+          tags: { feature: 'expenses', action: 'toggle-settlement' },
+          extra: { memberId }
+        });
+      }
     }
   };
 
