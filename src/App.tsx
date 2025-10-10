@@ -102,15 +102,17 @@ const AppContent = () => {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        <AppSidebar />
+        <div className="hidden md:block">
+          <AppSidebar />
+        </div>
         <main className="flex-1 w-full bg-background">
           <header className="sticky top-0 z-40 bg-background border-b border-border/30" dir={isRTL ? 'rtl' : 'ltr'}>
             <div className="h-16 flex items-center justify-between px-4 md:px-6">
               {isRTL ? (
                 <>
                   <div className="flex items-center gap-2">
-                    <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm h-9 w-9 flex items-center justify-center" />
-                    <button 
+                    <SidebarTrigger className="hidden md:flex hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm h-9 w-9 items-center justify-center" />
+                    <button
                       onClick={handleLogoClick}
                       className="flex items-center hover:opacity-80 transition-opacity"
                     >
@@ -124,7 +126,7 @@ const AppContent = () => {
               ) : (
                 <>
                   <div className="flex items-center gap-2">
-                    <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm h-9 w-9 flex items-center justify-center" />
+                    <SidebarTrigger className="hidden md:flex hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm h-9 w-9 items-center justify-center" />
                     <button 
                       onClick={handleLogoClick}
                       className="flex items-center hover:opacity-80 transition-opacity"
