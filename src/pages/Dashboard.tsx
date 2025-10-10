@@ -205,7 +205,7 @@ export default function Dashboard() {
       setRecentExpenseGroups(groupsWithBalances);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      toast.error('Failed to load dashboard data');
+      toast.error(t('errors.failedToLoad'));
     } finally {
       setLoading(false);
     }
@@ -242,9 +242,9 @@ export default function Dashboard() {
       color: 'text-success'
     },
     { 
-      label: 'Focus Sessions',
+      label: t('dashboard.focusSessions'),
       value: stats.focusSessions,
-      subtitle: `${stats.focusMinutes} minutes focused`,
+      subtitle: t('dashboard.focusSessionsSubtitle', { count: stats.focusMinutes }),
       icon: Brain,
       color: 'text-purple-600'
     },
@@ -258,17 +258,17 @@ export default function Dashboard() {
         
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">Track your progress and insights</p>
+          <h1 className="text-3xl font-bold mb-2">{t('dashboard.title')}</h1>
+          <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
         </div>
 
         {/* Tabs for different views */}
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="habits">Habits</TabsTrigger>
-            <TabsTrigger value="challenges">Challenges</TabsTrigger>
-            <TabsTrigger value="expenses">Expenses</TabsTrigger>
+            <TabsTrigger value="overview">{t('dashboard.overview')}</TabsTrigger>
+            <TabsTrigger value="habits">{t('dashboard.habits')}</TabsTrigger>
+            <TabsTrigger value="challenges">{t('dashboard.challenges')}</TabsTrigger>
+            <TabsTrigger value="expenses">{t('dashboard.expenses')}</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -340,8 +340,8 @@ export default function Dashboard() {
                     <button onClick={() => navigate('/focus')} className={`w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}>
                       <Brain className="h-4 w-4 text-muted-foreground" />
                       <div>
-                        <div className="text-sm font-medium">Start Focus Session</div>
-                        <div className="text-xs text-muted-foreground">Pomodoro timer & task tracking</div>
+                        <div className="text-sm font-medium">{t('dashboard.startFocusSession')}</div>
+                        <div className="text-xs text-muted-foreground">{t('dashboard.startFocusSessionDesc')}</div>
                       </div>
                     </button>
                     <button onClick={() => navigate('/challenges')} className={`w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}>

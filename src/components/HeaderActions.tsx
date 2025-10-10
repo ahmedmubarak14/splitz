@@ -28,7 +28,7 @@ import NotificationBell from './NotificationBell';
 export function HeaderActions() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null } | null>(null);
   const [userEmail, setUserEmail] = useState<string>('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -63,10 +63,10 @@ export function HeaderActions() {
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      toast.error('Failed to sign out');
+      toast.error(t('errors.failedToSignOut'));
     } else {
       navigate('/auth');
-      toast.success('Signed out successfully');
+      toast.success(t('success.signedOut'));
     }
   };
 
@@ -95,19 +95,19 @@ export function HeaderActions() {
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="rounded-lg h-9 w-9">
             <Search className="h-[18px] w-[18px]" />
-            <span className="sr-only">Search</span>
+            <span className="sr-only">{t('search.label')}</span>
           </Button>
         </SheetTrigger>
         <SheetContent side="top" className="h-[200px]">
           <SheetHeader>
-            <SheetTitle>Search</SheetTitle>
+            <SheetTitle>{t('search.title')}</SheetTitle>
             <SheetDescription>
-              Search habits, challenges, expenses...
+              {t('search.description')}
             </SheetDescription>
           </SheetHeader>
           <div className="mt-4">
             <Input
-              placeholder="Type to search..."
+              placeholder={t('search.placeholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full"
@@ -124,11 +124,11 @@ export function HeaderActions() {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="rounded-lg h-9 w-9">
             <Globe className="h-[18px] w-[18px]" />
-            <span className="sr-only">Change language</span>
+            <span className="sr-only">{t('header.changeLanguage')}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Language</DropdownMenuLabel>
+          <DropdownMenuLabel>{t('header.language')}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => i18n.changeLanguage('en')}>
             {i18n.language === 'en' && <Check className="mr-2 h-4 w-4" />}
@@ -153,7 +153,7 @@ export function HeaderActions() {
         ) : (
           <Moon className="h-[18px] w-[18px]" />
         )}
-        <span className="sr-only">Toggle theme</span>
+        <span className="sr-only">{t('header.toggleTheme')}</span>
       </Button>
 
       {/* User Menu */}
@@ -183,16 +183,16 @@ export function HeaderActions() {
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => navigate('/profile')}>
             <User className="mr-2 h-4 w-4" />
-            Profile
+            {t('header.profile')}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate('/profile?tab=notifications')}>
             <Settings className="mr-2 h-4 w-4" />
-            Notification Settings
+            {t('header.notificationSettings')}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
             <LogOut className="mr-2 h-4 w-4" />
-            Sign out
+            {t('header.signOut')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

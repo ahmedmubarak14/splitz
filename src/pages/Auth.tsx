@@ -44,12 +44,12 @@ const Auth = () => {
     e.preventDefault();
     
     if (!email.trim() || !password.trim()) {
-      toast.error('Please fill in all fields');
+      toast.error(t('errors.fillAllFields'));
       return;
     }
 
     if (!isLogin && !fullName.trim()) {
-      toast.error('Please enter your full name');
+      toast.error(t('errors.enterFullName'));
       return;
     }
 
@@ -62,7 +62,7 @@ const Auth = () => {
           password,
         });
         if (error) throw error;
-        toast.success('Welcome back! 🎉');
+        toast.success(t('success.welcomeBack'));
       } else {
         const { error } = await supabase.auth.signUp({
           email: email.trim(),
@@ -73,20 +73,20 @@ const Auth = () => {
           },
         });
         if (error) throw error;
-        toast.success('Account created! Welcome to Splitz! 🚀');
+        toast.success(t('success.accountCreated'));
       }
     } catch (error: any) {
       const message = error.message?.toLowerCase() || '';
       if (message.includes('invalid login credentials')) {
-        toast.error('Invalid email or password');
+        toast.error(t('errors.invalidEmail'));
       } else if (message.includes('user already registered')) {
-        toast.error('This email is already registered. Please login instead.');
+        toast.error(t('errors.emailAlreadyRegistered'));
       } else if (message.includes('email')) {
-        toast.error('Please enter a valid email address');
+        toast.error(t('errors.validEmailRequired'));
       } else if (message.includes('password')) {
-        toast.error('Password must be at least 6 characters');
+        toast.error(t('errors.passwordLength'));
       } else {
-        toast.error(error.message || 'An error occurred');
+        toast.error(error.message || t('errors.genericError'));
       }
     } finally {
       setLoading(false);
@@ -170,7 +170,7 @@ const Auth = () => {
                       to="/forgot-password" 
                       className="text-xs text-primary hover:underline"
                     >
-                      Forgot password?
+                      {t('forgotPassword.forgotPasswordLink')}
                     </Link>
                   )}
                 </div>

@@ -233,13 +233,13 @@ const Profile = () => {
               </Button>
 
               <div className="pt-4 space-y-3">
-                <h4 className="text-sm font-semibold text-muted-foreground">Security</h4>
+                <h4 className="text-sm font-semibold text-muted-foreground">{t('security.title')}</h4>
                 <ChangePasswordDialog />
                 <DeleteAccountDialog />
               </div>
 
               <div className="pt-6 space-y-3">
-                <h4 className="text-sm font-semibold text-muted-foreground">Notifications</h4>
+                <h4 className="text-sm font-semibold text-muted-foreground">{t('header.notificationSettings')}</h4>
                 <NotificationPreferences />
               </div>
 
@@ -269,10 +269,10 @@ const Profile = () => {
             
             <div className="pt-4 space-y-2 border-t border-border">
               <Link to="/privacy" className="block text-xs hover:text-primary transition-colors">
-                Privacy Policy
+                {t('legal.privacyPolicy')}
               </Link>
               <Link to="/terms" className="block text-xs hover:text-primary transition-colors">
-                Terms of Service
+                {t('legal.termsOfService')}
               </Link>
             </div>
             
