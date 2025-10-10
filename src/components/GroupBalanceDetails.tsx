@@ -76,7 +76,7 @@ export const GroupBalanceDetails = ({
                   <span className="font-bold text-lg">
                     {formatCurrency(debt.amount)}
                   </span>
-                  {onRecordPayment && debt.from_user_id === currentUserId && (
+                  {onRecordPayment && debt.to_user_id === currentUserId && (
                     <Button
                       size="sm"
                       onClick={() => onRecordPayment(debt.from_user_id, debt.to_user_id, debt.amount)}

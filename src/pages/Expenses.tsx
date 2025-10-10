@@ -685,14 +685,14 @@ const Expenses = () => {
                   </div>
 
                   <div className={`flex flex-wrap gap-2 mt-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    {/* Settle Up button if current user owes someone in this group */}
-                    {group.simplified_debts?.some((d) => d.from_user_id === currentUserId) && (
+                    {/* Settle Up button - only shown to users who are OWED money */}
+                    {group.simplified_debts?.some((d) => d.to_user_id === currentUserId) && (
                       <Button
                         size="sm"
                         className="flex-1 min-w-[100px]"
                         variant="secondary"
                         onClick={() => {
-                          const debt = group.simplified_debts!.find((d) => d.from_user_id === currentUserId)!;
+                          const debt = group.simplified_debts!.find((d) => d.to_user_id === currentUserId)!;
                           recordPaymentForGroup(group.id, debt.from_user_id, debt.to_user_id, debt.amount);
                         }}
                       >
