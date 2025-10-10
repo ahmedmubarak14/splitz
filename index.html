@@ -70,13 +70,29 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      // Register service worker for PWA
+      // Register service worker only in production, not in preview
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('Service Worker registered'))
-            .catch(err => console.log('Service Worker registration failed'));
-        });
+        const host = location.hostname;
+        const isPreview = /localhost|127\.0\.0\.1|lovableproject\.com/i.test(host);
+        
+        if (!isPreview) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+              .then(reg => console.log('Service Worker registered', reg.scope))
+              .catch(err => console.log('Service Worker registration failed', err));
+          });
+        } else {
+          // Unregister any existing service workers in preview
+          navigator.serviceWorker.getRegistrations().then(regs => {
+            regs.forEach(reg => reg.unregister());
+          });
+          // Clear caches in preview
+          if ('caches' in window) {
+            caches.keys().then(keys => {
+              keys.forEach(key => caches.delete(key));
+            });
+          }
+        }
       }
     </script>
   </body>

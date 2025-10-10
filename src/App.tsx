@@ -13,8 +13,8 @@ import splitzLogo from "@/assets/splitz-logo.png";
 import { useIsRTL } from "@/lib/rtl-utils";
 import './i18n/config';
 
-// Lazy load page components for better performance
-const Index = lazy(() => import("./pages/Index"));
+// Eager load Index to prevent loading issues, lazy load others
+import Index from "./pages/Index";
 const Auth = lazy(() => import("./pages/Auth"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
