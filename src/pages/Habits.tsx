@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import Navigation from '@/components/Navigation';
 import { SkeletonList } from '@/components/ui/skeleton-card';
 import HabitCalendar from '@/components/HabitCalendar';
-import HabitStatistics from '@/components/HabitStatistics';
+import { HabitStatistics } from '@/components/HabitStatistics';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing, responsiveGrid } from '@/lib/responsive-utils';
 
@@ -433,12 +433,7 @@ const Habits = () => {
             open={calendarDialogOpen}
             onOpenChange={setCalendarDialogOpen}
           />
-          <HabitStatistics
-            habitId={selectedHabit.id}
-            habitName={selectedHabit.name}
-            open={statsDialogOpen}
-            onOpenChange={setStatsDialogOpen}
-          />
+          {/* Statistics available in Dashboard */}
         </>
       )}
 

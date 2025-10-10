@@ -23,7 +23,7 @@ import { formatCurrency } from '@/lib/formatters';
 import { SplitTypeSelector } from '@/components/SplitTypeSelector';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ExpenseHistory from '@/components/ExpenseHistory';
-import ExpenseAnalytics from '@/components/ExpenseAnalytics';
+import { ExpenseAnalytics } from '@/components/ExpenseAnalytics';
 
 type ExpenseGroup = {
   id: string;

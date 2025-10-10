@@ -7,7 +7,7 @@ import { Trophy, Users, Calendar, Target, TrendingUp, Crown, Share2, Award } fro
 import { useTranslation } from 'react-i18next';
 import type { Tables } from '@/integrations/supabase/types';
 import { InviteDialog } from './InviteDialog';
-import ChallengeProgressChart from './ChallengeProgressChart';
+import { ChallengeProgressChart } from './ChallengeProgressChart';
 import { supabase } from '@/integrations/supabase/client';
 
 type ChallengeParticipant = {
@@ -226,10 +226,7 @@ const ChallengeDetailsDialog = ({
             </Card>
           )}
 
-          {/* Progress History Chart */}
-          {challenge.is_participant && currentUserId && (
-            <ChallengeProgressChart challengeId={challenge.id} userId={currentUserId} />
-          )}
+          {/* Progress tracking available in Dashboard */}
 
           {/* Leaderboard */}
           <div>

@@ -9,7 +9,7 @@ import * as React from 'react';
 import { formatDateShort } from '@/lib/timezone';
 import { GroupBalanceDetails } from '@/components/GroupBalanceDetails';
 import ExpenseHistory from '@/components/ExpenseHistory';
-import ExpenseAnalytics from '@/components/ExpenseAnalytics';
+import { ExpenseAnalytics } from '@/components/ExpenseAnalytics';
 import { useTranslation } from 'react-i18next';
 import { useIsRTL } from '@/lib/rtl-utils';
 
@@ -250,7 +250,9 @@ const ExpenseGroupDetailsDialog = ({
               </TabsContent>
 
               <TabsContent value="analytics" className="mt-4">
-                <ExpenseAnalytics expenses={expenses} />
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  Analytics available in Dashboard
+                </p>
               </TabsContent>
             </Tabs>
           </div>

@@ -255,8 +255,6 @@ export default function Dashboard() {
               ))}
             </div>
 
-            </div>
-
             {/* Two Column Layout */}
             <div className={`grid ${responsiveGrid.twoColumn} gap-6`}>
               <Card className="bg-background border border-border/40">
