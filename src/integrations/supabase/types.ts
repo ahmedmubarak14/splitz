@@ -262,6 +262,106 @@ export type Database = {
           },
         ]
       }
+      focus_sessions: {
+        Row: {
+          created_at: string
+          duration_minutes: number | null
+          end_time: string | null
+          id: string
+          session_type: string | null
+          start_time: string
+          task_id: string | null
+          tree_survived: boolean | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number | null
+          end_time?: string | null
+          id?: string
+          session_type?: string | null
+          start_time?: string
+          task_id?: string | null
+          tree_survived?: boolean | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number | null
+          end_time?: string | null
+          id?: string
+          session_type?: string | null
+          start_time?: string
+          task_id?: string | null
+          tree_survived?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "focus_sessions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "focus_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      focus_tasks: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          has_reminder: boolean | null
+          id: string
+          is_completed: boolean | null
+          parent_task_id: string | null
+          reminder_time: string | null
+          repeat_pattern: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          has_reminder?: boolean | null
+          id?: string
+          is_completed?: boolean | null
+          parent_task_id?: string | null
+          reminder_time?: string | null
+          repeat_pattern?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          has_reminder?: boolean | null
+          id?: string
+          is_completed?: boolean | null
+          parent_task_id?: string | null
+          reminder_time?: string | null
+          repeat_pattern?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "focus_tasks_parent_task_id_fkey"
+            columns: ["parent_task_id"]
+            isOneToOne: false
+            referencedRelation: "focus_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       habit_check_ins: {
         Row: {
           checked_in_at: string

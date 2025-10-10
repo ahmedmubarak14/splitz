@@ -494,6 +494,18 @@ const Index = () => {
 
             <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
               <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-green-600" />
+                </div>
+              </div>
+              <CardContent className="p-5">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">Focus & Pomodoro</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Stay focused with Pomodoro timer and grow your focus tree</p>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
                 <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
                   <Trophy className="w-5 h-5 text-accent-foreground" />
                 </div>
@@ -513,18 +525,6 @@ const Index = () => {
               <CardContent className="p-5">
                 <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.splitter.title')}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{t('features.splitter.desc')}</p>
-              </CardContent>
-            </Card>
-
-            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
-              <div className="px-5 py-4 border-b border-border bg-muted/30">
-                <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
-                  <MessageCircle className="w-5 h-5 text-success" />
-                </div>
-              </div>
-              <CardContent className="p-5">
-                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.reminders.title')}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.reminders.desc')}</p>
               </CardContent>
             </Card>
           </div>

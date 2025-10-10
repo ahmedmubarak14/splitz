@@ -17,6 +17,7 @@ const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Habits = lazy(() => import("./pages/Habits"));
+const Focus = lazy(() => import("./pages/Focus"));
 const Expenses = lazy(() => import("./pages/Expenses"));
 const Challenges = lazy(() => import("./pages/Challenges"));
 const Profile = lazy(() => import("./pages/Profile"));
@@ -62,6 +63,7 @@ const AppContent = () => {
           <Route path="/join/:inviteCode" element={<JoinInvite />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/habits" element={<Habits />} />
+          <Route path="/focus" element={<Focus />} />
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/challenges" element={<Challenges />} />
           <Route path="/profile" element={<Profile />} />
@@ -97,6 +99,7 @@ const AppContent = () => {
               <Route path="/join/:inviteCode" element={<JoinInvite />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/habits" element={<Habits />} />
+              <Route path="/focus" element={<Focus />} />
               <Route path="/expenses" element={<Expenses />} />
               <Route path="/challenges" element={<Challenges />} />
               <Route path="/profile" element={<Profile />} />

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Target, DollarSign, Trophy, User } from 'lucide-react';
+import { Home, Target, DollarSign, Trophy, User, Brain } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -21,6 +21,7 @@ const overviewItems = [
 
 const workspaceItems = [
   { path: '/habits', icon: Target, labelKey: 'nav.habits', label: 'Habits' },
+  { path: '/focus', icon: Brain, labelKey: 'nav.focus', label: 'Focus' },
   { path: '/expenses', icon: DollarSign, labelKey: 'nav.expenses', label: 'Expenses' },
   { path: '/challenges', icon: Trophy, labelKey: 'nav.challenges', label: 'Challenges' },
 ];
