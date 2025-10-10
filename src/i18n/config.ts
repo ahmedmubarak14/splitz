@@ -62,9 +62,9 @@ const resources = {
         currency: 'SAR',
       },
       hero: {
-        badge: 'Habits · Challenges · Expense Splitter',
-        title: 'Build habits together. Split life fairly.',
-        subtitle: 'Grow stronger as a team. Settle up effortlessly.',
+        badge: 'Habits · Focus · Challenges · Expense Splitter',
+        title: 'Build habits together. Stay focused. Split life fairly.',
+        subtitle: 'Grow stronger as a team. Maintain focus. Settle up effortlessly.',
       },
       cta: {
         start: 'Start Free',
