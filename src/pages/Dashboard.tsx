@@ -14,7 +14,9 @@ import {
   AlertTriangle,
   Plus,
   Users,
-  ArrowRight
+  ArrowRight,
+  Brain,
+  Trees
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useIsRTL } from '@/lib/rtl-utils';
@@ -33,6 +35,8 @@ export default function Dashboard() {
     pendingExpenses: 0,
     totalOwed: 0,
     totalExpenseGroups: 0,
+    focusSessions: 0,
+    focusMinutes: 0,
   });
   const [recentExpenseGroups, setRecentExpenseGroups] = useState<any[]>([]);
 
@@ -64,6 +68,16 @@ export default function Dashboard() {
         .select('*')
         .or(`creator_id.eq.${user.id},challenge_participants.user_id.eq.${user.id}`)
         .gte('end_date', new Date().toISOString().split('T')[0]);
+
+      // Fetch focus sessions
+      const { data: focusSessions } = await supabase
+        .from('focus_sessions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('tree_survived', true);
+
+      const totalFocusMinutes = focusSessions?.reduce((sum, session) => 
+        sum + (session.duration_minutes || 0), 0) || 0;
 
       // Fetch net balances where user owes money (from_user_id = user.id)
       const { data: netBalancesOwed } = await supabase
@@ -139,6 +153,8 @@ export default function Dashboard() {
         pendingExpenses: netBalancesOwed?.length || 0,
         totalOwed,
         totalExpenseGroups: uniqueGroupIds.length,
+        focusSessions: focusSessions?.length || 0,
+        focusMinutes: totalFocusMinutes,
       });
       setRecentExpenseGroups(groupsWithBalances);
     } catch (error) {
@@ -180,11 +196,11 @@ export default function Dashboard() {
       color: 'text-success'
     },
     { 
-      label: t('dashboard.stats.totalOwed'),
-      value: formatCurrency(stats.totalOwed, 'SAR', i18n.language),
-      subtitle: t('dashboard.stats.pendingSettlements'),
-      icon: ShoppingCart,
-      color: 'text-accent-foreground'
+      label: 'Focus Sessions',
+      value: stats.focusSessions,
+      subtitle: `${stats.focusMinutes} minutes focused`,
+      icon: Brain,
+      color: 'text-purple-600'
     },
   ];
 
@@ -271,6 +287,17 @@ export default function Dashboard() {
                   </div>
                 </Button>
                 
+                <button
+                  onClick={() => navigate('/focus')}
+                  className={`w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}
+                >
+                  <Brain className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <div className="text-sm font-medium">Start Focus Session</div>
+                    <div className="text-xs text-muted-foreground">Pomodoro timer & task tracking</div>
+                  </div>
+                </button>
+
                 <button
                   onClick={() => navigate('/challenges')}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}

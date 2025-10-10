@@ -242,6 +242,27 @@ const Index = () => {
               </CardContent>
             </Card>
 
+            {/* Focus & Pomodoro Card */}
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center mb-3">
+                  <Clock className="w-5 h-5 text-purple-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-1">
+                  Focus & Pomodoro
+                </h3>
+              </div>
+              <CardContent className="p-5">
+                <p className={`text-sm text-muted-foreground leading-relaxed mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                  Stay focused with Pomodoro timer, task management, and grow your focus tree as you work.
+                </p>
+                <div className={`flex items-center gap-2 text-xs text-purple-600 font-semibold ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <span>Start Focusing</span>
+                  <Zap className="w-3.5 h-3.5" />
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Expense Settle-up Card */}
             <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
               <div className="px-5 py-4 border-b border-border bg-muted/30">
@@ -494,18 +515,6 @@ const Index = () => {
 
             <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
               <div className="px-5 py-4 border-b border-border bg-muted/30">
-                <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-green-600" />
-                </div>
-              </div>
-              <CardContent className="p-5">
-                <h3 className="text-lg font-semibold mb-2 text-foreground">Focus & Pomodoro</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">Stay focused with Pomodoro timer and grow your focus tree</p>
-              </CardContent>
-            </Card>
-
-            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
-              <div className="px-5 py-4 border-b border-border bg-muted/30">
                 <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
                   <Trophy className="w-5 h-5 text-accent-foreground" />
                 </div>
@@ -513,6 +522,18 @@ const Index = () => {
               <CardContent className="p-5">
                 <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.challenges.title')}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{t('features.challenges.desc')}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-purple-600" />
+                </div>
+              </div>
+              <CardContent className="p-5">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">Focus & Pomodoro</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Pomodoro timer, task tracking, and grow your focus tree</p>
               </CardContent>
             </Card>
 
