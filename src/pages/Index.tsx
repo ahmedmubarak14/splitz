@@ -153,11 +153,11 @@ const Index = () => {
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold mb-4 md:mb-6 text-primary leading-tight animate-fade-in px-4" style={{ animationDelay: '0.1s' }}>
-            Habits · Focus · Challenges · Expense Splitter
+            {t('hero.title')}
           </h1>
 
           <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-8 md:mb-10 max-w-2xl mx-auto animate-fade-in px-4" style={{ animationDelay: '0.2s' }}>
-            Build habits together. Stay focused. Split life fairly.
+            {t('hero.subtitle')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center animate-fade-in px-4" style={{ animationDelay: '0.3s' }}>
@@ -191,18 +191,15 @@ const Index = () => {
               <span className="text-sm font-semibold text-primary">{t('showcase.social.badge')}</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-primary">
-              Better Together
+              {t('showcase.social.title')}
             </h2>
             <p className="text-lg text-muted-foreground">
-              Achieve More with Friends
-            </p>
-            <p className="text-base text-muted-foreground mt-2">
-              Leverage social features to stay motivated, challenge each other, maintain focus, and manage shared expenses effortlessly
+              {t('showcase.social.subtitle')}
             </p>
           </div>
 
           {/* Feature Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
             {/* Group Challenges Card */}
             <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
               <div className="px-5 py-4 border-b border-border bg-muted/30">
