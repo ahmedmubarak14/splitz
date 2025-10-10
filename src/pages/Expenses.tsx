@@ -13,6 +13,7 @@ import { DollarSign, Plus, Users, ArrowRight, Receipt, History, BarChart3 } from
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import { InviteDialog } from '@/components/InviteDialog';
+import { EmptyState } from '@/components/EmptyState';
 import EditExpenseDialog from '@/components/EditExpenseDialog';
 import ExpenseGroupDetailsDialog from '@/components/ExpenseGroupDetailsDialog';
 import ExpenseDetailsDialog from '@/components/ExpenseDetailsDialog';
@@ -620,15 +621,13 @@ const Expenses = () => {
         {loading ? (
           <SkeletonList count={6} />
         ) : groups.length === 0 ? (
-          <Card className="border border-border">
-            <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-              <Users className="w-16 h-16 text-muted mb-4" />
-              <h3 className={`text-xl font-semibold mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>{t('expenses.noExpenseGroups')}</h3>
-              <p className={`text-sm text-muted-foreground max-w-md ${isRTL ? 'text-right' : 'text-left'}`}>
-                {t('expenses.createFirstGroup')}
-              </p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Users}
+            title={t('expenses.noExpenseGroups')}
+            description={t('expenses.createFirstGroup')}
+            actionLabel={t('expenses.createGroup')}
+            onAction={() => setCreateDialogOpen(true)}
+          />
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {groups.map((group) => (

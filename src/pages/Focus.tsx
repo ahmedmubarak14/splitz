@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useIsRTL } from '@/lib/rtl-utils';
 import Navigation from '@/components/Navigation';
+import { EmptyState } from '@/components/EmptyState';
 
 interface FocusTask {
   id: string;
@@ -618,9 +619,15 @@ const Focus = () => {
               </CardHeader>
               <CardContent className="space-y-2">
                 {incompleteTasks.length === 0 ? (
-                  <p className={`text-muted-foreground text-sm text-center py-4 ${isRTL ? 'text-right' : ''}`}>
-                    {t('features.focus.noActiveTasks')}
-                  </p>
+                  <div className="py-8">
+                    <EmptyState
+                      icon={StickyNote}
+                      title={t('features.focus.noActiveTasks')}
+                      description={t('features.focus.createTaskToStart')}
+                      actionLabel={t('features.focus.addTask')}
+                      onAction={() => setIsAddTaskOpen(true)}
+                    />
+                  </div>
                 ) : (
                   incompleteTasks.map((task) => (
                     <div

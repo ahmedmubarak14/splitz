@@ -14,6 +14,7 @@ import { Trophy, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import ChallengeCard from '@/components/ChallengeCard';
+import { EmptyState } from '@/components/EmptyState';
 import ChallengeDetailsDialog from '@/components/ChallengeDetailsDialog';
 import EditChallengeDialog from '@/components/EditChallengeDialog';
 import { InviteDialog } from '@/components/InviteDialog';
@@ -443,20 +444,13 @@ const Challenges = () => {
             {loading ? (
               <SkeletonList count={6} />
             ) : filteredChallenges.length === 0 ? (
-              <Card className="border border-border">
-                <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-                  <Trophy className="w-16 h-16 text-muted mb-4" />
-                  <h3 className={`${responsiveText.sectionTitle} font-semibold mb-2`}>
-                    {activeTab === 'joined' ? t('challenges.noJoinedChallenges') : t('challenges.noChallenges').split('.')[0]}
-                  </h3>
-                  <p className={`${responsiveText.small} text-muted-foreground max-w-md`}>
-                    {activeTab === 'joined' 
-                      ? t('challenges.joinToStart')
-                      : t('challenges.noChallenges')
-                    }
-                  </p>
-                </CardContent>
-              </Card>
+              <EmptyState
+                icon={Trophy}
+                title={activeTab === 'joined' ? t('challenges.noJoinedChallenges') : t('challenges.noChallenges').split('.')[0]}
+                description={activeTab === 'joined' ? t('challenges.joinToStart') : t('challenges.noChallenges')}
+                actionLabel={activeTab === 'all' ? t('challenges.createChallenge') : undefined}
+                onAction={() => setDialogOpen(true)}
+              />
             ) : (
               <div className={`grid ${responsiveGrid.cards} ${responsiveSpacing.gridGap}`}>
                 {filteredChallenges.map((challenge) => (
