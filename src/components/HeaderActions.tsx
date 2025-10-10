@@ -92,72 +92,6 @@ export function HeaderActions() {
 
   return (
     <div className="flex items-center gap-0.5">
-      {/* Search */}
-      <Sheet open={searchOpen} onOpenChange={setSearchOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="rounded-lg h-9 w-9">
-            <Search className="h-[18px] w-[18px]" />
-            <span className="sr-only">{t('search.label')}</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="top" className="h-[200px]">
-          <SheetHeader>
-            <SheetTitle>{t('search.title')}</SheetTitle>
-            <SheetDescription>
-              {t('search.description')}
-            </SheetDescription>
-          </SheetHeader>
-          <div className="mt-4">
-            <Input
-              placeholder={t('search.placeholder')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full"
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      {/* Notifications */}
-      <NotificationBell />
-
-      {/* Language Toggle */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="rounded-lg h-9 w-9">
-            <Globe className="h-[18px] w-[18px]" />
-            <span className="sr-only">{t('header.changeLanguage')}</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align={isRTL ? 'start' : 'end'}>
-          <DropdownMenuLabel>{t('header.language')}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => i18n.changeLanguage('en')}>
-            {i18n.language === 'en' && <Check className={isRTL ? 'ml-2 h-4 w-4' : 'mr-2 h-4 w-4'} />}
-            <span className={i18n.language !== 'en' ? (isRTL ? 'mr-6' : 'ml-6') : ''}>English</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => i18n.changeLanguage('ar')}>
-            {i18n.language === 'ar' && <Check className={isRTL ? 'ml-2 h-4 w-4' : 'mr-2 h-4 w-4'} />}
-            <span className={i18n.language !== 'ar' ? (isRTL ? 'mr-6' : 'ml-6') : ''}>العربية</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* Theme Toggle */}
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className="rounded-lg h-9 w-9"
-        onClick={toggleTheme}
-      >
-        {theme === 'dark' ? (
-          <Sun className="h-[18px] w-[18px]" />
-        ) : (
-          <Moon className="h-[18px] w-[18px]" />
-        )}
-        <span className="sr-only">{t('header.toggleTheme')}</span>
-      </Button>
-
       {/* User Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -198,6 +132,72 @@ export function HeaderActions() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Theme Toggle */}
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="rounded-lg h-9 w-9"
+        onClick={toggleTheme}
+      >
+        {theme === 'dark' ? (
+          <Sun className="h-[18px] w-[18px]" />
+        ) : (
+          <Moon className="h-[18px] w-[18px]" />
+        )}
+        <span className="sr-only">{t('header.toggleTheme')}</span>
+      </Button>
+
+      {/* Language Toggle */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="rounded-lg h-9 w-9">
+            <Globe className="h-[18px] w-[18px]" />
+            <span className="sr-only">{t('header.changeLanguage')}</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align={isRTL ? 'start' : 'end'}>
+          <DropdownMenuLabel>{t('header.language')}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => i18n.changeLanguage('en')}>
+            {i18n.language === 'en' && <Check className={isRTL ? 'ml-2 h-4 w-4' : 'mr-2 h-4 w-4'} />}
+            <span className={i18n.language !== 'en' ? (isRTL ? 'mr-6' : 'ml-6') : ''}>English</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => i18n.changeLanguage('ar')}>
+            {i18n.language === 'ar' && <Check className={isRTL ? 'ml-2 h-4 w-4' : 'mr-2 h-4 w-4'} />}
+            <span className={i18n.language !== 'ar' ? (isRTL ? 'mr-6' : 'ml-6') : ''}>العربية</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Notifications */}
+      <NotificationBell />
+
+      {/* Search */}
+      <Sheet open={searchOpen} onOpenChange={setSearchOpen}>
+        <SheetTrigger asChild>
+          <Button variant="ghost" size="icon" className="rounded-lg h-9 w-9">
+            <Search className="h-[18px] w-[18px]" />
+            <span className="sr-only">{t('search.label')}</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="top" className="h-[200px]">
+          <SheetHeader>
+            <SheetTitle>{t('search.title')}</SheetTitle>
+            <SheetDescription>
+              {t('search.description')}
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-4">
+            <Input
+              placeholder={t('search.placeholder')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full"
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
