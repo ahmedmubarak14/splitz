@@ -96,17 +96,17 @@ const AppContent = () => {
             <div className="h-16 flex items-center justify-between px-4 md:px-6">
               {isRTL ? (
                 <>
-                  <div className="flex items-center">
-                    <HeaderActions />
-                  </div>
                   <div className="flex items-center gap-2">
+                    <HeaderActions />
+                    <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm h-9 w-9 flex items-center justify-center" />
+                  </div>
+                  <div className="flex items-center">
                     <button 
                       onClick={handleLogoClick}
                       className="flex items-center hover:opacity-80 transition-opacity"
                     >
                       <img src={splitzLogo} alt="Splitz" className="h-8" loading="lazy" />
                     </button>
-                    <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm h-9 w-9 flex items-center justify-center" />
                   </div>
                 </>
               ) : (
