@@ -91,22 +91,25 @@ export function HeaderActions() {
   };
 
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-2">
       {/* User Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className={`h-9 w-9 rounded-full p-0 ${isRTL ? 'mr-1' : 'ml-1'}`}>
+          <Button variant="ghost" className="h-9 rounded-full p-0 flex items-center gap-1 px-2">
             {profile?.avatar_url ? (
               <img 
                 src={profile.avatar_url} 
                 alt={profile.full_name || 'User'} 
-                className="h-8 w-8 rounded-full object-cover"
+                className="h-7 w-7 rounded-full object-cover"
               />
             ) : (
-              <div className="h-8 w-8 rounded-full bg-foreground text-background flex items-center justify-center text-xs font-semibold">
+              <div className="h-7 w-7 rounded-full bg-foreground text-background flex items-center justify-center text-xs font-semibold">
                 {getInitials(profile?.full_name || null)}
               </div>
             )}
+            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align={isRTL ? 'start' : 'end'} className="w-56">
@@ -151,8 +154,8 @@ export function HeaderActions() {
       {/* Language Toggle */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="rounded-lg h-9 w-9">
-            <Globe className="h-[18px] w-[18px]" />
+          <Button variant="outline" className="h-9 px-3 rounded-xl text-sm font-medium">
+            {i18n.language.toUpperCase()}
             <span className="sr-only">{t('header.changeLanguage')}</span>
           </Button>
         </DropdownMenuTrigger>
