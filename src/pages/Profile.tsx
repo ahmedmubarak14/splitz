@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -266,6 +266,16 @@ const Profile = () => {
             <p>{t('profile.aboutHabits')}</p>
             <p>{t('profile.aboutExpenses')}</p>
             <p>{t('profile.aboutChallenges')}</p>
+            
+            <div className="pt-4 space-y-2 border-t border-border">
+              <Link to="/privacy" className="block text-xs hover:text-primary transition-colors">
+                Privacy Policy
+              </Link>
+              <Link to="/terms" className="block text-xs hover:text-primary transition-colors">
+                Terms of Service
+              </Link>
+            </div>
+            
             <p className="pt-3 text-xs font-medium">{t('profile.version')}</p>
           </CardContent>
         </Card>
