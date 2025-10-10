@@ -136,7 +136,6 @@ const Focus = () => {
     const { data, error } = await supabase
       .from('focus_sessions')
       .select('*')
-      .is('end_time', null)
       .not('end_time', 'is', null)
       .order('created_at', { ascending: false })
       .limit(100);
