@@ -18,6 +18,7 @@ import {
   BarChart3, Trees, Sparkles, AlertTriangle, Skull
 } from 'lucide-react';
 import { useIsRTL } from '@/lib/rtl-utils';
+import Navigation from '@/components/Navigation';
 
 interface FocusTask {
   id: string;
@@ -91,7 +92,7 @@ const Focus = () => {
       if (document.hidden && currentSessionId && isSessionActive && !isPaused) {
         pauseSession();
         markSessionAsFailed(currentSessionId);
-        toast.error('🍂 You left the page - your tree died!');
+        toast.error(t('features.focus.treeKilled'));
       }
     };
 
@@ -177,7 +178,7 @@ const Focus = () => {
 
   const createTask = async () => {
     if (!newTask.title.trim()) {
-      toast.error('Please enter a task title');
+      toast.error(t('features.focus.taskTitleRequired'));
       return;
     }
 
@@ -192,12 +193,12 @@ const Focus = () => {
       }]);
 
     if (error) {
-      toast.error('Failed to create task');
+      toast.error(t('features.focus.taskFailed'));
       console.error(error);
       return;
     }
 
-    toast.success('Task created successfully');
+    toast.success(t('features.focus.taskCreated'));
     setIsAddTaskOpen(false);
     setNewTask({
       title: '',
@@ -220,7 +221,7 @@ const Focus = () => {
       .eq('id', taskId);
 
     if (error) {
-      toast.error('Failed to update task');
+      toast.error(t('features.focus.taskFailed'));
       return;
     }
 
@@ -249,7 +250,7 @@ const Focus = () => {
       .single();
 
     if (error) {
-      toast.error('Failed to start session');
+      toast.error(t('features.focus.sessionStartFailed'));
       console.error(error);
       return;
     }
@@ -317,16 +318,16 @@ const Focus = () => {
 
       if (error) {
         console.error('Error completing session:', error);
-        toast.error('Failed to save session');
+        toast.error(t('features.focus.sessionSaveFailed'));
       } else {
         if (treeSurvived) {
-          toast.success('🌳 Your tree survived! Great focus!', {
-            description: 'Session completed successfully',
+          toast.success(t('features.focus.treeSurvived'), {
+            description: t('features.focus.sessionCompleted'),
             duration: 5000,
           });
         } else {
-          toast.error('🍂 Your tree died. Try again!', {
-            description: 'Session ended early',
+          toast.error(t('features.focus.treeDied'), {
+            description: t('features.focus.sessionEndedEarly'),
             duration: 3000,
           });
         }
@@ -356,60 +357,62 @@ const Focus = () => {
   const totalFocusTime = survivedSessions.reduce((sum, s) => sum + s.duration_minutes, 0);
 
   return (
-    <div className={`min-h-screen p-6 ${isRTL ? 'rtl' : 'ltr'}`}>
+    <div className={`min-h-screen p-4 md:p-6 pb-24 md:pb-6 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">{t('nav.focus') || 'Focus'}</h1>
-            <p className="text-muted-foreground">Stay focused on what matters most</p>
+        <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className={isRTL ? 'text-right' : ''}>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">{t('features.focus.title')}</h1>
+            <p className="text-sm md:text-base text-muted-foreground">{t('features.focus.subtitle')}</p>
           </div>
           <Dialog open={isAddTaskOpen} onOpenChange={setIsAddTaskOpen}>
             <DialogTrigger asChild>
               <Button size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Task
+                <Plus className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                {t('features.focus.addTask')}
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Create New Task</DialogTitle>
+                <DialogTitle>{t('features.focus.createNewTask')}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label>Title</Label>
+                  <Label>{t('features.focus.taskTitle')}</Label>
                   <Input
                     value={newTask.title}
                     onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                    placeholder="Task title"
+                    placeholder={t('features.focus.taskTitlePlaceholder')}
+                    dir={isRTL ? 'rtl' : 'ltr'}
                   />
                 </div>
                 <div>
-                  <Label>Description</Label>
+                  <Label>{t('features.focus.description')}</Label>
                   <Textarea
                     value={newTask.description}
                     onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                    placeholder="Task description"
+                    placeholder={t('features.focus.descriptionPlaceholder')}
+                    dir={isRTL ? 'rtl' : 'ltr'}
                   />
                 </div>
                 <div>
-                  <Label>Due Date</Label>
+                  <Label>{t('features.focus.dueDate')}</Label>
                   <Input
                     type="date"
                     value={newTask.due_date}
                     onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
                   />
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Checkbox
                     checked={newTask.has_reminder}
                     onCheckedChange={(checked) => setNewTask({ ...newTask, has_reminder: !!checked })}
                   />
-                  <Label>Set Reminder</Label>
+                  <Label>{t('features.focus.setReminder')}</Label>
                 </div>
                 {newTask.has_reminder && (
                   <div>
-                    <Label>Reminder Time</Label>
+                    <Label>{t('features.focus.reminderTime')}</Label>
                     <Input
                       type="datetime-local"
                       value={newTask.reminder_time}
@@ -418,20 +421,20 @@ const Focus = () => {
                   </div>
                 )}
                 <div>
-                  <Label>Repeat</Label>
+                  <Label>{t('features.focus.repeat')}</Label>
                   <Select value={newTask.repeat_pattern || 'none'} onValueChange={(value) => setNewTask({ ...newTask, repeat_pattern: value === 'none' ? '' : value })}>
                     <SelectTrigger>
-                      <SelectValue placeholder="No repeat" />
+                      <SelectValue placeholder={t('features.focus.noRepeat')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">No repeat</SelectItem>
-                      <SelectItem value="daily">Daily</SelectItem>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="none">{t('features.focus.noRepeat')}</SelectItem>
+                      <SelectItem value="daily">{t('features.focus.daily')}</SelectItem>
+                      <SelectItem value="weekly">{t('features.focus.weekly')}</SelectItem>
+                      <SelectItem value="monthly">{t('features.focus.monthly')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <Button onClick={createTask} className="w-full">Create Task</Button>
+                <Button onClick={createTask} className="w-full">{t('features.focus.createTask')}</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -442,9 +445,9 @@ const Focus = () => {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Clock className="w-5 h-5" />
-                  Pomodoro Timer
+                  {t('features.focus.pomodoroTimer')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -452,8 +455,8 @@ const Focus = () => {
                 {isSessionActive && (
                   <Alert className="border-warning bg-warning/10">
                     <AlertTriangle className="h-4 w-4 text-warning" />
-                    <AlertDescription className="text-sm">
-                      ⚠️ Stay focused! Leaving this page, switching tabs, or minimizing the browser will kill your tree 🌳
+                    <AlertDescription className={`text-sm ${isRTL ? 'text-right' : ''}`}>
+                      {t('features.focus.warningStayFocused')}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -466,7 +469,7 @@ const Focus = () => {
                     onClick={() => !isSessionActive && setSessionType('work')}
                     disabled={isSessionActive}
                   >
-                    Work (25 min)
+                    {t('features.focus.workSession')}
                   </Button>
                   <Button
                     variant={sessionType === 'short_break' ? 'default' : 'outline'}
@@ -474,7 +477,7 @@ const Focus = () => {
                     onClick={() => !isSessionActive && setSessionType('short_break')}
                     disabled={isSessionActive}
                   >
-                    Short Break (5 min)
+                    {t('features.focus.shortBreak')}
                   </Button>
                   <Button
                     variant={sessionType === 'long_break' ? 'default' : 'outline'}
@@ -482,7 +485,7 @@ const Focus = () => {
                     onClick={() => !isSessionActive && setSessionType('long_break')}
                     disabled={isSessionActive}
                   >
-                    Long Break (15 min)
+                    {t('features.focus.longBreak')}
                   </Button>
                   <Button
                     variant={sessionType === 'custom' ? 'default' : 'outline'}
@@ -490,14 +493,14 @@ const Focus = () => {
                     onClick={() => !isSessionActive && setSessionType('custom')}
                     disabled={isSessionActive}
                   >
-                    Custom
+                    {t('features.focus.custom')}
                   </Button>
                 </div>
 
                 {/* Custom Duration Input */}
                 {sessionType === 'custom' && !isSessionActive && (
-                  <div className="flex items-center gap-2">
-                    <Label>Duration (minutes):</Label>
+                  <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <Label>{t('features.focus.durationMinutes')}</Label>
                     <Input
                       type="number"
                       min="1"
@@ -505,6 +508,7 @@ const Focus = () => {
                       value={customDuration}
                       onChange={(e) => setCustomDuration(Math.max(1, Math.min(120, parseInt(e.target.value) || 1)))}
                       className="w-24"
+                      dir="ltr"
                     />
                   </div>
                 )}
@@ -524,7 +528,7 @@ const Focus = () => {
                       </div>
                       <Progress value={treeGrowth} className="h-2" />
                       <p className="text-sm text-muted-foreground">
-                        Your tree is {Math.round(treeGrowth)}% grown
+                        {t('features.focus.treeGrowth', { percent: Math.round(treeGrowth) })}
                       </p>
                     </div>
                   )}
@@ -533,13 +537,13 @@ const Focus = () => {
                 {/* Task Selector */}
                 {!isSessionActive && (
                   <div>
-                    <Label>Select a task to focus on (optional)</Label>
+                    <Label>{t('features.focus.selectTask')}</Label>
                     <Select value={selectedTask || 'none'} onValueChange={(value) => setSelectedTask(value === 'none' ? null : value)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="No task selected" />
+                        <SelectValue placeholder={t('features.focus.noTaskSelected')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">No task</SelectItem>
+                        <SelectItem value="none">{t('features.focus.noTask')}</SelectItem>
                         {incompleteTasks.map((task) => (
                           <SelectItem key={task.id} value={task.id}>
                             {task.title}
@@ -551,28 +555,28 @@ const Focus = () => {
                 )}
 
                 {/* Controls */}
-                <div className="flex gap-2 justify-center">
+                <div className="flex gap-2 justify-center flex-wrap">
                   {!isSessionActive ? (
                     <Button onClick={startSession} size="lg">
-                      <Play className="w-5 h-5 mr-2" />
-                      Start Focus
+                      <Play className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                      {t('features.focus.startFocus')}
                     </Button>
                   ) : (
                     <>
                       {!isPaused ? (
                         <Button onClick={pauseSession} variant="secondary" size="lg">
-                          <Pause className="w-5 h-5 mr-2" />
-                          Pause
+                          <Pause className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                          {t('features.focus.pause')}
                         </Button>
                       ) : (
                         <Button onClick={resumeSession} size="lg">
-                          <Play className="w-5 h-5 mr-2" />
-                          Resume
+                          <Play className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                          {t('features.focus.resume')}
                         </Button>
                       )}
                       <Button onClick={skipSession} variant="outline" size="lg">
-                        <SkipForward className="w-5 h-5 mr-2" />
-                        Skip
+                        <SkipForward className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                        {t('features.focus.skip')}
                       </Button>
                     </>
                   )}
@@ -581,26 +585,26 @@ const Focus = () => {
             </Card>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-4">
+            <div className="grid grid-cols-3 gap-2 md:gap-4 mt-4">
               <Card>
-                <CardContent className="pt-6 text-center">
-                  <Trees className="w-8 h-8 mx-auto mb-2 text-green-600" />
-                  <div className="text-2xl font-bold">{survivedSessions.length}</div>
-                  <div className="text-sm text-muted-foreground">Trees Planted 🌳</div>
+                <CardContent className="pt-4 md:pt-6 text-center">
+                  <Trees className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-2 text-green-600" />
+                  <div className="text-xl md:text-2xl font-bold">{survivedSessions.length}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground">{t('features.focus.treesPlanted')}</div>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="pt-6 text-center">
-                  <Clock className="w-8 h-8 mx-auto mb-2 text-success" />
-                  <div className="text-2xl font-bold">{totalFocusTime}</div>
-                  <div className="text-sm text-muted-foreground">Focus Minutes</div>
+                <CardContent className="pt-4 md:pt-6 text-center">
+                  <Clock className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-2 text-success" />
+                  <div className="text-xl md:text-2xl font-bold">{totalFocusTime}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground">{t('features.focus.focusMinutes')}</div>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="pt-6 text-center">
-                  <Skull className="w-8 h-8 mx-auto mb-2 text-destructive" />
-                  <div className="text-2xl font-bold">{failedSessions.length}</div>
-                  <div className="text-sm text-muted-foreground">Trees Died 💀</div>
+                <CardContent className="pt-4 md:pt-6 text-center">
+                  <Skull className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-2 text-destructive" />
+                  <div className="text-xl md:text-2xl font-bold">{failedSessions.length}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground">{t('features.focus.treesDied')}</div>
                 </CardContent>
               </Card>
             </div>
@@ -610,18 +614,18 @@ const Focus = () => {
           <div className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Active Tasks</CardTitle>
+                <CardTitle>{t('features.focus.activeTasks')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {incompleteTasks.length === 0 ? (
-                  <p className="text-muted-foreground text-sm text-center py-4">
-                    No active tasks. Create one to get started!
+                  <p className={`text-muted-foreground text-sm text-center py-4 ${isRTL ? 'text-right' : ''}`}>
+                    {t('features.focus.noActiveTasks')}
                   </p>
                 ) : (
                   incompleteTasks.map((task) => (
                     <div
                       key={task.id}
-                      className="flex items-start gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                      className={`flex items-start gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
                     >
                       <button
                         onClick={() => toggleTaskComplete(task.id, task.is_completed)}
@@ -629,25 +633,25 @@ const Focus = () => {
                       >
                         <Circle className="w-5 h-5 text-muted-foreground" />
                       </button>
-                      <div className="flex-1 min-w-0">
+                      <div className={`flex-1 min-w-0 ${isRTL ? 'text-right' : ''}`}>
                         <div className="font-medium text-sm">{task.title}</div>
                         {task.description && (
                           <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
                         )}
-                        <div className="flex gap-2 mt-1">
+                        <div className={`flex gap-2 mt-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
                           {task.due_date && (
-                            <span className="text-xs flex items-center gap-1 text-muted-foreground">
+                            <span className={`text-xs flex items-center gap-1 text-muted-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
                               <Calendar className="w-3 h-3" />
-                              {new Date(task.due_date).toLocaleDateString()}
+                              {new Date(task.due_date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
                             </span>
                           )}
                           {task.has_reminder && (
-                            <span className="text-xs flex items-center gap-1 text-primary">
+                            <span className={`text-xs flex items-center gap-1 text-primary ${isRTL ? 'flex-row-reverse' : ''}`}>
                               <Bell className="w-3 h-3" />
                             </span>
                           )}
                           {task.repeat_pattern && (
-                            <span className="text-xs flex items-center gap-1 text-muted-foreground">
+                            <span className={`text-xs flex items-center gap-1 text-muted-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
                               <Repeat className="w-3 h-3" />
                               {task.repeat_pattern}
                             </span>
@@ -663,18 +667,18 @@ const Focus = () => {
             {completedTasks.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Completed</CardTitle>
+                  <CardTitle>{t('features.focus.completed')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {completedTasks.slice(0, 5).map((task) => (
                     <div
                       key={task.id}
-                      className="flex items-start gap-2 p-2 rounded-lg bg-success/10"
+                      className={`flex items-start gap-2 p-2 rounded-lg bg-success/10 ${isRTL ? 'flex-row-reverse' : ''}`}
                     >
                       <button onClick={() => toggleTaskComplete(task.id, task.is_completed)}>
                         <CheckCircle2 className="w-5 h-5 text-success" />
                       </button>
-                      <div className="flex-1 min-w-0">
+                      <div className={`flex-1 min-w-0 ${isRTL ? 'text-right' : ''}`}>
                         <div className="font-medium text-sm line-through text-muted-foreground">
                           {task.title}
                         </div>
@@ -687,6 +691,7 @@ const Focus = () => {
           </div>
         </div>
       </div>
+      <Navigation />
     </div>
   );
 };
