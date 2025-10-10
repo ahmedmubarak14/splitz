@@ -4,6 +4,7 @@ import { Home, Target, DollarSign, Trophy, User, Brain, Wrench } from 'lucide-re
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { config } from '@/lib/config';
+import { useIsRTL } from '@/lib/rtl-utils';
 import {
   Sidebar,
   SidebarContent,
@@ -36,6 +37,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const { t } = useTranslation();
+  const isRTL = useIsRTL();
   const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null } | null>(null);
   const [userEmail, setUserEmail] = useState<string>('');
 
@@ -72,7 +74,8 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className={`${isCollapsed ? 'w-16' : 'w-[260px]'} bg-card border-r border-border/30 transition-[width] duration-300`}
+      side={isRTL ? 'right' : 'left'}
+      className={`${isCollapsed ? 'w-16' : 'w-[260px]'} bg-card ${isRTL ? 'border-l' : 'border-r'} border-border/30 transition-[width] duration-300`}
       collapsible="icon"
     >
       <SidebarContent className="flex flex-col h-full bg-card">

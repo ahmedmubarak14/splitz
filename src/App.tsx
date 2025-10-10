@@ -10,6 +10,7 @@ import { HeaderActions } from "@/components/HeaderActions";
 import Navigation from "@/components/Navigation";
 import { Home } from "lucide-react";
 import splitzLogo from "@/assets/splitz-logo.png";
+import { useIsRTL } from "@/lib/rtl-utils";
 import './i18n/config';
 
 // Lazy load page components for better performance
@@ -42,6 +43,7 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isRTL = useIsRTL();
   const isLandingPage = location.pathname === '/';
   const isAuthPage = location.pathname === '/auth';
 
@@ -87,12 +89,12 @@ const AppContent = () => {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full">
+      <div className={`flex min-h-screen w-full ${isRTL ? 'flex-row-reverse' : ''}`}>
         <AppSidebar />
         <main className="flex-1 w-full bg-background">
           <header className="sticky top-0 z-40 bg-background border-b border-border/30">
-            <div className="h-16 flex items-center justify-between px-6">
-              <div className="flex items-center gap-4">
+            <div className={`h-16 flex items-center justify-between px-6 ${isRTL ? 'flex-row-reverse' : ''}`}>
+              <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm" />
                 <button 
                   onClick={handleLogoClick}
