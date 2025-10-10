@@ -3,10 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>splitz - Track Habits, Split Expenses, Challenge Friends</title>
-    <meta name="description" content="splitz helps you build habits, join challenges, and split expenses with friends—organized, connected, and reminded via Push & WhatsApp.">
-    <meta name="author" content="LinkUp" />
-    <meta name="keywords" content="habit tracker, expense splitter, friend challenges, Saudi Arabia, Gen Z app">
+    <meta name="theme-color" content="#8b5cf6" />
+    
+    <!-- SEO Meta Tags -->
+    <title>Splitz - Track Habits, Split Expenses, Challenge Friends</title>
+    <meta name="description" content="Build better habits, join friend challenges, and split expenses effortlessly. Stay organized and motivated with push notifications and WhatsApp reminders.">
+    <meta name="author" content="Splitz" />
+    <meta name="keywords" content="habit tracker, expense splitter, challenge app, productivity, finance management, group expenses, habit building, focus timer, pomodoro">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Splitz">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,14 +52,32 @@
   
   
   
-  <meta property="og:title" content="splitz - Track Habits, Split Expenses, Challenge Friends">
-  <meta name="twitter:title" content="splitz - Track Habits, Split Expenses, Challenge Friends">
-  <meta property="og:description" content="splitz helps you build habits, join challenges, and split expenses with friends—organized, connected, and reminded via Push &amp; WhatsApp.">
-  <meta name="twitter:description" content="splitz helps you build habits, join challenges, and split expenses with friends—organized, connected, and reminded via Push &amp; WhatsApp.">
+  <meta property="og:title" content="Splitz - Track Habits, Split Expenses, Challenge Friends">
+  <meta name="twitter:title" content="Splitz - Track Habits, Split Expenses, Challenge Friends">
+  <meta property="og:description" content="Build better habits, join friend challenges, and split expenses effortlessly. Stay organized and motivated with push notifications.">
+  <meta name="twitter:description" content="Build better habits, join friend challenges, and split expenses effortlessly. Stay organized and motivated with push notifications.">
+  <meta property="og:url" content="https://splitz.app">
+  <meta name="twitter:url" content="https://splitz.app">
 </head>
 
   <body>
+    <noscript>
+      <div style="text-align: center; padding: 50px; font-family: system-ui;">
+        <h1>JavaScript Required</h1>
+        <p>Splitz requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Register service worker for PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('Service Worker registered'))
+            .catch(err => console.log('Service Worker registration failed'));
+        });
+      }
+    </script>
   </body>
 </html>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { SEO, pageSEO } from '@/components/SEO';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
@@ -250,7 +251,9 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className={`min-h-screen bg-muted/20 ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
+    <>
+      <SEO {...pageSEO.dashboard} />
+      <div className={`min-h-screen bg-muted/20 ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className={`max-w-[1400px] mx-auto ${responsiveSpacing.sectionGap}`}>
         
         {/* Header */}
@@ -401,6 +404,7 @@ export default function Dashboard() {
         </Tabs>
       </div>
       <Navigation />
-    </div>
+      </div>
+    </>
   );
 }
