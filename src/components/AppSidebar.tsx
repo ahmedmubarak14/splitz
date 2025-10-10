@@ -34,7 +34,8 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const { t } = useTranslation();
-  const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null; email: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null } | null>(null);
+  const [userEmail, setUserEmail] = useState<string>('');
 
   const isCollapsed = state === 'collapsed';
 
@@ -42,9 +43,10 @@ export function AppSidebar() {
     const fetchProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        setUserEmail(user.email || '');
         const { data } = await supabase
           .from('profiles')
-          .select('full_name, avatar_url, email')
+          .select('full_name, avatar_url')
           .eq('id', user.id)
           .single();
         
@@ -110,7 +112,7 @@ export function AppSidebar() {
               </div>
               <div className="flex flex-col min-w-0 flex-1">
                 <span className="text-sm font-semibold truncate">{profile?.full_name || 'User'}</span>
-                <span className="text-xs text-muted-foreground truncate">{profile?.email || ''}</span>
+                <span className="text-xs text-muted-foreground truncate">{userEmail}</span>
               </div>
             </div>
           )}

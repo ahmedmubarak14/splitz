@@ -29,7 +29,8 @@ export function HeaderActions() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { i18n } = useTranslation();
-  const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null; email: string | null } | null>(null);
+  const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null } | null>(null);
+  const [userEmail, setUserEmail] = useState<string>('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -43,9 +44,10 @@ export function HeaderActions() {
     const fetchProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        setUserEmail(user.email || '');
         const { data } = await supabase
           .from('profiles')
-          .select('full_name, avatar_url, email')
+          .select('full_name, avatar_url')
           .eq('id', user.id)
           .single();
         
@@ -175,7 +177,7 @@ export function HeaderActions() {
           <DropdownMenuLabel>
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">{profile?.full_name || 'User'}</p>
-              <p className="text-xs leading-none text-muted-foreground">{profile?.email || ''}</p>
+              <p className="text-xs leading-none text-muted-foreground">{userEmail}</p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />

@@ -120,46 +120,8 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
         setInviteLink(linkToSend);
       }
 
-      // If email belongs to an existing user and this is a challenge or expense group, add directly
-      if (resourceType === 'challenge') {
-        const { data: existingUser } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('email', recipientEmail.trim())
-          .maybeSingle();
-
-        if (existingUser?.id) {
-          const { error: addErr } = await supabase
-            .from('challenge_participants')
-            .insert({ challenge_id: resourceId, user_id: existingUser.id });
-
-          if (!addErr || (addErr as any)?.code === '23505') {
-            toast.success('Member added to the challenge!');
-            setRecipientEmail('');
-            return;
-          }
-          // If adding fails for another reason, continue to email flow
-        }
-      } else if (resourceType === 'expense') {
-        const { data: existingUser } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('email', recipientEmail.trim())
-          .maybeSingle();
-
-        if (existingUser?.id) {
-          const { error: addErr } = await supabase
-            .from('expense_group_members')
-            .insert({ group_id: resourceId, user_id: existingUser.id });
-
-          if (!addErr || (addErr as any)?.code === '23505') {
-            toast.success('Member added to the group!');
-            setRecipientEmail('');
-            return;
-          }
-          // If adding fails for another reason, continue to email flow
-        }
-      }
+      // Since email is removed from profiles, we'll just send the invite email
+      // Users must join via the invite link
 
       const { data, error } = await supabase.functions.invoke('send-invite', {
         body: {
