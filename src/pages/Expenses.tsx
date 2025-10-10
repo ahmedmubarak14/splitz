@@ -684,11 +684,12 @@ const Expenses = () => {
                     )}
                   </div>
 
-                  <div className={`flex gap-2 mt-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <div className={`flex flex-wrap gap-2 mt-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     {/* Settle Up button if current user owes someone in this group */}
                     {group.simplified_debts?.some((d) => d.from_user_id === currentUserId) && (
                       <Button
-                        className="flex-1"
+                        size="sm"
+                        className="flex-1 min-w-[100px]"
                         variant="secondary"
                         onClick={() => {
                           const debt = group.simplified_debts!.find((d) => d.from_user_id === currentUserId)!;
@@ -699,16 +700,18 @@ const Expenses = () => {
                       </Button>
                     )}
                     <Button
+                      size="sm"
                       onClick={() => openAddExpense(group)}
-                      className="flex-1"
+                      className="flex-1 min-w-[100px]"
                       variant="outline"
                     >
-                      <Plus className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                      {t('expenses.addExpense')}
+                      <Plus className="w-4 h-4" />
                     </Button>
                     <Button
+                      size="sm"
                       onClick={() => openGroupDetails(group)}
-                      className="flex-1"
+                      variant="default"
+                      className="flex-1 min-w-[100px]"
                     >
                       {t('expenses.viewDetails')}
                     </Button>
