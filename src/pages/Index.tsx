@@ -532,8 +532,8 @@ const Index = () => {
                 </div>
               </div>
               <CardContent className="p-5">
-                <h3 className="text-lg font-semibold mb-2 text-foreground">Focus & Pomodoro</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">Pomodoro timer, task tracking, and grow your focus tree</p>
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.focus.title')}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.focus.desc')}</p>
               </CardContent>
             </Card>
 

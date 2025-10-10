@@ -141,6 +141,10 @@ const resources = {
           title: 'Friend Challenges',
           desc: 'Compete and grow together with group challenges',
         },
+        focus: {
+          title: 'Focus & Pomodoro',
+          desc: 'Pomodoro timer, task tracking, and grow your focus tree',
+        },
         splitter: {
           title: 'Expense Splitter',
           desc: 'Split expenses fairly with smart settlement links',
@@ -149,7 +153,8 @@ const resources = {
           title: 'Push + WhatsApp',
           desc: 'Get timely nudges where you actually see them',
         },
-        focus: {
+      },
+      focus: {
           title: 'Focus & Pomodoro',
           subtitle: 'Stay focused on what matters most',
           addTask: 'Add Task',
@@ -199,7 +204,6 @@ const resources = {
           sessionEndedEarly: 'Session ended early',
           treeKilled: '🍂 You left the page - your tree died!',
         },
-      },
       howItWorks: {
         title: 'How It Works',
         subtitle: 'Get started in three simple steps',
@@ -646,6 +650,10 @@ const resources = {
           title: 'تحديات الأصدقاء',
           desc: 'تنافس وانمُ معاً بتحديات جماعية',
         },
+        focus: {
+          title: 'التركيز والبومودورو',
+          desc: 'مؤقت البومودورو، تتبع المهام، وازرع شجرة تركيزك',
+        },
         splitter: {
           title: 'تقسيم المصاريف',
           desc: 'قسّم المصاريف بعدالة مع روابط تسوية ذكية',
@@ -654,7 +662,8 @@ const resources = {
           title: 'إشعارات + واتساب',
           desc: 'احصل على تنبيهات في الوقت المناسب حيث تراها فعلاً',
         },
-        focus: {
+      },
+      focus: {
           title: 'التركيز والبومودورو',
           subtitle: 'ركز على ما يهم أكثر',
           addTask: 'إضافة مهمة',
@@ -704,7 +713,6 @@ const resources = {
           sessionEndedEarly: 'انتهت الجلسة مبكراً',
           treeKilled: '🍂 غادرت الصفحة - ماتت شجرتك!',
         },
-      },
       howItWorks: {
         title: 'كيف تعمل',
         subtitle: 'ابدأ في ثلاث خطوات بسيطة',
