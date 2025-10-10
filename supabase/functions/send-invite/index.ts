@@ -1,11 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-// Using direct HTTP call to Resend API to avoid bundling issues
-const resendApiKey = Deno.env.get("RESEND_API_KEY") as string;
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.58.0";
+import { securityHeaders, sanitizeInput, sanitizeEmail, checkRateLimit, validateOrigin } from "../_shared/security.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const resendApiKey = Deno.env.get("RESEND_API_KEY") as string;
 
 interface InviteEmailRequest {
   recipientEmail: string;
@@ -17,11 +14,75 @@ interface InviteEmailRequest {
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: securityHeaders });
+  }
+
+  // Validate origin (CSRF protection)
+  if (!validateOrigin(req)) {
+    return new Response(JSON.stringify({ error: "Invalid origin" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json", ...securityHeaders },
+    });
   }
 
   try {
-    const { recipientEmail, inviteLink, resourceType, resourceName, inviterName }: InviteEmailRequest = await req.json();
+    // Verify authentication
+    const authHeader = req.headers.get("authorization") || req.headers.get("Authorization");
+    const token = authHeader?.replace("Bearer ", "");
+    if (!token) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...securityHeaders },
+      });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...securityHeaders },
+      });
+    }
+
+    // Rate limiting: 10 invites per hour
+    const rateLimit = await checkRateLimit(
+      user.id,
+      { action: "send-invite", maxRequests: 10, windowMinutes: 60 },
+      supabaseUrl,
+      supabaseKey
+    );
+
+    if (!rateLimit.allowed) {
+      return new Response(
+        JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
+        {
+          status: 429,
+          headers: { "Content-Type": "application/json", ...securityHeaders },
+        }
+      );
+    }
+
+    // Parse and sanitize inputs
+    const rawData = await req.json();
+    const recipientEmail = sanitizeEmail(rawData.recipientEmail || "");
+    const inviteLink = sanitizeInput(rawData.inviteLink || "");
+    const resourceType = sanitizeInput(rawData.resourceType || "");
+    const resourceName = sanitizeInput(rawData.resourceName || "");
+    const inviterName = sanitizeInput(rawData.inviterName || "User");
+
+    if (!recipientEmail || !inviteLink || !resourceType || !resourceName) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...securityHeaders },
+        }
+      );
+    }
 
     console.log("Sending invite email to:", recipientEmail);
 
@@ -136,7 +197,7 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ success: true, data }),
       {
         status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...securityHeaders },
       }
     );
   } catch (error: any) {
@@ -145,7 +206,7 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ error: error.message }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...securityHeaders },
       }
     );
   }

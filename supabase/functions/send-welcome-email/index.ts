@@ -1,11 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { securityHeaders, sanitizeInput, sanitizeEmail } from "../_shared/security.ts";
 
 const resendApiKey = Deno.env.get("RESEND_API_KEY") as string;
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
 
 interface WelcomeEmailRequest {
   recipientEmail: string;
@@ -14,11 +10,23 @@ interface WelcomeEmailRequest {
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: securityHeaders });
   }
 
   try {
-    const { recipientEmail, userName }: WelcomeEmailRequest = await req.json();
+    const rawData = await req.json();
+    const recipientEmail = sanitizeEmail(rawData.recipientEmail || "");
+    const userName = sanitizeInput(rawData.userName || "User");
+
+    if (!recipientEmail) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email address" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...securityHeaders },
+        }
+      );
+    }
 
     console.log("Sending welcome email to:", recipientEmail);
 
@@ -156,7 +164,7 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ success: true, data }),
       {
         status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...securityHeaders },
       }
     );
   } catch (error: any) {
@@ -165,7 +173,7 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ error: error.message }),
       {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...securityHeaders },
       }
     );
   }

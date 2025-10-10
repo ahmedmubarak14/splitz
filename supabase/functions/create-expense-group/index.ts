@@ -1,10 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.58.0";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { securityHeaders, sanitizeInput, sanitizeEmail, checkRateLimit, validateOrigin } from "../_shared/security.ts";
 
 interface CreateGroupRequest {
   groupName: string;
@@ -13,7 +9,15 @@ interface CreateGroupRequest {
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: securityHeaders });
+  }
+
+  // Validate origin (CSRF protection)
+  if (!validateOrigin(req)) {
+    return new Response(JSON.stringify({ error: "Invalid origin" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json", ...securityHeaders },
+    });
   }
 
   try {
@@ -22,15 +26,25 @@ const handler = async (req: Request): Promise<Response> => {
     if (!token) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...securityHeaders },
       });
     }
 
-    const { groupName, emails = [] }: CreateGroupRequest = await req.json();
-    if (!groupName || groupName.trim().length === 0) {
+    const rawData = await req.json();
+    const groupName = sanitizeInput(rawData.groupName || "");
+    const emails = (rawData.emails || []).map(sanitizeEmail).filter(Boolean);
+
+    if (!groupName || groupName.length === 0) {
       return new Response(JSON.stringify({ error: "Group name is required" }), {
         status: 400,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...securityHeaders },
+      });
+    }
+
+    if (emails.length > 50) {
+      return new Response(JSON.stringify({ error: "Maximum 50 emails allowed" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...securityHeaders },
       });
     }
 
@@ -40,7 +54,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("Missing Supabase envs");
       return new Response(JSON.stringify({ error: "Server not configured" }), {
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...securityHeaders },
       });
     }
 
@@ -54,16 +68,34 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("getUser error", userErr);
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...securityHeaders },
       });
     }
 
     const user = userData.user;
 
+    // Rate limiting: 20 groups per hour
+    const rateLimit = await checkRateLimit(
+      user.id,
+      { action: "create-expense-group", maxRequests: 20, windowMinutes: 60 },
+      SUPABASE_URL,
+      SERVICE_ROLE
+    );
+
+    if (!rateLimit.allowed) {
+      return new Response(
+        JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
+        {
+          status: 429,
+          headers: { "Content-Type": "application/json", ...securityHeaders },
+        }
+      );
+    }
+
     // Create group (bypass RLS using service role)
     const { data: group, error: groupError } = await supabase
       .from("expense_groups")
-      .insert({ name: groupName.trim(), created_by: user.id })
+      .insert({ name: groupName, created_by: user.id })
       .select()
       .single();
 
@@ -71,7 +103,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("Insert expense_groups error", groupError);
       return new Response(JSON.stringify({ error: groupError.message }), {
         status: 400,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...securityHeaders },
       });
     }
 
@@ -100,7 +132,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       const foundEmailSet = new Set((foundProfiles || []).map((p: any) => (p.email || "").toLowerCase()));
-      const notFoundEmails = emails.filter((e) => !foundEmailSet.has(e.toLowerCase()));
+      const notFoundEmails = emails.filter((e: string) => !foundEmailSet.has(e.toLowerCase()));
 
       const membersToInsert = (foundProfiles || [])
         .filter((p: any) => p.id !== user.id)
@@ -166,13 +198,13 @@ const handler = async (req: Request): Promise<Response> => {
 
     return new Response(
       JSON.stringify({ group, addedCount, invitationsCreated, emailsSent }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      { status: 200, headers: { "Content-Type": "application/json", ...securityHeaders } }
     );
   } catch (error: any) {
     console.error("create-expense-group error", error);
     return new Response(JSON.stringify({ error: error?.message || "Unexpected error" }), {
       status: 500,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+      headers: { "Content-Type": "application/json", ...securityHeaders },
     });
   }
 };
