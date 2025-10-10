@@ -51,7 +51,8 @@ const Focus = () => {
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
-  const [sessionType, setSessionType] = useState<'work' | 'short_break' | 'long_break'>('work');
+  const [sessionType, setSessionType] = useState<'work' | 'short_break' | 'long_break' | 'custom'>('work');
+  const [customDuration, setCustomDuration] = useState(25);
   const [treeGrowth, setTreeGrowth] = useState(0);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
@@ -162,7 +163,10 @@ const Focus = () => {
   const startSession = async () => {
     if (!user) return;
 
-    const duration = sessionType === 'work' ? 25 : sessionType === 'short_break' ? 5 : 15;
+    const duration = sessionType === 'work' ? 25 : 
+                    sessionType === 'short_break' ? 5 : 
+                    sessionType === 'long_break' ? 15 : 
+                    customDuration;
     setTimeLeft(duration * 60);
 
     const { data, error } = await supabase
@@ -172,6 +176,7 @@ const Focus = () => {
         task_id: selectedTask,
         duration_minutes: duration,
         session_type: sessionType,
+        start_time: new Date().toISOString(),
       }])
       .select()
       .single();
@@ -199,9 +204,9 @@ const Focus = () => {
           return 0;
         }
         
-        // Grow tree as time passes (for 25 min work session)
-        if (sessionType === 'work') {
-          const duration = 25 * 60;
+        // Grow tree as time passes (for work and custom sessions)
+        if (sessionType === 'work' || sessionType === 'custom') {
+          const duration = sessionType === 'work' ? 25 * 60 : customDuration * 60;
           const progress = ((duration - prev) / duration) * 100;
           setTreeGrowth(progress);
         }
@@ -363,7 +368,7 @@ const Focus = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Session Type Selector */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                   <Button
                     variant={sessionType === 'work' ? 'default' : 'outline'}
                     size="sm"
@@ -388,7 +393,30 @@ const Focus = () => {
                   >
                     Long Break (15 min)
                   </Button>
+                  <Button
+                    variant={sessionType === 'custom' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => !isSessionActive && setSessionType('custom')}
+                    disabled={isSessionActive}
+                  >
+                    Custom
+                  </Button>
                 </div>
+
+                {/* Custom Duration Input */}
+                {sessionType === 'custom' && !isSessionActive && (
+                  <div className="flex items-center gap-2">
+                    <Label>Duration (minutes):</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="120"
+                      value={customDuration}
+                      onChange={(e) => setCustomDuration(Math.max(1, Math.min(120, parseInt(e.target.value) || 1)))}
+                      className="w-24"
+                    />
+                  </div>
+                )}
 
                 {/* Timer Display */}
                 <div className="text-center py-8">
@@ -397,10 +425,10 @@ const Focus = () => {
                   </div>
                   
                   {/* Tree Growth */}
-                  {isSessionActive && sessionType === 'work' && (
+                  {isSessionActive && (sessionType === 'work' || sessionType === 'custom') && (
                     <div className="space-y-2">
                       <div className="flex items-center justify-center gap-2">
-                        <Trees className="w-8 h-8 text-success" style={{ opacity: treeGrowth / 100 }} />
+                        <Trees className="w-8 h-8 text-green-600" style={{ opacity: Math.max(0.3, treeGrowth / 100) }} />
                         <Sparkles className="w-4 h-4 text-yellow-500" style={{ opacity: treeGrowth / 100 }} />
                       </div>
                       <Progress value={treeGrowth} className="h-2" />
