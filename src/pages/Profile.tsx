@@ -12,6 +12,8 @@ import { LogOut, Mail, Calendar, Globe, Image as ImageIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import NotificationPreferences from '@/components/NotificationPreferences';
+import { ChangePasswordDialog } from '@/components/ChangePasswordDialog';
+import { DeleteAccountDialog } from '@/components/DeleteAccountDialog';
 import type { Tables, TablesUpdate } from '@/integrations/supabase/types';
 import type { User } from '@supabase/supabase-js';
 import { useIsRTL } from '@/lib/rtl-utils';
@@ -230,14 +232,22 @@ const Profile = () => {
                 {saving ? t('profile.saving') : t('profile.saveChanges')}
               </Button>
 
-              <Button
-                onClick={handleLogout}
-                variant="destructive"
-                className="w-full"
-              >
-                <LogOut className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                {t('profile.logout')}
-              </Button>
+              <div className="pt-4 space-y-3">
+                <h4 className="text-sm font-semibold text-muted-foreground">Security</h4>
+                <ChangePasswordDialog />
+                <DeleteAccountDialog />
+              </div>
+
+              <div className="pt-4">
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <LogOut className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                  {t('profile.logout')}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

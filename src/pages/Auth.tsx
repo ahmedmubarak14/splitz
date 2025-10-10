@@ -161,9 +161,19 @@ const Auth = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className={`text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {t('auth.password')}
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className={`text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {t('auth.password')}
+                  </Label>
+                  {isLogin && (
+                    <Link 
+                      to="/forgot-password" 
+                      className="text-xs text-primary hover:underline"
+                    >
+                      Forgot password?
+                    </Link>
+                  )}
+                </div>
                 <PasswordInput
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

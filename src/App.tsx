@@ -15,6 +15,8 @@ import './i18n/config';
 // Lazy load page components for better performance
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Habits = lazy(() => import("./pages/Habits"));
 const Focus = lazy(() => import("./pages/Focus"));
@@ -54,12 +56,14 @@ const AppContent = () => {
     }
   };
 
-  if (isLandingPage || isAuthPage) {
+  if (isLandingPage || isAuthPage || location.pathname === '/forgot-password' || location.pathname === '/reset-password') {
     return (
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/join/:inviteCode" element={<JoinInvite />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/habits" element={<Habits />} />
@@ -96,6 +100,8 @@ const AppContent = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/join/:inviteCode" element={<JoinInvite />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/habits" element={<Habits />} />
