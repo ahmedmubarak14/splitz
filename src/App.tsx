@@ -24,6 +24,7 @@ const Expenses = lazy(() => import("./pages/Expenses"));
 const Challenges = lazy(() => import("./pages/Challenges"));
 const Profile = lazy(() => import("./pages/Profile"));
 const DevTools = lazy(() => import("./pages/DevTools"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
 const JoinInvite = lazy(() => import("./pages/JoinInvite"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -57,7 +58,7 @@ const AppContent = () => {
     }
   };
 
-  if (isLandingPage || isAuthPage || location.pathname === '/forgot-password' || location.pathname === '/reset-password') {
+  if (isLandingPage || isAuthPage || location.pathname === '/forgot-password' || location.pathname === '/reset-password' || location.pathname === '/onboarding') {
     return (
       <Suspense fallback={<PageLoader />}>
         <Routes>
@@ -66,12 +67,14 @@ const AppContent = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/join/:inviteCode" element={<JoinInvite />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/habits" element={<Habits />} />
           <Route path="/focus" element={<Focus />} />
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/challenges" element={<Challenges />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/dev-tools" element={<DevTools />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
@@ -104,6 +107,7 @@ const AppContent = () => {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/join/:inviteCode" element={<JoinInvite />} />
+              <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/habits" element={<Habits />} />
               <Route path="/focus" element={<Focus />} />

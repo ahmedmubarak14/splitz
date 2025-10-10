@@ -57,6 +57,22 @@ export default function Dashboard() {
       navigate('/auth');
       return;
     }
+    
+    // Check if onboarding is completed
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', user.id)
+        .maybeSingle();
+      
+      if (profile && !profile.onboarding_completed) {
+        navigate('/onboarding');
+        return;
+      }
+    }
+    
     fetchDashboardData();
   };
 

@@ -18,6 +18,7 @@ import HabitCalendar from '@/components/HabitCalendar';
 import { HabitStatistics } from '@/components/HabitStatistics';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing, responsiveGrid } from '@/lib/responsive-utils';
+import { EmptyState } from '@/components/EmptyState';
 
 type Habit = {
   id: string;
@@ -262,15 +263,13 @@ const Habits = () => {
         {loading ? (
           <SkeletonList count={6} />
         ) : habits.length === 0 ? (
-          <Card className="border border-border">
-            <CardContent className="flex flex-col items-center justify-center py-20 text-center">
-              <Target className="w-16 h-16 text-muted mb-4" />
-              <h3 className={`${responsiveText.sectionTitle} font-semibold mb-2`}>{t('habits.startJourney')}</h3>
-              <p className={`${responsiveText.small} text-muted-foreground max-w-md`}>
-                {t('habits.noHabits')}
-              </p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Target}
+            title={t('habits.startJourney')}
+            description={t('habits.noHabits')}
+            actionLabel={t('habits.createNew')}
+            onAction={() => setDialogOpen(true)}
+          />
         ) : (
           <div className={`grid ${responsiveGrid.cards} ${responsiveSpacing.gridGap}`}>
             {habits.map((habit) => (
