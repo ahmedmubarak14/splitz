@@ -70,11 +70,32 @@ export default function Dashboard() {
         .select('*')
         .eq('user_id', user.id);
 
-      const { data: challenges } = await supabase
+      // Fetch challenges where user is creator
+      const { data: createdChallenges } = await supabase
         .from('challenges')
         .select('*')
-        .or(`creator_id.eq.${user.id},challenge_participants.user_id.eq.${user.id}`)
+        .eq('creator_id', user.id)
         .gte('end_date', new Date().toISOString().split('T')[0]);
+
+      // Fetch challenges where user is participant
+      const { data: participantChallenges } = await supabase
+        .from('challenge_participants')
+        .select('challenge_id')
+        .eq('user_id', user.id);
+
+      const participantChallengeIds = participantChallenges?.map(p => p.challenge_id) || [];
+      
+      let joinedChallenges: any[] = [];
+      if (participantChallengeIds.length > 0) {
+        const { data } = await supabase
+          .from('challenges')
+          .select('*')
+          .in('id', participantChallengeIds)
+          .gte('end_date', new Date().toISOString().split('T')[0]);
+        joinedChallenges = data || [];
+      }
+
+      const challenges = [...(createdChallenges || []), ...joinedChallenges];
 
       // Fetch focus sessions (only completed ones with end_time)
       const { data: focusSessions } = await supabase
