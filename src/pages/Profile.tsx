@@ -238,6 +238,11 @@ const Profile = () => {
                 <DeleteAccountDialog />
               </div>
 
+              <div className="pt-6 space-y-3">
+                <h4 className="text-sm font-semibold text-muted-foreground">Notifications</h4>
+                <NotificationPreferences />
+              </div>
+
               <div className="pt-4">
                 <Button
                   onClick={handleLogout}

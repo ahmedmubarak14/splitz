@@ -1,33 +1,29 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { Bell, Clock } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Preferences {
   habit_reminders: boolean;
   challenge_updates: boolean;
   expense_alerts: boolean;
-  email_notifications: boolean;
   push_notifications: boolean;
+  email_notifications: boolean;
   reminder_time: string;
 }
 
-const NotificationPreferences = () => {
+export default function NotificationPreferences() {
   const [preferences, setPreferences] = useState<Preferences>({
     habit_reminders: true,
     challenge_updates: true,
     expense_alerts: true,
-    email_notifications: false,
     push_notifications: false,
+    email_notifications: false,
     reminder_time: '09:00:00',
   });
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchPreferences();
@@ -42,12 +38,19 @@ const NotificationPreferences = () => {
         .from('notification_preferences')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') throw error;
 
       if (data) {
-        setPreferences(data);
+        setPreferences({
+          habit_reminders: data.habit_reminders,
+          challenge_updates: data.challenge_updates,
+          expense_alerts: data.expense_alerts,
+          push_notifications: data.push_notifications,
+          email_notifications: data.email_notifications,
+          reminder_time: data.reminder_time,
+        });
       }
     } catch (error) {
       console.error('Error fetching preferences:', error);
@@ -56,8 +59,7 @@ const NotificationPreferences = () => {
     }
   };
 
-  const savePreferences = async () => {
-    setSaving(true);
+  const updatePreference = async (key: keyof Preferences, value: boolean | string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -66,158 +68,112 @@ const NotificationPreferences = () => {
         .from('notification_preferences')
         .upsert({
           user_id: user.id,
-          ...preferences,
+          [key]: value,
+        }, {
+          onConflict: 'user_id'
         });
 
       if (error) throw error;
 
-      toast.success('Preferences saved');
+      setPreferences(prev => ({ ...prev, [key]: value }));
+      toast.success("Preferences updated");
     } catch (error) {
-      console.error('Error saving preferences:', error);
-      toast.error('Failed to save preferences');
-    } finally {
-      setSaving(false);
+      console.error('Error updating preferences:', error);
+      toast.error("Failed to update preferences");
     }
   };
 
-  const updatePreference = (key: keyof Preferences, value: boolean | string) => {
-    setPreferences(prev => ({ ...prev, [key]: value }));
-  };
-
   if (loading) {
-    return (
-      <Card>
-        <CardContent className="p-8 text-center text-muted-foreground">
-          Loading preferences...
-        </CardContent>
-      </Card>
-    );
+    return <div className="p-4">Loading...</div>;
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Bell className="w-5 h-5" />
-          Notification Preferences
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* In-App Notifications */}
-        <div>
-          <h3 className="font-semibold mb-3">In-App Notifications</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="habit-reminders" className="font-medium">
-                  Habit Reminders
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Get notified about your daily habits
-                </p>
-              </div>
-              <Switch
-                id="habit-reminders"
-                checked={preferences.habit_reminders}
-                onCheckedChange={(checked) => updatePreference('habit_reminders', checked)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="challenge-updates" className="font-medium">
-                  Challenge Updates
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Get updates on challenge progress and participants
-                </p>
-              </div>
-              <Switch
-                id="challenge-updates"
-                checked={preferences.challenge_updates}
-                onCheckedChange={(checked) => updatePreference('challenge_updates', checked)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="expense-alerts" className="font-medium">
-                  Expense Alerts
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Get notified about new expenses and payments
-                </p>
-              </div>
-              <Switch
-                id="expense-alerts"
-                checked={preferences.expense_alerts}
-                onCheckedChange={(checked) => updatePreference('expense_alerts', checked)}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Other Notification Channels */}
-        <div>
-          <h3 className="font-semibold mb-3">Notification Channels</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="email-notifs" className="font-medium">
-                  Email Notifications
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Receive notifications via email
-                </p>
-              </div>
-              <Switch
-                id="email-notifs"
-                checked={preferences.email_notifications}
-                onCheckedChange={(checked) => updatePreference('email_notifications', checked)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="push-notifs" className="font-medium">
-                  Push Notifications
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  Receive browser push notifications
-                </p>
-              </div>
-              <Switch
-                id="push-notifs"
-                checked={preferences.push_notifications}
-                onCheckedChange={(checked) => updatePreference('push_notifications', checked)}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Reminder Time */}
-        <div>
-          <h3 className="font-semibold mb-3 flex items-center gap-2">
-            <Clock className="w-4 h-4" />
-            Daily Reminder Time
-          </h3>
-          <div className="flex items-center gap-2">
-            <Input
-              type="time"
-              value={preferences.reminder_time.substring(0, 5)}
-              onChange={(e) => updatePreference('reminder_time', e.target.value + ':00')}
-              className="w-40"
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Notification Types</CardTitle>
+          <CardDescription>Choose what you want to be notified about</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="habit_reminders" className="flex flex-col gap-1">
+              <span>Habit Reminders</span>
+              <span className="font-normal text-sm text-muted-foreground">
+                Get reminded to complete your daily habits
+              </span>
+            </Label>
+            <Switch
+              id="habit_reminders"
+              checked={preferences.habit_reminders}
+              onCheckedChange={(checked) => updatePreference('habit_reminders', checked)}
             />
-            <span className="text-sm text-muted-foreground">Riyadh Time (UTC+3)</span>
           </div>
-        </div>
 
-        <Button onClick={savePreferences} disabled={saving} className="w-full">
-          {saving ? 'Saving...' : 'Save Preferences'}
-        </Button>
-      </CardContent>
-    </Card>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="challenge_updates" className="flex flex-col gap-1">
+              <span>Challenge Updates</span>
+              <span className="font-normal text-sm text-muted-foreground">
+                Get notified about challenge progress and milestones
+              </span>
+            </Label>
+            <Switch
+              id="challenge_updates"
+              checked={preferences.challenge_updates}
+              onCheckedChange={(checked) => updatePreference('challenge_updates', checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="expense_alerts" className="flex flex-col gap-1">
+              <span>Expense Alerts</span>
+              <span className="font-normal text-sm text-muted-foreground">
+                Get notified about new expenses and settlements
+              </span>
+            </Label>
+            <Switch
+              id="expense_alerts"
+              checked={preferences.expense_alerts}
+              onCheckedChange={(checked) => updatePreference('expense_alerts', checked)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Delivery Methods</CardTitle>
+          <CardDescription>Choose how you want to receive notifications</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="push_notifications" className="flex flex-col gap-1">
+              <span>Push Notifications</span>
+              <span className="font-normal text-sm text-muted-foreground">
+                Receive notifications in your browser
+              </span>
+            </Label>
+            <Switch
+              id="push_notifications"
+              checked={preferences.push_notifications}
+              onCheckedChange={(checked) => updatePreference('push_notifications', checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="email_notifications" className="flex flex-col gap-1">
+              <span>Email Notifications</span>
+              <span className="font-normal text-sm text-muted-foreground">
+                Receive notifications via email
+              </span>
+            </Label>
+            <Switch
+              id="email_notifications"
+              checked={preferences.email_notifications}
+              onCheckedChange={(checked) => updatePreference('email_notifications', checked)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
-};
-
-export default NotificationPreferences;
+}
