@@ -98,5 +98,9 @@ export const validateOrigin = (req: Request): boolean => {
   ];
   
   if (!origin) return true; // Allow requests without origin (e.g., server-to-server)
+  
+  // Allow Lovable preview domains
+  if (origin.includes('.lovableproject.com')) return true;
+  
   return allowedOrigins.some(allowed => origin.startsWith(allowed));
 };
