@@ -91,7 +91,7 @@ export function HeaderActions() {
   };
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-0.5">
       {/* Search */}
       <Sheet open={searchOpen} onOpenChange={setSearchOpen}>
         <SheetTrigger asChild>
