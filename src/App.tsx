@@ -93,32 +93,36 @@ const AppContent = () => {
         <AppSidebar />
         <main className="flex-1 w-full bg-background">
           <header className="sticky top-0 z-40 bg-background border-b border-border/30" dir={isRTL ? 'rtl' : 'ltr'}>
-            <div className="h-16 flex items-center justify-between px-6">
+            <div className="h-16 flex items-center justify-between px-4 md:px-6">
               {isRTL ? (
                 <>
-                  <HeaderActions />
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <HeaderActions />
+                  </div>
+                  <div className="flex items-center gap-3">
                     <button 
                       onClick={handleLogoClick}
                       className="flex items-center hover:opacity-80 transition-opacity"
                     >
-                      <img src={splitzLogo} alt="Splitz" className="h-8" loading="lazy" />
+                      <img src={splitzLogo} alt="Splitz" className="h-7" loading="lazy" />
                     </button>
-                    <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm" />
+                    <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm h-9 w-9" />
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="flex items-center gap-4">
-                    <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm" />
+                  <div className="flex items-center gap-3">
+                    <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm h-9 w-9" />
                     <button 
                       onClick={handleLogoClick}
                       className="flex items-center hover:opacity-80 transition-opacity"
                     >
-                      <img src={splitzLogo} alt="Splitz" className="h-8" loading="lazy" />
+                      <img src={splitzLogo} alt="Splitz" className="h-7" loading="lazy" />
                     </button>
                   </div>
-                  <HeaderActions />
+                  <div className="flex items-center gap-2">
+                    <HeaderActions />
+                  </div>
                 </>
               )}
             </div>
