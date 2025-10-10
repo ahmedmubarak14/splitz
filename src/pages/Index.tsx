@@ -58,6 +58,7 @@ const Index = () => {
               src={splitzLogo}
               alt={t('common.logoAlt')}
               className="h-8 w-auto rounded-none cursor-pointer hover:opacity-80 transition-opacity"
+              loading="eager"
             />
           </Link>
 

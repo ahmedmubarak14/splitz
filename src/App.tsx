@@ -90,7 +90,7 @@ const AppContent = () => {
                   onClick={handleLogoClick}
                   className="flex items-center hover:opacity-80 transition-opacity"
                 >
-                  <img src={splitzLogo} alt="Splitz" className="h-8" />
+                  <img src={splitzLogo} alt="Splitz" className="h-8" loading="lazy" />
                 </button>
               </div>
               <HeaderActions />

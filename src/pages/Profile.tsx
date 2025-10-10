@@ -149,7 +149,7 @@ const Profile = () => {
             <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <div className="w-20 h-20 rounded-full overflow-hidden bg-accent flex items-center justify-center">
                 {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                  <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" loading="lazy" />
                 ) : (
                   <div className="text-foreground text-3xl font-semibold">
                     {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase()}
