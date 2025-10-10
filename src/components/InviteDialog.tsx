@@ -133,14 +133,10 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
         },
       });
 
-      // Log full error response for debugging
-      console.log('Edge function response:', { data, error });
-      
       // Handle Resend 403/Test-mode gracefully (error can be in either `error` or `data.error`)
       const serverMsg = (data as any)?.error || (error as any)?.message || '';
       if (error || serverMsg) {
         const msg = String(serverMsg);
-        console.error('Full error details:', msg);
         
         const isResendBlocked = msg.includes('testing emails') || msg.includes('Resend API error 403') || msg.includes('403') || msg.includes('Domain not found');
         if (isResendBlocked) {

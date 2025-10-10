@@ -148,13 +148,7 @@ const Expenses = () => {
           expenseMembersData?.some(em => em.expense_id === expense.id)
         );
         
-        // Check for orphaned expenses (expenses without members) and log warning
-        const orphanedExpenses = groupExpenses.filter(expense => 
-          !expenseMembersData?.some(em => em.expense_id === expense.id)
-        );
-        if (orphanedExpenses.length > 0) {
-          console.warn(`Group "${group.name}" has ${orphanedExpenses.length} expense(s) without members. These are excluded from balance calculations.`);
-        }
+        // Orphaned expenses (expenses without members) are excluded from balance calculations
 
         // Get simplified debts from net_balances table
         const simplified_debts = groupNetBalances.map(nb => ({
@@ -179,7 +173,6 @@ const Expenses = () => {
 
       setGroups(processedGroups);
     } catch (error) {
-      console.error('Error fetching groups:', error);
       toast.error('Failed to load expense groups');
     } finally {
       setLoading(false);
@@ -200,7 +193,7 @@ const Expenses = () => {
 
       setGroupMembers(profiles?.map(p => ({ id: p.id, name: p.full_name || 'Unknown' })) || []);
     } catch (error) {
-      console.error('Error fetching members:', error);
+      toast.error('Failed to fetch group members');
     }
   };
 
@@ -236,7 +229,6 @@ const Expenses = () => {
       setCreateDialogOpen(false);
       fetchGroups();
     } catch (error) {
-      console.error('Error creating group:', error);
       toast.error('Failed to create group');
     }
   };
@@ -308,7 +300,6 @@ const Expenses = () => {
       setAddExpenseDialogOpen(false);
       fetchGroups();
     } catch (error) {
-      console.error('Error adding expense:', error);
       toast.error('Failed to add expense');
     }
   };
@@ -358,7 +349,7 @@ const Expenses = () => {
 
       setGroupExpenses(processedExpenses);
     } catch (error) {
-      console.error('Error fetching expenses:', error);
+      toast.error('Failed to fetch expenses');
     }
   };
 
@@ -395,7 +386,6 @@ const Expenses = () => {
         await fetchGroupExpenses(selectedGroup.id);
       }
     } catch (error) {
-      console.error('Error updating expense:', error);
       toast.error('Failed to update expense');
     }
   };
@@ -415,7 +405,6 @@ const Expenses = () => {
         await fetchGroupExpenses(selectedGroup.id);
       }
     } catch (error) {
-      console.error('Error deleting expense:', error);
       toast.error('Failed to delete expense');
     }
   };
@@ -471,7 +460,6 @@ const Expenses = () => {
         await fetchGroupExpenses(selectedGroup.id);
       }
     } catch (error) {
-      console.error('Error recording payment:', error);
       toast.error(t('expenses.paymentError'));
     }
   };

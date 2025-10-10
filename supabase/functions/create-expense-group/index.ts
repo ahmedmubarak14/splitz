@@ -74,10 +74,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     const user = userData.user;
 
-    // Rate limiting: 20 groups per hour
+    // Rate limiting: 10 groups per hour
     const rateLimit = await checkRateLimit(
       user.id,
-      { action: "create-expense-group", maxRequests: 20, windowMinutes: 60 },
+      { action: "create-expense-group", maxRequests: 10, windowMinutes: 60 },
       SUPABASE_URL,
       SERVICE_ROLE
     );

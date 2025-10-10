@@ -118,7 +118,6 @@ const Challenges = () => {
 
       setChallenges(processedChallenges);
     } catch (error) {
-      console.error('Error fetching challenges:', error);
       toast.error('Failed to load challenges');
     } finally {
       setLoading(false);
@@ -146,8 +145,6 @@ const Challenges = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      console.log('Creating challenge with user:', user.id);
-
       // Defensive: send creator_id explicitly as fallback (trigger will override for security)
       const payload: TablesInsert<'challenges'> = {
         creator_id: user.id,
@@ -156,8 +153,6 @@ const Challenges = () => {
         start_date: startDate,
         end_date: endDate,
       };
-
-      console.log('Challenge payload:', payload);
 
       const { data: created, error } = await supabase.from('challenges').insert(payload).select('id').single();
       
@@ -185,8 +180,7 @@ const Challenges = () => {
       setDialogOpen(false);
       fetchChallenges();
     } catch (error: any) {
-      console.error('Error creating challenge:', error);
-      const message = error.code === '42501' 
+      const message = error.code === '42501'
         ? 'Permission denied. Please try logging in again.'
         : error.message || 'Failed to create challenge';
       toast.error(message);
@@ -215,7 +209,6 @@ const Challenges = () => {
         fetchChallenges();
       }
     } catch (error) {
-      console.error('Error joining challenge:', error);
       toast.error('Failed to join challenge');
     }
   };
@@ -236,7 +229,6 @@ const Challenges = () => {
       toast.success('Left challenge');
       fetchChallenges();
     } catch (error) {
-      console.error('Error leaving challenge:', error);
       toast.error('Failed to leave challenge');
     }
   };
@@ -294,7 +286,6 @@ const Challenges = () => {
         setSelectedChallenge({ ...updated, user_progress: newProgress });
       }
     } catch (error) {
-      console.error('Error updating progress:', error);
       toast.error('Failed to update progress');
     }
   };
@@ -340,7 +331,6 @@ const Challenges = () => {
       setEditDialogOpen(false);
       fetchChallenges();
     } catch (error) {
-      console.error('Error updating challenge:', error);
       toast.error('Failed to update challenge');
     }
   };
@@ -369,7 +359,6 @@ const Challenges = () => {
       setDeletingChallenge(null);
       fetchChallenges();
     } catch (error) {
-      console.error('Error deleting challenge:', error);
       toast.error('Failed to delete challenge');
     }
   };

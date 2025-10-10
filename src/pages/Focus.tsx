@@ -127,7 +127,7 @@ const Focus = () => {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching tasks:', error);
+      toast.error('Failed to fetch tasks');
       return;
     }
 
@@ -143,7 +143,7 @@ const Focus = () => {
       .limit(100);
 
     if (error) {
-      console.error('Error fetching sessions:', error);
+      toast.error('Failed to fetch sessions');
       return;
     }
 
@@ -163,7 +163,7 @@ const Focus = () => {
       .eq('user_id', user?.id);
 
     if (error) {
-      console.error('Error cleaning up orphaned sessions:', error);
+      toast.error('Failed to cleanup sessions');
     }
   };
 
@@ -195,7 +195,6 @@ const Focus = () => {
 
     if (error) {
       toast.error(t('focus.taskFailed'));
-      console.error(error);
       return;
     }
 
@@ -252,7 +251,6 @@ const Focus = () => {
 
     if (error) {
       toast.error(t('focus.sessionStartFailed'));
-      console.error(error);
       return;
     }
 
@@ -318,7 +316,6 @@ const Focus = () => {
         .eq('id', currentSessionId);
 
       if (error) {
-        console.error('Error completing session:', error);
         toast.error(t('focus.sessionSaveFailed'));
       } else {
         if (treeSurvived) {

@@ -48,10 +48,10 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    // Rate limiting: 10 invites per hour
+    // Rate limiting: 20 invites per hour
     const rateLimit = await checkRateLimit(
       user.id,
-      { action: "send-invite", maxRequests: 10, windowMinutes: 60 },
+      { action: "send-invite", maxRequests: 20, windowMinutes: 60 },
       supabaseUrl,
       supabaseKey
     );
