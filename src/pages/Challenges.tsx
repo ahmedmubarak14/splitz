@@ -146,15 +146,20 @@ const Challenges = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Server-side trigger will set creator_id automatically
-      const payload: Omit<TablesInsert<'challenges'>, 'creator_id'> = {
+      console.log('Creating challenge with user:', user.id);
+
+      // Defensive: send creator_id explicitly as fallback (trigger will override for security)
+      const payload: TablesInsert<'challenges'> = {
+        creator_id: user.id,
         name: name.trim(),
         description: description.trim() || null,
         start_date: startDate,
         end_date: endDate,
       };
 
-      const { data: created, error } = await supabase.from('challenges').insert(payload as TablesInsert<'challenges'>).select('id').single();
+      console.log('Challenge payload:', payload);
+
+      const { data: created, error } = await supabase.from('challenges').insert(payload).select('id').single();
       
       if (error) {
         if (error.code === '42501') {
