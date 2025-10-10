@@ -146,26 +146,22 @@ const Challenges = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      console.log('Creating challenge with user:', user.id);
-
-      const payload: TablesInsert<'challenges'> = {
-        creator_id: user.id,
+      // Server-side trigger will set creator_id automatically
+      const payload: Omit<TablesInsert<'challenges'>, 'creator_id'> = {
         name: name.trim(),
         description: description.trim() || null,
         start_date: startDate,
         end_date: endDate,
       };
 
-      console.log('Challenge payload:', payload);
-
-      const { data: created, error } = await supabase.from('challenges').insert(payload).select('id').single();
+      const { data: created, error } = await supabase.from('challenges').insert(payload as TablesInsert<'challenges'>).select('id').single();
       
       if (error) {
-        console.error('Challenge creation error:', error);
+        if (error.code === '42501') {
+          toast.error('Permission denied. Please try logging in again.');
+        }
         throw error;
       }
-
-      console.log('Challenge created:', created);
 
       const { error: participantError } = await supabase
         .from('challenge_participants')
@@ -174,10 +170,7 @@ const Challenges = () => {
           user_id: user.id,
           progress: 0,
         });
-      if (participantError) {
-        console.error('Participant error:', participantError);
-        throw participantError;
-      }
+      if (participantError) throw participantError;
 
       toast.success('Challenge created');
       setName('');
@@ -188,7 +181,10 @@ const Challenges = () => {
       fetchChallenges();
     } catch (error: any) {
       console.error('Error creating challenge:', error);
-      toast.error(error.message || 'Failed to create challenge');
+      const message = error.code === '42501' 
+        ? 'Permission denied. Please try logging in again.'
+        : error.message || 'Failed to create challenge';
+      toast.error(message);
     }
   };
 
