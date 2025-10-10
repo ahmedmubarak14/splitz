@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Target, DollarSign, Trophy, User, Brain } from 'lucide-react';
+import { Home, Target, DollarSign, Trophy, User, Brain, Wrench } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -28,6 +28,7 @@ const workspaceItems = [
 
 const accountItems = [
   { path: '/profile', icon: User, labelKey: 'nav.profile', label: 'Profile' },
+  { path: '/dev-tools', icon: Wrench, labelKey: 'nav.devtools', label: 'Dev Tools' },
 ];
 
 export function AppSidebar() {

@@ -23,6 +23,7 @@ const Focus = lazy(() => import("./pages/Focus"));
 const Expenses = lazy(() => import("./pages/Expenses"));
 const Challenges = lazy(() => import("./pages/Challenges"));
 const Profile = lazy(() => import("./pages/Profile"));
+const DevTools = lazy(() => import("./pages/DevTools"));
 const JoinInvite = lazy(() => import("./pages/JoinInvite"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -109,6 +110,7 @@ const AppContent = () => {
               <Route path="/expenses" element={<Expenses />} />
               <Route path="/challenges" element={<Challenges />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/dev-tools" element={<DevTools />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
