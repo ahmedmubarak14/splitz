@@ -91,7 +91,7 @@ export function HeaderActions() {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-3">
       {/* User Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -100,10 +100,10 @@ export function HeaderActions() {
               <img 
                 src={profile.avatar_url} 
                 alt={profile.full_name || 'User'} 
-                className="h-7 w-7 rounded-full object-cover"
+                className="h-8 w-8 rounded-full object-cover"
               />
             ) : (
-              <div className="h-7 w-7 rounded-full bg-foreground text-background flex items-center justify-center text-xs font-semibold">
+              <div className="h-8 w-8 rounded-full bg-foreground text-background flex items-center justify-center text-xs font-semibold">
                 {getInitials(profile?.full_name || null)}
               </div>
             )}
@@ -136,20 +136,22 @@ export function HeaderActions() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Theme Toggle */}
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className="rounded-lg h-9 w-9"
-        onClick={toggleTheme}
-      >
-        {theme === 'dark' ? (
-          <Sun className="h-[18px] w-[18px]" />
-        ) : (
-          <Moon className="h-[18px] w-[18px]" />
-        )}
-        <span className="sr-only">{t('header.toggleTheme')}</span>
-      </Button>
+      {/* Theme Toggle - Hidden in RTL */}
+      {!isRTL && (
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="rounded-lg h-9 w-9"
+          onClick={toggleTheme}
+        >
+          {theme === 'dark' ? (
+            <Sun className="h-5 w-5" />
+          ) : (
+            <Moon className="h-5 w-5" />
+          )}
+          <span className="sr-only">{t('header.toggleTheme')}</span>
+        </Button>
+      )}
 
       {/* Language Toggle */}
       <DropdownMenu>
@@ -180,7 +182,7 @@ export function HeaderActions() {
       <Sheet open={searchOpen} onOpenChange={setSearchOpen}>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="rounded-lg h-9 w-9">
-            <Search className="h-[18px] w-[18px]" />
+            <Search className="h-5 w-5" />
             <span className="sr-only">{t('search.label')}</span>
           </Button>
         </SheetTrigger>
