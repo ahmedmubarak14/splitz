@@ -87,33 +87,52 @@ export type Database = {
       }
       challenges: {
         Row: {
+          category: Database["public"]["Enums"]["challenge_category"] | null
           created_at: string
           creator_id: string
+          current_value: number | null
           description: string | null
+          difficulty: Database["public"]["Enums"]["challenge_difficulty"] | null
           end_date: string
           id: string
           name: string
           start_date: string
+          target_value: number | null
+          type: Database["public"]["Enums"]["challenge_type"] | null
           updated_at: string
         }
         Insert: {
+          category?: Database["public"]["Enums"]["challenge_category"] | null
           created_at?: string
           creator_id: string
+          current_value?: number | null
           description?: string | null
+          difficulty?:
+            | Database["public"]["Enums"]["challenge_difficulty"]
+            | null
           end_date: string
           id?: string
           name: string
           start_date: string
+          target_value?: number | null
+          type?: Database["public"]["Enums"]["challenge_type"] | null
           updated_at?: string
         }
         Update: {
+          category?: Database["public"]["Enums"]["challenge_category"] | null
           created_at?: string
           creator_id?: string
+          current_value?: number | null
           description?: string | null
+          difficulty?:
+            | Database["public"]["Enums"]["challenge_difficulty"]
+            | null
           end_date?: string
           id?: string
           name?: string
           start_date?: string
+          target_value?: number | null
+          type?: Database["public"]["Enums"]["challenge_type"] | null
           updated_at?: string
         }
         Relationships: []
@@ -219,8 +238,12 @@ export type Database = {
           description: string | null
           group_id: string | null
           id: string
+          is_recurring: boolean | null
           name: string
           paid_by: string | null
+          receipt_url: string | null
+          recurrence_end_date: string | null
+          recurrence_pattern: string | null
           split_type: Database["public"]["Enums"]["split_type"]
           total_amount: number
           updated_at: string
@@ -232,8 +255,12 @@ export type Database = {
           description?: string | null
           group_id?: string | null
           id?: string
+          is_recurring?: boolean | null
           name: string
           paid_by?: string | null
+          receipt_url?: string | null
+          recurrence_end_date?: string | null
+          recurrence_pattern?: string | null
           split_type?: Database["public"]["Enums"]["split_type"]
           total_amount: number
           updated_at?: string
@@ -245,8 +272,12 @@ export type Database = {
           description?: string | null
           group_id?: string | null
           id?: string
+          is_recurring?: boolean | null
           name?: string
           paid_by?: string | null
+          receipt_url?: string | null
+          recurrence_end_date?: string | null
+          recurrence_pattern?: string | null
           split_type?: Database["public"]["Enums"]["split_type"]
           total_amount?: number
           updated_at?: string
@@ -268,6 +299,8 @@ export type Database = {
           duration_minutes: number | null
           end_time: string | null
           id: string
+          is_break: boolean | null
+          round_number: number | null
           session_type: string | null
           start_time: string
           task_id: string | null
@@ -279,6 +312,8 @@ export type Database = {
           duration_minutes?: number | null
           end_time?: string | null
           id?: string
+          is_break?: boolean | null
+          round_number?: number | null
           session_type?: string | null
           start_time?: string
           task_id?: string | null
@@ -290,6 +325,8 @@ export type Database = {
           duration_minutes?: number | null
           end_time?: string | null
           id?: string
+          is_break?: boolean | null
+          round_number?: number | null
           session_type?: string | null
           start_time?: string
           task_id?: string | null
@@ -309,9 +346,11 @@ export type Database = {
       focus_tasks: {
         Row: {
           completed_at: string | null
+          completed_pomodoros: number | null
           created_at: string
           description: string | null
           due_date: string | null
+          estimated_pomodoros: number | null
           has_reminder: boolean | null
           id: string
           is_completed: boolean | null
@@ -324,9 +363,11 @@ export type Database = {
         }
         Insert: {
           completed_at?: string | null
+          completed_pomodoros?: number | null
           created_at?: string
           description?: string | null
           due_date?: string | null
+          estimated_pomodoros?: number | null
           has_reminder?: boolean | null
           id?: string
           is_completed?: boolean | null
@@ -339,9 +380,11 @@ export type Database = {
         }
         Update: {
           completed_at?: string | null
+          completed_pomodoros?: number | null
           created_at?: string
           description?: string | null
           due_date?: string | null
+          estimated_pomodoros?: number | null
           has_reminder?: boolean | null
           id?: string
           is_completed?: boolean | null
@@ -397,6 +440,7 @@ export type Database = {
       habits: {
         Row: {
           best_streak: number | null
+          category: Database["public"]["Enums"]["habit_category"] | null
           completion_date: string | null
           created_at: string
           description: string | null
@@ -404,13 +448,17 @@ export type Database = {
           id: string
           last_completed_at: string | null
           name: string
+          reminder_enabled: boolean | null
+          reminder_time: string | null
           streak_count: number | null
+          tags: string[] | null
           target_days: number | null
           updated_at: string
           user_id: string
         }
         Insert: {
           best_streak?: number | null
+          category?: Database["public"]["Enums"]["habit_category"] | null
           completion_date?: string | null
           created_at?: string
           description?: string | null
@@ -418,13 +466,17 @@ export type Database = {
           id?: string
           last_completed_at?: string | null
           name: string
+          reminder_enabled?: boolean | null
+          reminder_time?: string | null
           streak_count?: number | null
+          tags?: string[] | null
           target_days?: number | null
           updated_at?: string
           user_id: string
         }
         Update: {
           best_streak?: number | null
+          category?: Database["public"]["Enums"]["habit_category"] | null
           completion_date?: string | null
           created_at?: string
           description?: string | null
@@ -432,7 +484,10 @@ export type Database = {
           id?: string
           last_completed_at?: string | null
           name?: string
+          reminder_enabled?: boolean | null
+          reminder_time?: string | null
           streak_count?: number | null
+          tags?: string[] | null
           target_days?: number | null
           updated_at?: string
           user_id?: string
@@ -706,6 +761,16 @@ export type Database = {
       }
     }
     Enums: {
+      challenge_category:
+        | "fitness"
+        | "learning"
+        | "productivity"
+        | "health"
+        | "finance"
+        | "social"
+        | "other"
+      challenge_difficulty: "easy" | "medium" | "hard"
+      challenge_type: "percentage" | "habit" | "metric" | "steps"
       expense_category:
         | "food"
         | "transport"
@@ -714,6 +779,15 @@ export type Database = {
         | "shopping"
         | "health"
         | "education"
+        | "other"
+      habit_category:
+        | "health"
+        | "productivity"
+        | "fitness"
+        | "learning"
+        | "social"
+        | "mindfulness"
+        | "finance"
         | "other"
       split_type: "equal" | "percentage" | "custom" | "shares"
     }
@@ -843,6 +917,17 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      challenge_category: [
+        "fitness",
+        "learning",
+        "productivity",
+        "health",
+        "finance",
+        "social",
+        "other",
+      ],
+      challenge_difficulty: ["easy", "medium", "hard"],
+      challenge_type: ["percentage", "habit", "metric", "steps"],
       expense_category: [
         "food",
         "transport",
@@ -851,6 +936,16 @@ export const Constants = {
         "shopping",
         "health",
         "education",
+        "other",
+      ],
+      habit_category: [
+        "health",
+        "productivity",
+        "fitness",
+        "learning",
+        "social",
+        "mindfulness",
+        "finance",
         "other",
       ],
       split_type: ["equal", "percentage", "custom", "shares"],
