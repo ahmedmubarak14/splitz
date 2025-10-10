@@ -249,15 +249,15 @@ const Index = () => {
                   <Clock className="w-5 h-5 text-purple-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-1">
-                  Focus & Pomodoro
+                  {t('nav.focus')}
                 </h3>
               </div>
               <CardContent className="p-5">
                 <p className={`text-sm text-muted-foreground leading-relaxed mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  Stay focused with Pomodoro timer, task management, and grow your focus tree as you work.
+                  {t('showcase.social.focusDesc')}
                 </p>
                 <div className={`flex items-center gap-2 text-xs text-purple-600 font-semibold ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <span>Start Focusing</span>
+                  <span>{t('showcase.social.focusCta')}</span>
                   <Zap className="w-3.5 h-3.5" />
                 </div>
               </CardContent>
