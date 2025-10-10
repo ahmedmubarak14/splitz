@@ -89,21 +89,38 @@ const AppContent = () => {
 
   return (
     <SidebarProvider>
-      <div className={`flex min-h-screen w-full ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <div className="flex min-h-screen w-full">
         <AppSidebar />
         <main className="flex-1 w-full bg-background">
           <header className="sticky top-0 z-40 bg-background border-b border-border/30">
-            <div className={`h-16 flex items-center justify-between px-6 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm" />
-                <button 
-                  onClick={handleLogoClick}
-                  className="flex items-center hover:opacity-80 transition-opacity"
-                >
-                  <img src={splitzLogo} alt="Splitz" className="h-8" loading="lazy" />
-                </button>
-              </div>
-              <HeaderActions />
+            <div className="h-16 flex items-center justify-between px-6">
+              {isRTL ? (
+                <>
+                  <HeaderActions />
+                  <div className="flex items-center gap-4">
+                    <button 
+                      onClick={handleLogoClick}
+                      className="flex items-center hover:opacity-80 transition-opacity"
+                    >
+                      <img src={splitzLogo} alt="Splitz" className="h-8" loading="lazy" />
+                    </button>
+                    <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-4">
+                    <SidebarTrigger className="hover:bg-accent rounded-lg p-2 transition-colors border border-border shadow-sm" />
+                    <button 
+                      onClick={handleLogoClick}
+                      className="flex items-center hover:opacity-80 transition-opacity"
+                    >
+                      <img src={splitzLogo} alt="Splitz" className="h-8" loading="lazy" />
+                    </button>
+                  </div>
+                  <HeaderActions />
+                </>
+              )}
             </div>
           </header>
           <Suspense fallback={<PageLoader />}>
