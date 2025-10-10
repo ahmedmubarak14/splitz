@@ -24,6 +24,7 @@ import { SplitTypeSelector } from '@/components/SplitTypeSelector';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ExpenseHistory from '@/components/ExpenseHistory';
 import { ExpenseAnalytics } from '@/components/ExpenseAnalytics';
+import { ReceiptUpload } from '@/components/ReceiptUpload';
 
 type ExpenseGroup = {
   id: string;
@@ -64,6 +65,7 @@ const Expenses = () => {
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [splitType, setSplitType] = useState<'equal' | 'percentage' | 'custom' | 'shares'>('equal');
   const [memberSplits, setMemberSplits] = useState<Array<{ user_id: string; name: string; split_value?: number; calculated_amount?: number }>>([]);
+  const [receiptUrl, setReceiptUrl] = useState<string>('');
   
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -273,6 +275,7 @@ const Expenses = () => {
           user_id: user.id,
           category: category as any,
           split_type: splitType,
+          receipt_url: receiptUrl || null,
         })
         .select()
         .single();
@@ -296,6 +299,7 @@ const Expenses = () => {
       toast.success('Expense added successfully');
       setExpenseDescription('');
       setExpenseAmount('');
+      setReceiptUrl('');
       setPaidBy('');
       setCategory('other');
       setSplitType('equal');
@@ -799,6 +803,11 @@ const Expenses = () => {
                 initialSplits={memberSplits}
               />
             )}
+
+            <ReceiptUpload
+              onUploadComplete={(url) => setReceiptUrl(url)}
+              onDelete={() => setReceiptUrl('')}
+            />
             
             <Button onClick={addExpense} className="w-full">
               {t('expenses.addExpense')}
