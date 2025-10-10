@@ -735,9 +735,27 @@ export type Database = {
         }
         Returns: string
       }
+      get_invitation_by_code: {
+        Args: { _invite_code: string }
+        Returns: {
+          created_at: string
+          created_by: string
+          current_uses: number
+          expires_at: string
+          id: string
+          invite_code: string
+          invite_type: string
+          max_uses: number
+          resource_id: string
+        }[]
+      }
       habit_checkin_date: {
         Args: { checked_in_at: string }
         Returns: string
+      }
+      increment_invitation_uses: {
+        Args: { _invitation_id: string }
+        Returns: undefined
       }
       is_challenge_member: {
         Args: { _challenge_id: string; _user_id: string }

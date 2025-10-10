@@ -29,11 +29,9 @@ const JoinInvite = () => {
         return;
       }
 
-      // Fetch invitation details
+      // Fetch invitation details using secure function
       const { data: inviteData, error: inviteError } = await supabase
-        .from('invitations')
-        .select('*')
-        .eq('invite_code', inviteCode)
+        .rpc('get_invitation_by_code', { _invite_code: inviteCode })
         .maybeSingle();
 
       if (inviteError) {
@@ -115,11 +113,10 @@ const JoinInvite = () => {
             throw error;
           }
         } else {
-          // Update invitation uses
-          await supabase
-            .from('invitations')
-            .update({ current_uses: invitation.current_uses + 1 })
-            .eq('id', invitation.id);
+          // Update invitation uses via RPC to bypass RLS
+          await supabase.rpc('increment_invitation_uses', { 
+            _invitation_id: invitation.id 
+          });
 
           toast.success('Successfully joined the challenge! 🎉');
           navigate('/challenges');
@@ -140,11 +137,10 @@ const JoinInvite = () => {
             throw error;
           }
         } else {
-          // Update invitation uses safely
-          await supabase
-            .from('invitations')
-            .update({ current_uses: (invitation.current_uses || 0) + 1 })
-            .eq('id', invitation.id);
+          // Update invitation uses via RPC to bypass RLS
+          await supabase.rpc('increment_invitation_uses', { 
+            _invitation_id: invitation.id 
+          });
 
           toast.success('Successfully joined the expense group! 💰');
           navigate('/expenses');
