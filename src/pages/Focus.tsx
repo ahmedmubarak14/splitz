@@ -333,12 +333,12 @@ const Focus = () => {
                 )}
                 <div>
                   <Label>Repeat</Label>
-                  <Select value={newTask.repeat_pattern} onValueChange={(value) => setNewTask({ ...newTask, repeat_pattern: value })}>
+                  <Select value={newTask.repeat_pattern || 'none'} onValueChange={(value) => setNewTask({ ...newTask, repeat_pattern: value === 'none' ? '' : value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="No repeat" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No repeat</SelectItem>
+                      <SelectItem value="none">No repeat</SelectItem>
                       <SelectItem value="daily">Daily</SelectItem>
                       <SelectItem value="weekly">Weekly</SelectItem>
                       <SelectItem value="monthly">Monthly</SelectItem>
@@ -415,12 +415,12 @@ const Focus = () => {
                 {!isSessionActive && (
                   <div>
                     <Label>Select a task to focus on (optional)</Label>
-                    <Select value={selectedTask || ''} onValueChange={setSelectedTask}>
+                    <Select value={selectedTask || 'none'} onValueChange={(value) => setSelectedTask(value === 'none' ? null : value)}>
                       <SelectTrigger>
                         <SelectValue placeholder="No task selected" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No task</SelectItem>
+                        <SelectItem value="none">No task</SelectItem>
                         {incompleteTasks.map((task) => (
                           <SelectItem key={task.id} value={task.id}>
                             {task.title}
