@@ -10,11 +10,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { 
   Play, Pause, SkipForward, Plus, Calendar, Bell, 
   Repeat, StickyNote, CheckCircle2, Circle, Clock,
-  BarChart3, Trees, Sparkles
+  BarChart3, Trees, Sparkles, AlertTriangle, Skull
 } from 'lucide-react';
 import { useIsRTL } from '@/lib/rtl-utils';
 
@@ -72,7 +73,45 @@ const Focus = () => {
     fetchUser();
     fetchTasks();
     fetchSessions();
+    cleanupOrphanedSessions();
   }, []);
+
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      if (currentSessionId && isSessionActive) {
+        markSessionAsFailed(currentSessionId);
+      }
+    };
+  }, [currentSessionId, isSessionActive]);
+
+  // Page visibility detection (leaving page = tree dies)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && currentSessionId && isSessionActive && !isPaused) {
+        pauseSession();
+        markSessionAsFailed(currentSessionId);
+        toast.error('🍂 You left the page - your tree died!');
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [currentSessionId, isSessionActive, isPaused]);
+
+  // Browser close/refresh detection
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (currentSessionId && isSessionActive) {
+        markSessionAsFailed(currentSessionId);
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [currentSessionId, isSessionActive]);
 
   const fetchUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -97,8 +136,10 @@ const Focus = () => {
     const { data, error } = await supabase
       .from('focus_sessions')
       .select('*')
+      .is('end_time', null)
+      .not('end_time', 'is', null)
       .order('created_at', { ascending: false })
-      .limit(10);
+      .limit(100);
 
     if (error) {
       console.error('Error fetching sessions:', error);
@@ -106,6 +147,33 @@ const Focus = () => {
     }
 
     setSessions(data || []);
+  };
+
+  const cleanupOrphanedSessions = async () => {
+    if (!user) return;
+    
+    const { error } = await supabase
+      .from('focus_sessions')
+      .update({ 
+        end_time: new Date().toISOString(),
+        tree_survived: false 
+      })
+      .is('end_time', null)
+      .eq('user_id', user?.id);
+
+    if (error) {
+      console.error('Error cleaning up orphaned sessions:', error);
+    }
+  };
+
+  const markSessionAsFailed = async (sessionId: string) => {
+    await supabase
+      .from('focus_sessions')
+      .update({
+        end_time: new Date().toISOString(),
+        tree_survived: false,
+      })
+      .eq('id', sessionId);
   };
 
   const createTask = async () => {
@@ -199,7 +267,7 @@ const Focus = () => {
 
     intervalRef.current = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev <= 1) {
+        if (prev <= 0) {
           completeSession(true);
           return 0;
         }
@@ -240,7 +308,7 @@ const Focus = () => {
     }
 
     if (currentSessionId) {
-      await supabase
+      const { error } = await supabase
         .from('focus_sessions')
         .update({
           end_time: new Date().toISOString(),
@@ -248,18 +316,29 @@ const Focus = () => {
         })
         .eq('id', currentSessionId);
 
-      if (treeSurvived) {
-        toast.success('🌳 Your tree survived! Great focus!');
+      if (error) {
+        console.error('Error completing session:', error);
+        toast.error('Failed to save session');
       } else {
-        toast.error('🍂 Your tree died. Try again!');
+        if (treeSurvived) {
+          toast.success('🌳 Your tree survived! Great focus!', {
+            description: 'Session completed successfully',
+            duration: 5000,
+          });
+        } else {
+          toast.error('🍂 Your tree died. Try again!', {
+            description: 'Session ended early',
+            duration: 3000,
+          });
+        }
+        fetchSessions();
       }
-
-      fetchSessions();
     }
 
     setIsSessionActive(false);
     setCurrentSessionId(null);
     setTreeGrowth(0);
+    setIsPaused(false);
   };
 
   const formatTime = (seconds: number) => {
@@ -270,9 +349,12 @@ const Focus = () => {
 
   const incompleteTasks = tasks.filter(t => !t.is_completed && !t.parent_task_id);
   const completedTasks = tasks.filter(t => t.is_completed);
-  const totalFocusTime = sessions
-    .filter(s => s.tree_survived)
-    .reduce((sum, s) => sum + s.duration_minutes, 0);
+  
+  // Only count completed sessions (with end_time)
+  const completedSessions = sessions.filter(s => s.end_time !== null);
+  const survivedSessions = completedSessions.filter(s => s.tree_survived);
+  const failedSessions = completedSessions.filter(s => !s.tree_survived);
+  const totalFocusTime = survivedSessions.reduce((sum, s) => sum + s.duration_minutes, 0);
 
   return (
     <div className={`min-h-screen p-6 ${isRTL ? 'rtl' : 'ltr'}`}>
@@ -367,6 +449,16 @@ const Focus = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Warning Banner */}
+                {isSessionActive && (
+                  <Alert className="border-warning bg-warning/10">
+                    <AlertTriangle className="h-4 w-4 text-warning" />
+                    <AlertDescription className="text-sm">
+                      ⚠️ Stay focused! Leaving this page, switching tabs, or minimizing the browser will kill your tree 🌳
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 {/* Session Type Selector */}
                 <div className="flex gap-2 flex-wrap">
                   <Button
@@ -493,23 +585,23 @@ const Focus = () => {
             <div className="grid grid-cols-3 gap-4 mt-4">
               <Card>
                 <CardContent className="pt-6 text-center">
-                  <BarChart3 className="w-8 h-8 mx-auto mb-2 text-primary" />
-                  <div className="text-2xl font-bold">{sessions.filter(s => s.tree_survived).length}</div>
-                  <div className="text-sm text-muted-foreground">Completed</div>
+                  <Trees className="w-8 h-8 mx-auto mb-2 text-green-600" />
+                  <div className="text-2xl font-bold">{survivedSessions.length}</div>
+                  <div className="text-sm text-muted-foreground">Trees Planted 🌳</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-6 text-center">
                   <Clock className="w-8 h-8 mx-auto mb-2 text-success" />
                   <div className="text-2xl font-bold">{totalFocusTime}</div>
-                  <div className="text-sm text-muted-foreground">Minutes</div>
+                  <div className="text-sm text-muted-foreground">Focus Minutes</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-6 text-center">
-                  <Trees className="w-8 h-8 mx-auto mb-2 text-green-600" />
-                  <div className="text-2xl font-bold">{sessions.filter(s => s.tree_survived).length}</div>
-                  <div className="text-sm text-muted-foreground">Trees Grown</div>
+                  <Skull className="w-8 h-8 mx-auto mb-2 text-destructive" />
+                  <div className="text-2xl font-bold">{failedSessions.length}</div>
+                  <div className="text-sm text-muted-foreground">Trees Died 💀</div>
                 </CardContent>
               </Card>
             </div>

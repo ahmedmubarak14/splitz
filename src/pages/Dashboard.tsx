@@ -69,11 +69,12 @@ export default function Dashboard() {
         .or(`creator_id.eq.${user.id},challenge_participants.user_id.eq.${user.id}`)
         .gte('end_date', new Date().toISOString().split('T')[0]);
 
-      // Fetch focus sessions
+      // Fetch focus sessions (only completed ones with end_time)
       const { data: focusSessions } = await supabase
         .from('focus_sessions')
         .select('*')
         .eq('user_id', user.id)
+        .not('end_time', 'is', null)
         .eq('tree_survived', true);
 
       const totalFocusMinutes = focusSessions?.reduce((sum, session) => 
