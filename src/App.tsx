@@ -13,8 +13,9 @@ import splitzLogo from "@/assets/splitz-logo.png";
 import { useIsRTL } from "@/lib/rtl-utils";
 import './i18n/config';
 
-// Eager load Index to prevent loading issues, lazy load others
-import Index from "./pages/Index";
+// Lazy load all pages for route-based code splitting
+// Index is also lazy loaded for maximum bundle size reduction
+const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
@@ -31,14 +32,25 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const JoinInvite = lazy(() => import("./pages/JoinInvite"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-// Loading fallback component
+// Enhanced loading fallback with brand styling
 const PageLoader = () => (
-  <div className="min-h-screen bg-background flex items-center justify-center">
+  <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
     <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+    <p className="text-sm text-muted-foreground animate-pulse">Loading...</p>
   </div>
 );
 
-const queryClient = new QueryClient();
+// Optimized React Query configuration for better caching
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes - data stays fresh longer
+      gcTime: 10 * 60 * 1000, // 10 minutes - keep in cache longer (formerly cacheTime)
+      refetchOnWindowFocus: false, // Don't refetch when switching tabs
+      retry: 1, // Retry failed requests once
+    },
+  },
+});
 
 const AppContent = () => {
   const location = useLocation();
