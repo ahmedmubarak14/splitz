@@ -93,7 +93,7 @@ const Focus = () => {
       if (document.hidden && currentSessionId && isSessionActive && !isPaused) {
         pauseSession();
         markSessionAsFailed(currentSessionId);
-        toast.error(t('features.focus.treeKilled'));
+        toast.error(t('focus.treeKilled'));
       }
     };
 
@@ -179,7 +179,7 @@ const Focus = () => {
 
   const createTask = async () => {
     if (!newTask.title.trim()) {
-      toast.error(t('features.focus.taskTitleRequired'));
+      toast.error(t('focus.taskTitleRequired'));
       return;
     }
 
@@ -194,12 +194,12 @@ const Focus = () => {
       }]);
 
     if (error) {
-      toast.error(t('features.focus.taskFailed'));
+      toast.error(t('focus.taskFailed'));
       console.error(error);
       return;
     }
 
-    toast.success(t('features.focus.taskCreated'));
+    toast.success(t('focus.taskCreated'));
     setIsAddTaskOpen(false);
     setNewTask({
       title: '',
@@ -222,7 +222,7 @@ const Focus = () => {
       .eq('id', taskId);
 
     if (error) {
-      toast.error(t('features.focus.taskFailed'));
+      toast.error(t('focus.taskFailed'));
       return;
     }
 
@@ -251,7 +251,7 @@ const Focus = () => {
       .single();
 
     if (error) {
-      toast.error(t('features.focus.sessionStartFailed'));
+      toast.error(t('focus.sessionStartFailed'));
       console.error(error);
       return;
     }
@@ -319,16 +319,16 @@ const Focus = () => {
 
       if (error) {
         console.error('Error completing session:', error);
-        toast.error(t('features.focus.sessionSaveFailed'));
+        toast.error(t('focus.sessionSaveFailed'));
       } else {
         if (treeSurvived) {
-          toast.success(t('features.focus.treeSurvived'), {
-            description: t('features.focus.sessionCompleted'),
+          toast.success(t('focus.treeSurvived'), {
+            description: t('focus.sessionCompleted'),
             duration: 5000,
           });
         } else {
-          toast.error(t('features.focus.treeDied'), {
-            description: t('features.focus.sessionEndedEarly'),
+          toast.error(t('focus.treeDied'), {
+            description: t('focus.sessionEndedEarly'),
             duration: 3000,
           });
         }
@@ -363,41 +363,41 @@ const Focus = () => {
         {/* Header */}
         <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
           <div className={isRTL ? 'text-right' : ''}>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">{t('features.focus.title')}</h1>
-            <p className="text-sm md:text-base text-muted-foreground">{t('features.focus.subtitle')}</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">{t('focus.title')}</h1>
+            <p className="text-sm md:text-base text-muted-foreground">{t('focus.subtitle')}</p>
           </div>
           <Dialog open={isAddTaskOpen} onOpenChange={setIsAddTaskOpen}>
             <DialogTrigger asChild>
               <Button size="sm">
                 <Plus className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                {t('features.focus.addTask')}
+                {t('focus.addTask')}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>{t('features.focus.createNewTask')}</DialogTitle>
+                <DialogTitle>{t('focus.createNewTask')}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label>{t('features.focus.taskTitle')}</Label>
+                  <Label>{t('focus.taskTitle')}</Label>
                   <Input
                     value={newTask.title}
                     onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                    placeholder={t('features.focus.taskTitlePlaceholder')}
+                    placeholder={t('focus.taskTitlePlaceholder')}
                     dir={isRTL ? 'rtl' : 'ltr'}
                   />
                 </div>
                 <div>
-                  <Label>{t('features.focus.description')}</Label>
+                  <Label>{t('focus.description')}</Label>
                   <Textarea
                     value={newTask.description}
                     onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                    placeholder={t('features.focus.descriptionPlaceholder')}
+                    placeholder={t('focus.descriptionPlaceholder')}
                     dir={isRTL ? 'rtl' : 'ltr'}
                   />
                 </div>
                 <div>
-                  <Label>{t('features.focus.dueDate')}</Label>
+                  <Label>{t('focus.dueDate')}</Label>
                   <Input
                     type="date"
                     value={newTask.due_date}
@@ -409,11 +409,11 @@ const Focus = () => {
                     checked={newTask.has_reminder}
                     onCheckedChange={(checked) => setNewTask({ ...newTask, has_reminder: !!checked })}
                   />
-                  <Label>{t('features.focus.setReminder')}</Label>
+                  <Label>{t('focus.setReminder')}</Label>
                 </div>
                 {newTask.has_reminder && (
                   <div>
-                    <Label>{t('features.focus.reminderTime')}</Label>
+                    <Label>{t('focus.reminderTime')}</Label>
                     <Input
                       type="datetime-local"
                       value={newTask.reminder_time}
@@ -422,20 +422,20 @@ const Focus = () => {
                   </div>
                 )}
                 <div>
-                  <Label>{t('features.focus.repeat')}</Label>
+                  <Label>{t('focus.repeat')}</Label>
                   <Select value={newTask.repeat_pattern || 'none'} onValueChange={(value) => setNewTask({ ...newTask, repeat_pattern: value === 'none' ? '' : value })}>
                     <SelectTrigger>
-                      <SelectValue placeholder={t('features.focus.noRepeat')} />
+                      <SelectValue placeholder={t('focus.noRepeat')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">{t('features.focus.noRepeat')}</SelectItem>
-                      <SelectItem value="daily">{t('features.focus.daily')}</SelectItem>
-                      <SelectItem value="weekly">{t('features.focus.weekly')}</SelectItem>
-                      <SelectItem value="monthly">{t('features.focus.monthly')}</SelectItem>
+                      <SelectItem value="none">{t('focus.noRepeat')}</SelectItem>
+                      <SelectItem value="daily">{t('focus.daily')}</SelectItem>
+                      <SelectItem value="weekly">{t('focus.weekly')}</SelectItem>
+                      <SelectItem value="monthly">{t('focus.monthly')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <Button onClick={createTask} className="w-full">{t('features.focus.createTask')}</Button>
+                <Button onClick={createTask} className="w-full">{t('focus.createTask')}</Button>
               </div>
             </DialogContent>
           </Dialog>
@@ -448,7 +448,7 @@ const Focus = () => {
               <CardHeader>
                 <CardTitle className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Clock className="w-5 h-5" />
-                  {t('features.focus.pomodoroTimer')}
+                  {t('focus.pomodoroTimer')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -457,7 +457,7 @@ const Focus = () => {
                   <Alert className="border-warning bg-warning/10">
                     <AlertTriangle className="h-4 w-4 text-warning" />
                     <AlertDescription className={`text-sm ${isRTL ? 'text-right' : ''}`}>
-                      {t('features.focus.warningStayFocused')}
+                      {t('focus.warningStayFocused')}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -470,7 +470,7 @@ const Focus = () => {
                     onClick={() => !isSessionActive && setSessionType('work')}
                     disabled={isSessionActive}
                   >
-                    {t('features.focus.workSession')}
+                    {t('focus.workSession')}
                   </Button>
                   <Button
                     variant={sessionType === 'short_break' ? 'default' : 'outline'}
@@ -478,7 +478,7 @@ const Focus = () => {
                     onClick={() => !isSessionActive && setSessionType('short_break')}
                     disabled={isSessionActive}
                   >
-                    {t('features.focus.shortBreak')}
+                    {t('focus.shortBreak')}
                   </Button>
                   <Button
                     variant={sessionType === 'long_break' ? 'default' : 'outline'}
@@ -486,7 +486,7 @@ const Focus = () => {
                     onClick={() => !isSessionActive && setSessionType('long_break')}
                     disabled={isSessionActive}
                   >
-                    {t('features.focus.longBreak')}
+                    {t('focus.longBreak')}
                   </Button>
                   <Button
                     variant={sessionType === 'custom' ? 'default' : 'outline'}
@@ -494,14 +494,14 @@ const Focus = () => {
                     onClick={() => !isSessionActive && setSessionType('custom')}
                     disabled={isSessionActive}
                   >
-                    {t('features.focus.custom')}
+                    {t('focus.custom')}
                   </Button>
                 </div>
 
                 {/* Custom Duration Input */}
                 {sessionType === 'custom' && !isSessionActive && (
                   <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <Label>{t('features.focus.durationMinutes')}</Label>
+                    <Label>{t('focus.durationMinutes')}</Label>
                     <Input
                       type="number"
                       min="1"
@@ -529,7 +529,7 @@ const Focus = () => {
                       </div>
                       <Progress value={treeGrowth} className="h-2" />
                       <p className="text-sm text-muted-foreground">
-                        {t('features.focus.treeGrowth', { percent: Math.round(treeGrowth) })}
+                        {t('focus.treeGrowth', { percent: Math.round(treeGrowth) })}
                       </p>
                     </div>
                   )}
@@ -538,13 +538,13 @@ const Focus = () => {
                 {/* Task Selector */}
                 {!isSessionActive && (
                   <div>
-                    <Label>{t('features.focus.selectTask')}</Label>
+                    <Label>{t('focus.selectTask')}</Label>
                     <Select value={selectedTask || 'none'} onValueChange={(value) => setSelectedTask(value === 'none' ? null : value)}>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('features.focus.noTaskSelected')} />
+                        <SelectValue placeholder={t('focus.noTaskSelected')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">{t('features.focus.noTask')}</SelectItem>
+                        <SelectItem value="none">{t('focus.noTask')}</SelectItem>
                         {incompleteTasks.map((task) => (
                           <SelectItem key={task.id} value={task.id}>
                             {task.title}
@@ -560,24 +560,24 @@ const Focus = () => {
                   {!isSessionActive ? (
                     <Button onClick={startSession} size="lg">
                       <Play className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                      {t('features.focus.startFocus')}
+                      {t('focus.startFocus')}
                     </Button>
                   ) : (
                     <>
                       {!isPaused ? (
                         <Button onClick={pauseSession} variant="secondary" size="lg">
                           <Pause className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                          {t('features.focus.pause')}
+                          {t('focus.pause')}
                         </Button>
                       ) : (
                         <Button onClick={resumeSession} size="lg">
                           <Play className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                          {t('features.focus.resume')}
+                          {t('focus.resume')}
                         </Button>
                       )}
                       <Button onClick={skipSession} variant="outline" size="lg">
                         <SkipForward className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                        {t('features.focus.skip')}
+                        {t('focus.skip')}
                       </Button>
                     </>
                   )}
@@ -591,21 +591,21 @@ const Focus = () => {
                 <CardContent className="pt-4 md:pt-6 text-center">
                   <Trees className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-2 text-green-600" />
                   <div className="text-xl md:text-2xl font-bold">{survivedSessions.length}</div>
-                  <div className="text-xs md:text-sm text-muted-foreground">{t('features.focus.treesPlanted')}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground">{t('focus.treesPlanted')}</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-4 md:pt-6 text-center">
                   <Clock className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-2 text-success" />
                   <div className="text-xl md:text-2xl font-bold">{totalFocusTime}</div>
-                  <div className="text-xs md:text-sm text-muted-foreground">{t('features.focus.focusMinutes')}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground">{t('focus.focusMinutes')}</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-4 md:pt-6 text-center">
                   <Skull className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-2 text-destructive" />
                   <div className="text-xl md:text-2xl font-bold">{failedSessions.length}</div>
-                  <div className="text-xs md:text-sm text-muted-foreground">{t('features.focus.treesDied')}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground">{t('focus.treesDied')}</div>
                 </CardContent>
               </Card>
             </div>
@@ -615,16 +615,16 @@ const Focus = () => {
           <div className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>{t('features.focus.activeTasks')}</CardTitle>
+                <CardTitle>{t('focus.activeTasks')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {incompleteTasks.length === 0 ? (
                   <div className="py-8">
                     <EmptyState
                       icon={StickyNote}
-                      title={t('features.focus.noActiveTasks')}
-                      description={t('features.focus.createTaskToStart')}
-                      actionLabel={t('features.focus.addTask')}
+                      title={t('focus.noActiveTasks')}
+                      description={t('focus.createTaskToStart')}
+                      actionLabel={t('focus.addTask')}
                       onAction={() => setIsAddTaskOpen(true)}
                     />
                   </div>
@@ -674,7 +674,7 @@ const Focus = () => {
             {completedTasks.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>{t('features.focus.completed')}</CardTitle>
+                  <CardTitle>{t('focus.completed')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {completedTasks.slice(0, 5).map((task) => (
