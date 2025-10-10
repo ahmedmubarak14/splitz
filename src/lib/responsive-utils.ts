@@ -20,11 +20,11 @@ export const responsiveText = {
  */
 export const responsiveSize = {
   card: 'p-4 md:p-6',
-  button: 'h-10 md:h-11',
-  input: 'h-10 md:h-12',
-  icon: 'w-4 h-4 md:w-5 md:h-5',
+  button: 'h-9',
+  input: 'h-9 md:h-10',
+  icon: 'w-4 h-4',
   iconSmall: 'w-4 h-4',
-  iconLarge: 'w-5 h-5 md:w-6 md:h-6',
+  iconLarge: 'w-5 h-5',
 };
 
 /**

@@ -67,13 +67,13 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className={`${isCollapsed ? 'w-[72px]' : 'w-[260px]'} bg-card border-r border-border/30 transition-[width] duration-300`}
+      className={`${isCollapsed ? 'w-16' : 'w-[260px]'} bg-card border-r border-border/30 transition-[width] duration-300`}
       collapsible="icon"
     >
       <SidebarContent className="flex flex-col h-full bg-card">
         
         {/* User Section */}
-        <div className={`${isCollapsed ? 'px-4 py-5' : 'px-5 py-5'} border-b border-border/30`}>
+        <div className={`${isCollapsed ? 'px-2 py-4' : 'px-5 py-5'} border-b border-border/30`}>
           {isCollapsed ? (
             <div className="flex justify-center">
               <div className="relative">
@@ -81,14 +81,14 @@ export function AppSidebar() {
                   <img 
                     src={profile.avatar_url} 
                     alt={profile.full_name || 'User'} 
-                    className="h-9 w-9 rounded-full object-cover"
+                    className="h-8 w-8 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="h-9 w-9 rounded-full bg-foreground text-background flex items-center justify-center font-semibold text-sm">
+                  <div className="h-8 w-8 rounded-full bg-foreground text-background flex items-center justify-center font-semibold text-xs">
                     {getInitials(profile?.full_name || null)}
                   </div>
                 )}
-                <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-success ring-2 ring-card" />
+                <span className="absolute bottom-0 right-0 h-1.5 w-1.5 rounded-full bg-success ring-2 ring-card" />
               </div>
             </div>
           ) : (
@@ -126,7 +126,7 @@ export function AppSidebar() {
               </SidebarGroupLabel>
             )}
             <SidebarGroupContent>
-              <SidebarMenu className={`${isCollapsed ? 'px-4' : 'px-3'} space-y-0.5`}>
+              <SidebarMenu className={`${isCollapsed ? 'px-2' : 'px-3'} space-y-0.5`}>
                 {overviewItems.map((item) => {
                   const isActive = location.pathname === item.path;
                   return (
@@ -134,15 +134,15 @@ export function AppSidebar() {
                       <SidebarMenuButton asChild>
                         <NavLink
                           to={item.path}
-                          className={`flex items-center h-9 rounded-lg transition-all ${
-                            isCollapsed ? 'justify-center w-9 mx-auto' : 'gap-3 px-3'
+                          className={`flex items-center h-8 rounded-lg transition-all ${
+                            isCollapsed ? 'justify-center w-10 mx-auto' : 'gap-3 px-3'
                           } ${
                             isActive
                               ? 'bg-foreground text-background font-medium shadow-sm'
                               : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
                           }`}
                         >
-                          <item.icon className="h-[18px] w-[18px] flex-shrink-0" />
+                          <item.icon className="h-4 w-4 flex-shrink-0" />
                           {!isCollapsed && <span className="text-sm">{item.labelKey ? t(item.labelKey) : item.label}</span>}
                         </NavLink>
                       </SidebarMenuButton>
@@ -161,7 +161,7 @@ export function AppSidebar() {
               </SidebarGroupLabel>
             )}
             <SidebarGroupContent>
-              <SidebarMenu className={`${isCollapsed ? 'px-4' : 'px-3'} space-y-0.5`}>
+              <SidebarMenu className={`${isCollapsed ? 'px-2' : 'px-3'} space-y-0.5`}>
                 {workspaceItems.map((item) => {
                   const isActive = location.pathname === item.path;
                   return (
@@ -169,15 +169,15 @@ export function AppSidebar() {
                       <SidebarMenuButton asChild>
                         <NavLink
                           to={item.path}
-                          className={`flex items-center h-9 rounded-lg transition-all ${
-                            isCollapsed ? 'justify-center w-9 mx-auto' : 'gap-3 px-3'
+                          className={`flex items-center h-8 rounded-lg transition-all ${
+                            isCollapsed ? 'justify-center w-10 mx-auto' : 'gap-3 px-3'
                           } ${
                             isActive
                               ? 'bg-foreground text-background font-medium shadow-sm'
                               : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
                           }`}
                         >
-                          <item.icon className="h-[18px] w-[18px] flex-shrink-0" />
+                          <item.icon className="h-4 w-4 flex-shrink-0" />
                           {!isCollapsed && <span className="text-sm">{item.labelKey ? t(item.labelKey) : item.label}</span>}
                         </NavLink>
                       </SidebarMenuButton>
@@ -196,17 +196,17 @@ export function AppSidebar() {
               </SidebarGroupLabel>
             )}
             <SidebarGroupContent>
-              <SidebarMenu className={`${isCollapsed ? 'px-4' : 'px-3'} space-y-0.5`}>
+              <SidebarMenu className={`${isCollapsed ? 'px-2' : 'px-3'} space-y-0.5`}>
                 {accountItems.map((item, idx) => (
                   <SidebarMenuItem key={idx}>
                     <SidebarMenuButton asChild>
                       <NavLink
                         to={item.path}
-                        className={`flex items-center h-9 rounded-lg transition-all ${
-                          isCollapsed ? 'justify-center w-9 mx-auto' : 'gap-3 px-3'
+                        className={`flex items-center h-8 rounded-lg transition-all ${
+                          isCollapsed ? 'justify-center w-10 mx-auto' : 'gap-3 px-3'
                         } text-muted-foreground hover:bg-muted/60 hover:text-foreground`}
                       >
-                        <item.icon className="h-[18px] w-[18px] flex-shrink-0" />
+                        <item.icon className="h-4 w-4 flex-shrink-0" />
                         {!isCollapsed && <span className="text-sm">{item.labelKey ? t(item.labelKey) : item.label}</span>}
                       </NavLink>
                     </SidebarMenuButton>
