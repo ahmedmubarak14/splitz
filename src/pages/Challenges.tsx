@@ -140,6 +140,8 @@ const Challenges = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      console.log('Creating challenge with user:', user.id);
+
       const payload: TablesInsert<'challenges'> = {
         creator_id: user.id,
         name: name.trim(),
@@ -148,8 +150,16 @@ const Challenges = () => {
         end_date: endDate,
       };
 
+      console.log('Challenge payload:', payload);
+
       const { data: created, error } = await supabase.from('challenges').insert(payload).select('id').single();
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Challenge creation error:', error);
+        throw error;
+      }
+
+      console.log('Challenge created:', created);
 
       const { error: participantError } = await supabase
         .from('challenge_participants')
@@ -158,7 +168,10 @@ const Challenges = () => {
           user_id: user.id,
           progress: 0,
         });
-      if (participantError) throw participantError;
+      if (participantError) {
+        console.error('Participant error:', participantError);
+        throw participantError;
+      }
 
       toast.success('Challenge created');
       setName('');
@@ -167,9 +180,9 @@ const Challenges = () => {
       setEndDate('');
       setDialogOpen(false);
       fetchChallenges();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating challenge:', error);
-      toast.error('Failed to create challenge');
+      toast.error(error.message || 'Failed to create challenge');
     }
   };
 
