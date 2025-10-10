@@ -175,12 +175,12 @@ const Auth = () => {
                 {googleLoading ? (
                   <span className="flex items-center gap-3">
                     <div className="h-5 w-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                    <span>Connecting...</span>
+                    <span>{t('auth.connecting')}</span>
                   </span>
                 ) : (
                   <span className="flex items-center gap-3">
                     <GoogleLogo />
-                    <span>Continue with Google</span>
+                    <span>{t('auth.continueWithGoogle')}</span>
                   </span>
                 )}
               </Button>
@@ -188,7 +188,7 @@ const Auth = () => {
               <div className="relative">
                 <Separator />
                 <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs text-muted-foreground">
-                  or continue with email
+                  {t('auth.orContinueWithEmail')}
                 </span>
               </div>
             </div>

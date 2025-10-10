@@ -7,18 +7,21 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import splitzLogo from '@/assets/splitz-logo.png';
+import { useTranslation } from 'react-i18next';
+import * as Sentry from "@sentry/react";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSendResetLink = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email.trim()) {
-      toast.error('Please enter your email');
+      toast.error(t('forgotPassword.enterEmail'));
       return;
     }
 
@@ -32,10 +35,16 @@ const ForgotPassword = () => {
       if (error) throw error;
 
       setEmailSent(true);
-      toast.success('Password reset link sent to your email!');
+      toast.success(t('forgotPassword.resetLinkSent'));
     } catch (error: any) {
-      console.error('Password reset error:', error);
       toast.error(error.message || 'Failed to send reset link');
+      
+      if (import.meta.env.PROD) {
+        Sentry.captureException(error, {
+          tags: { feature: 'auth', action: 'forgot-password' },
+          extra: { email }
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -51,12 +60,12 @@ const ForgotPassword = () => {
           <div className="space-y-2 text-center">
             <CardTitle className="text-2xl font-bold flex items-center justify-center gap-2">
               <Mail className="h-6 w-6" />
-              Forgot Password
+              {t('forgotPassword.title')}
             </CardTitle>
             <CardDescription>
               {emailSent 
-                ? "Check your email for the reset link"
-                : "Enter your email to receive a password reset link"
+                ? t('forgotPassword.successSubtitle')
+                : t('forgotPassword.subtitle')
               }
             </CardDescription>
           </div>
@@ -67,10 +76,10 @@ const ForgotPassword = () => {
               <div className="flex flex-col items-center gap-4 py-6">
                 <CheckCircle className="h-16 w-16 text-green-500" />
                 <p className="text-center text-muted-foreground">
-                  We've sent a password reset link to <strong>{email}</strong>
+                  {t('forgotPassword.emailSentTo')} <strong>{email}</strong>
                 </p>
                 <p className="text-sm text-center text-muted-foreground">
-                  Please check your email and click the link to reset your password.
+                  {t('forgotPassword.checkEmail')}
                 </p>
               </div>
               <Button
@@ -79,16 +88,16 @@ const ForgotPassword = () => {
                 onClick={() => navigate('/auth')}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Login
+                {t('forgotPassword.backToLogin')}
               </Button>
             </div>
           ) : (
             <form onSubmit={handleSendResetLink} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Email Address</label>
+                <label className="text-sm font-medium">{t('forgotPassword.emailAddress')}</label>
                 <Input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('forgotPassword.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -96,7 +105,7 @@ const ForgotPassword = () => {
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Sending...' : 'Send Reset Link'}
+                {loading ? t('forgotPassword.sending') : t('forgotPassword.sendResetLink')}
               </Button>
 
               <Button
@@ -106,7 +115,7 @@ const ForgotPassword = () => {
                 onClick={() => navigate('/auth')}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Login
+                {t('forgotPassword.backToLogin')}
               </Button>
             </form>
           )}
