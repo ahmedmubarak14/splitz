@@ -92,7 +92,7 @@ const AppContent = () => {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <main className="flex-1 w-full bg-background">
-          <header className="sticky top-0 z-40 bg-background border-b border-border/30">
+          <header className="sticky top-0 z-40 bg-background border-b border-border/30" dir={isRTL ? 'rtl' : 'ltr'}>
             <div className="h-16 flex items-center justify-between px-6">
               {isRTL ? (
                 <>

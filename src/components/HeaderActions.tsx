@@ -24,11 +24,13 @@ import { toast } from 'sonner';
 import { useTheme } from 'next-themes';
 import { useTranslation } from 'react-i18next';
 import NotificationBell from './NotificationBell';
+import { useIsRTL } from '@/lib/rtl-utils';
 
 export function HeaderActions() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { t, i18n } = useTranslation();
+  const isRTL = useIsRTL();
   const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null } | null>(null);
   const [userEmail, setUserEmail] = useState<string>('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -127,16 +129,16 @@ export function HeaderActions() {
             <span className="sr-only">{t('header.changeLanguage')}</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align={isRTL ? 'start' : 'end'}>
           <DropdownMenuLabel>{t('header.language')}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => i18n.changeLanguage('en')}>
-            {i18n.language === 'en' && <Check className="mr-2 h-4 w-4" />}
-            <span className={i18n.language !== 'en' ? 'ml-6' : ''}>English</span>
+            {i18n.language === 'en' && <Check className={isRTL ? 'ml-2 h-4 w-4' : 'mr-2 h-4 w-4'} />}
+            <span className={i18n.language !== 'en' ? (isRTL ? 'mr-6' : 'ml-6') : ''}>English</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => i18n.changeLanguage('ar')}>
-            {i18n.language === 'ar' && <Check className="mr-2 h-4 w-4" />}
-            <span className={i18n.language !== 'ar' ? 'ml-6' : ''}>العربية</span>
+            {i18n.language === 'ar' && <Check className={isRTL ? 'ml-2 h-4 w-4' : 'mr-2 h-4 w-4'} />}
+            <span className={i18n.language !== 'ar' ? (isRTL ? 'mr-6' : 'ml-6') : ''}>العربية</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -159,7 +161,7 @@ export function HeaderActions() {
       {/* User Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-9 w-9 rounded-full p-0 ml-1">
+          <Button variant="ghost" className={`h-9 w-9 rounded-full p-0 ${isRTL ? 'mr-1' : 'ml-1'}`}>
             {profile?.avatar_url ? (
               <img 
                 src={profile.avatar_url} 
@@ -173,7 +175,7 @@ export function HeaderActions() {
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuContent align={isRTL ? 'start' : 'end'} className="w-56">
           <DropdownMenuLabel>
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">{profile?.full_name || 'User'}</p>
@@ -182,16 +184,16 @@ export function HeaderActions() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => navigate('/profile')}>
-            <User className="mr-2 h-4 w-4" />
+            <User className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
             {t('header.profile')}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate('/profile?tab=notifications')}>
-            <Settings className="mr-2 h-4 w-4" />
+            <Settings className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
             {t('header.notificationSettings')}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
-            <LogOut className="mr-2 h-4 w-4" />
+            <LogOut className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
             {t('header.signOut')}
           </DropdownMenuItem>
         </DropdownMenuContent>
