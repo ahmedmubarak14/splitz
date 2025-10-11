@@ -18,17 +18,15 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
-import { Search, Sun, Moon, LogOut, User, Settings, Globe, Check } from 'lucide-react';
+import { Search, LogOut, User, Settings, Check } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useTheme } from 'next-themes';
 import { useTranslation } from 'react-i18next';
 import NotificationBell from './NotificationBell';
 import { useIsRTL } from '@/lib/rtl-utils';
 
 export function HeaderActions() {
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
   const { t, i18n } = useTranslation();
   const isRTL = useIsRTL();
   const [profile, setProfile] = useState<{ full_name: string | null; avatar_url: string | null } | null>(null);
@@ -75,10 +73,6 @@ export function HeaderActions() {
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'ar' : 'en';
     i18n.changeLanguage(newLang);
-  };
-
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   const getInitials = (name: string | null) => {
@@ -135,23 +129,6 @@ export function HeaderActions() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {/* Theme Toggle - Hidden in RTL */}
-      {!isRTL && (
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="rounded-lg h-9 w-9"
-          onClick={toggleTheme}
-        >
-          {theme === 'dark' ? (
-            <Sun className="h-5 w-5" />
-          ) : (
-            <Moon className="h-5 w-5" />
-          )}
-          <span className="sr-only">{t('header.toggleTheme')}</span>
-        </Button>
-      )}
 
       {/* Language Toggle */}
       <DropdownMenu>

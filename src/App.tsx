@@ -11,7 +11,6 @@ import Navigation from "@/components/Navigation";
 import { Home } from "lucide-react";
 import splitzLogo from "@/assets/splitz-logo.png";
 import { useIsRTL } from "@/lib/rtl-utils";
-import { ThemeProvider } from "next-themes";
 import './i18n/config';
 
 // Lazy load all pages for route-based code splitting
@@ -170,17 +169,15 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ThemeProvider>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;
