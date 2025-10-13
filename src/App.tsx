@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -60,6 +60,16 @@ const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isRTL = useIsRTL();
+
+  // Load Ionic CSS only for native apps to avoid breaking web scrolling
+  useEffect(() => {
+    if (isNativeApp) {
+      import('@ionic/react/css/core.css');
+      import('@ionic/react/css/normalize.css');
+      import('@ionic/react/css/structure.css');
+      import('@ionic/react/css/typography.css');
+    }
+  }, []);
   const isLandingPage = location.pathname === '/';
   const isAuthPage = location.pathname === '/auth';
 
