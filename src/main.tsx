@@ -1,8 +1,21 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import "./styles/native-mobile.css";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import * as Sentry from "@sentry/react";
+import { setupIonicReact } from '@ionic/react';
+import '@ionic/react/css/core.css';
+import '@ionic/react/css/normalize.css';
+import '@ionic/react/css/structure.css';
+import '@ionic/react/css/typography.css';
+
+// Initialize Ionic for native mobile experience
+setupIonicReact({
+  mode: 'ios',
+  rippleEffect: true,
+  animated: true,
+});
 
 // Initialize Sentry in production
 if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {

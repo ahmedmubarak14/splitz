@@ -8,9 +8,12 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { HeaderActions } from "@/components/HeaderActions";
 import Navigation from "@/components/Navigation";
+import { NativeMobileNavigation } from "@/components/NativeMobileNavigation";
+import { MobileAppRouter } from "@/components/MobileAppRouter";
 import { Home } from "lucide-react";
 import splitzLogo from "@/assets/splitz-logo.png";
 import { useIsRTL } from "@/lib/rtl-utils";
+import { isNativeApp, getPlatformClass } from "@/lib/platform";
 import './i18n/config';
 
 // Lazy load all pages for route-based code splitting
@@ -60,6 +63,11 @@ const AppContent = () => {
   const isLandingPage = location.pathname === '/';
   const isAuthPage = location.pathname === '/auth';
 
+  // Native app: Skip landing page, go straight to auth/dashboard
+  if (isNativeApp && isLandingPage) {
+    return <MobileAppRouter />;
+  }
+
   const handleLogoClick = () => {
     const now = Date.now();
     const lastClick = parseInt(sessionStorage.getItem('lastLogoClick') || '0');
@@ -77,33 +85,35 @@ const AppContent = () => {
 
   if (isLandingPage || isAuthPage || location.pathname === '/forgot-password' || location.pathname === '/reset-password' || location.pathname === '/onboarding' || location.pathname === '/auth/callback') {
     return (
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/join/:inviteCode" element={<JoinInvite />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/habits" element={<Habits />} />
-          <Route path="/focus" element={<Focus />} />
-          <Route path="/expenses" element={<Expenses />} />
-          <Route path="/challenges" element={<Challenges />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/dev-tools" element={<DevTools />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
+      <div className={getPlatformClass()}>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            {!isNativeApp && <Route path="/" element={<Index />} />}
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/join/:inviteCode" element={<JoinInvite />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/habits" element={<Habits />} />
+            <Route path="/focus" element={<Focus />} />
+            <Route path="/expenses" element={<Expenses />} />
+            <Route path="/challenges" element={<Challenges />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/dev-tools" element={<DevTools />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </div>
     );
   }
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full">
+      <div className={`flex min-h-screen w-full ${getPlatformClass()}`}>
         <div className="hidden md:block">
           <AppSidebar />
         </div>
@@ -164,7 +174,7 @@ const AppContent = () => {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
-          <Navigation />
+          {isNativeApp ? <NativeMobileNavigation /> : <Navigation />}
         </main>
       </div>
     </SidebarProvider>
