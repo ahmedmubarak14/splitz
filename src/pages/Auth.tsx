@@ -265,14 +265,31 @@ const Auth = () => {
                   className="h-12 text-base"
                 />
                 {!isLogin && passwordTouched && (
-                  <p className={`text-xs flex items-center gap-1.5 ${isRTL ? 'flex-row-reverse' : ''} ${
-                    password.length >= 8 
-                      ? 'text-green-600' 
-                      : 'text-destructive'
-                  }`}>
-                    <span className="font-semibold">{password.length >= 8 ? '✓' : '•'}</span>
-                    <span>{t('auth.passwordRequirement')}</span>
-                  </p>
+                  <div className="space-y-1.5 mt-2">
+                    <PasswordRequirement 
+                      met={password.length >= 8} 
+                      text={t('auth.passwordLength')}
+                      isRTL={isRTL}
+                    />
+                    <PasswordRequirement 
+                      met={/[A-Z]/.test(password) && /[a-z]/.test(password)} 
+                      text={t('auth.passwordMixedCase')}
+                      isRTL={isRTL}
+                    />
+                    <PasswordRequirement 
+                      met={/[0-9]/.test(password)} 
+                      text={t('auth.passwordNumber')}
+                      isRTL={isRTL}
+                    />
+                    <PasswordRequirement 
+                      met={/[^A-Za-z0-9]/.test(password)} 
+                      text={t('auth.passwordSymbol')}
+                      isRTL={isRTL}
+                    />
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {t('auth.passwordExample')}
+                    </p>
+                  </div>
                 )}
               </div>
 
@@ -384,6 +401,15 @@ const FeatureItem = ({ emoji, title, description }: { emoji: string; title: stri
       <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
     </div>
   </div>
+);
+
+const PasswordRequirement = ({ met, text, isRTL }: { met: boolean; text: string; isRTL: boolean }) => (
+  <p className={`text-xs flex items-center gap-1.5 ${isRTL ? 'flex-row-reverse' : ''} ${
+    met ? 'text-green-600' : 'text-muted-foreground'
+  }`}>
+    <span className="font-semibold text-sm">{met ? '✓' : '○'}</span>
+    <span>{text}</span>
+  </p>
 );
 
 export default Auth;
