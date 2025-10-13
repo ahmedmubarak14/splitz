@@ -32,6 +32,7 @@ const Auth = () => {
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isRTL = useIsRTL();
@@ -248,13 +249,23 @@ const Auth = () => {
                 </div>
                 <PasswordInput
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (!isLogin && !passwordTouched) {
+                      setPasswordTouched(true);
+                    }
+                  }}
                   placeholder="••••••••"
                   className="h-12 text-base"
                 />
-                {!isLogin && (
-                  <p className={`text-xs text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
-                    {t('auth.passwordRequirement')}
+                {!isLogin && passwordTouched && (
+                  <p className={`text-xs flex items-center gap-1.5 ${isRTL ? 'flex-row-reverse' : ''} ${
+                    password.length >= 6 
+                      ? 'text-green-600' 
+                      : 'text-destructive'
+                  }`}>
+                    <span className="font-semibold">{password.length >= 6 ? '✓' : '•'}</span>
+                    <span>{t('auth.passwordRequirement')}</span>
                   </p>
                 )}
               </div>
@@ -293,6 +304,7 @@ const Auth = () => {
                     setEmail('');
                     setPassword('');
                     setFullName('');
+                    setPasswordTouched(false);
                   }}
                   className="w-full h-11 font-medium"
                 >
