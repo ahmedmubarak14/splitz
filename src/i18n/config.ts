@@ -604,6 +604,8 @@ const resources = {
       success: {
         welcomeBack: 'Welcome back! 🎉',
         accountCreated: 'Account created! Welcome to Splitz! 🚀',
+        checkEmail: 'Check your email! 📧',
+        checkEmailDescription: 'We sent you a confirmation link. Click it to verify your email and start using Splitz.',
         signedOut: 'Signed out successfully',
       },
       notFound: {
@@ -1160,6 +1162,8 @@ const resources = {
       success: {
         welcomeBack: 'مرحباً بعودتك! 🎉',
         accountCreated: 'تم إنشاء الحساب! مرحباً بك في Splitz! 🚀',
+        checkEmail: 'تحقق من بريدك الإلكتروني! 📧',
+        checkEmailDescription: 'أرسلنا لك رابط تأكيد. انقر عليه للتحقق من بريدك الإلكتروني وبدء استخدام Splitz.',
         signedOut: 'تم تسجيل الخروج بنجاح',
       },
       notFound: {

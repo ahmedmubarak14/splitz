@@ -17,6 +17,7 @@ import './i18n/config';
 // Index is also lazy loaded for maximum bundle size reduction
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -74,12 +75,13 @@ const AppContent = () => {
     }
   };
 
-  if (isLandingPage || isAuthPage || location.pathname === '/forgot-password' || location.pathname === '/reset-password' || location.pathname === '/onboarding') {
+  if (isLandingPage || isAuthPage || location.pathname === '/forgot-password' || location.pathname === '/reset-password' || location.pathname === '/onboarding' || location.pathname === '/auth/callback') {
     return (
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/join/:inviteCode" element={<JoinInvite />} />
@@ -145,6 +147,7 @@ const AppContent = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/join/:inviteCode" element={<JoinInvite />} />

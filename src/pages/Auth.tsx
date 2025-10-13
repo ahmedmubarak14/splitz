@@ -88,7 +88,10 @@ const Auth = () => {
           },
         });
         if (error) throw error;
-        toast.success(t('success.accountCreated'));
+        toast.success(t('success.checkEmail'), {
+          duration: 6000,
+          description: t('success.checkEmailDescription'),
+        });
       }
     } catch (error: any) {
       const message = error.message?.toLowerCase() || '';
