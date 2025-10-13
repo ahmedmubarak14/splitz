@@ -9,7 +9,8 @@ import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { PasswordInput } from '@/components/PasswordInput';
 import { toast } from 'sonner';
-import { Mail, User, ArrowRight, Sparkles, Shield } from 'lucide-react';
+import { Mail, User, ArrowRight, Sparkles, Shield, AlertTriangle } from 'lucide-react';
+import { usePasswordStrength } from '@/hooks/usePasswordStrength';
 import { useTranslation } from 'react-i18next';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing } from '@/lib/responsive-utils';
@@ -36,6 +37,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isRTL = useIsRTL();
+  const passwordStrength = usePasswordStrength(password);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -265,31 +267,60 @@ const Auth = () => {
                   className="h-12 text-base"
                 />
                 {!isLogin && passwordTouched && (
-                  <div className="space-y-1.5 mt-2">
-                    <PasswordRequirement 
-                      met={password.length >= 8} 
-                      text={t('auth.passwordLength')}
-                      isRTL={isRTL}
-                    />
-                    <PasswordRequirement 
-                      met={/[A-Z]/.test(password) && /[a-z]/.test(password)} 
-                      text={t('auth.passwordMixedCase')}
-                      isRTL={isRTL}
-                    />
-                    <PasswordRequirement 
-                      met={/[0-9]/.test(password)} 
-                      text={t('auth.passwordNumber')}
-                      isRTL={isRTL}
-                    />
-                    <PasswordRequirement 
-                      met={/[^A-Za-z0-9]/.test(password)} 
-                      text={t('auth.passwordSymbol')}
-                      isRTL={isRTL}
-                    />
+                  <>
+                    <div className="space-y-1.5 mt-2">
+                      <PasswordRequirement 
+                        met={password.length >= 8} 
+                        text={t('auth.passwordLength')}
+                        isRTL={isRTL}
+                      />
+                      <PasswordRequirement 
+                        met={/[A-Z]/.test(password) && /[a-z]/.test(password)} 
+                        text={t('auth.passwordMixedCase')}
+                        isRTL={isRTL}
+                      />
+                      <PasswordRequirement 
+                        met={/[0-9]/.test(password)} 
+                        text={t('auth.passwordNumber')}
+                        isRTL={isRTL}
+                      />
+                      <PasswordRequirement 
+                        met={/[^A-Za-z0-9]/.test(password)} 
+                        text={t('auth.passwordSymbol')}
+                        isRTL={isRTL}
+                      />
+                    </div>
+
+                    {/* Pattern Detection Warning */}
+                    {password.length >= 8 && passwordStrength.hasPatterns && (
+                      <div className={`mt-3 p-3 rounded-lg border-2 border-amber-500 bg-amber-50 dark:bg-amber-950/20 ${isRTL ? 'text-right' : 'text-left'}`}>
+                        <div className={`flex items-start gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                          <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+                          <div className="flex-1">
+                            <p className="text-xs font-semibold text-amber-900 dark:text-amber-200 mb-1">
+                              {t('auth.patternWarningTitle')}
+                            </p>
+                            {passwordStrength.warning && (
+                              <p className="text-xs text-amber-800 dark:text-amber-300 mb-1">
+                                ⚠️ {passwordStrength.warning}
+                              </p>
+                            )}
+                            {passwordStrength.suggestions.length > 0 && (
+                              <ul className={`text-xs text-amber-700 dark:text-amber-400 space-y-0.5 ${isRTL ? 'pr-4' : 'pl-4'} list-disc`}>
+                                {passwordStrength.suggestions.map((suggestion, idx) => (
+                                  <li key={idx}>{suggestion}</li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     <p className="text-xs text-muted-foreground mt-2">
                       {t('auth.passwordExample')}
                     </p>
-                  </div>
+                  </>
                 )}
               </div>
 
