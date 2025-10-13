@@ -90,14 +90,20 @@ const Auth = () => {
       }
     } catch (error: any) {
       const message = error.message?.toLowerCase() || '';
-      if (message.includes('invalid login credentials')) {
+      
+      // More specific password error detection
+      if (message.includes('password is too weak') || 
+          message.includes('insufficient entropy') ||
+          message.includes('does not meet security requirements')) {
+        toast.error(t('errors.passwordTooWeak'));
+      } else if (message.includes('password') && message.includes('least')) {
+        toast.error(t('errors.passwordLength'));
+      } else if (message.includes('invalid login credentials')) {
         toast.error(t('errors.invalidEmail'));
       } else if (message.includes('user already registered')) {
         toast.error(t('errors.emailAlreadyRegistered'));
       } else if (message.includes('email')) {
         toast.error(t('errors.validEmailRequired'));
-      } else if (message.includes('password')) {
-        toast.error(t('errors.passwordLength'));
       } else {
         toast.error(error.message || t('errors.genericError'));
       }
@@ -260,11 +266,11 @@ const Auth = () => {
                 />
                 {!isLogin && passwordTouched && (
                   <p className={`text-xs flex items-center gap-1.5 ${isRTL ? 'flex-row-reverse' : ''} ${
-                    password.length >= 6 
+                    password.length >= 8 
                       ? 'text-green-600' 
                       : 'text-destructive'
                   }`}>
-                    <span className="font-semibold">{password.length >= 6 ? '✓' : '•'}</span>
+                    <span className="font-semibold">{password.length >= 8 ? '✓' : '•'}</span>
                     <span>{t('auth.passwordRequirement')}</span>
                   </p>
                 )}
