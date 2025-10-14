@@ -264,11 +264,12 @@ export default function Dashboard() {
 
         {/* Tabs for different views */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
             <TabsTrigger value="overview">{t('dashboard.overview')}</TabsTrigger>
             <TabsTrigger value="habits">{t('dashboard.habits')}</TabsTrigger>
-            <TabsTrigger value="challenges">{t('dashboard.challenges')}</TabsTrigger>
+            <TabsTrigger value="focus">{t('dashboard.focus') || 'Focus'}</TabsTrigger>
             <TabsTrigger value="expenses">{t('dashboard.expenses')}</TabsTrigger>
+            <TabsTrigger value="challenges">{t('dashboard.challenges')}</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -396,11 +397,53 @@ export default function Dashboard() {
           {/* Habits Analytics Tab */}
           <TabsContent value="habits"><HabitStatistics /></TabsContent>
 
-          {/* Challenges Tab */}
-          <TabsContent value="challenges"><ChallengeProgressChart /></TabsContent>
+          {/* Focus Tab */}
+          <TabsContent value="focus" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Brain className="w-5 h-5" />
+                  {t('dashboard.focusSessions') || 'Focus Sessions'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="text-center p-4 bg-muted/50 rounded-lg">
+                    <div className="text-2xl font-bold">{stats.focusSessions}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {t('focus.totalSessions') || 'Total Sessions'}
+                    </div>
+                  </div>
+                  <div className="text-center p-4 bg-muted/50 rounded-lg">
+                    <div className="text-2xl font-bold">{stats.focusMinutes}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {t('focus.minutesFocused') || 'Minutes'}
+                    </div>
+                  </div>
+                  <div className="text-center p-4 bg-muted/50 rounded-lg col-span-2 md:col-span-1">
+                    <div className="text-2xl font-bold">
+                      {Math.floor(stats.focusMinutes / 60)}h {stats.focusMinutes % 60}m
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {t('focus.totalTime') || 'Total Time'}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-center pt-2">
+                  <Button onClick={() => navigate('/focus')} className="gap-2">
+                    <Brain className="w-4 h-4" />
+                    {t('dashboard.startFocus') || 'Start Focus Session'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* Expenses Tab */}
           <TabsContent value="expenses"><ExpenseAnalytics /></TabsContent>
+
+          {/* Challenges Tab */}
+          <TabsContent value="challenges"><ChallengeProgressChart /></TabsContent>
         </Tabs>
       </div>
       <Navigation />
