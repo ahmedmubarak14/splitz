@@ -63,6 +63,7 @@ const Focus = () => {
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const sessionCompletedRef = useRef(false);
+  const isCompletingRef = useRef(false);
   const [user, setUser] = useState<any>(null);
   const [visibilityGraceTimer, setVisibilityGraceTimer] = useState<NodeJS.Timeout | null>(null);
   const [showSkipConfirmation, setShowSkipConfirmation] = useState(false);
@@ -118,9 +119,12 @@ const Focus = () => {
         // Start 30-second grace period
         const graceTimer = setTimeout(() => {
           // Only mark as failed if session hasn't been completed yet
-          if (currentSessionId && !sessionCompletedRef.current) {
+          if (currentSessionId && !sessionCompletedRef.current && !isCompletingRef.current) {
+            console.log('[Focus] Grace timer fired - marking session as failed:', currentSessionId);
             markSessionAsFailed(currentSessionId);
             toast.error('Tree died - You were away too long');
+          } else {
+            console.log('[Focus] Grace timer fired but session already completed/completing');
           }
         }, 30000); // 30 seconds
         
@@ -151,7 +155,8 @@ const Focus = () => {
   // Browser close/refresh detection
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (currentSessionId && isSessionActive && !sessionCompletedRef.current) {
+      if (currentSessionId && isSessionActive && !sessionCompletedRef.current && !isCompletingRef.current) {
+        console.log('[Focus] Before unload - marking session as failed:', currentSessionId);
         markSessionAsFailed(currentSessionId);
         e.preventDefault();
         e.returnValue = '';
@@ -198,19 +203,23 @@ const Focus = () => {
   };
 
   const cleanupOrphanedSessions = async () => {
-    if (!user) return;
-    
+    if (!user || isSessionActive) return;
+
+    console.log('[Focus] Cleaning up stale sessions (older than 24h)');
+
+    // Only cleanup truly stale sessions (older than 24 hours)
     const { error } = await supabase
       .from('focus_sessions')
       .update({ 
         end_time: new Date().toISOString(),
         tree_survived: false 
       })
+      .eq('user_id', user.id)
       .is('end_time', null)
-      .eq('user_id', user?.id);
+      .lt('start_time', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
     if (error) {
-      toast.error('Failed to cleanup sessions');
+      console.error('Error cleaning up orphaned sessions:', error);
     }
   };
 
@@ -220,21 +229,25 @@ const Focus = () => {
       .from('focus_sessions')
       .select('tree_survived, end_time')
       .eq('id', sessionId)
-      .single();
+      .maybeSingle();
     
     // If session already has an end_time, it's already completed - don't overwrite
     if (existingSession?.end_time) {
-      console.log('Session already completed, skipping mark as failed');
+      console.log('[Focus] Session already completed, skipping mark as failed:', sessionId);
       return;
     }
     
+    console.log('[Focus] Marking session as failed:', sessionId);
+    
+    // Only update if end_time is still null (idempotent)
     await supabase
       .from('focus_sessions')
       .update({
         end_time: new Date().toISOString(),
         tree_survived: false,
       })
-      .eq('id', sessionId);
+      .eq('id', sessionId)
+      .is('end_time', null);
   };
 
   const createTask = async () => {
@@ -330,6 +343,8 @@ const Focus = () => {
       return;
     }
 
+    console.log('[Focus] Session started:', { id: data.id, duration, type: sessionType });
+
     setCurrentSessionId(data.id);
     setIsSessionActive(true);
     setIsPaused(false);
@@ -390,6 +405,9 @@ const Focus = () => {
   const completeSession = async (treeSurvived: boolean) => {
     // Mark that session is being intentionally completed
     sessionCompletedRef.current = true;
+    isCompletingRef.current = true;
+    
+    console.log('[Focus] Completing session:', { currentSessionId, treeSurvived });
     
     // Clear any active grace timers
     if (visibilityGraceTimer) {
@@ -402,18 +420,41 @@ const Focus = () => {
       intervalRef.current = null;
     }
 
-    if (currentSessionId) {
+    let resolvedSessionId = currentSessionId;
+
+    // Fallback: If currentSessionId is missing, find the last open session
+    if (!resolvedSessionId && user) {
+      console.log('[Focus] currentSessionId is null, searching for last open session...');
+      const { data: lastSession } = await supabase
+        .from('focus_sessions')
+        .select('id')
+        .eq('user_id', user.id)
+        .is('end_time', null)
+        .order('start_time', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (lastSession) {
+        resolvedSessionId = lastSession.id;
+        console.log('[Focus] Found last open session:', resolvedSessionId);
+      }
+    }
+
+    if (resolvedSessionId) {
       const { error } = await supabase
         .from('focus_sessions')
         .update({
           end_time: new Date().toISOString(),
           tree_survived: treeSurvived,
         })
-        .eq('id', currentSessionId);
+        .eq('id', resolvedSessionId);
 
       if (error) {
+        console.error('[Focus] Failed to complete session:', error);
         toast.error(t('focus.sessionSaveFailed'));
       } else {
+        console.log('[Focus] Session completed successfully:', { id: resolvedSessionId, treeSurvived });
+        
         if (treeSurvived) {
           toast.success(t('focus.treeSurvived'), {
             description: t('focus.sessionCompleted'),
@@ -425,8 +466,30 @@ const Focus = () => {
             duration: 3000,
           });
         }
+        
+        // Optimistically update sessions for immediate UI feedback
+        setSessions(prev => {
+          const newSession = {
+            id: resolvedSessionId,
+            user_id: user?.id || '',
+            task_id: null,
+            start_time: new Date().toISOString(),
+            end_time: new Date().toISOString(),
+            duration_minutes: Math.ceil((sessionType === 'custom' ? customDuration : sessionType === 'work' ? 25 : sessionType === 'short_break' ? 5 : 15)),
+            tree_survived: treeSurvived,
+            session_type: sessionType,
+            is_break: sessionType !== 'work' && sessionType !== 'custom',
+            round_number: 1,
+            created_at: new Date().toISOString()
+          };
+          return [newSession, ...prev];
+        });
+        
+        // Fetch sessions to sync with database
         fetchSessions();
       }
+    } else {
+      console.warn('[Focus] No session ID available to complete');
     }
 
     setIsSessionActive(false);
@@ -436,7 +499,8 @@ const Focus = () => {
     setPausedAt(null);
     setTotalPausedTime(0);
     
-    // Reset the completion flag after state updates
+    // Reset the completion flags after state updates
+    isCompletingRef.current = false;
     setTimeout(() => {
       sessionCompletedRef.current = false;
     }, 100);
