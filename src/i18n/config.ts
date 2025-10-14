@@ -639,12 +639,14 @@ const resources = {
         title: 'لوحة التحكم',
         overview: 'نظرة عامة',
         habits: 'العادات',
+        focus: 'التركيز',
         challenges: 'التحديات',
         expenses: 'المصاريف',
         focusSessions: 'جلسات التركيز',
         focusSessionsSubtitle: '{{count}} دقيقة من التركيز',
         startFocusSession: 'بدء جلسة تركيز',
         startFocusSessionDesc: 'مؤقت البومودورو وتتبع المهام',
+        startFocus: 'بدء جلسة التركيز',
         stats: {
           totalHabits: 'إجمالي العادات',
           activeTracking: 'تتبع نشط',
@@ -812,6 +814,9 @@ const resources = {
         giveUp: 'الاستسلام',
         treesPlanted: 'أشجار مزروعة 🌳',
           focusMinutes: 'دقائق التركيز',
+          totalSessions: 'إجمالي الجلسات',
+          minutesFocused: 'دقائق',
+          totalTime: 'إجمالي الوقت',
           treesDied: 'أشجار ماتت 💀',
           activeTasks: 'المهام النشطة',
           noActiveTasks: 'لا توجد مهام نشطة. أنشئ واحدة للبدء!',
