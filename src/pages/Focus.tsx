@@ -17,6 +17,7 @@ import {
   Repeat, StickyNote, CheckCircle2, Circle, Clock,
   BarChart3, Trees, Sparkles, AlertTriangle, Skull
 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useIsRTL } from '@/lib/rtl-utils';
 import Navigation from '@/components/Navigation';
 import { EmptyState } from '@/components/EmptyState';
@@ -61,6 +62,10 @@ const Focus = () => {
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [user, setUser] = useState<any>(null);
+  const [visibilityGraceTimer, setVisibilityGraceTimer] = useState<NodeJS.Timeout | null>(null);
+  const [showSkipConfirmation, setShowSkipConfirmation] = useState(false);
+  const [pausedAt, setPausedAt] = useState<Date | null>(null);
+  const [totalPausedTime, setTotalPausedTime] = useState(0);
 
   const [newTask, setNewTask] = useState({
     title: '',
@@ -87,19 +92,54 @@ const Focus = () => {
     };
   }, [currentSessionId, isSessionActive]);
 
-  // Page visibility detection (leaving page = tree dies)
+  // Page visibility detection with grace period
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.hidden && currentSessionId && isSessionActive && !isPaused) {
+      // Tab/app is hidden
+      if (document.hidden && currentSessionId && isSessionActive) {
+        // CASE 1: Already paused - Don't kill tree, just track it
+        if (isPaused) {
+          console.log('Session paused, tab switched - tree safe');
+          return; // Don't kill tree if already paused
+        }
+        
+        // CASE 2: Running - Auto-pause and start grace period
         pauseSession();
-        markSessionAsFailed(currentSessionId);
-        toast.error(t('focus.treeKilled'));
+        
+        toast.warning('Focus session paused', {
+          description: 'Return within 30 seconds to continue your session',
+          duration: 5000,
+        });
+        
+        // Start 30-second grace period
+        const graceTimer = setTimeout(() => {
+          markSessionAsFailed(currentSessionId);
+          toast.error('Tree died - You were away too long');
+        }, 30000); // 30 seconds
+        
+        setVisibilityGraceTimer(graceTimer);
+      }
+      
+      // Tab/app is visible again
+      if (!document.hidden && visibilityGraceTimer) {
+        // User came back within grace period - cancel tree death
+        clearTimeout(visibilityGraceTimer);
+        setVisibilityGraceTimer(null);
+        
+        toast.success('Welcome back!', {
+          description: 'Session is paused. Click Resume to continue.',
+        });
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [currentSessionId, isSessionActive, isPaused]);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (visibilityGraceTimer) {
+        clearTimeout(visibilityGraceTimer);
+      }
+    };
+  }, [currentSessionId, isSessionActive, isPaused, visibilityGraceTimer]);
 
   // Browser close/refresh detection
   useEffect(() => {
@@ -289,14 +329,25 @@ const Focus = () => {
       intervalRef.current = null;
     }
     setIsPaused(true);
+    setPausedAt(new Date());
   };
 
   const resumeSession = () => {
+    if (pausedAt) {
+      const pausedDuration = (new Date().getTime() - pausedAt.getTime()) / 1000;
+      setTotalPausedTime(prev => prev + pausedDuration);
+    }
+    setPausedAt(null);
     setIsPaused(false);
     startTimer();
   };
 
   const skipSession = () => {
+    setShowSkipConfirmation(true);
+  };
+
+  const confirmSkipSession = () => {
+    setShowSkipConfirmation(false);
     completeSession(false);
   };
 
@@ -511,6 +562,27 @@ const Focus = () => {
                   </div>
                 )}
 
+                {/* Session Status Indicator */}
+                {isSessionActive && (
+                  <div className="text-center mb-4">
+                    {isPaused ? (
+                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/20 rounded-full">
+                        <Pause className="w-4 h-4 text-yellow-600" />
+                        <span className="text-sm font-medium text-yellow-700 dark:text-yellow-400">
+                          Session Paused - Tree is Safe
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/20 rounded-full">
+                        <Play className="w-4 h-4 text-green-600 animate-pulse" />
+                        <span className="text-sm font-medium text-green-700 dark:text-green-400">
+                          Session Active - Stay Focused!
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Timer Display */}
                 <div className="text-center py-8">
                   <div className="text-6xl font-bold text-primary mb-4">
@@ -562,23 +634,51 @@ const Focus = () => {
                   ) : (
                     <>
                       {!isPaused ? (
-                        <Button onClick={pauseSession} variant="secondary" size="lg">
+                        <Button 
+                          onClick={pauseSession} 
+                          variant="secondary" 
+                          size="lg"
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white dark:text-white"
+                        >
                           <Pause className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
                           {t('focus.pause')}
                         </Button>
                       ) : (
-                        <Button onClick={resumeSession} size="lg">
-                          <Play className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                          {t('focus.resume')}
-                        </Button>
+                        <div className="flex flex-col gap-2 items-center">
+                          <Button onClick={resumeSession} size="lg" className="bg-green-600 hover:bg-green-700">
+                            <Play className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                            {t('focus.resume')}
+                          </Button>
+                          <div className="text-sm text-yellow-600 dark:text-yellow-400 font-semibold">
+                            ⏸️ Tree is safe while paused
+                          </div>
+                        </div>
                       )}
-                      <Button onClick={skipSession} variant="outline" size="lg">
-                        <SkipForward className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                        {t('focus.skip')}
+                      <Button onClick={skipSession} variant="destructive" size="lg">
+                        <Skull className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                        Give Up
                       </Button>
                     </>
                   )}
                 </div>
+                
+                {/* Skip Confirmation Dialog */}
+                <AlertDialog open={showSkipConfirmation} onOpenChange={setShowSkipConfirmation}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Give Up Session?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        If you end this session early, your tree will die. Are you sure?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Continue Session</AlertDialogCancel>
+                      <AlertDialogAction onClick={confirmSkipSession} className="bg-destructive hover:bg-destructive/90">
+                        End Session (Tree Dies)
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </CardContent>
             </Card>
 
