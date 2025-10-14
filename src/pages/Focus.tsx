@@ -62,6 +62,7 @@ const Focus = () => {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const sessionCompletedRef = useRef(false);
   const [user, setUser] = useState<any>(null);
   const [visibilityGraceTimer, setVisibilityGraceTimer] = useState<NodeJS.Timeout | null>(null);
   const [showSkipConfirmation, setShowSkipConfirmation] = useState(false);
@@ -88,7 +89,8 @@ const Focus = () => {
   // Cleanup on component unmount
   useEffect(() => {
     return () => {
-      if (currentSessionId && isSessionActive) {
+      // Only mark as failed if session wasn't intentionally completed
+      if (currentSessionId && isSessionActive && !sessionCompletedRef.current) {
         markSessionAsFailed(currentSessionId);
       }
     };
@@ -115,8 +117,11 @@ const Focus = () => {
         
         // Start 30-second grace period
         const graceTimer = setTimeout(() => {
-          markSessionAsFailed(currentSessionId);
-          toast.error('Tree died - You were away too long');
+          // Only mark as failed if session hasn't been completed yet
+          if (currentSessionId && !sessionCompletedRef.current) {
+            markSessionAsFailed(currentSessionId);
+            toast.error('Tree died - You were away too long');
+          }
         }, 30000); // 30 seconds
         
         setVisibilityGraceTimer(graceTimer);
@@ -146,7 +151,7 @@ const Focus = () => {
   // Browser close/refresh detection
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (currentSessionId && isSessionActive) {
+      if (currentSessionId && isSessionActive && !sessionCompletedRef.current) {
         markSessionAsFailed(currentSessionId);
         e.preventDefault();
         e.returnValue = '';
@@ -210,6 +215,19 @@ const Focus = () => {
   };
 
   const markSessionAsFailed = async (sessionId: string) => {
+    // Check if session was already completed (don't overwrite completed sessions)
+    const { data: existingSession } = await supabase
+      .from('focus_sessions')
+      .select('tree_survived, end_time')
+      .eq('id', sessionId)
+      .single();
+    
+    // If session already has an end_time, it's already completed - don't overwrite
+    if (existingSession?.end_time) {
+      console.log('Session already completed, skipping mark as failed');
+      return;
+    }
+    
     await supabase
       .from('focus_sessions')
       .update({
@@ -370,6 +388,9 @@ const Focus = () => {
   };
 
   const completeSession = async (treeSurvived: boolean) => {
+    // Mark that session is being intentionally completed
+    sessionCompletedRef.current = true;
+    
     // Clear any active grace timers
     if (visibilityGraceTimer) {
       clearTimeout(visibilityGraceTimer);
@@ -414,6 +435,11 @@ const Focus = () => {
     setIsPaused(false);
     setPausedAt(null);
     setTotalPausedTime(0);
+    
+    // Reset the completion flag after state updates
+    setTimeout(() => {
+      sessionCompletedRef.current = false;
+    }, 100);
   };
 
   const formatTime = (seconds: number) => {
