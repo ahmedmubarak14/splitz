@@ -3,8 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Calendar, TrendingUp, Award, Target } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export function HabitStatistics() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<{
     weeklyData: Array<{ day: string; checkIns: number }>;
     totalCheckIns: number;
@@ -82,45 +84,45 @@ export function HabitStatistics() {
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <Calendar className="h-4 w-4 text-primary" />
-              <span className="text-xs text-muted-foreground">Current Streak</span>
+              <span className="text-xs text-muted-foreground">{t('habits.statistics.currentStreak')}</span>
             </div>
             <div className="text-2xl font-bold">{stats.currentStreak}</div>
-            <div className="text-xs text-muted-foreground">days</div>
+            <div className="text-xs text-muted-foreground">{t('habits.days')}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <Award className="h-4 w-4 text-yellow-500" />
-              <span className="text-xs text-muted-foreground">Best Streak</span>
+              <span className="text-xs text-muted-foreground">{t('habits.statistics.bestStreak')}</span>
             </div>
             <div className="text-2xl font-bold">{stats.bestStreak}</div>
-            <div className="text-xs text-muted-foreground">days</div>
+            <div className="text-xs text-muted-foreground">{t('habits.days')}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="h-4 w-4 text-success" />
-              <span className="text-xs text-muted-foreground">This Week</span>
+              <span className="text-xs text-muted-foreground">{t('habits.statistics.thisWeek')}</span>
             </div>
             <div className="text-2xl font-bold">{stats.totalCheckIns}</div>
-            <div className="text-xs text-muted-foreground">check-ins</div>
+            <div className="text-xs text-muted-foreground">{t('habits.statistics.checkIns')}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <Target className="h-4 w-4 text-purple-500" />
-              <span className="text-xs text-muted-foreground">Completion</span>
+              <span className="text-xs text-muted-foreground">{t('habits.statistics.completion')}</span>
             </div>
             <div className="text-2xl font-bold">{stats.completionRate}%</div>
-            <div className="text-xs text-muted-foreground">rate</div>
+            <div className="text-xs text-muted-foreground">{t('habits.statistics.rate')}</div>
           </CardContent>
         </Card>
       </div>
       <Card>
-        <CardHeader><CardTitle className="text-base">Weekly Activity</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{t('habits.statistics.weeklyActivity')}</CardTitle></CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={stats.weeklyData}>

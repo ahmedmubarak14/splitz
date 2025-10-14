@@ -4,10 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { TrendingDown, TrendingUp, CreditCard } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
+import { useTranslation } from 'react-i18next';
 
 const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 export function ExpenseAnalytics() {
+  const { t, i18n } = useTranslation();
   const [stats, setStats] = useState<{
     categoryData: Array<{ name: string; value: number }>;
     totalOwed: number;
@@ -73,33 +75,33 @@ export function ExpenseAnalytics() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-2"><TrendingDown className="h-4 w-4 text-destructive" /><span className="text-xs text-muted-foreground">You Owe</span></div>
-            <div className="text-2xl font-bold text-destructive">{formatCurrency(stats.totalOwed, 'SAR', 'en')}</div>
+            <div className="flex items-center gap-2 mb-2"><TrendingDown className="h-4 w-4 text-destructive" /><span className="text-xs text-muted-foreground">{t('expenses.analyticsData.youOwe')}</span></div>
+            <div className="text-2xl font-bold text-destructive">{formatCurrency(stats.totalOwed, 'SAR', i18n.language)}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-2"><TrendingUp className="h-4 w-4 text-success" /><span className="text-xs text-muted-foreground">Owed to You</span></div>
-            <div className="text-2xl font-bold text-success">{formatCurrency(stats.totalOwedToYou, 'SAR', 'en')}</div>
+            <div className="flex items-center gap-2 mb-2"><TrendingUp className="h-4 w-4 text-success" /><span className="text-xs text-muted-foreground">{t('expenses.analyticsData.owedToYou')}</span></div>
+            <div className="text-2xl font-bold text-success">{formatCurrency(stats.totalOwedToYou, 'SAR', i18n.language)}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 mb-2"><CreditCard className="h-4 w-4 text-primary" /><span className="text-xs text-muted-foreground">This Month</span></div>
-            <div className="text-2xl font-bold">{formatCurrency(stats.monthlyTotal, 'SAR', 'en')}</div>
+            <div className="flex items-center gap-2 mb-2"><CreditCard className="h-4 w-4 text-primary" /><span className="text-xs text-muted-foreground">{t('expenses.analyticsData.thisMonth')}</span></div>
+            <div className="text-2xl font-bold">{formatCurrency(stats.monthlyTotal, 'SAR', i18n.language)}</div>
           </CardContent>
         </Card>
       </div>
       {stats.categoryData.length > 0 && (
         <Card>
-          <CardHeader><CardTitle className="text-base">Spending by Category</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{t('expenses.analyticsData.spendingByCategory')}</CardTitle></CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie data={stats.categoryData} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => `${name} ${((percent as number) * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
                   {stats.categoryData.map((entry, index) => (<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />))}
                 </Pie>
-                <Tooltip formatter={(value: number) => formatCurrency(value, 'SAR', 'en')} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
+                <Tooltip formatter={(value: number) => formatCurrency(value, 'SAR', i18n.language)} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
