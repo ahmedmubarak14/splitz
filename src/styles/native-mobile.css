@@ -1,3 +1,9 @@
+/* Force focus timer buttons to be visible */
+.focus-timer-controls button {
+  display: block !important;
+  opacity: 1 !important;
+}
+
 /* Platform Detection */
 .platform-ios {
   --safe-area-top: env(safe-area-inset-top);

@@ -57,6 +57,7 @@ const Focus = () => {
   const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
   const [sessionType, setSessionType] = useState<'work' | 'short_break' | 'long_break' | 'custom'>('work');
   const [customDuration, setCustomDuration] = useState(25);
+  const [customDurationInput, setCustomDurationInput] = useState('25');
   const [treeGrowth, setTreeGrowth] = useState(0);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
@@ -66,6 +67,7 @@ const Focus = () => {
   const [showSkipConfirmation, setShowSkipConfirmation] = useState(false);
   const [pausedAt, setPausedAt] = useState<Date | null>(null);
   const [totalPausedTime, setTotalPausedTime] = useState(0);
+  const [isStartingSession, setIsStartingSession] = useState(false);
 
   const [newTask, setNewTask] = useState({
     title: '',
@@ -270,12 +272,26 @@ const Focus = () => {
 
   const startSession = async () => {
     if (!user) return;
+    
+    // Validate custom duration
+    if (sessionType === 'custom') {
+      const parsedDuration = parseInt(customDurationInput);
+      if (!parsedDuration || parsedDuration < 1 || parsedDuration > 120) {
+        toast.error('Please enter a valid duration (1-120 minutes)');
+        setCustomDurationInput('25');
+        setCustomDuration(25);
+        return;
+      }
+      setCustomDuration(parsedDuration);
+    }
 
     const duration = sessionType === 'work' ? 25 : 
                     sessionType === 'short_break' ? 5 : 
                     sessionType === 'long_break' ? 15 : 
                     customDuration;
+    
     setTimeLeft(duration * 60);
+    setIsStartingSession(true);
 
     const { data, error } = await supabase
       .from('focus_sessions')
@@ -288,6 +304,8 @@ const Focus = () => {
       }])
       .select()
       .single();
+
+    setIsStartingSession(false);
 
     if (error) {
       toast.error(t('focus.sessionStartFailed'));
@@ -352,6 +370,12 @@ const Focus = () => {
   };
 
   const completeSession = async (treeSurvived: boolean) => {
+    // Clear any active grace timers
+    if (visibilityGraceTimer) {
+      clearTimeout(visibilityGraceTimer);
+      setVisibilityGraceTimer(null);
+    }
+    
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -388,6 +412,8 @@ const Focus = () => {
     setCurrentSessionId(null);
     setTreeGrowth(0);
     setIsPaused(false);
+    setPausedAt(null);
+    setTotalPausedTime(0);
   };
 
   const formatTime = (seconds: number) => {
@@ -551,13 +577,38 @@ const Focus = () => {
                   <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                     <Label>{t('focus.durationMinutes')}</Label>
                     <Input
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
                       min="1"
                       max="120"
-                      value={customDuration}
-                      onChange={(e) => setCustomDuration(Math.max(1, Math.min(120, parseInt(e.target.value) || 1)))}
+                      value={customDurationInput}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Allow empty string for deletion
+                        if (value === '') {
+                          setCustomDurationInput('');
+                          return;
+                        }
+                        // Only allow digits
+                        const numValue = value.replace(/[^0-9]/g, '');
+                        if (numValue) {
+                          const parsed = parseInt(numValue);
+                          if (parsed >= 1 && parsed <= 120) {
+                            setCustomDurationInput(numValue);
+                            setCustomDuration(parsed);
+                          }
+                        }
+                      }}
+                      onBlur={(e) => {
+                        // On blur, validate and set to 1 if empty
+                        if (!e.target.value || parseInt(e.target.value) < 1) {
+                          setCustomDurationInput('1');
+                          setCustomDuration(1);
+                        }
+                      }}
                       className="w-24"
                       dir="ltr"
+                      placeholder="25"
                     />
                   </div>
                 )}
@@ -625,11 +676,15 @@ const Focus = () => {
                 )}
 
                 {/* Controls */}
-                <div className="flex gap-2 justify-center flex-wrap">
+                <div className="flex gap-2 justify-center flex-wrap focus-timer-controls">
                   {!isSessionActive ? (
-                    <Button onClick={startSession} size="lg">
+                    <Button 
+                      onClick={startSession} 
+                      size="lg"
+                      disabled={isStartingSession || (sessionType === 'custom' && (!customDurationInput || parseInt(customDurationInput) < 1))}
+                    >
                       <Play className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                      {t('focus.startFocus')}
+                      {isStartingSession ? 'Starting...' : t('focus.startFocus')}
                     </Button>
                   ) : (
                     <>
@@ -638,25 +693,26 @@ const Focus = () => {
                           onClick={pauseSession} 
                           variant="secondary" 
                           size="lg"
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white dark:text-white"
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white dark:text-white !opacity-100 !block"
+                          style={{ display: 'block !important', opacity: '1 !important' } as React.CSSProperties}
                         >
                           <Pause className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
                           {t('focus.pause')}
                         </Button>
                       ) : (
-                        <div className="flex flex-col gap-2 items-center">
+                        <>
                           <Button onClick={resumeSession} size="lg" className="bg-green-600 hover:bg-green-700">
                             <Play className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
                             {t('focus.resume')}
                           </Button>
                           <div className="text-sm text-yellow-600 dark:text-yellow-400 font-semibold">
-                            ⏸️ Tree is safe while paused
+                            ⏸️ Session Paused - Tree is safe while paused
                           </div>
-                        </div>
+                        </>
                       )}
                       <Button onClick={skipSession} variant="destructive" size="lg">
                         <Skull className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                        Give Up
+                        {t('focus.giveUp')}
                       </Button>
                     </>
                   )}
