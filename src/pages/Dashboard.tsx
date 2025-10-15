@@ -264,13 +264,13 @@ export default function Dashboard() {
 
         {/* Tabs for different views */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="overview">{t('dashboard.overview')}</TabsTrigger>
-            <TabsTrigger value="habits">{t('dashboard.habits')}</TabsTrigger>
-            <TabsTrigger value="focus">{t('dashboard.focus') || 'Focus'}</TabsTrigger>
-            <TabsTrigger value="expenses">{t('dashboard.expenses')}</TabsTrigger>
-            <TabsTrigger value="challenges">{t('dashboard.challenges')}</TabsTrigger>
-          </TabsList>
+            <TabsList className={`${isRTL ? 'flex flex-row-reverse' : 'grid grid-cols-5'} w-full lg:w-auto lg:inline-grid`}>
+              <TabsTrigger value="overview">{t('dashboard.overview')}</TabsTrigger>
+              <TabsTrigger value="habits">{t('dashboard.habits')}</TabsTrigger>
+              <TabsTrigger value="focus">{t('dashboard.focus') || 'Focus'}</TabsTrigger>
+              <TabsTrigger value="expenses">{t('dashboard.expenses')}</TabsTrigger>
+              <TabsTrigger value="challenges">{t('dashboard.challenges')}</TabsTrigger>
+            </TabsList>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
