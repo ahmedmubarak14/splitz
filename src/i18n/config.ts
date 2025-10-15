@@ -26,6 +26,7 @@ const resources = {
         title: 'Dashboard',
         overview: 'Overview',
         habits: 'Habits',
+        focus: 'Focus',
         challenges: 'Challenges',
         expenses: 'Expenses',
         focusSessions: 'Focus Sessions',

@@ -253,8 +253,8 @@ export default function Dashboard() {
   return (
     <>
       <SEO {...pageSEO.dashboard} />
-      <div className={`min-h-screen bg-muted/20 ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className={`max-w-[1400px] mx-auto ${responsiveSpacing.sectionGap}`}>
+      <div className={`min-h-screen bg-muted/20 ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding} overflow-x-hidden`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className={`max-w-[1400px] mx-auto px-4 sm:px-6 ${responsiveSpacing.sectionGap} max-w-full`}>
         
         {/* Header */}
         <div className="mb-6">
