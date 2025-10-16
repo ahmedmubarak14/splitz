@@ -1156,6 +1156,18 @@ export type Database = {
         Args: { _group_id: string; _user_id: string }
         Returns: boolean
       }
+      is_subscription_contributor: {
+        Args: { _subscription_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_subscription_owner: {
+        Args: { _subscription_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_subscription_owner_and_shared: {
+        Args: { _subscription_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_trip_member: {
         Args: { _trip_id: string; _user_id: string }
         Returns: boolean
