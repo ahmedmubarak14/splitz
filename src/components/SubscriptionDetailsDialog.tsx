@@ -8,7 +8,7 @@ import { formatCurrency } from "@/lib/formatters";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Calendar, Users, Bell, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Calendar, Users, Bell, CheckCircle, XCircle, Clock, Check, X } from "lucide-react";
 import { format } from "date-fns";
 
 interface SubscriptionDetailsDialogProps {
@@ -90,14 +90,13 @@ export const SubscriptionDetailsDialog = ({
         .update({
           payment_submitted: true,
           submission_at: new Date().toISOString(),
-          paid_at: new Date().toISOString()
         })
         .eq('id', contributorId);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subscription-contributors', subscriptionId] });
-      toast.success('Payment submitted for approval');
+      toast.success(t('subscriptions.paymentSubmitted'));
     }
   });
 
@@ -108,14 +107,15 @@ export const SubscriptionDetailsDialog = ({
         .from('subscription_contributors')
         .update({
           is_settled: true,
-          approved_at: new Date().toISOString()
+          approved_at: new Date().toISOString(),
+          paid_at: new Date().toISOString()
         })
         .eq('id', contributorId);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subscription-contributors', subscriptionId] });
-      toast.success('Payment approved');
+      toast.success(t('subscriptions.paymentApproved'));
     }
   });
 
@@ -126,16 +126,35 @@ export const SubscriptionDetailsDialog = ({
         .from('subscription_contributors')
         .update({
           payment_submitted: false,
-          is_settled: false,
           submission_at: null,
-          approved_at: null
         })
         .eq('id', contributorId);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subscription-contributors', subscriptionId] });
-      toast.success('Payment rejected');
+      toast.success(t('subscriptions.paymentRejected'));
+    }
+  });
+
+  // Mark own payment as paid (owner self-settlement)
+  const markAsPaid = useMutation({
+    mutationFn: async (contributorId: string) => {
+      const { error } = await supabase
+        .from('subscription_contributors')
+        .update({
+          payment_submitted: true,
+          is_settled: true,
+          submission_at: new Date().toISOString(),
+          approved_at: new Date().toISOString(),
+          paid_at: new Date().toISOString(),
+        })
+        .eq('id', contributorId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscription-contributors', subscriptionId] });
+      toast.success(t('subscriptions.paymentStatusUpdated'));
     }
   });
 
@@ -236,13 +255,17 @@ export const SubscriptionDetailsDialog = ({
             {contributors.map((contributor) => {
               const profile = (contributor as any).profiles;
               const isCurrentUser = user?.id === contributor.user_id;
+              const isOwnerContribution = contributor.user_id === subscription?.user_id;
+              
               const getStatusBadge = () => {
                 if (contributor.is_settled) {
-                  return <Badge className="bg-success"><CheckCircle className="h-3 w-3 mr-1" />Paid</Badge>;
+                  return <Badge className="bg-success text-success-foreground"><CheckCircle className="h-3 w-3 mr-1" />{t('subscriptions.statusPaid')}</Badge>;
                 } else if (contributor.payment_submitted) {
-                  return <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" />Submitted</Badge>;
+                  return <Badge variant="secondary" className="bg-warning/20 text-warning"><Clock className="h-3 w-3 mr-1" />{t('subscriptions.statusAwaitingApproval')}</Badge>;
+                } else if (isOwnerContribution && isOwner) {
+                  return <Badge variant="outline">{t('subscriptions.statusYourContribution')}</Badge>;
                 } else {
-                  return <Badge variant="secondary"><XCircle className="h-3 w-3 mr-1" />Pending</Badge>;
+                  return <Badge variant="secondary"><XCircle className="h-3 w-3 mr-1" />{t('subscriptions.statusPending')}</Badge>;
                 }
               };
 
@@ -253,11 +276,14 @@ export const SubscriptionDetailsDialog = ({
                     <Avatar>
                       <AvatarImage src={profile?.avatar_url} />
                       <AvatarFallback>
-                        {profile?.full_name?.charAt(0) || '?'}
+                        {profile?.full_name?.charAt(0)?.toUpperCase() || '?'}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="font-medium">{profile?.full_name || 'Unknown'}</div>
+                      <div className="font-medium">
+                        {profile?.full_name || t('common.unknown')}
+                        {isCurrentUser && ' (You)'}
+                      </div>
                       <div className="text-sm text-muted-foreground">
                         {formatCurrency(Number(contributor.contribution_amount), subscription?.currency || 'SAR', i18n.language)}
                       </div>
@@ -267,65 +293,71 @@ export const SubscriptionDetailsDialog = ({
                 </div>
 
                 <div className="flex gap-2">
-                  {/* Contributor view - can submit payment */}
-                  {isCurrentUser && !isOwner && !contributor.is_settled && !contributor.payment_submitted && (
+                  {/* Current user can settle/mark payment */}
+                  {isCurrentUser && !contributor.is_settled && !contributor.payment_submitted && (
                     <Button
                       variant="default"
                       size="sm"
                       className="flex-1"
-                      onClick={() => submitPayment.mutate(contributor.id)}
-                      disabled={submitPayment.isPending}
+                      onClick={() => {
+                        if (isOwner && isOwnerContribution) {
+                          markAsPaid.mutate(contributor.id);
+                        } else {
+                          submitPayment.mutate(contributor.id);
+                        }
+                      }}
+                      disabled={submitPayment.isPending || markAsPaid.isPending}
                     >
                       <CheckCircle className="h-4 w-4 mr-1" />
-                      Settle Payment
+                      {isOwner && isOwnerContribution 
+                        ? t('subscriptions.markAsPaid')
+                        : t('subscriptions.settlePayment')}
                     </Button>
                   )}
 
-                  {/* Owner view - can approve/reject and send reminders */}
-                  {isOwner && (
+                  {/* Owner can approve/reject submitted payments from others */}
+                  {isOwner && !isCurrentUser && contributor.payment_submitted && !contributor.is_settled && (
                     <>
-                      {contributor.payment_submitted && !contributor.is_settled && (
-                        <>
-                          <Button
-                            variant="default"
-                            size="sm"
-                            className="flex-1"
-                            onClick={() => approvePayment.mutate(contributor.id)}
-                            disabled={approvePayment.isPending}
-                          >
-                            <CheckCircle className="h-4 w-4 mr-1" />
-                            Approve
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => rejectPayment.mutate(contributor.id)}
-                            disabled={rejectPayment.isPending}
-                          >
-                            <XCircle className="h-4 w-4 mr-1" />
-                            Reject
-                          </Button>
-                        </>
-                      )}
-                      {!contributor.is_settled && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => sendReminder.mutate(contributor.id)}
-                          disabled={sendReminder.isPending}
-                        >
-                          <Bell className="h-4 w-4 mr-1" />
-                          Remind
-                        </Button>
-                      )}
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => approvePayment.mutate(contributor.id)}
+                        disabled={approvePayment.isPending}
+                      >
+                        <Check className="h-4 w-4 mr-1" />
+                        {t('subscriptions.approve')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => rejectPayment.mutate(contributor.id)}
+                        disabled={rejectPayment.isPending}
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        {t('subscriptions.reject')}
+                      </Button>
                     </>
+                  )}
+
+                  {/* Owner can send reminders to all pending contributors */}
+                  {isOwner && !isCurrentUser && !contributor.is_settled && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => sendReminder.mutate(contributor.id)}
+                      disabled={sendReminder.isPending}
+                    >
+                      <Bell className="h-4 w-4 mr-1" />
+                      {t('subscriptions.sendReminder')}
+                    </Button>
                   )}
                 </div>
 
                 {contributor.paid_at && (
                   <div className="mt-2 text-xs text-muted-foreground flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    Paid on {format(new Date(contributor.paid_at), 'PPP')}
+                    {t('subscriptions.paidOn')} {format(new Date(contributor.paid_at), 'PPP')}
                   </div>
                 )}
               </div>
