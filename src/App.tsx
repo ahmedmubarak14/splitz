@@ -44,6 +44,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Copyright = lazy(() => import("./pages/Copyright"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const JoinInvite = lazy(() => import("./pages/JoinInvite"));
+const JoinFriendInvite = lazy(() => import("./pages/JoinFriendInvite"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Prefetch functions for critical routes
@@ -204,6 +205,7 @@ const AppContent = () => {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/join/:inviteCode" element={<JoinInvite />} />
+              <Route path="/join-friend/:inviteCode" element={<JoinFriendInvite />} />
               <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/habits" element={<Habits />} />

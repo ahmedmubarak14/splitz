@@ -1382,6 +1382,18 @@ export type Database = {
         }
         Returns: string
       }
+      get_friend_invite_by_code: {
+        Args: { _invite_code: string }
+        Returns: {
+          created_at: string
+          expires_at: string
+          id: string
+          sender_avatar: string
+          sender_id: string
+          sender_name: string
+          status: string
+        }[]
+      }
       get_friendship_status: {
         Args: { other_user_id: string }
         Returns: string
