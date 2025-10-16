@@ -104,7 +104,7 @@ const handler = async (req: Request): Promise<Response> => {
     const nameAddr = /^[^<>]*<\s*[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+\s*>$/;
     const fromEmail = (rawFrom && (emailOnly.test(rawFrom) || nameAddr.test(rawFrom)))
       ? rawFrom
-      : 'Splitz <onboarding@resend.dev>';
+      : 'Splitz <no-reply@splitz.live>';
     // Send email using Resend API
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
