@@ -230,17 +230,17 @@ const Habits = () => {
               <div className="space-y-4 pt-4">
                 <div>
                   <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('habits.chooseEmoji')}</label>
-                  <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-5 gap-2">
                     {emojiOptions.map((emoji) => (
                       <button
                         key={emoji}
                         type="button"
                         onClick={() => setNewHabitIcon(emoji)}
                         className={cn(
-                          "text-3xl p-3 rounded-lg transition-all aspect-square flex items-center justify-center",
+                          "text-3xl p-3 rounded-lg transition-all duration-200 aspect-square flex items-center justify-center",
                           newHabitIcon === emoji 
-                            ? 'bg-primary/10 ring-2 ring-primary' 
-                            : 'bg-muted hover:bg-accent hover:scale-105'
+                            ? 'bg-primary/10 ring-2 ring-primary shadow-sm' 
+                            : 'bg-muted hover:bg-accent hover:scale-105 active:scale-95'
                         )}
                       >
                         {emoji}
@@ -276,11 +276,11 @@ const Habits = () => {
         ) : (
           <div className={`grid ${responsiveGrid.cards} ${responsiveSpacing.gridGap}`}>
             {habits.map((habit) => (
-              <Card key={habit.id} className="border border-border hover:shadow-md transition-shadow">
+              <Card key={habit.id} className="border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 transition-all duration-200 overflow-hidden group">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="text-4xl">{habit.icon || '🔥'}</div>
+                      <div className="text-4xl group-hover:scale-110 transition-transform duration-200">{habit.icon || '🔥'}</div>
                       <div>
                         <CardTitle className={`${responsiveText.cardTitle} font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{habit.name}</CardTitle>
                         <p className={`${responsiveText.caption} text-muted-foreground mt-1 ${isRTL ? 'text-right' : 'text-left'}`}>
@@ -326,16 +326,16 @@ const Habits = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {habit.target_days && (
-                    <div className="p-3 bg-primary/10 rounded-lg space-y-2">
+                    <div className="p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg space-y-2 border border-primary/20">
                       <div className={`flex items-center justify-between ${responsiveText.caption} ${isRTL ? 'flex-row-reverse' : ''}`}>
                         <span className="text-muted-foreground">{t('habits.goalProgress')}</span>
                         <span className="font-semibold text-primary">
                           {habit.streak_count ?? 0} / {habit.target_days} {t('habits.days')}
                         </span>
                       </div>
-                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div className="h-2 bg-muted rounded-full overflow-hidden shadow-inner">
                         <div 
-                          className={`h-full bg-gradient-to-r from-primary to-accent transition-all duration-500 ${isRTL ? 'float-right' : ''}`}
+                          className={`h-full bg-gradient-to-r from-primary to-accent transition-all duration-700 ease-out shadow-sm ${isRTL ? 'float-right' : ''}`}
                           style={{ width: `${Math.min(((habit.streak_count ?? 0) / habit.target_days) * 100, 100)}%` }}
                         />
                       </div>
@@ -350,7 +350,7 @@ const Habits = () => {
                   </div>
                   <Button
                     onClick={() => checkInHabit(habit.id)}
-                    className="w-full"
+                    className="w-full shadow-sm hover:shadow-md active:scale-95 transition-all duration-200"
                     size="sm"
                   >
                     <CheckCircle2 className="w-4 h-4 mr-2" />

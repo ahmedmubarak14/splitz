@@ -98,53 +98,69 @@ export default function Subscriptions() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
+          <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full" />
             <CardHeader className="pb-3">
+              <div className="inline-flex p-2 rounded-lg bg-primary/10 mb-2">
+                <CreditCard className="h-4 w-4 text-primary" />
+              </div>
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 {t('subscriptions.monthlyTotal')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl md:text-3xl font-bold tracking-tight">
                 {formatCurrency(totalMonthly, 'SAR', i18n.language)}
               </div>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-success/5 rounded-bl-full" />
             <CardHeader className="pb-3">
+              <div className="inline-flex p-2 rounded-lg bg-success/10 mb-2">
+                <Plus className="h-4 w-4 text-success" />
+              </div>
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Active
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl md:text-3xl font-bold text-success tracking-tight">
                 {activeSubscriptions.length}
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-warning/5 rounded-bl-full" />
             <CardHeader className="pb-3">
+              <div className="inline-flex p-2 rounded-lg bg-warning/10 mb-2">
+                <CreditCard className="h-4 w-4 text-warning" />
+              </div>
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Paused
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">
+              <div className="text-2xl md:text-3xl font-bold text-warning tracking-tight">
                 {pausedSubscriptions.length}
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-destructive/5 rounded-full" />
             <CardHeader className="pb-3">
+              <div className="inline-flex p-2 rounded-lg bg-destructive/10 mb-2">
+                <CreditCard className="h-4 w-4 text-destructive" />
+              </div>
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Canceled
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-600">
+              <div className="text-2xl md:text-3xl font-bold text-destructive tracking-tight">
                 {canceledSubscriptions.length}
               </div>
             </CardContent>

@@ -144,17 +144,19 @@ const Profile = () => {
         </div>
 
         {/* Profile Card */}
-        <Card className="border border-border">
+        <Card className="border border-border/40 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
           <CardHeader className="pb-4">
             <div className={`flex items-center gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <div className="w-20 h-20 rounded-full overflow-hidden bg-accent flex items-center justify-center">
-                {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" loading="lazy" />
-                ) : (
-                  <div className="text-foreground text-3xl font-semibold">
-                    {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase()}
-                  </div>
-                )}
+              <div className="relative group">
+                <div className="w-24 h-24 rounded-full overflow-hidden ring-4 ring-primary/10 shadow-md group-hover:ring-primary/20 transition-all duration-200 bg-accent flex items-center justify-center">
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="text-foreground text-3xl font-semibold">
+                      {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase()}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`}>
                 <CardTitle className={`${responsiveText.sectionTitle} font-semibold`}>
@@ -170,7 +172,7 @@ const Profile = () => {
           <CardContent className="space-y-6">
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-4 rounded-lg bg-accent border border-border">
+              <div className="p-4 rounded-lg bg-muted/20 border border-border/30 hover:bg-muted/30 transition-colors">
                 <div className={`flex items-center gap-2 mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Calendar className="w-4 h-4 text-primary" />
                   <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>{t('profile.memberSince')}</span>
@@ -180,7 +182,7 @@ const Profile = () => {
                 </p>
               </div>
 
-              <div className="p-4 rounded-lg bg-accent border border-border">
+              <div className="p-4 rounded-lg bg-muted/20 border border-border/30 hover:bg-muted/30 transition-colors">
                 <div className={`flex items-center gap-2 mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Globe className="w-4 h-4 text-primary" />
                   <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>{t('profile.language')}</span>
@@ -201,7 +203,7 @@ const Profile = () => {
             <div className="space-y-4">
               <div>
                 <Label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('profile.profilePicture')}</Label>
-                <label className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border cursor-pointer hover:bg-accent transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <label className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border/40 cursor-pointer hover:bg-accent/50 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <ImageIcon className="w-4 h-4" />
                   <span className="text-sm font-medium">
                     {uploading ? (
@@ -228,7 +230,7 @@ const Profile = () => {
                 />
               </div>
 
-              <Button onClick={saveProfile} disabled={saving} className="w-full">
+              <Button onClick={saveProfile} disabled={saving} className="w-full shadow-sm hover:shadow-md active:scale-95 transition-all duration-200">
                 {saving ? t('profile.saving') : t('profile.saveChanges')}
               </Button>
 
@@ -258,9 +260,9 @@ const Profile = () => {
         </Card>
 
         {/* Info Card */}
-        <Card className="border border-border">
-          <CardHeader>
-            <CardTitle className={`text-base font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{t('profile.aboutTitle')}</CardTitle>
+        <Card className="border border-border/40 shadow-sm">
+          <CardHeader className="border-b border-border/40 bg-muted/20">
+            <CardTitle className={`text-base font-semibold tracking-tight ${isRTL ? 'text-right' : 'text-left'}`}>{t('profile.aboutTitle')}</CardTitle>
           </CardHeader>
           <CardContent className={`space-y-2 text-sm text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
             <p>{t('profile.aboutHabits')}</p>

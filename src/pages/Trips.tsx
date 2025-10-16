@@ -62,7 +62,12 @@ export default function Trips() {
 
         {/* Trips List */}
         {isLoading ? (
-          <div className="text-center py-12">{t('common.loading')}</div>
+          <div className="min-h-[400px] flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-3 border-primary border-t-transparent shadow-lg"></div>
+              <p className="text-sm text-muted-foreground animate-pulse">{t('common.loading')}</p>
+            </div>
+          </div>
         ) : !trips || trips.length === 0 ? (
           <EmptyState
             icon={MapPin}
@@ -72,7 +77,7 @@ export default function Trips() {
             onAction={() => setCreateDialogOpen(true)}
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {trips.map((trip) => (
               <TripCard key={trip.id} trip={trip} />
             ))}

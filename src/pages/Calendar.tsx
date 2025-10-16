@@ -193,31 +193,31 @@ export default function CalendarPage() {
         </Tabs>
 
         {/* Legend */}
-        <Card className="p-4">
+        <Card className="p-4 shadow-sm border border-border/40">
           <div className={`flex flex-wrap gap-4 text-sm ${isRTL ? 'flex-row-reverse' : ''}`}>
             <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-              <div className="w-3 h-3 rounded-full bg-blue-500" />
-              <span>{t('calendar.tasks')}</span>
+              <div className="w-3 h-3 rounded-full bg-blue-500 shadow-sm" />
+              <span className="font-medium">{t('calendar.tasks')}</span>
             </div>
             <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-              <div className="w-3 h-3 rounded-full bg-green-500" />
-              <span>{t('calendar.habits')}</span>
+              <div className="w-3 h-3 rounded-full bg-green-500 shadow-sm" />
+              <span className="font-medium">{t('calendar.habits')}</span>
             </div>
             <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-              <div className="w-3 h-3 rounded-full bg-red-500" />
-              <span>{t('calendar.subscriptions')}</span>
+              <div className="w-3 h-3 rounded-full bg-red-500 shadow-sm" />
+              <span className="font-medium">{t('calendar.subscriptions')}</span>
             </div>
             <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-              <div className="w-3 h-3 rounded-full bg-purple-500" />
-              <span>{t('calendar.focus')}</span>
+              <div className="w-3 h-3 rounded-full bg-purple-500 shadow-sm" />
+              <span className="font-medium">{t('calendar.focus')}</span>
             </div>
             <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-              <div className="w-3 h-3 rounded-full bg-orange-500" />
-              <span>{t('calendar.trips')}</span>
+              <div className="w-3 h-3 rounded-full bg-orange-500 shadow-sm" />
+              <span className="font-medium">{t('calendar.trips')}</span>
             </div>
             <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-              <div className="w-3 h-3 rounded-full bg-yellow-500" />
-              <span>{t('calendar.challenges')}</span>
+              <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-sm" />
+              <span className="font-medium">{t('calendar.challenges')}</span>
             </div>
           </div>
         </Card>

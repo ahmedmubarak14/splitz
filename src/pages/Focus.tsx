@@ -608,10 +608,12 @@ const Focus = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Pomodoro Timer */}
           <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <Clock className="w-5 h-5" />
+            <Card className="border-2 border-primary/20 shadow-lg bg-gradient-to-br from-background to-primary/5 overflow-hidden">
+              <CardHeader className="border-b border-border/40 bg-muted/20">
+                <CardTitle className={`flex items-center gap-2 font-semibold tracking-tight ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <div className="inline-flex p-2 rounded-lg bg-primary/10">
+                    <Clock className="w-5 h-5 text-primary" />
+                  </div>
                   {t('focus.pomodoroTimer')}
                 </CardTitle>
               </CardHeader>
@@ -726,21 +728,28 @@ const Focus = () => {
 
                 {/* Timer Display */}
                 <div className="text-center py-8">
-                  <div className="text-6xl font-bold text-primary mb-4">
-                    {formatTime(timeLeft)}
+                  <div className="text-7xl md:text-8xl font-bold tracking-tighter mb-4">
+                    <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{formatTime(timeLeft)}</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <div className={`h-2 w-2 rounded-full ${isSessionActive ? 'bg-primary animate-pulse' : 'bg-muted'}`} />
+                    <span className="text-sm text-muted-foreground">
+                      {sessionType === 'work' ? 'Focus Time' : sessionType === 'short_break' ? 'Short Break' : sessionType === 'long_break' ? 'Long Break' : 'Custom Session'}
+                    </span>
                   </div>
                   
                   {/* Tree Growth */}
                   {isSessionActive && (sessionType === 'work' || sessionType === 'custom') && (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-center gap-2">
-                        <Trees className="w-8 h-8 text-green-600" style={{ opacity: Math.max(0.3, treeGrowth / 100) }} />
-                        <Sparkles className="w-4 h-4 text-yellow-500" style={{ opacity: treeGrowth / 100 }} />
+                    <div className="relative h-64 flex items-end justify-center mb-4">
+                      <div 
+                        className="transition-all duration-1000 ease-out transform"
+                        style={{
+                          height: `${treeGrowth}%`,
+                          opacity: Math.max(0.2, treeGrowth / 100)
+                        }}
+                      >
+                        <Trees className={`h-full w-auto ${treeGrowth > 75 ? 'text-success' : treeGrowth > 50 ? 'text-green-500' : 'text-green-400'}`} />
                       </div>
-                      <Progress value={treeGrowth} className="h-2" />
-                      <p className="text-sm text-muted-foreground">
-                        {t('focus.treeGrowth', { percent: Math.round(treeGrowth) })}
-                      </p>
                     </div>
                   )}
                 </div>
@@ -830,24 +839,33 @@ const Focus = () => {
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-2 md:gap-4 mt-4">
-              <Card>
+              <Card className="shadow-sm hover:shadow-md transition-all duration-200 border border-border/40 overflow-hidden group">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-success/5 rounded-bl-full" />
                 <CardContent className="pt-4 md:pt-6 text-center">
-                  <Trees className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-2 text-green-600" />
-                  <div className="text-xl md:text-2xl font-bold">{survivedSessions.length}</div>
+                  <div className="inline-flex p-2 rounded-lg bg-success/10 mb-2">
+                    <Trees className="w-6 h-6 md:w-8 md:h-8 text-success" />
+                  </div>
+                  <div className="text-xl md:text-2xl font-bold tracking-tight">{survivedSessions.length}</div>
                   <div className="text-xs md:text-sm text-muted-foreground">{t('focus.treesPlanted')}</div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="shadow-sm hover:shadow-md transition-all duration-200 border border-border/40 overflow-hidden group">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full" />
                 <CardContent className="pt-4 md:pt-6 text-center">
-                  <Clock className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-2 text-success" />
-                  <div className="text-xl md:text-2xl font-bold">{totalFocusTime}</div>
+                  <div className="inline-flex p-2 rounded-lg bg-primary/10 mb-2">
+                    <Clock className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                  </div>
+                  <div className="text-xl md:text-2xl font-bold tracking-tight">{totalFocusTime}</div>
                   <div className="text-xs md:text-sm text-muted-foreground">{t('focus.focusMinutes')}</div>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="shadow-sm hover:shadow-md transition-all duration-200 border border-border/40 overflow-hidden group">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-destructive/5 rounded-bl-full" />
                 <CardContent className="pt-4 md:pt-6 text-center">
-                  <Skull className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-2 text-destructive" />
-                  <div className="text-xl md:text-2xl font-bold">{failedSessions.length}</div>
+                  <div className="inline-flex p-2 rounded-lg bg-destructive/10 mb-2">
+                    <Skull className="w-6 h-6 md:w-8 md:h-8 text-destructive" />
+                  </div>
+                  <div className="text-xl md:text-2xl font-bold tracking-tight">{failedSessions.length}</div>
                   <div className="text-xs md:text-sm text-muted-foreground">{t('focus.treesDied')}</div>
                 </CardContent>
               </Card>

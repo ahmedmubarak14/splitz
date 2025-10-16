@@ -59,20 +59,20 @@ const Matrix = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-muted/30 via-muted/10 to-background">
       <div className={cn('max-w-7xl mx-auto', responsiveSpacing.pageContainer, responsiveSpacing.mobileNavPadding)}>
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 md:mb-8 flex items-center justify-between">
           <div>
-            <h1 className={cn('font-bold mb-2', responsiveText.pageTitle)}>
+            <h1 className={cn('font-bold tracking-tight mb-2', responsiveText.pageTitle)}>
               {t('matrix.title') || 'Eisenhower Matrix'}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-sm md:text-base">
               {t('matrix.subtitle') || 'Prioritize your tasks using the Eisenhower Matrix'}
             </p>
           </div>
           
-          <Button onClick={() => setQuickAddOpen(true)}>
+          <Button onClick={() => setQuickAddOpen(true)} className="shadow-sm hover:shadow-md transition-all duration-200">
             <Plus className="w-4 h-4 mr-2" />
             Add Task
           </Button>
@@ -96,7 +96,7 @@ const Matrix = () => {
           <div className="fixed bottom-20 right-4 z-20">
             <Button
               size="lg"
-              className="rounded-full w-14 h-14 shadow-lg"
+              className="rounded-full w-14 h-14 shadow-2xl hover:shadow-3xl active:scale-95 transition-all duration-200"
               onClick={() => setQuickAddOpen(true)}
             >
               <Plus className="w-6 h-6" />

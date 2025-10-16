@@ -63,13 +63,14 @@ const Tasks = () => {
 
   const SidebarContent = () => (
     <div className="h-full flex flex-col">
-      <div className="p-4 border-b border-border flex items-center justify-between">
-        <h2 className={cn('font-semibold', responsiveText.sectionTitle)}>
+      <div className="p-4 border-b border-border/40 bg-muted/20 flex items-center justify-between">
+        <h2 className={cn('font-semibold tracking-tight', responsiveText.sectionTitle)}>
           {t('nav.tasks')}
         </h2>
         <Button
           variant="ghost"
           size="icon"
+          className="hover:bg-accent/50 transition-colors duration-200"
           onClick={() => setShowProjectManager(true)}
         >
           <Settings className="w-4 h-4" />
@@ -91,7 +92,7 @@ const Tasks = () => {
       <div className="flex h-screen">
         {/* Desktop Sidebar */}
         {!isMobile && (
-          <div className="w-64 border-r border-border bg-card">
+          <div className="w-64 border-r border-border/40 bg-card/50 backdrop-blur-sm shadow-sm">
             <SidebarContent />
           </div>
         )}
@@ -108,20 +109,21 @@ const Tasks = () => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col">
           {/* Header */}
-          <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+          <div className="border-b border-border/40 bg-card/50 backdrop-blur-lg sticky top-0 z-10 shadow-sm">
             <div className={cn('flex items-center justify-between', responsiveSpacing.pageContainer)}>
               <div className="flex items-center gap-3">
                 {isMobile && (
                   <Button
                     variant="ghost"
                     size="icon"
+                    className="hover:bg-accent/50 transition-colors duration-200"
                     onClick={() => setSidebarOpen(true)}
                   >
                     <Menu className="w-5 h-5" />
                   </Button>
                 )}
                 <div>
-                  <h1 className={cn('font-bold', responsiveText.pageTitle)}>
+                  <h1 className={cn('font-bold tracking-tight', responsiveText.pageTitle)}>
                     {selectedProject}
                   </h1>
                   <p className="text-sm text-muted-foreground">
@@ -131,7 +133,7 @@ const Tasks = () => {
               </div>
               
               {!isMobile && (
-                <Button onClick={() => setShowQuickAdd(true)}>
+                <Button onClick={() => setShowQuickAdd(true)} className="shadow-sm hover:shadow-md transition-all duration-200">
                   <Plus className="w-4 h-4 mr-2" />
                   {t('tasks.addTask')}
                 </Button>
@@ -227,8 +229,18 @@ const Tasks = () => {
               )}
 
               {filteredTasks.length === 0 && !isLoading && (
-                <div className="text-center py-12 text-muted-foreground">
-                  No tasks yet. Create your first task to get started!
+                <div className="text-center py-16">
+                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted/50 mb-4">
+                    <Plus className="w-10 h-10 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">No tasks yet</h3>
+                  <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
+                    Create your first task to get started with your productivity journey
+                  </p>
+                  <Button onClick={() => setShowQuickAdd(true)} className="shadow-sm hover:shadow-md">
+                    <Plus className="w-4 h-4 mr-2" />
+                    {t('tasks.addTask')}
+                  </Button>
                 </div>
               )}
             </div>
