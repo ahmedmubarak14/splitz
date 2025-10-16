@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, CreditCard, Pause, XCircle, Archive } from "lucide-react";
+import { Plus, CreditCard, Pause, XCircle, Archive, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,11 +26,15 @@ export default function Subscriptions() {
   const [contributorsDialogOpen, setContributorsDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState<any>(null);
-  const [selectedTab, setSelectedTab] = useState("active");
+  const [selectedTab, setSelectedTab] = useState("my-active");
 
+  // Owned subscriptions query
   const { data: subscriptions, isLoading } = useQuery({
     queryKey: ["subscriptions"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
       const { data, error } = await supabase
         .from("subscriptions")
         .select(`
@@ -43,6 +47,7 @@ export default function Subscriptions() {
             paid_at
           )
         `)
+        .eq('user_id', user.id)
         .order("next_renewal_date", { ascending: true });
 
       if (error) {
@@ -53,12 +58,42 @@ export default function Subscriptions() {
     },
   });
 
-  const activeSubscriptions = subscriptions?.filter(s => s.status === 'active') || [];
+  // Shared subscriptions where user is a contributor
+  const { data: sharedSubscriptions, isLoading: isLoadingShared } = useQuery({
+    queryKey: ['shared-subscriptions'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase
+        .from('subscription_contributors')
+        .select(`
+          *,
+          subscriptions!inner (
+            *,
+            subscription_contributors (
+              id,
+              user_id,
+              contribution_amount,
+              is_settled,
+              paid_at
+            )
+          )
+        `)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      return data?.map(d => d.subscriptions).filter((s: any) => s.user_id !== user.id) || [];
+    },
+  });
+
+  const myActiveSubscriptions = subscriptions?.filter(s => s.status === 'active') || [];
   const pausedSubscriptions = subscriptions?.filter(s => s.status === 'paused') || [];
   const canceledSubscriptions = subscriptions?.filter(s => s.status === 'canceled') || [];
   const archivedSubscriptions = subscriptions?.filter(s => s.status === 'archived') || [];
+  const sharedWithMe = sharedSubscriptions || [];
 
-  const totalMonthly = activeSubscriptions.reduce((sum, sub) => {
+  const totalMonthly = myActiveSubscriptions.reduce((sum, sub) => {
     if (sub.billing_cycle === "monthly") return sum + Number(sub.amount);
     if (sub.billing_cycle === "yearly") return sum + Number(sub.amount) / 12;
     if (sub.billing_cycle === "weekly") return sum + Number(sub.amount) * 4;
@@ -133,12 +168,29 @@ export default function Subscriptions() {
                 <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-success" />
               </div>
               <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Active
+                My Active
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-3xl md:text-4xl font-bold text-success tracking-tight">
-                {activeSubscriptions.length}
+                {myActiveSubscriptions.length}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-info/10 rounded-bl-full" />
+            <CardHeader className="pb-3">
+              <div className="inline-flex p-2.5 rounded-xl bg-info/20 mb-3 group-hover:bg-info/30 transition-colors">
+                <Users className="h-5 w-5 md:h-6 md:w-6 text-info" />
+              </div>
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Shared with Me
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl md:text-4xl font-bold text-info tracking-tight">
+                {sharedWithMe.length}
               </div>
             </CardContent>
           </Card>
@@ -159,36 +211,29 @@ export default function Subscriptions() {
               </div>
             </CardContent>
           </Card>
-
-          <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-destructive/10 rounded-bl-full" />
-            <CardHeader className="pb-3">
-              <div className="inline-flex p-2.5 rounded-xl bg-destructive/20 mb-3 group-hover:bg-destructive/30 transition-colors">
-                <XCircle className="h-5 w-5 md:h-6 md:w-6 text-destructive" />
-              </div>
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Canceled
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl md:text-4xl font-bold text-destructive tracking-tight">
-                {canceledSubscriptions.length}
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Subscriptions List */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="grid w-full max-w-4xl grid-cols-4 bg-muted/50 p-1 rounded-lg border border-border/40">
+          <TabsList className="grid w-full max-w-5xl grid-cols-5 bg-muted/50 p-1 rounded-lg border border-border/40">
             <TabsTrigger 
-              value="active"
+              value="my-active"
               className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
             >
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-success" />
-                <span className="hidden sm:inline font-medium">Active</span>
-                <Badge variant="secondary" className="ml-1">{activeSubscriptions.length}</Badge>
+                <span className="hidden sm:inline font-medium">My Active</span>
+                <Badge variant="secondary" className="ml-1">{myActiveSubscriptions.length}</Badge>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="shared"
+              className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-info" />
+                <span className="hidden sm:inline font-medium">Shared</span>
+                <Badge variant="secondary" className="ml-1">{sharedWithMe.length}</Badge>
               </div>
             </TabsTrigger>
             <TabsTrigger 
@@ -223,7 +268,7 @@ export default function Subscriptions() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="active" className="space-y-4 mt-6">
+          <TabsContent value="my-active" className="space-y-4 mt-6">
             {isLoading ? (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -238,7 +283,7 @@ export default function Subscriptions() {
                   ))}
                 </div>
               </div>
-            ) : activeSubscriptions.length === 0 ? (
+            ) : myActiveSubscriptions.length === 0 ? (
               <div className="text-center py-16">
                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted/50 mb-6">
                   <CreditCard className="w-10 h-10 text-muted-foreground" />
@@ -257,12 +302,50 @@ export default function Subscriptions() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {activeSubscriptions.map((subscription) => (
+                {myActiveSubscriptions.map((subscription) => (
                   <SubscriptionCard 
                     key={subscription.id} 
                     subscription={subscription}
                     onEdit={() => handleEditSubscription(subscription)}
                     onManageContributors={() => handleManageContributors(subscription)}
+                    onViewDetails={() => handleViewDetails(subscription)}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="shared" className="space-y-4 mt-6">
+            {isLoadingShared ? (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[1, 2, 3].map(i => (
+                    <Card key={i} className="animate-pulse">
+                      <CardContent className="p-6 space-y-3">
+                        <div className="h-4 bg-muted rounded w-2/3"></div>
+                        <div className="h-3 bg-muted rounded w-full"></div>
+                        <div className="h-3 bg-muted rounded w-5/6"></div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            ) : sharedWithMe.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted/50 mb-6">
+                  <Users className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No shared subscriptions</h3>
+                <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                  You haven't been added to any shared subscriptions yet
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {sharedWithMe.map((subscription: any) => (
+                  <SubscriptionCard 
+                    key={subscription.id} 
+                    subscription={subscription}
                     onViewDetails={() => handleViewDetails(subscription)}
                   />
                 ))}

@@ -7,9 +7,12 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
-import { UserPlus, X } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Trash2, Mail, Link2, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SubscriptionSplitTypeSelector } from './SubscriptionSplitTypeSelector';
+import { InviteDialog } from './InviteDialog';
+import type { SplitType, MemberSplit } from './SubscriptionSplitTypeSelector';
 
 interface ManageContributorsDialogProps {
   open: boolean;
@@ -29,6 +32,10 @@ const ManageContributorsDialog = ({
   const queryClient = useQueryClient();
   const [contributionAmount, setContributionAmount] = useState('');
   const [searchEmail, setSearchEmail] = useState('');
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [userNotFound, setUserNotFound] = useState(false);
+  const [splitType, setSplitType] = useState<SplitType>('equal');
+  const [memberSplits, setMemberSplits] = useState<MemberSplit[]>([]);
 
   // Fetch subscription details for split type
   const { data: subscription } = useQuery({
@@ -79,14 +86,22 @@ const ManageContributorsDialog = ({
   // Add contributor
   const addContributor = useMutation({
     mutationFn: async () => {
-      // Find user by email (using the email column we just added)
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) throw new Error("Not authenticated");
+
+      // Find user by email (using maybeSingle instead of single)
       const { data: user, error: userError } = await supabase
         .from('profiles')
         .select('id')
         .eq('email', searchEmail.trim().toLowerCase())
-        .single();
+        .maybeSingle();
 
-      if (userError || !user) {
+      if (userError) {
+        throw new Error('Error searching for user');
+      }
+
+      if (!user) {
+        setUserNotFound(true);
         throw new Error('User not found with this email');
       }
 
@@ -96,31 +111,37 @@ const ManageContributorsDialog = ({
         .select('id')
         .eq('subscription_id', subscriptionId)
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (existing) {
         throw new Error('User is already a contributor');
       }
 
-      // Add contributor
-      const { error } = await supabase
+      // Add new contributor
+      const { error: insertError } = await supabase
         .from('subscription_contributors')
         .insert({
           subscription_id: subscriptionId,
           user_id: user.id,
-          contribution_amount: parseFloat(contributionAmount),
+          contribution_amount: parseFloat(contributionAmount) || 0,
+          split_value: parseFloat(contributionAmount),
         });
 
-      if (error) throw error;
+      if (insertError) throw insertError;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subscription-contributors'] });
-      toast.success('Contributor added successfully');
+      queryClient.invalidateQueries({ queryKey: ['subscription-contributors', subscriptionId] });
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
       setSearchEmail('');
       setContributionAmount('');
+      setUserNotFound(false);
+      toast.success('Contributor added successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to add contributor');
+    onError: (error: Error) => {
+      if (error.message !== 'User not found with this email') {
+        toast.error(error.message);
+        setUserNotFound(false);
+      }
     },
   });
 
@@ -135,184 +156,249 @@ const ManageContributorsDialog = ({
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subscription-contributors'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription-contributors', subscriptionId] });
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
       toast.success('Contributor removed');
     },
-    onError: () => {
-      toast.error('Failed to remove contributor');
+    onError: (error: Error) => {
+      toast.error(error.message);
     },
   });
 
-  const handleAddContributor = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchEmail || !contributionAmount) {
-      toast.error('Please fill in all fields');
+  // Update split type
+  const updateSplitType = useMutation({
+    mutationFn: async ({ newSplitType, newSplits }: { newSplitType: SplitType; newSplits: MemberSplit[] }) => {
+      // Update subscription split type
+      const { error: subError } = await supabase
+        .from('subscriptions')
+        .update({ split_type: newSplitType })
+        .eq('id', subscriptionId);
+
+      if (subError) throw subError;
+
+      // Update each contributor's split_value and contribution_amount
+      for (const split of newSplits) {
+        const { error } = await supabase
+          .from('subscription_contributors')
+          .update({
+            split_value: split.split_value,
+            contribution_amount: split.calculated_amount,
+          })
+          .eq('user_id', split.user_id)
+          .eq('subscription_id', subscriptionId);
+
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscription-contributors', subscriptionId] });
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
+      queryClient.invalidateQueries({ queryKey: ['subscription-details', subscriptionId] });
+      toast.success('Split type updated');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleSplitsChange = (newSplits: MemberSplit[]) => {
+    setMemberSplits(newSplits);
+    updateSplitType.mutate({ newSplitType: splitType, newSplits });
+  };
+
+  const handleAddContributor = () => {
+    if (!searchEmail) {
+      toast.error('Please enter an email address');
       return;
     }
     addContributor.mutate();
   };
 
-  const totalContributions = contributors?.reduce((sum, c) => sum + Number(c.contribution_amount), 0) || 0;
-  const remainingAmount = totalAmount - totalContributions;
+  const totalCovered = contributors?.reduce((sum, c) => sum + Number(c.contribution_amount || 0), 0) || 0;
+  const remaining = totalAmount - totalCovered;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Manage Contributors - {subscriptionName}</DialogTitle>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Manage Contributors - {subscriptionName}</DialogTitle>
+          </DialogHeader>
 
-        <div className="space-y-6">
-          {/* Split Type Selector */}
-          {subscription && contributors && contributors.length > 0 && (
-            <div className="border rounded-lg p-4">
-              <h3 className="font-semibold mb-4">Split Configuration</h3>
-              <SubscriptionSplitTypeSelector
-                totalAmount={totalAmount}
-                currency={subscription.currency}
-                members={contributors.map(c => ({
-                  user_id: c.user_id,
-                  full_name: (c as any).profile?.full_name || 'Unknown'
-                }))}
-                onSplitsChange={async (splits, splitType) => {
-                  // Update split type in subscription
-                  await supabase
-                    .from('subscriptions')
-                    .update({ split_type: splitType })
-                    .eq('id', subscriptionId);
+          <div className="space-y-6">
+            {/* Split Type Selector */}
+            {subscription && contributors && (
+              <div className="space-y-2">
+                <Label>Split Type</Label>
+                <SubscriptionSplitTypeSelector
+                  totalAmount={totalAmount}
+                  currency={subscription.currency || 'SAR'}
+                  members={contributors.map(c => ({
+                    user_id: c.user_id,
+                    full_name: (c as any).profile?.full_name || 'Unknown',
+                  }))}
+                  onSplitsChange={handleSplitsChange}
+                  initialSplitType={subscription.split_type as SplitType}
+                  initialSplits={contributors.map(c => ({
+                    user_id: c.user_id,
+                    split_value: c.split_value || 0,
+                  }))}
+                />
+              </div>
+            )}
 
-                  // Update contributor split values and amounts
-                  for (const split of splits) {
-                    await supabase
-                      .from('subscription_contributors')
-                      .update({
-                        split_value: split.split_value,
-                        contribution_amount: split.calculated_amount
-                      })
-                      .eq('subscription_id', subscriptionId)
-                      .eq('user_id', split.user_id);
-                  }
-
-                  queryClient.invalidateQueries({ queryKey: ['subscription-contributors'] });
-                  queryClient.invalidateQueries({ queryKey: ['subscription-details'] });
-                  toast.success('Split updated successfully');
-                }}
-                initialSplitType={subscription.split_type || 'equal'}
-                initialSplits={contributors.map(c => ({
-                  user_id: c.user_id,
-                  split_value: c.split_value
-                }))}
-              />
-            </div>
-          )}
-
-          {/* Summary */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="bg-card border rounded-lg p-4">
-              <p className="text-sm text-muted-foreground">Total Amount</p>
-              <p className="text-2xl font-bold">{totalAmount.toFixed(2)}</p>
-            </div>
-            <div className="bg-card border rounded-lg p-4">
-              <p className="text-sm text-muted-foreground">Covered</p>
-              <p className="text-2xl font-bold text-success">{totalContributions.toFixed(2)}</p>
-            </div>
-            <div className="bg-card border rounded-lg p-4">
-              <p className="text-sm text-muted-foreground">Remaining</p>
-              <p className="text-2xl font-bold text-warning">{remainingAmount.toFixed(2)}</p>
-            </div>
-          </div>
-
-          {/* Add Contributor Form */}
-          <form onSubmit={handleAddContributor} className="border rounded-lg p-4 space-y-4">
-            <h3 className="font-semibold flex items-center gap-2">
-              <UserPlus className="w-4 h-4" />
-              Add Contributor
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Summary */}
+            <div className="grid grid-cols-3 gap-4 p-4 bg-muted rounded-lg">
               <div>
-                <Label htmlFor="email">User Email</Label>
+                <p className="text-sm text-muted-foreground">Total</p>
+                <p className="text-lg font-semibold">{subscription?.currency || 'SAR'} {totalAmount.toFixed(2)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Covered</p>
+                <p className="text-lg font-semibold text-success">{subscription?.currency || 'SAR'} {totalCovered.toFixed(2)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Remaining</p>
+                <p className={`text-lg font-semibold ${remaining > 0 ? 'text-warning' : 'text-success'}`}>
+                  {subscription?.currency || 'SAR'} {remaining.toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            {/* Add Contributor Section */}
+            <div className="space-y-2">
+              <Label htmlFor="email">Add Contributor</Label>
+              {userNotFound && (
+                <Alert className="mb-4">
+                  <AlertTitle>User not found</AlertTitle>
+                  <AlertDescription className="space-y-2">
+                    <p>This email isn't registered yet. Would you like to invite them?</p>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setInviteDialogOpen(true);
+                          setUserNotFound(false);
+                        }}
+                      >
+                        <Link2 className="w-4 h-4 mr-2" />
+                        Send Invite
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setUserNotFound(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+              <div className="flex gap-2">
                 <Input
                   id="email"
                   type="email"
+                  placeholder="Enter email address"
                   value={searchEmail}
                   onChange={(e) => setSearchEmail(e.target.value)}
-                  placeholder="user@example.com"
                 />
+                <Button
+                  onClick={handleAddContributor}
+                  disabled={!searchEmail || addContributor.isPending}
+                >
+                  {addContributor.isPending ? (
+                    'Adding...'
+                  ) : (
+                    <>
+                      <Mail className="w-4 h-4 mr-2" />
+                      Add
+                    </>
+                  )}
+                </Button>
               </div>
-
-              <div>
-                <Label htmlFor="contribution">Contribution Amount</Label>
-                <Input
-                  id="contribution"
-                  type="number"
-                  step="0.01"
-                  value={contributionAmount}
-                  onChange={(e) => setContributionAmount(e.target.value)}
-                  placeholder={remainingAmount > 0 ? remainingAmount.toFixed(2) : '0.00'}
-                />
+              <div className="flex gap-2 mt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setInviteDialogOpen(true)}
+                  className="flex-1"
+                >
+                  <Link2 className="w-4 h-4 mr-2" />
+                  Invite via Link
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setInviteDialogOpen(true)}
+                  className="flex-1"
+                >
+                  <Share2 className="w-4 h-4 mr-2" />
+                  WhatsApp
+                </Button>
               </div>
             </div>
 
-            <Button type="submit" disabled={addContributor.isPending} className="w-full">
-              {addContributor.isPending ? 'Adding...' : 'Add Contributor'}
-            </Button>
-          </form>
-
-          {/* Contributors List */}
-          <div className="space-y-2">
-            <h3 className="font-semibold">Contributors ({contributors?.length || 0})</h3>
-            
-            {contributors && contributors.length > 0 ? (
-              <div className="space-y-2">
-                {contributors.map((contributor) => (
-                  <div
-                    key={contributor.id}
-                    className="flex items-center justify-between p-3 border rounded-lg bg-card"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarImage src={(contributor as any).profile?.avatar_url} />
-                        <AvatarFallback>
-                          {(contributor as any).profile?.full_name?.charAt(0) || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">
-                          {(contributor as any).profile?.full_name || 'Unknown User'}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Contributes: {Number(contributor.contribution_amount).toFixed(2)}
-                        </p>
+            {/* Contributors List */}
+            <div className="space-y-2">
+              <Label>Current Contributors ({contributors?.length || 0})</Label>
+              {!contributors || contributors.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No contributors yet. Add the first one above.
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {contributors.map((contributor) => (
+                    <div
+                      key={contributor.id}
+                      className="flex items-center justify-between p-3 rounded-lg border bg-card"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={(contributor as any).profile?.avatar_url || ''} />
+                          <AvatarFallback>
+                            {(contributor as any).profile?.full_name?.charAt(0) || '?'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{(contributor as any).profile?.full_name || 'Unknown'}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {subscription?.currency || 'SAR'} {Number(contributor.contribution_amount).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {contributor.is_settled ? (
+                          <Badge className="bg-success text-success-foreground">Paid</Badge>
+                        ) : (
+                          <Badge variant="secondary">Pending</Badge>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeContributor.mutate(contributor.id)}
+                        >
+                          <Trash2 className="w-4 h-4 text-destructive" />
+                        </Button>
                       </div>
                     </div>
-
-                    <div className="flex items-center gap-2">
-                      {contributor.is_settled ? (
-                        <Badge variant="secondary">Paid</Badge>
-                      ) : (
-                        <Badge variant="outline">Pending</Badge>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeContributor.mutate(contributor.id)}
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-center text-muted-foreground py-8">
-                No contributors yet. Add someone to share this subscription!
-              </p>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      <InviteDialog
+        open={inviteDialogOpen}
+        onOpenChange={setInviteDialogOpen}
+        resourceId={subscriptionId}
+        resourceType="subscription"
+        resourceName={subscriptionName}
+      />
+    </>
   );
 };
 

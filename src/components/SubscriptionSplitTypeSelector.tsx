@@ -7,11 +7,12 @@ import { useTranslation } from "react-i18next";
 import { formatCurrency } from "@/lib/formatters";
 import { CheckCircle, XCircle } from "lucide-react";
 
-type SplitType = 'equal' | 'percentage' | 'custom' | 'shares';
+export type SplitType = 'equal' | 'percentage' | 'custom' | 'shares';
 
-interface MemberSplit {
+export interface MemberSplit {
   user_id: string;
-  full_name: string;
+  full_name?: string;
+  name?: string;
   split_value: number | null;
   calculated_amount: number;
 }
