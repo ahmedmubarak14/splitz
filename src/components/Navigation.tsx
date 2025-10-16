@@ -29,6 +29,17 @@ const Navigation = () => {
     'challenges',
   ]);
 
+  // Dynamic item limiting based on screen size
+  const getMaxVisibleItems = () => {
+    const width = window.innerWidth;
+    if (width < 360) return 3; // Menu + 2 items
+    if (width < 400) return 4; // Menu + 3 items
+    if (width < 500) return 5; // Menu + 4 items
+    return 5; // Menu + 4 items (max)
+  };
+
+  const [maxItems, setMaxItems] = useState(getMaxVisibleItems());
+
   const allNavItems = [
     { id: 'dashboard' as NavItemId, path: '/dashboard', icon: Home, label: t('nav.dashboard') },
     { id: 'habits' as NavItemId, path: '/habits', icon: Flame, label: t('nav.habits') },
@@ -44,6 +55,13 @@ const Navigation = () => {
 
   useEffect(() => {
     fetchNavPreferences();
+    
+    const handleResize = () => {
+      setMaxItems(getMaxVisibleItems());
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const fetchNavPreferences = async () => {
@@ -74,23 +92,27 @@ const Navigation = () => {
   };
 
   const visibleNavItems = allNavItems.filter(item => visibleNavIds.includes(item.id));
+  const displayedNavItems = visibleNavItems.slice(0, maxItems - 1); // -1 for Menu button
+  const hasOverflow = visibleNavItems.length > maxItems - 1;
 
   return (
     <>
       <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-50 md:hidden shadow-lg">
-        <div className="flex justify-around items-center h-16 px-1">
+        <div className="mobile-nav-container">
           {/* Hamburger Menu */}
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={() => setDrawerOpen(true)}
-            className="flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all hover:bg-accent/50"
+            className={cn(
+              'mobile-nav-item',
+              'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+            )}
           >
-            <Menu className="w-[18px] h-[18px]" />
-            <span className="text-[10px] font-medium">{t('nav.menu')}</span>
-          </Button>
+            <Menu className="flex-shrink-0" />
+            <span>{t('nav.menu')}</span>
+            {hasOverflow && <div className="mobile-nav-overflow-indicator" />}
+          </button>
 
-          {visibleNavItems.map((item) => {
+          {displayedNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
             
@@ -101,14 +123,14 @@ const Navigation = () => {
                 onMouseEnter={() => handlePrefetch(item.path)}
                 onTouchStart={() => handlePrefetch(item.path)}
                 className={cn(
-                  'flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all',
+                  'mobile-nav-item',
                   isActive
-                    ? 'text-primary bg-primary/10 scale-105'
+                    ? 'text-primary active'
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
                 )}
               >
-                <Icon className="w-[18px] h-[18px]" />
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <Icon className="flex-shrink-0" />
+                <span>{item.label}</span>
               </Link>
             );
           })}
