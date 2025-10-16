@@ -14,6 +14,7 @@ import { InviteDialog } from "./InviteDialog";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { SplitType, MemberSplit } from "./SubscriptionSplitTypeSelector";
+import { withAuthRecovery } from "@/lib/auth-recovery";
 
 interface ManageContributorsDialogProps {
   open: boolean;
@@ -41,16 +42,16 @@ const ManageContributorsDialog = ({
   // Get current user
   const { data: currentUser } = useQuery({
     queryKey: ["current-user"],
-    queryFn: async () => {
+    queryFn: () => withAuthRecovery(async () => {
       const { data: { user } } = await supabase.auth.getUser();
       return user;
-    },
+    }, "Failed to get user"),
   });
 
   // Fetch subscription details
   const { data: subscription } = useQuery({
     queryKey: ["subscription", subscriptionId],
-    queryFn: async () => {
+    queryFn: () => withAuthRecovery(async () => {
       const { data, error } = await supabase
         .from("subscriptions")
         .select("*")
@@ -59,7 +60,7 @@ const ManageContributorsDialog = ({
 
       if (error) throw error;
       return data;
-    },
+    }, "Failed to load subscription"),
   });
 
   const isOwner = currentUser?.id === subscription?.user_id;
@@ -67,7 +68,7 @@ const ManageContributorsDialog = ({
   // Fetch contributors with profiles
   const { data: contributors = [], isLoading: isLoadingContributors } = useQuery({
     queryKey: ["subscription-contributors", subscriptionId],
-    queryFn: async () => {
+    queryFn: () => withAuthRecovery(async () => {
       const { data: contribData, error: contribError } = await supabase
         .from("subscription_contributors")
         .select("*")
@@ -95,7 +96,7 @@ const ManageContributorsDialog = ({
           profile: profile || { id: contrib.user_id, full_name: t("common.unknown"), email: "", avatar_url: null },
         };
       });
-    },
+    }, "Failed to load contributors"),
   });
 
   // Initialize staged state when subscription or contributors load
@@ -306,9 +307,24 @@ const ManageContributorsDialog = ({
     },
   });
 
-  // Send reminder mutation
+  // Send reminder mutation - creates in-app notification
   const sendReminder = useMutation({
     mutationFn: async (contributorId: string) => {
+      const contributor = contributors.find(c => c.id === contributorId);
+      if (!contributor) throw new Error("Contributor not found");
+
+      // Create in-app notification using the database function
+      const { error: notifError } = await supabase.rpc('create_notification', {
+        p_user_id: contributor.user_id,
+        p_title: t("subscriptions.reminderTitle"),
+        p_message: `${t("subscriptions.reminderMessage")} "${subscriptionName}" - ${subscription?.currency} ${contributor.contribution_amount}`,
+        p_type: 'subscription',
+        p_resource_id: subscriptionId
+      });
+
+      if (notifError) throw notifError;
+
+      // Update last reminder sent timestamp
       const { error } = await supabase
         .from("subscription_contributors")
         .update({
@@ -321,6 +337,10 @@ const ManageContributorsDialog = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subscription-contributors", subscriptionId] });
       toast.success(t("subscriptions.reminderSent"));
+    },
+    onError: (error) => {
+      console.error("Failed to send reminder:", error);
+      toast.error(t("subscriptions.reminderFailed"));
     },
   });
 
@@ -356,18 +376,18 @@ const ManageContributorsDialog = ({
     const isOwnContribution = contributor.user_id === currentUser?.id;
 
     if (contributor.is_settled) {
-      return <Badge className="bg-green-500">{t("subscriptions.status.paid")}</Badge>;
+      return <Badge className="bg-green-500">{t("subscriptions.statusPaid")}</Badge>;
     }
 
     if (contributor.payment_submitted) {
-      return <Badge variant="secondary">{t("subscriptions.status.awaitingApproval")}</Badge>;
+      return <Badge variant="secondary">{t("subscriptions.statusAwaitingApproval")}</Badge>;
     }
 
     if (isOwnContribution && isOwner) {
-      return <Badge variant="outline">{t("subscriptions.status.yourContribution")}</Badge>;
+      return <Badge variant="outline">{t("subscriptions.statusYourContribution")}</Badge>;
     }
 
-    return <Badge variant="secondary">{t("subscriptions.status.pendingPayment")}</Badge>;
+    return <Badge variant="secondary">{t("subscriptions.statusPending")}</Badge>;
   };
 
   const renderActionButtons = (contributor: any) => {
@@ -435,7 +455,17 @@ const ManageContributorsDialog = ({
           new Date(contributor.last_reminder_sent).getTime() < Date.now() - 24 * 60 * 60 * 1000;
 
         return (
-          <div className="flex flex-col gap-1">
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="default"
+              onClick={() => markAsPaid.mutate(contributor.id)}
+              disabled={markAsPaid.isPending}
+            >
+              {markAsPaid.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              <Check className="h-4 w-4 mr-2" />
+              {t("subscriptions.markAsPaid")}
+            </Button>
             <Button
               size="sm"
               variant="outline"
@@ -446,11 +476,6 @@ const ManageContributorsDialog = ({
               <Bell className="h-4 w-4 mr-2" />
               {t("subscriptions.sendReminder")}
             </Button>
-            {contributor.last_reminder_sent && (
-              <span className="text-xs text-muted-foreground">
-                {t("subscriptions.lastReminderSent")}: {new Date(contributor.last_reminder_sent).toLocaleDateString()}
-              </span>
-            )}
           </div>
         );
       }

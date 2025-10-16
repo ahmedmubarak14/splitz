@@ -429,17 +429,30 @@ export const SubscriptionDetailsDialog = ({
                     </>
                   )}
 
-                  {/* Owner can send reminders to all pending contributors */}
+                  {/* Owner can mark others as paid or send reminders */}
                   {isOwner && !isCurrentUser && !contributor.is_settled && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => sendReminder.mutate(contributor.id)}
-                      disabled={sendReminder.isPending}
-                    >
-                      <Bell className="h-4 w-4 mr-1" />
-                      {t('subscriptions.sendReminder')}
-                    </Button>
+                    <>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => markAsPaid.mutate(contributor.id)}
+                        disabled={markAsPaid.isPending}
+                      >
+                        <Check className="h-4 w-4 mr-1" />
+                        {t('subscriptions.markAsPaid')}
+                      </Button>
+                      {!contributor.payment_submitted && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => sendReminder.mutate(contributor.id)}
+                          disabled={sendReminder.isPending}
+                        >
+                          <Bell className="h-4 w-4 mr-1" />
+                          {t('subscriptions.sendReminder')}
+                        </Button>
+                      )}
+                    </>
                   )}
                 </div>
 
