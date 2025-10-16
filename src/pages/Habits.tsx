@@ -428,20 +428,12 @@ const Habits = () => {
       </AlertDialog>
 
       {selectedHabit && (
-        <>
-          <HabitCalendar
-            habitId={selectedHabit.id}
-            habitName={selectedHabit.name}
-            open={calendarDialogOpen}
-            onOpenChange={setCalendarDialogOpen}
-          />
-          <HabitStatistics
-            habitId={selectedHabit.id}
-            habitName={selectedHabit.name}
-            open={statsDialogOpen}
-            onOpenChange={setStatsDialogOpen}
-          />
-        </>
+        <HabitCalendar
+          habitId={selectedHabit.id}
+          habitName={selectedHabit.name}
+          open={calendarDialogOpen}
+          onOpenChange={setCalendarDialogOpen}
+        />
       )}
 
       {/* Mobile Quick Actions FAB */}
