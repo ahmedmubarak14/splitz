@@ -32,6 +32,7 @@ const resources = {
         social: 'Social',
         account: 'Account',
         manageYourLife: 'Manage your life',
+        friends: 'Friends',
       },
       dashboard: {
         welcome: 'Welcome back!',
@@ -1111,6 +1112,7 @@ const resources = {
         social: 'اجتماعي',
         account: 'الحساب',
         manageYourLife: 'أدر حياتك',
+        friends: 'الأصدقاء',
       },
       dashboard: {
         welcome: 'مرحباً بعودتك!',
