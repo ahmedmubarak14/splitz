@@ -19,6 +19,8 @@ import { HabitStatistics } from '@/components/HabitStatistics';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing, responsiveGrid } from '@/lib/responsive-utils';
 import { EmptyState } from '@/components/EmptyState';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
 
 type Habit = {
   id: string;
@@ -48,6 +50,7 @@ const Habits = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isRTL = useIsRTL();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     checkAuth();
@@ -432,9 +435,17 @@ const Habits = () => {
             open={calendarDialogOpen}
             onOpenChange={setCalendarDialogOpen}
           />
-          {/* Statistics available in Dashboard */}
+          <HabitStatistics
+            habitId={selectedHabit.id}
+            habitName={selectedHabit.name}
+            open={statsDialogOpen}
+            onOpenChange={setStatsDialogOpen}
+          />
         </>
       )}
+
+      {/* Mobile Quick Actions FAB */}
+      <MobileQuickActionsFAB onAddHabit={() => setDialogOpen(true)} />
 
       <Navigation />
     </div>

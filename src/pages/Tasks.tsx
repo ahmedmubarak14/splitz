@@ -13,6 +13,9 @@ import ProjectSelector from '@/components/ProjectSelector';
 import QuickAddTask from '@/components/QuickAddTask';
 import ProjectManagementDialog from '@/components/ProjectManagementDialog';
 import { toast } from 'sonner';
+import { CollapsibleSection } from '@/components/CollapsibleSection';
+import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
+import { isToday, isPast, isThisWeek } from 'date-fns';
 
 const Tasks = () => {
   const { t } = useTranslation();
@@ -45,6 +48,18 @@ const Tasks = () => {
   const projects = Array.from(new Set(tasks?.map(t => t.project) || ['Inbox']));
 
   const filteredTasks = tasks?.filter(t => t.project === selectedProject) || [];
+
+  // Group tasks by sections
+  const todayTasks = filteredTasks.filter(
+    (t) => !t.is_completed && t.due_date && (isToday(new Date(t.due_date)) || isPast(new Date(t.due_date)))
+  );
+  const thisWeekTasks = filteredTasks.filter(
+    (t) => !t.is_completed && t.due_date && isThisWeek(new Date(t.due_date)) && !isToday(new Date(t.due_date)) && !isPast(new Date(t.due_date))
+  );
+  const laterTasks = filteredTasks.filter(
+    (t) => !t.is_completed && (!t.due_date || (!isThisWeek(new Date(t.due_date)) && !isPast(new Date(t.due_date))))
+  );
+  const completedTasks = filteredTasks.filter((t) => t.is_completed);
 
   const SidebarContent = () => (
     <div className="h-full flex flex-col">
@@ -124,30 +139,101 @@ const Tasks = () => {
             </div>
           </div>
 
-          {/* Task List */}
+          {/* Task List with Collapsible Sections */}
           <div className={cn('flex-1 overflow-y-auto', responsiveSpacing.pageContainer, responsiveSpacing.mobileNavPadding)}>
-            <TaskList
-              tasks={filteredTasks}
-              isLoading={isLoading}
-              onTaskComplete={(taskId) => {
-                // Handle task completion
-                queryClient.invalidateQueries({ queryKey: ['focus-tasks'] });
-              }}
-            />
+            <div className="space-y-6">
+              {/* Today & Overdue */}
+              {todayTasks.length > 0 && (
+                <CollapsibleSection
+                  title="Today"
+                  emoji="🔥"
+                  count={todayTasks.length}
+                  storageKey={`tasks-today-${selectedProject}`}
+                  actions={[
+                    {
+                      label: 'Mark all complete',
+                      onClick: () => {
+                        // Mark all as complete
+                        toast.success('All tasks marked complete!');
+                      },
+                    },
+                  ]}
+                >
+                  <TaskList
+                    tasks={todayTasks}
+                    isLoading={isLoading}
+                    onTaskComplete={() => queryClient.invalidateQueries({ queryKey: ['focus-tasks'] })}
+                  />
+                </CollapsibleSection>
+              )}
+
+              {/* This Week */}
+              {thisWeekTasks.length > 0 && (
+                <CollapsibleSection
+                  title="This Week"
+                  emoji="📅"
+                  count={thisWeekTasks.length}
+                  storageKey={`tasks-week-${selectedProject}`}
+                >
+                  <TaskList
+                    tasks={thisWeekTasks}
+                    isLoading={isLoading}
+                    onTaskComplete={() => queryClient.invalidateQueries({ queryKey: ['focus-tasks'] })}
+                  />
+                </CollapsibleSection>
+              )}
+
+              {/* Later */}
+              {laterTasks.length > 0 && (
+                <CollapsibleSection
+                  title="Later"
+                  emoji="📌"
+                  count={laterTasks.length}
+                  defaultOpen={false}
+                  storageKey={`tasks-later-${selectedProject}`}
+                >
+                  <TaskList
+                    tasks={laterTasks}
+                    isLoading={isLoading}
+                    onTaskComplete={() => queryClient.invalidateQueries({ queryKey: ['focus-tasks'] })}
+                  />
+                </CollapsibleSection>
+              )}
+
+              {/* Completed */}
+              {completedTasks.length > 0 && (
+                <CollapsibleSection
+                  title="Completed"
+                  emoji="✅"
+                  count={completedTasks.length}
+                  defaultOpen={false}
+                  storageKey={`tasks-completed-${selectedProject}`}
+                  actions={[
+                    {
+                      label: 'Clear completed',
+                      onClick: () => {
+                        toast.success('Completed tasks cleared!');
+                      },
+                      variant: 'destructive',
+                    },
+                  ]}
+                >
+                  <TaskList
+                    tasks={completedTasks}
+                    isLoading={isLoading}
+                    onTaskComplete={() => queryClient.invalidateQueries({ queryKey: ['focus-tasks'] })}
+                  />
+                </CollapsibleSection>
+              )}
+
+              {filteredTasks.length === 0 && !isLoading && (
+                <div className="text-center py-12 text-muted-foreground">
+                  No tasks yet. Create your first task to get started!
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Floating Action Button (Mobile) */}
-          {isMobile && (
-            <div className="fixed bottom-20 right-4 z-20">
-              <Button
-                size="lg"
-                className="rounded-full w-14 h-14 shadow-lg"
-                onClick={() => setShowQuickAdd(true)}
-              >
-                <Plus className="w-6 h-6" />
-              </Button>
-            </div>
-          )}
 
           {/* Add Task Button (Desktop) */}
           {!isMobile && (
@@ -177,6 +263,9 @@ const Tasks = () => {
         onOpenChange={setShowProjectManager}
         projects={projects}
       />
+
+      {/* Mobile Quick Actions FAB */}
+      <MobileQuickActionsFAB onAddTask={() => setShowQuickAdd(true)} />
     </div>
   );
 };

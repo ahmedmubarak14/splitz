@@ -29,10 +29,10 @@ interface TaskItemProps {
 }
 
 const QUADRANT_CONFIG = {
-  urgent_important: { label: 'Do First', color: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20' },
-  not_urgent_important: { label: 'Schedule', color: 'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20' },
-  urgent_unimportant: { label: 'Delegate', color: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20' },
-  not_urgent_unimportant: { label: 'Eliminate', color: 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20' },
+  urgent_important: { label: 'Do First', emoji: '🔥', color: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20' },
+  not_urgent_important: { label: 'Schedule', emoji: '⏰', color: 'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20' },
+  urgent_unimportant: { label: 'Delegate', emoji: '👥', color: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20' },
+  not_urgent_unimportant: { label: 'Eliminate', emoji: '🗑️', color: 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20' },
 };
 
 const TaskItem = ({ task, onComplete }: TaskItemProps) => {
@@ -81,14 +81,14 @@ const TaskItem = ({ task, onComplete }: TaskItemProps) => {
 
   return (
     <Card className={cn(
-      'p-4 transition-all hover:shadow-md',
+      'p-3 md:p-4 transition-all hover:shadow-md active:scale-[0.98]',
       task.is_completed && 'opacity-60'
     )}>
       <div className="flex items-start gap-3">
         <Checkbox
           checked={task.is_completed}
           onCheckedChange={() => toggleComplete.mutate()}
-          className="mt-1"
+          className="mt-1 h-5 w-5"
         />
 
         <div className="flex-1 min-w-0">
@@ -118,7 +118,8 @@ const TaskItem = ({ task, onComplete }: TaskItemProps) => {
 
           <div className="flex flex-wrap items-center gap-2">
             {quadrantConfig && (
-              <Badge variant="outline" className={quadrantConfig.color}>
+              <Badge variant="outline" className={cn(quadrantConfig.color, 'text-xs')}>
+                <span className="mr-1">{quadrantConfig.emoji}</span>
                 {quadrantConfig.label}
               </Badge>
             )}
