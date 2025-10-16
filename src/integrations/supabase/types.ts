@@ -436,6 +436,99 @@ export type Database = {
           },
         ]
       }
+      friend_invites: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          invite_code: string
+          receiver_email: string | null
+          receiver_id: string | null
+          receiver_username: string | null
+          sender_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          invite_code?: string
+          receiver_email?: string | null
+          receiver_id?: string | null
+          receiver_username?: string | null
+          sender_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          invite_code?: string
+          receiver_email?: string | null
+          receiver_id?: string | null
+          receiver_username?: string | null
+          sender_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friend_invites_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friend_invites_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      friendships: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          friend_id: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          friend_id: string
+          id?: string
+          status: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          friend_id?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_friend_id_fkey"
+            columns: ["friend_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friendships_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       habit_check_ins: {
         Row: {
           checked_in_at: string
@@ -765,6 +858,7 @@ export type Database = {
           onboarding_completed: boolean
           preferred_language: string | null
           updated_at: string
+          username: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -775,6 +869,7 @@ export type Database = {
           onboarding_completed?: boolean
           preferred_language?: string | null
           updated_at?: string
+          username?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -785,6 +880,7 @@ export type Database = {
           onboarding_completed?: boolean
           preferred_language?: string | null
           updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -1278,6 +1374,10 @@ export type Database = {
         }
         Returns: string
       }
+      get_friendship_status: {
+        Args: { other_user_id: string }
+        Returns: string
+      }
       get_invitation_by_code: {
         Args: { _invite_code: string }
         Returns: {
@@ -1328,6 +1428,10 @@ export type Database = {
         Args: { _trip_id: string; _user_id: string }
         Returns: boolean
       }
+      is_username_available: {
+        Args: { username_to_check: string }
+        Returns: boolean
+      }
       notify_upcoming_subscriptions: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1343,6 +1447,15 @@ export type Database = {
       recalc_subscription_split: {
         Args: { _subscription_id: string }
         Returns: undefined
+      }
+      search_users_by_username: {
+        Args: { search_term: string }
+        Returns: {
+          avatar_url: string
+          full_name: string
+          id: string
+          username: string
+        }[]
       }
     }
     Enums: {

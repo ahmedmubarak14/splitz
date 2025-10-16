@@ -36,6 +36,7 @@ const Subscriptions = lazy(() => import("./pages/Subscriptions"));
 const Calendar = lazy(() => import("./pages/Calendar"));
 const Trips = lazy(() => import("./pages/Trips"));
 const TripDetails = lazy(() => import("./pages/TripDetails"));
+const Friends = lazy(() => import("./pages/Friends"));
 const Profile = lazy(() => import("./pages/Profile"));
 const DevTools = lazy(() => import("./pages/DevTools"));
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -134,6 +135,7 @@ const AppContent = () => {
             <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/trips" element={<Trips />} />
+            <Route path="/friends" element={<Friends />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/dev-tools" element={<DevTools />} />
             <Route path="/privacy" element={<Privacy />} />
@@ -214,6 +216,7 @@ const AppContent = () => {
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/trips" element={<Trips />} />
             <Route path="/trips/:id" element={<TripDetails />} />
+            <Route path="/friends" element={<Friends />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/dev-tools" element={<DevTools />} />
             <Route path="/privacy" element={<Privacy />} />
