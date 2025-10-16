@@ -100,30 +100,30 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
       });
 
       if (error) {
-        // Return error and code for fallback handling
-        return { error, code };
+        // Return details for fallback handling
+        return { error, code, tripName: trip?.name || "Trip", recipientEmail };
       }
 
-      return { code };
+      return { code, tripName: trip?.name || "Trip", recipientEmail };
     },
-    onSuccess: (result) => {
+    onSuccess: async (result) => {
       setEmail("");
       queryClient.invalidateQueries({ queryKey: ["invitations"] });
       
+      // Always surface the link section
+      if (result?.code) setInviteCode(result.code);
+      
       if (result?.error) {
-        // Email failed - show invite link instead
-        setInviteCode(result.code);
         const inviteUrl = `${window.location.origin}/join/${result.code}`;
-        
-        // Try to copy but don't block on permission errors
-        try {
-          navigator.clipboard.writeText(inviteUrl).catch(() => {
-            // Silent fail - user can use copy button
-          });
-        } catch (e) {
-          // Browser doesn't support clipboard API
-        }
-        
+
+        // Try to copy silently
+        try { await navigator.clipboard.writeText(inviteUrl); } catch {}
+
+        // Mailto fallback, mirroring subscriptions logic
+        const subject = `You're invited to join ${result.tripName}!`;
+        const body = `${t('trips.inviteText')}\n\n${inviteUrl}`;
+        window.location.href = `mailto:${encodeURIComponent(result.recipientEmail || '')}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
         toast.info(t('trips.inviteFallback'));
       } else {
         toast.success(t('trips.inviteSent'));
