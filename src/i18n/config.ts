@@ -385,18 +385,18 @@ const resources = {
         },
       howItWorks: {
         title: 'How It Works',
-        subtitle: 'Get started in three simple steps',
+        subtitle: 'Three simple steps to organize your entire life',
         step1: {
-          title: 'Create & Invite',
-          desc: 'Set up habits or groups, invite friends',
+          title: 'Organize Everything',
+          desc: 'Add tasks, habits, expenses, and trips. Your calendar shows everything in one unified timeline with color-coded events.',
         },
         step2: {
-          title: 'Track & Compete',
-          desc: 'Start challenges, log expenses, build streaks',
+          title: 'Track Progress',
+          desc: 'Monitor habit streaks, challenge leaderboards, subscription renewals, and task completion. Stay motivated with real-time updates.',
         },
         step3: {
-          title: 'Get Nudged & Settle',
-          desc: 'Push & WhatsApp reminders keep you on track',
+          title: 'Collaborate & Achieve',
+          desc: 'Share trips, split expenses, compete in challenges with friends. Achieve more together with seamless collaboration.',
         },
       },
       pricing: {
@@ -1310,19 +1310,19 @@ const resources = {
           treeKilled: '🍂 غادرت الصفحة - ماتت شجرتك!',
         },
       howItWorks: {
-        title: 'كيف تعمل',
-        subtitle: 'ابدأ في ثلاث خطوات بسيطة',
+        title: 'كيف يعمل',
+        subtitle: 'ثلاث خطوات بسيطة لتنظيم حياتك بالكامل',
         step1: {
-          title: 'أنشئ وادعُ',
-          desc: 'أعد عادات أو مجموعات، وادعُ أصدقاءك',
+          title: 'نظم كل شيء',
+          desc: 'أضف المهام والعادات والمصاريف والرحلات. يعرض التقويم كل شيء في جدول زمني موحد مع أحداث ملونة.',
         },
         step2: {
-          title: 'تتبع وتنافس',
-          desc: 'ابدأ التحديات، سجل المصاريف، ابنِ السلاسل',
+          title: 'تتبع التقدم',
+          desc: 'راقب سلاسل العادات، لوحات المتصدرين للتحديات، تجديدات الاشتراكات، وإتمام المهام. ابقَ متحفزاً مع التحديثات الفورية.',
         },
         step3: {
-          title: 'احصل على تنبيهات وسوّي',
-          desc: 'تنبيهات الإشعارات وواتساب تبقيك على المسار',
+          title: 'تعاون وحقق',
+          desc: 'شارك الرحلات، قسّم المصاريف، تنافس في التحديات مع الأصدقاء. حقق المزيد معاً مع التعاون السلس.',
         },
       },
       pricing: {
