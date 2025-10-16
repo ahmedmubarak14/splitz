@@ -28,6 +28,9 @@ const Habits = lazy(() => import("./pages/Habits"));
 const Focus = lazy(() => import("./pages/Focus"));
 const Expenses = lazy(() => import("./pages/Expenses"));
 const Challenges = lazy(() => import("./pages/Challenges"));
+const Subscriptions = lazy(() => import("./pages/Subscriptions"));
+const Calendar = lazy(() => import("./pages/Calendar"));
+const Trips = lazy(() => import("./pages/Trips"));
 const Profile = lazy(() => import("./pages/Profile"));
 const DevTools = lazy(() => import("./pages/DevTools"));
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -111,6 +114,9 @@ const AppContent = () => {
             <Route path="/focus" element={<Focus />} />
             <Route path="/expenses" element={<Expenses />} />
             <Route path="/challenges" element={<Challenges />} />
+            <Route path="/subscriptions" element={<Subscriptions />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/trips" element={<Trips />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/dev-tools" element={<DevTools />} />
             <Route path="/privacy" element={<Privacy />} />
@@ -174,17 +180,20 @@ const AppContent = () => {
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/join/:inviteCode" element={<JoinInvite />} />
               <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/habits" element={<Habits />} />
-              <Route path="/focus" element={<Focus />} />
-              <Route path="/expenses" element={<Expenses />} />
-              <Route path="/challenges" element={<Challenges />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/dev-tools" element={<DevTools />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/copyright" element={<Copyright />} />
-              <Route path="*" element={<NotFound />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/habits" element={<Habits />} />
+            <Route path="/focus" element={<Focus />} />
+            <Route path="/expenses" element={<Expenses />} />
+            <Route path="/challenges" element={<Challenges />} />
+            <Route path="/subscriptions" element={<Subscriptions />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/trips" element={<Trips />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/dev-tools" element={<DevTools />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/copyright" element={<Copyright />} />
+            <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
           {isNativeApp ? <NativeMobileNavigation /> : <Navigation />}

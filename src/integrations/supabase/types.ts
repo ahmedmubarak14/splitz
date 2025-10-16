@@ -739,6 +739,362 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_contributors: {
+        Row: {
+          contribution_amount: number
+          created_at: string
+          id: string
+          is_settled: boolean | null
+          paid_at: string | null
+          subscription_id: string
+          user_id: string
+        }
+        Insert: {
+          contribution_amount: number
+          created_at?: string
+          id?: string
+          is_settled?: boolean | null
+          paid_at?: string | null
+          subscription_id: string
+          user_id: string
+        }
+        Update: {
+          contribution_amount?: number
+          created_at?: string
+          id?: string
+          is_settled?: boolean | null
+          paid_at?: string | null
+          subscription_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_contributors_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_payments: {
+        Row: {
+          amount: number
+          id: string
+          notes: string | null
+          paid_at: string
+          subscription_id: string
+        }
+        Insert: {
+          amount: number
+          id?: string
+          notes?: string | null
+          paid_at?: string
+          subscription_id: string
+        }
+        Update: {
+          amount?: number
+          id?: string
+          notes?: string | null
+          paid_at?: string
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_payments_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_reminders: {
+        Row: {
+          created_at: string
+          days_before: number
+          id: string
+          sent_at: string | null
+          subscription_id: string
+        }
+        Insert: {
+          created_at?: string
+          days_before: number
+          id?: string
+          sent_at?: string | null
+          subscription_id: string
+        }
+        Update: {
+          created_at?: string
+          days_before?: number
+          id?: string
+          sent_at?: string | null
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_reminders_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          amount: number
+          billing_cycle: string
+          category: string | null
+          created_at: string
+          currency: string
+          custom_cycle_days: number | null
+          id: string
+          is_active: boolean | null
+          is_shared: boolean | null
+          logo_url: string | null
+          name: string
+          next_renewal_date: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          billing_cycle: string
+          category?: string | null
+          created_at?: string
+          currency?: string
+          custom_cycle_days?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_shared?: boolean | null
+          logo_url?: string | null
+          name: string
+          next_renewal_date: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          billing_cycle?: string
+          category?: string | null
+          created_at?: string
+          currency?: string
+          custom_cycle_days?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_shared?: boolean | null
+          logo_url?: string | null
+          name?: string
+          next_renewal_date?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      task_shares: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          receiver_id: string
+          responded_at: string | null
+          sender_id: string
+          status: string | null
+          task_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          receiver_id: string
+          responded_at?: string | null
+          sender_id: string
+          status?: string | null
+          task_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          receiver_id?: string
+          responded_at?: string | null
+          sender_id?: string
+          status?: string | null
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_shares_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "focus_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_comments: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          trip_id: string
+          user_id: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          id?: string
+          trip_id: string
+          user_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          trip_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_comments_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_members: {
+        Row: {
+          id: string
+          joined_at: string
+          role: string | null
+          trip_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string
+          role?: string | null
+          trip_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string
+          role?: string | null
+          trip_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_members_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_tasks: {
+        Row: {
+          assigned_to: string | null
+          assigned_to_group: boolean | null
+          created_at: string
+          created_by: string
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: string | null
+          status: string | null
+          title: string
+          trip_id: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          assigned_to_group?: boolean | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string | null
+          status?: string | null
+          title: string
+          trip_id: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          assigned_to_group?: boolean | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string | null
+          status?: string | null
+          title?: string
+          trip_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_tasks_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trips: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          destination: string | null
+          end_date: string
+          id: string
+          name: string
+          start_date: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          destination?: string | null
+          end_date: string
+          id?: string
+          name: string
+          start_date: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          destination?: string | null
+          end_date?: string
+          id?: string
+          name?: string
+          start_date?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -798,6 +1154,10 @@ export type Database = {
       }
       is_group_member: {
         Args: { _group_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_trip_member: {
+        Args: { _trip_id: string; _user_id: string }
         Returns: boolean
       }
       recalc_expense_split: {
