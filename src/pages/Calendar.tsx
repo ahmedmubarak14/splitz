@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SEO } from "@/components/SEO";
 import { Calendar } from "@/components/ui/calendar";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, addWeeks, subWeeks, addDays, subDays } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -163,8 +163,111 @@ export default function CalendarPage() {
     challenge: 'bg-yellow-500',
   };
 
-  const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
-  const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
+  const nextPeriod = () => {
+    if (view === 'month') setCurrentDate(addMonths(currentDate, 1));
+    else if (view === 'week') setCurrentDate(addWeeks(currentDate, 1));
+    else setCurrentDate(addDays(currentDate, 1));
+  };
+
+  const prevPeriod = () => {
+    if (view === 'month') setCurrentDate(subMonths(currentDate, 1));
+    else if (view === 'week') setCurrentDate(subWeeks(currentDate, 1));
+    else setCurrentDate(subDays(currentDate, 1));
+  };
+
+  const getHeaderDate = () => {
+    if (view === 'month') {
+      return formatDate(currentDate, i18n.language, { year: 'numeric', month: 'long' });
+    } else if (view === 'week') {
+      const weekStart = startOfWeek(currentDate);
+      const weekEnd = endOfWeek(currentDate);
+      return `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d, yyyy')}`;
+    } else {
+      return formatDate(currentDate, i18n.language, { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    }
+  };
+
+  const WeekView = () => {
+    const weekStart = startOfWeek(currentDate);
+    const weekEnd = endOfWeek(currentDate);
+    const daysInWeek = eachDayOfInterval({ start: weekStart, end: weekEnd });
+
+    return (
+      <div className="grid grid-cols-7 gap-2">
+        {daysInWeek.map(day => {
+          const dayEvents = eventsForDate(day);
+          const isToday = isSameDay(day, new Date());
+          return (
+            <Card key={day.toString()} className={`p-3 ${isToday ? 'border-primary' : ''}`}>
+              <div className="text-center mb-2">
+                <div className="text-xs text-muted-foreground">
+                  {format(day, 'EEE')}
+                </div>
+                <div className={`text-lg font-semibold ${isToday ? 'text-primary' : ''}`}>
+                  {format(day, 'd')}
+                </div>
+              </div>
+              <div className="space-y-1">
+                {dayEvents.slice(0, 5).map(event => (
+                  <div key={event.id} className="flex items-center gap-1 text-xs">
+                    <div className={`w-2 h-2 rounded-full ${event.color} flex-shrink-0`} />
+                    <span className="truncate">{event.title}</span>
+                  </div>
+                ))}
+                {dayEvents.length > 5 && (
+                  <div className="text-xs text-muted-foreground text-center">
+                    +{dayEvents.length - 5} more
+                  </div>
+                )}
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const DayView = () => {
+    const dayEvents = eventsForDate(currentDate);
+
+    return (
+      <Card className="p-6">
+        <h2 className="text-2xl font-bold mb-4">
+          {formatDate(currentDate, i18n.language, { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}
+        </h2>
+        <div className="space-y-3">
+          {dayEvents.length === 0 && (
+            <p className="text-muted-foreground text-center py-8">
+              {t('calendar.noEvents')}
+            </p>
+          )}
+          {dayEvents.map(event => (
+            <div 
+              key={event.id} 
+              className="flex items-start gap-3 p-3 rounded-lg border hover:bg-accent/50 transition-colors"
+            >
+              <div className={`w-4 h-4 rounded-full ${event.color} mt-0.5 flex-shrink-0`} />
+              <div className="flex-1 min-w-0">
+                <div className="font-medium">{event.title}</div>
+                <div className="text-sm text-muted-foreground capitalize">
+                  {event.type}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    );
+  };
 
   return (
     <>
@@ -186,13 +289,13 @@ export default function CalendarPage() {
           </div>
 
           <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-            <Button variant="outline" size="icon" onClick={isRTL ? nextMonth : prevMonth}>
+            <Button variant="outline" size="icon" onClick={isRTL ? nextPeriod : prevPeriod}>
               {isRTL ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
             <div className="text-lg font-semibold min-w-[140px] text-center">
-              {formatDate(currentDate, i18n.language, { year: 'numeric', month: 'long' })}
+              {getHeaderDate()}
             </div>
-            <Button variant="outline" size="icon" onClick={isRTL ? prevMonth : nextMonth}>
+            <Button variant="outline" size="icon" onClick={isRTL ? prevPeriod : nextPeriod}>
               {isRTL ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </Button>
           </div>
@@ -239,57 +342,65 @@ export default function CalendarPage() {
         </Card>
 
         {/* Calendar Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2 p-4">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              month={currentDate}
-              onMonthChange={setCurrentDate}
-              className="w-full"
-              components={{
-                DayContent: ({ date }) => {
-                  const eventTypes = getEventTypesForDate(date);
-                  return (
-                    <div className="relative w-full h-full flex items-center justify-center">
-                      <span className={eventTypes.length > 0 ? 'font-semibold' : ''}>
-                        {format(date, 'd')}
-                      </span>
-                      {eventTypes.length > 0 && (
-                        <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5">
-                          {eventTypes.map((type) => (
-                            <div
-                              key={type}
-                              className={`w-1 h-1 rounded-full ${eventTypeColors[type]} shadow-sm`}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
-              }}
-            />
+        <div className={`grid grid-cols-1 ${view === 'month' ? 'lg:grid-cols-3' : ''} gap-6`}>
+          <Card className={`${view === 'month' ? 'lg:col-span-2' : ''} p-4`}>
+            {view === 'month' && (
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={setSelectedDate}
+                month={currentDate}
+                onMonthChange={setCurrentDate}
+                className="w-full"
+                components={{
+                  DayContent: ({ date }) => {
+                    const eventTypes = getEventTypesForDate(date);
+                    return (
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <span className={eventTypes.length > 0 ? 'font-semibold' : ''}>
+                          {format(date, 'd')}
+                        </span>
+                        {eventTypes.length > 0 && (
+                          <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5">
+                            {eventTypes.map((type) => (
+                              <div
+                                key={type}
+                                className={`w-1 h-1 rounded-full ${eventTypeColors[type]} shadow-sm`}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+                }}
+              />
+            )}
+
+            {view === 'week' && <WeekView />}
+
+            {view === 'day' && <DayView />}
           </Card>
 
-          {/* Selected Date Events */}
-          <Card className="p-4">
-            <h3 className="font-semibold mb-4">
-              {selectedDate ? formatDate(selectedDate, i18n.language, { year: 'numeric', month: 'long', day: 'numeric' }) : t('calendar.selectDate')}
-            </h3>
-            <div className="space-y-2">
-              {selectedDate && eventsForDate(selectedDate).length === 0 && (
-                <p className="text-sm text-muted-foreground">{t('calendar.noEvents')}</p>
-              )}
-              {selectedDate && eventsForDate(selectedDate).map(event => (
-                <div key={event.id} className={`flex items-center gap-2 p-2 rounded-lg bg-accent/10 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-                  <div className={`w-3 h-3 rounded-full ${event.color}`} />
-                  <span className="text-sm">{event.title}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
+          {/* Selected Date Events - Only show in month view */}
+          {view === 'month' && (
+            <Card className="p-4">
+              <h3 className="font-semibold mb-4">
+                {selectedDate ? formatDate(selectedDate, i18n.language, { year: 'numeric', month: 'long', day: 'numeric' }) : t('calendar.selectDate')}
+              </h3>
+              <div className="space-y-2">
+                {selectedDate && eventsForDate(selectedDate).length === 0 && (
+                  <p className="text-sm text-muted-foreground">{t('calendar.noEvents')}</p>
+                )}
+                {selectedDate && eventsForDate(selectedDate).map(event => (
+                  <div key={event.id} className={`flex items-center gap-2 p-2 rounded-lg bg-accent/10 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                    <div className={`w-3 h-3 rounded-full ${event.color}`} />
+                    <span className="text-sm">{event.title}</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
         </div>
       </div>
     </>
