@@ -98,8 +98,8 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Use RESEND_FROM if available, otherwise default
-    const fromEmail = Deno.env.get('RESEND_FROM') || 'Splitz <onboarding@resend.dev>';
+    // Use the same sender as subscriptions (can be overridden by RESEND_FROM)
+    const fromEmail = Deno.env.get('RESEND_FROM') || 'Splitz <noreply@splitz.live>';
 
     // Send email using Resend API
     const emailResponse = await fetch("https://api.resend.com/emails", {
