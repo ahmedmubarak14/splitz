@@ -25,67 +25,67 @@ const POPULAR_SUBSCRIPTIONS = [
   // Streaming Video
   { 
     name: "Netflix", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/netflix.svg",
+    logo: "https://logo.clearbit.com/netflix.com",
     category: "streaming",
     defaultAmount: 15
   },
   { 
     name: "Disney+", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/disneyplus.svg",
+    logo: "https://logo.clearbit.com/disneyplus.com",
     category: "streaming",
     defaultAmount: 8
   },
   { 
     name: "Amazon Prime", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/primevideo.svg",
+    logo: "https://logo.clearbit.com/primevideo.com",
     category: "streaming",
     defaultAmount: 14
   },
   { 
     name: "Apple TV+", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/appletv.svg",
+    logo: "https://logo.clearbit.com/apple.com",
     category: "streaming",
     defaultAmount: 7
   },
   { 
     name: "HBO Max", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/hbo.svg",
+    logo: "https://logo.clearbit.com/hbomax.com",
     category: "streaming",
     defaultAmount: 10
   },
   { 
     name: "Hulu", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/hulu.svg",
+    logo: "https://logo.clearbit.com/hulu.com",
     category: "streaming",
     defaultAmount: 8
   },
   { 
     name: "Paramount+", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/paramount.svg",
+    logo: "https://logo.clearbit.com/paramountplus.com",
     category: "streaming",
     defaultAmount: 6
   },
   { 
     name: "YouTube Premium", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg",
+    logo: "https://logo.clearbit.com/youtube.com",
     category: "streaming",
     defaultAmount: 12
   },
   { 
     name: "Crunchyroll", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/crunchyroll.svg",
+    logo: "https://logo.clearbit.com/crunchyroll.com",
     category: "streaming",
     defaultAmount: 8
   },
   { 
     name: "Twitch Turbo", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/twitch.svg",
+    logo: "https://logo.clearbit.com/twitch.tv",
     category: "streaming",
     defaultAmount: 9
   },
   { 
     name: "Peacock", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/peacock.svg",
+    logo: "https://logo.clearbit.com/peacocktv.com",
     category: "streaming",
     defaultAmount: 5
   },
@@ -93,37 +93,37 @@ const POPULAR_SUBSCRIPTIONS = [
   // Music Streaming
   { 
     name: "Spotify Premium", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/spotify.svg",
+    logo: "https://logo.clearbit.com/spotify.com",
     category: "streaming",
     defaultAmount: 10
   },
   { 
     name: "Apple Music", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/applemusic.svg",
+    logo: "https://logo.clearbit.com/apple.com",
     category: "streaming",
     defaultAmount: 11
   },
   { 
     name: "Tidal", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tidal.svg",
+    logo: "https://logo.clearbit.com/tidal.com",
     category: "streaming",
     defaultAmount: 10
   },
   { 
     name: "Audible", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/audible.svg",
+    logo: "https://logo.clearbit.com/audible.com",
     category: "streaming",
     defaultAmount: 15
   },
   { 
     name: "SoundCloud", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/soundcloud.svg",
+    logo: "https://logo.clearbit.com/soundcloud.com",
     category: "streaming",
     defaultAmount: 5
   },
   { 
     name: "Deezer", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/deezer.svg",
+    logo: "https://logo.clearbit.com/deezer.com",
     category: "streaming",
     defaultAmount: 10
   },
@@ -131,199 +131,217 @@ const POPULAR_SUBSCRIPTIONS = [
   // Software & Productivity
   { 
     name: "Microsoft 365", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/microsoft.svg",
+    logo: "https://logo.clearbit.com/microsoft.com",
     category: "software",
     defaultAmount: 7
   },
   { 
     name: "Adobe Creative Cloud", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/adobe.svg",
+    logo: "https://logo.clearbit.com/adobe.com",
     category: "software",
     defaultAmount: 55
   },
   { 
     name: "ChatGPT Plus", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/openai.svg",
+    logo: "https://logo.clearbit.com/openai.com",
     category: "software",
     defaultAmount: 20
   },
   { 
     name: "GitHub Pro", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/github.svg",
+    logo: "https://logo.clearbit.com/github.com",
     category: "software",
     defaultAmount: 4
   },
   { 
     name: "Notion", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/notion.svg",
+    logo: "https://logo.clearbit.com/notion.so",
     category: "software",
     defaultAmount: 8
   },
   { 
     name: "Canva Pro", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/canva.svg",
+    logo: "https://logo.clearbit.com/canva.com",
     category: "software",
     defaultAmount: 13
   },
   { 
     name: "Grammarly Premium", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/grammarly.svg",
+    logo: "https://logo.clearbit.com/grammarly.com",
     category: "software",
     defaultAmount: 12
   },
   { 
     name: "Zoom Pro", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/zoom.svg",
+    logo: "https://logo.clearbit.com/zoom.us",
     category: "software",
     defaultAmount: 15
   },
   { 
     name: "Slack", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/slack.svg",
+    logo: "https://logo.clearbit.com/slack.com",
     category: "software",
     defaultAmount: 8
   },
   { 
     name: "Trello", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/trello.svg",
+    logo: "https://logo.clearbit.com/trello.com",
     category: "software",
     defaultAmount: 10
   },
   { 
     name: "Asana", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/asana.svg",
+    logo: "https://logo.clearbit.com/asana.com",
     category: "software",
     defaultAmount: 11
   },
   { 
     name: "Monday.com", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/monday.svg",
+    logo: "https://logo.clearbit.com/monday.com",
     category: "software",
     defaultAmount: 10
   },
   { 
     name: "Figma", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/figma.svg",
+    logo: "https://logo.clearbit.com/figma.com",
     category: "software",
     defaultAmount: 12
   },
   { 
     name: "1Password", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/1password.svg",
+    logo: "https://logo.clearbit.com/1password.com",
     category: "software",
     defaultAmount: 3
   },
   { 
     name: "LastPass", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/lastpass.svg",
+    logo: "https://logo.clearbit.com/lastpass.com",
     category: "software",
     defaultAmount: 3
+  },
+  { 
+    name: "Evernote", 
+    logo: "https://logo.clearbit.com/evernote.com",
+    category: "software",
+    defaultAmount: 8
   },
   
   // Cloud Storage
   { 
     name: "Dropbox", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/dropbox.svg",
+    logo: "https://logo.clearbit.com/dropbox.com",
     category: "software",
     defaultAmount: 12
   },
   { 
     name: "Google One", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg",
+    logo: "https://logo.clearbit.com/google.com",
     category: "software",
     defaultAmount: 3
   },
   { 
     name: "iCloud+", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/icloud.svg",
+    logo: "https://logo.clearbit.com/icloud.com",
     category: "software",
     defaultAmount: 1
   },
   { 
     name: "OneDrive", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/microsoftonedrive.svg",
+    logo: "https://logo.clearbit.com/onedrive.com",
     category: "software",
     defaultAmount: 2
+  },
+  { 
+    name: "pCloud", 
+    logo: "https://logo.clearbit.com/pcloud.com",
+    category: "software",
+    defaultAmount: 5
   },
   
   // Education
   { 
     name: "Coursera Plus", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/coursera.svg",
+    logo: "https://logo.clearbit.com/coursera.org",
     category: "education",
     defaultAmount: 59
   },
   { 
     name: "Udemy", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/udemy.svg",
+    logo: "https://logo.clearbit.com/udemy.com",
     category: "education",
     defaultAmount: 17
   },
   { 
     name: "Skillshare", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/skillshare.svg",
+    logo: "https://logo.clearbit.com/skillshare.com",
     category: "education",
     defaultAmount: 14
   },
   { 
     name: "MasterClass", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/mastercard.svg",
+    logo: "https://logo.clearbit.com/masterclass.com",
     category: "education",
     defaultAmount: 20
   },
   { 
     name: "Duolingo Plus", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/duolingo.svg",
+    logo: "https://logo.clearbit.com/duolingo.com",
     category: "education",
     defaultAmount: 7
   },
   { 
     name: "LinkedIn Learning", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg",
+    logo: "https://logo.clearbit.com/linkedin.com",
     category: "education",
     defaultAmount: 30
   },
   { 
     name: "Brilliant", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/brilliant.svg",
+    logo: "https://logo.clearbit.com/brilliant.org",
     category: "education",
     defaultAmount: 13
+  },
+  { 
+    name: "Pluralsight", 
+    logo: "https://logo.clearbit.com/pluralsight.com",
+    category: "education",
+    defaultAmount: 29
+  },
+  { 
+    name: "Codecademy Pro", 
+    logo: "https://logo.clearbit.com/codecademy.com",
+    category: "education",
+    defaultAmount: 20
   },
   
   // Gaming
   { 
     name: "PlayStation Plus", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/playstation.svg",
+    logo: "https://logo.clearbit.com/playstation.com",
     category: "streaming",
     defaultAmount: 10
   },
   { 
     name: "Xbox Game Pass", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/xbox.svg",
+    logo: "https://logo.clearbit.com/xbox.com",
     category: "streaming",
     defaultAmount: 15
   },
   { 
     name: "Nintendo Switch Online", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/nintendo.svg",
+    logo: "https://logo.clearbit.com/nintendo.com",
     category: "streaming",
     defaultAmount: 4
   },
   { 
     name: "EA Play", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/ea.svg",
+    logo: "https://logo.clearbit.com/ea.com",
     category: "streaming",
     defaultAmount: 5
   },
   { 
     name: "Steam", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/steam.svg",
-    category: "streaming",
-    defaultAmount: 0
-  },
-  { 
-    name: "Epic Games", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/epicgames.svg",
+    logo: "https://logo.clearbit.com/steampowered.com",
     category: "streaming",
     defaultAmount: 0
   },
@@ -331,25 +349,31 @@ const POPULAR_SUBSCRIPTIONS = [
   // News & Media
   { 
     name: "The New York Times", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/nytimes.svg",
+    logo: "https://logo.clearbit.com/nytimes.com",
     category: "other",
     defaultAmount: 17
   },
   { 
     name: "Medium", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/medium.svg",
+    logo: "https://logo.clearbit.com/medium.com",
     category: "other",
     defaultAmount: 5
   },
   { 
     name: "Bloomberg", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/bloomberg.svg",
+    logo: "https://logo.clearbit.com/bloomberg.com",
     category: "other",
     defaultAmount: 35
   },
   { 
+    name: "The Wall Street Journal", 
+    logo: "https://logo.clearbit.com/wsj.com",
+    category: "other",
+    defaultAmount: 40
+  },
+  { 
     name: "The Economist", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/theconversation.svg",
+    logo: "https://logo.clearbit.com/economist.com",
     category: "other",
     defaultAmount: 13
   },
@@ -357,103 +381,121 @@ const POPULAR_SUBSCRIPTIONS = [
   // Social Media & Communication
   { 
     name: "X Premium", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg",
+    logo: "https://logo.clearbit.com/twitter.com",
     category: "other",
     defaultAmount: 8
   },
   { 
     name: "LinkedIn Premium", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg",
+    logo: "https://logo.clearbit.com/linkedin.com",
     category: "software",
     defaultAmount: 30
   },
   { 
     name: "Telegram Premium", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg",
+    logo: "https://logo.clearbit.com/telegram.org",
     category: "other",
     defaultAmount: 5
   },
   { 
     name: "Discord Nitro", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg",
+    logo: "https://logo.clearbit.com/discord.com",
     category: "other",
     defaultAmount: 10
+  },
+  { 
+    name: "Reddit Premium", 
+    logo: "https://logo.clearbit.com/reddit.com",
+    category: "other",
+    defaultAmount: 6
   },
   
   // VPN & Security
   { 
     name: "NordVPN", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/nordvpn.svg",
+    logo: "https://logo.clearbit.com/nordvpn.com",
     category: "software",
     defaultAmount: 12
   },
   { 
     name: "ExpressVPN", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/expressvpn.svg",
+    logo: "https://logo.clearbit.com/expressvpn.com",
     category: "software",
     defaultAmount: 13
   },
   { 
     name: "Surfshark", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/surfshark.svg",
+    logo: "https://logo.clearbit.com/surfshark.com",
     category: "software",
     defaultAmount: 10
   },
   { 
     name: "ProtonVPN", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/protonvpn.svg",
+    logo: "https://logo.clearbit.com/protonvpn.com",
     category: "software",
     defaultAmount: 10
+  },
+  { 
+    name: "Malwarebytes", 
+    logo: "https://logo.clearbit.com/malwarebytes.com",
+    category: "software",
+    defaultAmount: 4
   },
   
   // Fitness & Health
   { 
     name: "Peloton", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/peloton.svg",
+    logo: "https://logo.clearbit.com/onepeloton.com",
     category: "fitness",
     defaultAmount: 44
   },
   { 
     name: "Strava Premium", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/strava.svg",
+    logo: "https://logo.clearbit.com/strava.com",
     category: "fitness",
     defaultAmount: 8
   },
   { 
     name: "MyFitnessPal", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/myfitnesspal.svg",
+    logo: "https://logo.clearbit.com/myfitnesspal.com",
     category: "fitness",
     defaultAmount: 10
   },
   { 
     name: "Calm", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/calm.svg",
+    logo: "https://logo.clearbit.com/calm.com",
     category: "fitness",
     defaultAmount: 15
   },
   { 
     name: "Headspace", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/headspace.svg",
+    logo: "https://logo.clearbit.com/headspace.com",
     category: "fitness",
     defaultAmount: 13
+  },
+  { 
+    name: "Fitbit Premium", 
+    logo: "https://logo.clearbit.com/fitbit.com",
+    category: "fitness",
+    defaultAmount: 10
   },
   
   // Food Delivery
   { 
     name: "Uber Eats Pass", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/ubereats.svg",
+    logo: "https://logo.clearbit.com/ubereats.com",
     category: "other",
     defaultAmount: 10
   },
   { 
     name: "DoorDash DashPass", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/doordash.svg",
+    logo: "https://logo.clearbit.com/doordash.com",
     category: "other",
     defaultAmount: 10
   },
   { 
     name: "Grubhub+", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/grubhub.svg",
+    logo: "https://logo.clearbit.com/grubhub.com",
     category: "other",
     defaultAmount: 10
   },
@@ -461,35 +503,47 @@ const POPULAR_SUBSCRIPTIONS = [
   // Finance & Banking
   { 
     name: "Revolut Premium", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/revolut.svg",
+    logo: "https://logo.clearbit.com/revolut.com",
     category: "other",
     defaultAmount: 8
   },
   { 
     name: "N26 You", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/n26.svg",
+    logo: "https://logo.clearbit.com/n26.com",
     category: "other",
     defaultAmount: 10
   },
   { 
     name: "YNAB", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/ynab.svg",
+    logo: "https://logo.clearbit.com/youneedabudget.com",
     category: "software",
     defaultAmount: 15
+  },
+  { 
+    name: "Mint Premium", 
+    logo: "https://logo.clearbit.com/mint.com",
+    category: "software",
+    defaultAmount: 5
   },
   
   // Reading & Books
   { 
     name: "Kindle Unlimited", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/amazon.svg",
+    logo: "https://logo.clearbit.com/amazon.com",
     category: "other",
     defaultAmount: 10
   },
   { 
     name: "Scribd", 
-    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/scribd.svg",
+    logo: "https://logo.clearbit.com/scribd.com",
     category: "other",
     defaultAmount: 12
+  },
+  { 
+    name: "Blinkist", 
+    logo: "https://logo.clearbit.com/blinkist.com",
+    category: "other",
+    defaultAmount: 9
   },
 ];
 
