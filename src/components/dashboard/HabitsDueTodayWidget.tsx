@@ -66,7 +66,7 @@ export function HabitsDueTodayWidget({ habits, onRefresh }: HabitsDueTodayWidget
       badge={uncheckedHabits.length}
     >
       {habits.length > 0 ? (
-        <div className="space-y-3">
+        <div className="space-y-2 md:space-y-3">
           {/* Progress Bar */}
           <div className={isRTL ? 'text-right' : 'text-left'}>
             <div className="flex items-center justify-between mb-1 text-xs text-muted-foreground">
@@ -83,11 +83,11 @@ export function HabitsDueTodayWidget({ habits, onRefresh }: HabitsDueTodayWidget
 
           {/* Unchecked Habits */}
           {uncheckedHabits.length > 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-1.5 md:space-y-2">
               {uncheckedHabits.slice(0, 4).map((habit) => (
                 <div
                   key={habit.id}
-                  className={`flex items-center gap-3 p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+                  className={`flex items-center gap-3 p-2.5 md:p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
                 >
                   <button
                     onClick={() => handleCheckIn(habit.id)}

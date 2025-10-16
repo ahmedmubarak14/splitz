@@ -335,11 +335,11 @@ export default function Dashboard() {
   return (
     <>
       <SEO {...pageSEO.dashboard} />
-      <div className={`min-h-screen bg-muted/20 ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding} overflow-x-hidden`} dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className={`max-w-[1400px] mx-auto px-4 sm:px-6 ${responsiveSpacing.sectionGap} max-w-full`}>
+      <div className={`min-h-screen bg-muted/20 overflow-x-hidden`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className={`max-w-[1400px] mx-auto ${responsiveSpacing.pageContainer} ${responsiveSpacing.sectionGap} pb-20 md:pb-6`}>
         
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-4 md:mb-6">
           <h1 className="text-3xl font-bold mb-2">{t('dashboard.title')}</h1>
           <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
         </div>
@@ -357,7 +357,7 @@ export default function Dashboard() {
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             {/* Widget Grid - 2 Column Layout */}
-            <div className={`grid ${responsiveGrid.twoColumn} gap-6`}>
+            <div className={`grid ${responsiveGrid.twoColumn} gap-4 md:gap-6`}>
               <TodaysTasksWidget tasks={todaysTasks} onRefresh={fetchDashboardData} />
               <HabitsDueTodayWidget habits={habitsData} onRefresh={fetchDashboardData} />
               <UpcomingSubscriptionsWidget subscriptions={upcomingSubscriptions} />

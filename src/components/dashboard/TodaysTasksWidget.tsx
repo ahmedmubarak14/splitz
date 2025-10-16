@@ -59,11 +59,11 @@ export function TodaysTasksWidget({ tasks, onRefresh }: TodaysTasksWidgetProps) 
       badge={incompleteTasks.length}
     >
       {incompleteTasks.length > 0 ? (
-        <div className="space-y-2">
+        <div className="space-y-1.5 md:space-y-2">
           {incompleteTasks.map((task) => (
             <div
               key={task.id}
-              className={`flex items-center gap-3 p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+              className={`flex items-center gap-3 p-2.5 md:p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
             >
               <button
                 onClick={() => handleToggleTask(task.id, task.is_completed)}
@@ -103,7 +103,7 @@ export function TodaysTasksWidget({ tasks, onRefresh }: TodaysTasksWidgetProps) 
           </Button>
         </div>
       ) : (
-        <div className={`text-center py-6 ${isRTL ? 'text-right' : 'text-left'}`}>
+        <div className={`text-center py-8 ${isRTL ? 'text-right' : 'text-left'}`}>
           <p className="text-sm text-muted-foreground mb-2">
             {t('dashboard.noTasksToday')}
           </p>

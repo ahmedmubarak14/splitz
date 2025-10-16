@@ -37,7 +37,7 @@ export function UpcomingSubscriptionsWidget({ subscriptions }: UpcomingSubscript
       badge={subscriptions.length}
     >
       {subscriptions.length > 0 ? (
-        <div className="space-y-2">
+        <div className="space-y-1.5 md:space-y-2">
           {subscriptions.map((sub) => {
             const daysUntil = differenceInDays(new Date(sub.next_renewal_date), new Date());
             
@@ -45,7 +45,7 @@ export function UpcomingSubscriptionsWidget({ subscriptions }: UpcomingSubscript
               <div
                 key={sub.id}
                 onClick={() => navigate('/subscriptions')}
-                className={`p-3 rounded-lg border cursor-pointer transition-colors hover:bg-muted/40 ${getUrgencyColor(daysUntil)} ${isRTL ? 'text-right' : 'text-left'}`}
+                className={`p-2.5 md:p-3 rounded-lg border cursor-pointer transition-colors hover:bg-muted/40 ${getUrgencyColor(daysUntil)} ${isRTL ? 'text-right' : 'text-left'}`}
               >
                 <div className={`flex items-center justify-between mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <p className="text-sm font-medium">{sub.name}</p>

@@ -22,8 +22,8 @@ export function DashboardWidgetCard({
 
   return (
     <Card className="bg-background border border-border/40 hover:border-border transition-colors">
-      <CardContent className="p-4 md:p-6">
-        <div className={`flex items-center justify-between mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <CardContent className="p-4 md:p-5">
+        <div className={`flex items-center justify-between mb-3 md:mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
             <Icon className="h-5 w-5 text-primary" />
             <h3 className="text-base font-semibold">{title}</h3>

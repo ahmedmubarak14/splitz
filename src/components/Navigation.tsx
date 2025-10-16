@@ -22,16 +22,16 @@ const Navigation = () => {
   return (
     <>
       <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border z-50 md:hidden shadow-lg">
-        <div className="flex justify-around items-center h-16 px-2">
+        <div className="flex justify-around items-center h-16 px-1">
           {/* Hamburger Menu */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setDrawerOpen(true)}
-            className="flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-xl transition-all hover:bg-accent/50"
+            className="flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all hover:bg-accent/50"
           >
-            <Menu className="w-5 h-5" />
-            <span className="text-xs font-medium">{t('nav.menu') || 'Menu'}</span>
+            <Menu className="w-[18px] h-[18px]" />
+            <span className="text-[10px] font-medium">{t('nav.menu') || 'Menu'}</span>
           </Button>
 
           {navItems.map((item) => {
@@ -43,14 +43,14 @@ const Navigation = () => {
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  'flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-xl transition-all',
+                  'flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all',
                   isActive
                     ? 'text-primary bg-primary/10 scale-105'
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
                 )}
               >
-                <Icon className="w-5 h-5" />
-                <span className="text-xs font-medium">{item.label}</span>
+                <Icon className="w-[18px] h-[18px]" />
+                <span className="text-[10px] font-medium">{item.label}</span>
               </Link>
             );
           })}

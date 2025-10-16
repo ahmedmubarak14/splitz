@@ -58,19 +58,19 @@ export function QuickActionsHub({ focusMinutesThisWeek }: QuickActionsHubProps) 
 
   return (
     <Card className="bg-background border border-border/40">
-      <CardContent className="p-4 md:p-6">
-        <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <CardContent className="p-4 md:p-5">
+        <div className={`flex items-center gap-2 mb-3 md:mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
           <Zap className="h-5 w-5 text-primary" />
-          <h3 className="text-base font-semibold">
+          <h3 className="text-sm md:text-base font-semibold">
             {t('dashboard.quickActions') || 'Quick Actions'}
           </h3>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 md:gap-3">
           {quickActions.map((action, idx) => (
             <button
               key={idx}
               onClick={action.onClick}
-              className={`${action.bgColor} rounded-lg p-4 text-left hover:scale-105 transition-transform ${isRTL ? 'text-right' : 'text-left'}`}
+              className={`${action.bgColor} rounded-lg p-3 md:p-4 text-left hover:scale-105 transition-transform ${isRTL ? 'text-right' : 'text-left'}`}
             >
               <action.icon className={`h-6 w-6 ${action.color} mb-2`} />
               <div className="text-sm font-medium text-foreground mb-0.5">

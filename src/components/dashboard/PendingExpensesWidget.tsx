@@ -37,10 +37,10 @@ export function PendingExpensesWidget({ balances, userId }: PendingExpensesWidge
       icon={DollarSign}
       badge={balances.length}
     >
-      <div className="space-y-3">
+      <div className="space-y-2 md:space-y-3">
         {/* Net Balance Summary */}
         {(totalOwed > 0 || totalOwing > 0) && (
-          <div className={`p-3 rounded-lg ${totalOwing - totalOwed >= 0 ? 'bg-success/10 border border-success/30' : 'bg-destructive/10 border border-destructive/30'}`}>
+          <div className={`p-2.5 md:p-3 rounded-lg ${totalOwing - totalOwed >= 0 ? 'bg-success/10 border border-success/30' : 'bg-destructive/10 border border-destructive/30'}`}>
             <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
               <span className="text-xs text-muted-foreground">
                 {t('dashboard.netBalance') || 'Net Balance'}
