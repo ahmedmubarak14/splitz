@@ -34,16 +34,25 @@ const QuickAddTask = ({ open, onOpenChange, defaultProject = 'Inbox' }: QuickAdd
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
+      console.log('Adding task:', { user_id: user.id, title, description, project });
+
+      const { data, error } = await supabase
         .from('focus_tasks')
         .insert({
           user_id: user.id,
           title,
           description: description || null,
           project,
-        });
+        })
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error adding task:', error);
+        throw error;
+      }
+      
+      console.log('Task added successfully:', data);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['focus-tasks'] });
@@ -52,8 +61,9 @@ const QuickAddTask = ({ open, onOpenChange, defaultProject = 'Inbox' }: QuickAdd
       setDescription('');
       onOpenChange(false);
     },
-    onError: () => {
-      toast.error('Failed to add task');
+    onError: (error: any) => {
+      console.error('Failed to add task:', error);
+      toast.error(error.message || 'Failed to add task');
     },
   });
 

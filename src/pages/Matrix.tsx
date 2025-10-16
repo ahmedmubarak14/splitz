@@ -1,16 +1,21 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { responsiveSpacing, responsiveText } from '@/lib/responsive-utils';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 import EisenhowerMatrix from '@/components/EisenhowerMatrix';
+import QuickAddTask from '@/components/QuickAddTask';
 import { toast } from 'sonner';
 
 const Matrix = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
 
   // Fetch all tasks
   const { data: tasks, isLoading } = useQuery({
@@ -57,13 +62,20 @@ const Matrix = () => {
     <div className="min-h-screen bg-background">
       <div className={cn('max-w-7xl mx-auto', responsiveSpacing.pageContainer, responsiveSpacing.mobileNavPadding)}>
         {/* Header */}
-        <div className="mb-6">
-          <h1 className={cn('font-bold mb-2', responsiveText.pageTitle)}>
-            {t('matrix.title') || 'Eisenhower Matrix'}
-          </h1>
-          <p className="text-muted-foreground">
-            {t('matrix.subtitle') || 'Prioritize your tasks using the Eisenhower Matrix'}
-          </p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className={cn('font-bold mb-2', responsiveText.pageTitle)}>
+              {t('matrix.title') || 'Eisenhower Matrix'}
+            </h1>
+            <p className="text-muted-foreground">
+              {t('matrix.subtitle') || 'Prioritize your tasks using the Eisenhower Matrix'}
+            </p>
+          </div>
+          
+          <Button onClick={() => setQuickAddOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Task
+          </Button>
         </div>
 
         {/* Matrix */}
@@ -72,6 +84,25 @@ const Matrix = () => {
           isLoading={isLoading}
           onMoveTask={handleMoveTask}
         />
+
+        {/* Quick Add Task Dialog */}
+        <QuickAddTask
+          open={quickAddOpen}
+          onOpenChange={setQuickAddOpen}
+        />
+
+        {/* Mobile FAB */}
+        {isMobile && (
+          <div className="fixed bottom-20 right-4 z-20">
+            <Button
+              size="lg"
+              className="rounded-full w-14 h-14 shadow-lg"
+              onClick={() => setQuickAddOpen(true)}
+            >
+              <Plus className="w-6 h-6" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
