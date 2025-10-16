@@ -11,6 +11,9 @@ import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { useIsRTL } from "@/lib/rtl-utils";
+import { formatDate } from "@/lib/formatters";
 
 interface CreateTripDialogProps {
   open: boolean;
@@ -18,6 +21,8 @@ interface CreateTripDialogProps {
 }
 
 export const CreateTripDialog = ({ open, onOpenChange }: CreateTripDialogProps) => {
+  const { t, i18n } = useTranslation();
+  const isRTL = useIsRTL();
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     name: "",
@@ -32,7 +37,7 @@ export const CreateTripDialog = ({ open, onOpenChange }: CreateTripDialogProps) 
 
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) {
-      toast.error("You must be logged in");
+      toast.error(t('errors.notAuthenticated'));
       return;
     }
 
@@ -48,11 +53,11 @@ export const CreateTripDialog = ({ open, onOpenChange }: CreateTripDialogProps) 
       }]);
 
     if (error) {
-      toast.error("Failed to create trip");
+      toast.error(t('errors.genericError'));
       return;
     }
 
-    toast.success("Trip created!");
+    toast.success(t('toast.tripCreated'));
     queryClient.invalidateQueries({ queryKey: ["trips"] });
     onOpenChange(false);
     setFormData({

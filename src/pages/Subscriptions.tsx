@@ -10,8 +10,13 @@ import { toast } from "sonner";
 import { SubscriptionCard } from "@/components/SubscriptionCard";
 import { CreateSubscriptionDialog } from "@/components/CreateSubscriptionDialog";
 import { EmptyState } from "@/components/EmptyState";
+import { useTranslation } from "react-i18next";
+import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
+import { formatCurrency } from "@/lib/formatters";
 
 export default function Subscriptions() {
+  const { t, i18n } = useTranslation();
+  const isRTL = useIsRTL();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("personal");
 
@@ -34,7 +39,7 @@ export default function Subscriptions() {
         .order("next_renewal_date", { ascending: true });
 
       if (error) {
-        toast.error("Failed to load subscriptions");
+        toast.error(t('errors.failedToLoad'));
         throw error;
       }
       return data;
@@ -54,24 +59,24 @@ export default function Subscriptions() {
   return (
     <>
       <SEO 
-        title="Subscriptions - Splitz"
-        description="Track and manage your personal and shared subscriptions with renewal reminders"
+        title={`${t('subscriptions.title')} - Splitz`}
+        description={t('subscriptions.subtitle')}
       />
       
-      <div className="min-h-screen p-4 md:p-6 space-y-6">
+      <div className={`min-h-screen p-4 md:p-6 space-y-6 ${isRTL ? 'rtl' : 'ltr'}`}>
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className={`flex justify-between items-center ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Subscriptions
+              {t('subscriptions.title')}
             </h1>
             <p className="text-muted-foreground mt-1">
-              Manage your recurring payments
+              {t('subscriptions.subtitle')}
             </p>
           </div>
           <Button onClick={() => setCreateDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Subscription
+            <Plus className={`${isRTL ? 'ml-2' : 'mr-2'} h-4 w-4`} />
+            {t('subscriptions.addSubscription')}
           </Button>
         </div>
 
@@ -80,12 +85,12 @@ export default function Subscriptions() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Monthly Total
+                {t('subscriptions.monthlyTotal')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                SAR {totalMonthly.toFixed(2)}
+                {formatCurrency(totalMonthly, 'SAR', i18n.language)}
               </div>
             </CardContent>
           </Card>
@@ -93,7 +98,7 @@ export default function Subscriptions() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Active Subscriptions
+                {t('subscriptions.activeSubscriptions')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -106,7 +111,7 @@ export default function Subscriptions() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                Shared Subscriptions
+                {t('subscriptions.sharedSubscriptions')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -120,19 +125,19 @@ export default function Subscriptions() {
         {/* Subscriptions List */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
           <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="personal">Personal</TabsTrigger>
-            <TabsTrigger value="shared">Shared</TabsTrigger>
+            <TabsTrigger value="personal">{t('subscriptions.personalSubscriptions')}</TabsTrigger>
+            <TabsTrigger value="shared">{t('subscriptions.sharedSubscriptions')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="personal" className="space-y-4 mt-6">
             {isLoading ? (
-              <div className="text-center py-12">Loading...</div>
+              <div className="text-center py-12">{t('common.loading')}</div>
             ) : personalSubscriptions.length === 0 ? (
               <EmptyState
                 icon={CreditCard}
-                title="No personal subscriptions yet"
-                description="Start tracking your recurring payments"
-                actionLabel="Add Your First Subscription"
+                title={t('subscriptions.noPersonalSubscriptions')}
+                description={t('subscriptions.startTracking')}
+                actionLabel={t('subscriptions.addFirstSubscription')}
                 onAction={() => setCreateDialogOpen(true)}
               />
             ) : (
@@ -146,13 +151,13 @@ export default function Subscriptions() {
 
           <TabsContent value="shared" className="space-y-4 mt-6">
             {isLoading ? (
-              <div className="text-center py-12">Loading...</div>
+              <div className="text-center py-12">{t('common.loading')}</div>
             ) : sharedSubscriptions.length === 0 ? (
               <EmptyState
                 icon={CreditCard}
-                title="No shared subscriptions yet"
-                description="Split subscription costs with friends"
-                actionLabel="Create Shared Subscription"
+                title={t('subscriptions.noSharedSubscriptions')}
+                description={t('subscriptions.splitCosts')}
+                actionLabel={t('subscriptions.createSharedSubscription')}
                 onAction={() => setCreateDialogOpen(true)}
               />
             ) : (

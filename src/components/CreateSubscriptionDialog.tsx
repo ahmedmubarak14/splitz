@@ -12,6 +12,9 @@ import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { useIsRTL } from "@/lib/rtl-utils";
+import { formatDate } from "@/lib/formatters";
 
 interface CreateSubscriptionDialogProps {
   open: boolean;
@@ -19,6 +22,8 @@ interface CreateSubscriptionDialogProps {
 }
 
 export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscriptionDialogProps) => {
+  const { t, i18n } = useTranslation();
+  const isRTL = useIsRTL();
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     name: "",
@@ -35,7 +40,7 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
 
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) {
-      toast.error("You must be logged in");
+      toast.error(t('errors.notAuthenticated'));
       return;
     }
 
@@ -53,11 +58,11 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
       }]);
 
     if (error) {
-      toast.error("Failed to create subscription");
+      toast.error(t('errors.genericError'));
       return;
     }
 
-    toast.success("Subscription created!");
+    toast.success(t('toast.subscriptionCreated'));
     queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
     onOpenChange(false);
     setFormData({
@@ -75,24 +80,24 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Add Subscription</DialogTitle>
+          <DialogTitle>{t('subscriptions.addSubscription')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{t('subscriptions.name')}</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Netflix, Spotify, etc."
+              placeholder={t('subscriptions.namePlaceholder')}
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="amount">Amount</Label>
+              <Label htmlFor="amount">{t('subscriptions.amount')}</Label>
               <Input
                 id="amount"
                 type="number"
@@ -104,7 +109,7 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
             </div>
 
             <div>
-              <Label htmlFor="currency">Currency</Label>
+              <Label htmlFor="currency">{t('subscriptions.currency')}</Label>
               <Select value={formData.currency} onValueChange={(value) => setFormData({ ...formData, currency: value })}>
                 <SelectTrigger>
                   <SelectValue />
@@ -119,42 +124,42 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
           </div>
 
           <div>
-            <Label htmlFor="billing_cycle">Billing Cycle</Label>
+            <Label htmlFor="billing_cycle">{t('subscriptions.billingCycle')}</Label>
             <Select value={formData.billing_cycle} onValueChange={(value) => setFormData({ ...formData, billing_cycle: value })}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="monthly">Monthly</SelectItem>
-                <SelectItem value="yearly">Yearly</SelectItem>
-                <SelectItem value="weekly">Weekly</SelectItem>
+                <SelectItem value="monthly">{t('subscriptions.monthly')}</SelectItem>
+                <SelectItem value="yearly">{t('subscriptions.yearly')}</SelectItem>
+                <SelectItem value="weekly">{t('subscriptions.weekly')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category">{t('subscriptions.category')}</Label>
             <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="streaming">Streaming</SelectItem>
-                <SelectItem value="software">Software</SelectItem>
-                <SelectItem value="fitness">Fitness</SelectItem>
-                <SelectItem value="education">Education</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
+                <SelectItem value="streaming">{t('subscriptions.streaming')}</SelectItem>
+                <SelectItem value="software">{t('subscriptions.software')}</SelectItem>
+                <SelectItem value="fitness">{t('subscriptions.fitness')}</SelectItem>
+                <SelectItem value="education">{t('subscriptions.education')}</SelectItem>
+                <SelectItem value="other">{t('subscriptions.other')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <Label>Next Renewal Date</Label>
+            <Label>{t('subscriptions.nextRenewalDate')}</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start">
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {format(formData.next_renewal_date, "PPP")}
+                  <CalendarIcon className={`${isRTL ? 'ml-2' : 'mr-2'} h-4 w-4`} />
+                  {formatDate(formData.next_renewal_date, i18n.language, { year: 'numeric', month: 'long', day: 'numeric' })}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -168,7 +173,7 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
           </div>
 
           <div className="flex items-center justify-between">
-            <Label htmlFor="is_shared">Shared Subscription</Label>
+            <Label htmlFor="is_shared">{t('subscriptions.sharedSubscription')}</Label>
             <Switch
               id="is_shared"
               checked={formData.is_shared}
@@ -178,9 +183,9 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
 
           <div className="flex gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
-              Cancel
+              {t('common.cancel')}
             </Button>
-            <Button type="submit" className="flex-1">Create</Button>
+            <Button type="submit" className="flex-1">{t('subscriptions.create')}</Button>
           </div>
         </form>
       </DialogContent>

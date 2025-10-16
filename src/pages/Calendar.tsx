@@ -9,6 +9,9 @@ import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMont
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
+import { formatDate } from "@/lib/formatters";
 
 type CalendarEvent = {
   id: string;
@@ -19,6 +22,8 @@ type CalendarEvent = {
 };
 
 export default function CalendarPage() {
+  const { t, i18n } = useTranslation();
+  const isRTL = useIsRTL();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [view, setView] = useState<"month" | "week" | "day">("month");
@@ -149,31 +154,31 @@ export default function CalendarPage() {
   return (
     <>
       <SEO 
-        title="Calendar - Splitz"
-        description="View all your tasks, habits, subscriptions, and events in one place"
+        title={`${t('calendar.title')} - Splitz`}
+        description={t('calendar.subtitle')}
       />
       
-      <div className="min-h-screen p-4 md:p-6 space-y-6">
+      <div className={`min-h-screen p-4 md:p-6 space-y-6 ${isRTL ? 'rtl' : 'ltr'}`}>
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className={`flex justify-between items-center ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Calendar
+              {t('calendar.title')}
             </h1>
             <p className="text-muted-foreground mt-1">
-              All your activities in one place
+              {t('calendar.subtitle')}
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={prevMonth}>
-              <ChevronLeft className="h-4 w-4" />
+          <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+            <Button variant="outline" size="icon" onClick={isRTL ? nextMonth : prevMonth}>
+              {isRTL ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
             <div className="text-lg font-semibold min-w-[140px] text-center">
-              {format(currentDate, "MMMM yyyy")}
+              {formatDate(currentDate, i18n.language, { year: 'numeric', month: 'long' })}
             </div>
-            <Button variant="outline" size="icon" onClick={nextMonth}>
-              <ChevronRight className="h-4 w-4" />
+            <Button variant="outline" size="icon" onClick={isRTL ? prevMonth : nextMonth}>
+              {isRTL ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </Button>
           </div>
         </div>
@@ -181,38 +186,38 @@ export default function CalendarPage() {
         {/* View Toggle */}
         <Tabs value={view} onValueChange={(v) => setView(v as any)}>
           <TabsList>
-            <TabsTrigger value="month">Month</TabsTrigger>
-            <TabsTrigger value="week">Week</TabsTrigger>
-            <TabsTrigger value="day">Day</TabsTrigger>
+            <TabsTrigger value="month">{t('calendar.month')}</TabsTrigger>
+            <TabsTrigger value="week">{t('calendar.week')}</TabsTrigger>
+            <TabsTrigger value="day">{t('calendar.day')}</TabsTrigger>
           </TabsList>
         </Tabs>
 
         {/* Legend */}
         <Card className="p-4">
-          <div className="flex flex-wrap gap-4 text-sm">
-            <div className="flex items-center gap-2">
+          <div className={`flex flex-wrap gap-4 text-sm ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
               <div className="w-3 h-3 rounded-full bg-blue-500" />
-              <span>Tasks</span>
+              <span>{t('calendar.tasks')}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
               <div className="w-3 h-3 rounded-full bg-green-500" />
-              <span>Habits</span>
+              <span>{t('calendar.habits')}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
               <div className="w-3 h-3 rounded-full bg-red-500" />
-              <span>Subscriptions</span>
+              <span>{t('calendar.subscriptions')}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
               <div className="w-3 h-3 rounded-full bg-purple-500" />
-              <span>Focus</span>
+              <span>{t('calendar.focus')}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
               <div className="w-3 h-3 rounded-full bg-orange-500" />
-              <span>Trips</span>
+              <span>{t('calendar.trips')}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
               <div className="w-3 h-3 rounded-full bg-yellow-500" />
-              <span>Challenges</span>
+              <span>{t('calendar.challenges')}</span>
             </div>
           </div>
         </Card>
@@ -239,14 +244,14 @@ export default function CalendarPage() {
           {/* Selected Date Events */}
           <Card className="p-4">
             <h3 className="font-semibold mb-4">
-              {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "Select a date"}
+              {selectedDate ? formatDate(selectedDate, i18n.language, { year: 'numeric', month: 'long', day: 'numeric' }) : t('calendar.selectDate')}
             </h3>
             <div className="space-y-2">
               {selectedDate && eventsForDate(selectedDate).length === 0 && (
-                <p className="text-sm text-muted-foreground">No events on this day</p>
+                <p className="text-sm text-muted-foreground">{t('calendar.noEvents')}</p>
               )}
               {selectedDate && eventsForDate(selectedDate).map(event => (
-                <div key={event.id} className="flex items-center gap-2 p-2 rounded-lg bg-accent/10">
+                <div key={event.id} className={`flex items-center gap-2 p-2 rounded-lg bg-accent/10 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
                   <div className={`w-3 h-3 rounded-full ${event.color}`} />
                   <span className="text-sm">{event.title}</span>
                 </div>

@@ -2,14 +2,19 @@ import { MapPin, Calendar, Users, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { format, differenceInDays } from "date-fns";
+import { differenceInDays } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
+import { formatDate } from "@/lib/formatters";
 
 interface TripCardProps {
   trip: any;
 }
 
 export const TripCard = ({ trip }: TripCardProps) => {
+  const { t, i18n } = useTranslation();
+  const isRTL = useIsRTL();
   const navigate = useNavigate();
   const totalTasks = trip.trip_tasks?.length || 0;
   const completedTasks = trip.trip_tasks?.filter((t: any) => t.status === "done").length || 0;

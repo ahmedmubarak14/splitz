@@ -8,8 +8,12 @@ import { toast } from "sonner";
 import { TripCard } from "@/components/TripCard";
 import { CreateTripDialog } from "@/components/CreateTripDialog";
 import { EmptyState } from "@/components/EmptyState";
+import { useTranslation } from "react-i18next";
+import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 
 export default function Trips() {
+  const { t } = useTranslation();
+  const isRTL = useIsRTL();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const { data: trips, isLoading } = useQuery({
@@ -25,7 +29,7 @@ export default function Trips() {
         .order("start_date", { ascending: true });
 
       if (error) {
-        toast.error("Failed to load trips");
+        toast.error(t('errors.failedToLoad'));
         throw error;
       }
       return data;
@@ -35,36 +39,36 @@ export default function Trips() {
   return (
     <>
       <SEO 
-        title="Trips - Splitz"
-        description="Plan trips with friends and manage group tasks"
+        title={`${t('trips.title')} - Splitz`}
+        description={t('trips.subtitle')}
       />
       
-      <div className="min-h-screen p-4 md:p-6 space-y-6">
+      <div className={`min-h-screen p-4 md:p-6 space-y-6 ${isRTL ? 'rtl' : 'ltr'}`}>
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className={`flex justify-between items-center ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Trips
+              {t('trips.title')}
             </h1>
             <p className="text-muted-foreground mt-1">
-              Plan adventures with your crew
+              {t('trips.subtitle')}
             </p>
           </div>
           <Button onClick={() => setCreateDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Plan Trip
+            <Plus className={`${isRTL ? 'ml-2' : 'mr-2'} h-4 w-4`} />
+            {t('trips.planTrip')}
           </Button>
         </div>
 
         {/* Trips List */}
         {isLoading ? (
-          <div className="text-center py-12">Loading trips...</div>
+          <div className="text-center py-12">{t('common.loading')}</div>
         ) : !trips || trips.length === 0 ? (
           <EmptyState
             icon={MapPin}
-            title="No trips planned yet"
-            description="Start planning your next adventure with friends"
-            actionLabel="Plan Your First Trip"
+            title={t('trips.noTrips')}
+            description={t('trips.startPlanning')}
+            actionLabel={t('trips.planFirstTrip')}
             onAction={() => setCreateDialogOpen(true)}
           />
         ) : (
