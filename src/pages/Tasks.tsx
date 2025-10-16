@@ -114,6 +114,13 @@ const Tasks = () => {
                   </p>
                 </div>
               </div>
+              
+              {!isMobile && (
+                <Button onClick={() => setShowQuickAdd(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Task
+                </Button>
+              )}
             </div>
           </div>
 
