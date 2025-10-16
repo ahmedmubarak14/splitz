@@ -19,7 +19,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FriendSelector } from "./FriendSelector";
+import { UserSearchSelector } from "./UserSearchSelector";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { toast } from "sonner";
 
@@ -281,16 +283,18 @@ export function CreateSharedHabitDialog({
             </Select>
           </div>
 
-          {/* Invite Friends */}
+          {/* Invite Participants */}
           <div>
-            <Label>Invite Friends (optional)</Label>
+            <Label>Invite Participants (optional)</Label>
             <p className="text-sm text-muted-foreground mt-1 mb-3">
-              Select friends to invite to this habit
+              Search for users by @username or invite friends
             </p>
-            <FriendSelector
-              selectedFriends={selectedFriends}
+            <UserSearchSelector
+              selectedUsers={selectedFriends}
               onSelectionChange={setSelectedFriends}
               multiSelect={true}
+              showFriendsTab={true}
+              placeholder="Search by @username"
             />
           </div>
 

@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FriendSelector } from "@/components/FriendSelector";
+import { UserSearchSelector } from "./UserSearchSelector";
 
 interface InviteTripMemberDialogProps {
   tripId: string;
@@ -23,6 +24,7 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
   const [inviteCode, setInviteCode] = useState("");
   const [email, setEmail] = useState("");
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
   const createInviteMutation = useMutation({
     mutationFn: async () => {
@@ -136,14 +138,14 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
     },
   });
 
-  const addFriendsMutation = useMutation({
-    mutationFn: async (friendIds: string[]) => {
-      for (const friendId of friendIds) {
+  const addUsersMutation = useMutation({
+    mutationFn: async (userIds: string[]) => {
+      for (const userId of userIds) {
         const { error } = await (supabase as any)
           .from("trip_members")
           .insert({
             trip_id: tripId,
-            user_id: friendId,
+            user_id: userId,
           });
         
         if (error && !error.message.includes("duplicate")) {
@@ -153,11 +155,12 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
     },
     onSuccess: () => {
       setSelectedFriends([]);
+      setSelectedUserIds([]);
       queryClient.invalidateQueries({ queryKey: ["trip-members"] });
-      toast.success("Friends added to trip!");
+      toast.success(t("Member(s) added to trip"));
     },
     onError: () => {
-      toast.error("Failed to add friends");
+      toast.error(t("Failed to add members"));
     },
   });
 
@@ -175,10 +178,18 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
 
   const handleAddFriends = () => {
     if (selectedFriends.length === 0) {
-      toast.error("Please select at least one friend");
+      toast.error(t("Please select at least one friend"));
       return;
     }
-    addFriendsMutation.mutate(selectedFriends);
+    addUsersMutation.mutate(selectedFriends);
+  };
+
+  const handleAddUsers = () => {
+    if (selectedUserIds.length === 0) {
+      toast.error(t("Please select at least one user"));
+      return;
+    }
+    addUsersMutation.mutate(selectedUserIds);
   };
 
   const inviteUrl = inviteCode ? `${window.location.origin}/join/${inviteCode}` : "";
@@ -216,17 +227,40 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
           <DialogTitle>{t('trips.inviteMember')}</DialogTitle>
         </DialogHeader>
         
-        <Tabs defaultValue="friends" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs defaultValue="search" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="search">
+              <Users className="h-4 w-4 mr-2" />
+              {t("Search Users")}
+            </TabsTrigger>
             <TabsTrigger value="friends">
               <Users className="h-4 w-4 mr-2" />
-              Friends
+              {t("Friends")}
             </TabsTrigger>
             <TabsTrigger value="invite">
               <Mail className="h-4 w-4 mr-2" />
-              Invite
+              {t("Invite")}
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="search" className="space-y-4 mt-4">
+            <UserSearchSelector
+              selectedUsers={selectedUserIds}
+              onSelectionChange={setSelectedUserIds}
+              multiSelect={true}
+              showFriendsTab={false}
+              placeholder={t("Search by @username")}
+            />
+            <Button
+              onClick={handleAddUsers}
+              disabled={selectedUserIds.length === 0 || addUsersMutation.isPending}
+              className="w-full"
+            >
+              {addUsersMutation.isPending
+                ? t("Adding...")
+                : t(`Add ${selectedUserIds.length} User(s)`)}
+            </Button>
+          </TabsContent>
 
           <TabsContent value="friends" className="space-y-4 mt-4">
             <FriendSelector
@@ -236,12 +270,12 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
             />
             <Button
               onClick={handleAddFriends}
-              disabled={selectedFriends.length === 0 || addFriendsMutation.isPending}
+              disabled={selectedFriends.length === 0 || addUsersMutation.isPending}
               className="w-full"
             >
-              {addFriendsMutation.isPending
-                ? "Adding..."
-                : `Add ${selectedFriends.length} Friend${selectedFriends.length !== 1 ? "s" : ""}`}
+              {addUsersMutation.isPending
+                ? t("Adding...")
+                : t(`Add ${selectedFriends.length} Friend(s)`)}
             </Button>
           </TabsContent>
 

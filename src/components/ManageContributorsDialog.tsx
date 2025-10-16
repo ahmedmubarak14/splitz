@@ -11,6 +11,8 @@ import { toast } from "sonner";
 import { Loader2, UserPlus, Trash2, Bell, Check, X, Link2, Share2, AlertCircle } from "lucide-react";
 import { SubscriptionSplitTypeSelector } from "./SubscriptionSplitTypeSelector";
 import { InviteDialog } from "./InviteDialog";
+import { UserSearchSelector } from "./UserSearchSelector";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { SplitType, MemberSplit } from "./SubscriptionSplitTypeSelector";
@@ -38,6 +40,7 @@ const ManageContributorsDialog = ({
   const [pendingChanges, setPendingChanges] = useState(false);
   const [stagedSplitType, setStagedSplitType] = useState<SplitType>("equal");
   const [stagedMemberSplits, setStagedMemberSplits] = useState<MemberSplit[]>([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
   // Get current user
   const { data: currentUser } = useQuery({
@@ -115,47 +118,66 @@ const ManageContributorsDialog = ({
     }
   }, [subscription, contributors, t]);
 
-  // Add contributor mutation
+  // Add contributor mutation (now supports user IDs directly)
   const addContributor = useMutation({
-    mutationFn: async (email: string) => {
-      // Check if user exists
-      const { data: profiles, error: profileError } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("email", email.toLowerCase().trim())
-        .maybeSingle();
+    mutationFn: async (params: { userIds?: string[]; email?: string }) => {
+      const userIdsToAdd: string[] = [];
 
-      if (profileError) throw profileError;
-      if (!profiles) {
-        throw new Error("user-not-found");
+      // If email is provided, look up user by email
+      if (params.email) {
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("email", params.email.toLowerCase().trim())
+          .maybeSingle();
+
+        if (profileError) throw profileError;
+        if (!profile) {
+          throw new Error("user-not-found");
+        }
+        userIdsToAdd.push(profile.id);
       }
 
-      // Check if already a contributor
+      // If user IDs are provided directly (from username search)
+      if (params.userIds && params.userIds.length > 0) {
+        userIdsToAdd.push(...params.userIds);
+      }
+
+      if (userIdsToAdd.length === 0) {
+        throw new Error("No users to add");
+      }
+
+      // Check for duplicates
       const { data: existing } = await supabase
         .from("subscription_contributors")
-        .select("id")
+        .select("user_id")
         .eq("subscription_id", subscriptionId)
-        .eq("user_id", profiles.id)
-        .maybeSingle();
+        .in("user_id", userIdsToAdd);
 
-      if (existing) {
+      const existingIds = new Set(existing?.map(e => e.user_id) || []);
+      const newUserIds = userIdsToAdd.filter(id => !existingIds.has(id));
+
+      if (newUserIds.length === 0) {
         throw new Error("already-contributor");
       }
 
-      // Add contributor
+      // Add all new users as contributors
       const { error: insertError } = await supabase
         .from("subscription_contributors")
-        .insert({
-          subscription_id: subscriptionId,
-          user_id: profiles.id,
-          contribution_amount: 0,
-        });
+        .insert(
+          newUserIds.map((userId) => ({
+            subscription_id: subscriptionId,
+            user_id: userId,
+            contribution_amount: 0,
+          }))
+        );
 
       if (insertError) throw insertError;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subscription-contributors", subscriptionId] });
       setEmail("");
+      setSelectedUserIds([]);
       toast.success(t("subscriptions.contributorAdded"));
     },
     onError: (error: any) => {
@@ -591,33 +613,65 @@ const ManageContributorsDialog = ({
               </div>
             </div>
 
-            <div className="space-y-3">
-              <Label>{t("subscriptions.addByEmail")}</Label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder={t("subscriptions.enterEmail")}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  type="email"
-                />
-                <Button
-                  onClick={() => addContributor.mutate(email)}
-                  disabled={!email || addContributor.isPending}
-                >
-                  {addContributor.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <UserPlus className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => setInviteDialogOpen(true)}
-                className="w-full"
-              >
-                {t("subscriptions.orSendInviteLink")}
-              </Button>
+            <div className="space-y-4">
+              <Label className="text-base font-semibold">{t("subscriptions.addContributors")}</Label>
+              
+              <Tabs defaultValue="search" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="search">{t("Search Users")}</TabsTrigger>
+                  <TabsTrigger value="email">{t("Invite by Email")}</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="search" className="space-y-4 mt-4">
+                  <UserSearchSelector
+                    selectedUsers={selectedUserIds}
+                    onSelectionChange={setSelectedUserIds}
+                    multiSelect={true}
+                    excludeUserIds={contributors?.map((c) => c.user_id) || []}
+                    showFriendsTab={true}
+                    placeholder={t("Search by @username")}
+                  />
+                  <Button
+                    onClick={() => addContributor.mutate({ userIds: selectedUserIds })}
+                    disabled={selectedUserIds.length === 0 || addContributor.isPending}
+                    className="w-full"
+                  >
+                    {addContributor.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : null}
+                    {t(`Add ${selectedUserIds.length} User(s)`)}
+                  </Button>
+                </TabsContent>
+
+                <TabsContent value="email" className="space-y-4 mt-4">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder={t("subscriptions.enterEmail")}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      type="email"
+                    />
+                    <Button
+                      onClick={() => addContributor.mutate({ email })}
+                      disabled={!email || addContributor.isPending}
+                    >
+                      {addContributor.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <UserPlus className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => setInviteDialogOpen(true)}
+                    className="w-full"
+                  >
+                    <Link2 className="mr-2 h-4 w-4" />
+                    {t("subscriptions.orSendInviteLink")}
+                  </Button>
+                </TabsContent>
+              </Tabs>
             </div>
 
             <div className="space-y-3">
