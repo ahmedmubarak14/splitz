@@ -641,6 +641,11 @@ const resources = {
         challenges: 'Challenges',
         selectDate: 'Select a date',
         noEvents: 'No events on this day',
+        today: 'Today',
+        allDay: 'All Day',
+        morningEvents: 'Morning',
+        afternoonEvents: 'Afternoon',
+        eveningEvents: 'Evening',
       },
       trips: {
         title: 'Trips',
@@ -1733,6 +1738,11 @@ const resources = {
         challenges: 'التحديات',
         selectDate: 'اختر تاريخاً',
         noEvents: 'لا توجد أحداث في هذا اليوم',
+        today: 'اليوم',
+        allDay: 'طوال اليوم',
+        morningEvents: 'الصباح',
+        afternoonEvents: 'بعد الظهر',
+        eveningEvents: 'المساء',
       },
       trips: {
         title: 'الرحلات',

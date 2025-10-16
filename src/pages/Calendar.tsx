@@ -12,6 +12,9 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 import { formatDate } from "@/lib/formatters";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useSwipeGesture } from "@/hooks/useSwipeGesture";
+import { responsiveSpacing, responsiveText, responsiveSize } from "@/lib/responsive-utils";
 
 type CalendarEvent = {
   id: string;
@@ -24,9 +27,17 @@ type CalendarEvent = {
 export default function CalendarPage() {
   const { t, i18n } = useTranslation();
   const isRTL = useIsRTL();
+  const isMobile = useIsMobile();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [view, setView] = useState<"month" | "week" | "day">("month");
+
+  const goToToday = () => {
+    setCurrentDate(new Date());
+    setSelectedDate(new Date());
+  };
+
+  const isCurrentDateToday = isSameDay(currentDate, new Date());
 
   // Fetch all events
   const { data: events = [], isLoading } = useQuery({
@@ -191,35 +202,75 @@ export default function CalendarPage() {
     }
   };
 
+  const { bind } = useSwipeGesture({
+    onSwipeLeft: () => !isRTL ? nextPeriod() : prevPeriod(),
+    onSwipeRight: () => !isRTL ? prevPeriod() : nextPeriod(),
+    threshold: 50,
+    enabled: isMobile,
+  });
+
   const WeekView = () => {
     const weekStart = startOfWeek(currentDate);
     const weekEnd = endOfWeek(currentDate);
     const daysInWeek = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
     return (
-      <div className="grid grid-cols-7 gap-2">
+      <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 ${responsiveSpacing.gridGap}`}>
         {daysInWeek.map(day => {
           const dayEvents = eventsForDate(day);
-          const isToday = isSameDay(day, new Date());
+          const isDayToday = isSameDay(day, new Date());
+          const isCurrentMonth = day.getMonth() === currentDate.getMonth();
+          
           return (
-            <Card key={day.toString()} className={`p-3 ${isToday ? 'border-primary' : ''}`}>
-              <div className="text-center mb-2">
-                <div className="text-xs text-muted-foreground">
+            <Card 
+              key={day.toString()} 
+              className={`${responsiveSize.card} hover:shadow-md transition-all duration-200 ${
+                isDayToday 
+                  ? 'border-primary border-2 bg-primary/5 ring-2 ring-primary/20' 
+                  : isCurrentMonth 
+                    ? 'border-border' 
+                    : 'border-border/50 opacity-60'
+              }`}
+            >
+              <div className="text-center mb-3">
+                <div className={`${responsiveText.caption} text-muted-foreground uppercase tracking-wide`}>
                   {format(day, 'EEE')}
                 </div>
-                <div className={`text-lg font-semibold ${isToday ? 'text-primary' : ''}`}>
+                <div className={`${responsiveText.sectionTitle} font-bold ${
+                  isDayToday ? 'text-primary' : ''
+                }`}>
                   {format(day, 'd')}
                 </div>
+                {isDayToday && (
+                  <div className="text-[10px] font-semibold text-primary uppercase tracking-wider mt-0.5">
+                    {t('calendar.today')}
+                  </div>
+                )}
               </div>
-              <div className="space-y-1">
+              
+              <div className="space-y-2">
+                {dayEvents.length === 0 && (
+                  <p className={`${responsiveText.caption} text-muted-foreground text-center py-2`}>
+                    {t('calendar.noEvents')}
+                  </p>
+                )}
+                
                 {dayEvents.slice(0, 5).map(event => (
-                  <div key={event.id} className="flex items-center gap-1 text-xs">
-                    <div className={`w-2 h-2 rounded-full ${event.color} flex-shrink-0`} />
-                    <span className="truncate">{event.title}</span>
+                  <div 
+                    key={event.id} 
+                    className={`flex items-center gap-2 p-2 rounded-md hover:bg-accent/50 transition-colors ${
+                      rtlClass(isRTL, 'flex-row-reverse', 'flex-row')
+                    }`}
+                  >
+                    <div className={`w-2.5 h-2.5 rounded-full ${event.color} flex-shrink-0 shadow-sm`} />
+                    <span className={`${responsiveText.small} truncate font-medium`}>
+                      {event.title}
+                    </span>
                   </div>
                 ))}
+                
                 {dayEvents.length > 5 && (
-                  <div className="text-xs text-muted-foreground text-center">
+                  <div className={`${responsiveText.caption} text-muted-foreground text-center py-1 font-medium`}>
                     +{dayEvents.length - 5} more
                   </div>
                 )}
@@ -233,38 +284,93 @@ export default function CalendarPage() {
 
   const DayView = () => {
     const dayEvents = eventsForDate(currentDate);
+    
+    const categorizeEventsByTime = (events: CalendarEvent[]) => {
+      return {
+        morning: events.filter(e => {
+          const hour = e.date.getHours();
+          return hour >= 0 && hour < 12;
+        }),
+        afternoon: events.filter(e => {
+          const hour = e.date.getHours();
+          return hour >= 12 && hour < 17;
+        }),
+        evening: events.filter(e => {
+          const hour = e.date.getHours();
+          return hour >= 17;
+        }),
+        allDay: events.filter(e => e.date.getHours() === 0)
+      };
+    };
 
-    return (
-      <Card className="p-6">
-        <h2 className="text-2xl font-bold mb-4">
-          {formatDate(currentDate, i18n.language, { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })}
-        </h2>
+    const categorizedEvents = categorizeEventsByTime(dayEvents);
+    const hasAnyEvents = dayEvents.length > 0;
+
+    const EventSection = ({ title, events }: { title: string; events: CalendarEvent[] }) => {
+      if (events.length === 0) return null;
+      
+      return (
         <div className="space-y-3">
-          {dayEvents.length === 0 && (
-            <p className="text-muted-foreground text-center py-8">
-              {t('calendar.noEvents')}
-            </p>
-          )}
-          {dayEvents.map(event => (
-            <div 
-              key={event.id} 
-              className="flex items-start gap-3 p-3 rounded-lg border hover:bg-accent/50 transition-colors"
-            >
-              <div className={`w-4 h-4 rounded-full ${event.color} mt-0.5 flex-shrink-0`} />
-              <div className="flex-1 min-w-0">
-                <div className="font-medium">{event.title}</div>
-                <div className="text-sm text-muted-foreground capitalize">
-                  {event.type}
+          <h3 className={`${responsiveText.cardTitle} font-semibold text-muted-foreground uppercase tracking-wide`}>
+            {title}
+          </h3>
+          <div className="space-y-2">
+            {events.map(event => (
+              <div 
+                key={event.id} 
+                className={`flex items-start gap-3 p-4 rounded-lg border hover:bg-accent/50 transition-all duration-200 hover:shadow-sm ${
+                  rtlClass(isRTL, 'flex-row-reverse', 'flex-row')
+                }`}
+              >
+                <div className={`w-4 h-4 rounded-full ${event.color} mt-0.5 flex-shrink-0 shadow-md`} />
+                <div className="flex-1 min-w-0">
+                  <div className={`${responsiveText.body} font-semibold`}>{event.title}</div>
+                  <div className={`${responsiveText.small} text-muted-foreground capitalize mt-1`}>
+                    {event.type} • {format(event.date, 'h:mm a')}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+      );
+    };
+
+    return (
+      <Card className={`${responsiveSize.card} min-h-[400px]`}>
+        <div className="mb-6">
+          <h2 className={`${responsiveText.sectionTitle} font-bold`}>
+            {formatDate(currentDate, i18n.language, { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </h2>
+          {isSameDay(currentDate, new Date()) && (
+            <p className={`${responsiveText.small} text-primary font-semibold mt-1`}>
+              {t('calendar.today')}
+            </p>
+          )}
+        </div>
+
+        {!hasAnyEvents && (
+          <div className="flex flex-col items-center justify-center py-16">
+            <CalendarIcon className="h-16 w-16 text-muted-foreground/30 mb-4" />
+            <p className={`${responsiveText.body} text-muted-foreground text-center`}>
+              {t('calendar.noEvents')}
+            </p>
+          </div>
+        )}
+
+        {hasAnyEvents && (
+          <div className="space-y-6">
+            <EventSection title={t('calendar.allDay')} events={categorizedEvents.allDay} />
+            <EventSection title={t('calendar.morningEvents')} events={categorizedEvents.morning} />
+            <EventSection title={t('calendar.afternoonEvents')} events={categorizedEvents.afternoon} />
+            <EventSection title={t('calendar.eveningEvents')} events={categorizedEvents.evening} />
+          </div>
+        )}
       </Card>
     );
   };
@@ -278,23 +384,46 @@ export default function CalendarPage() {
       
       <div className={`min-h-screen bg-gradient-to-b from-muted/30 via-muted/10 to-background p-4 md:p-6 space-y-6 md:space-y-8 ${isRTL ? 'rtl' : 'ltr'}`}>
         {/* Header */}
-        <div className={`flex justify-between items-center ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+        <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
+            <h1 className={`${responsiveText.pageTitle} font-bold tracking-tight`}>
               {t('calendar.title')}
             </h1>
-            <p className="text-sm md:text-base text-muted-foreground mt-1">
+            <p className={`${responsiveText.body} text-muted-foreground mt-1`}>
               {t('calendar.subtitle')}
             </p>
           </div>
 
           <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={goToToday}
+              disabled={isCurrentDateToday}
+              className="hidden sm:flex"
+            >
+              <CalendarIcon className="h-4 w-4 mr-2" />
+              {t('calendar.today')}
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={goToToday}
+              disabled={isCurrentDateToday}
+              className="sm:hidden"
+            >
+              <CalendarIcon className="h-4 w-4" />
+            </Button>
+            
             <Button variant="outline" size="icon" onClick={isRTL ? nextPeriod : prevPeriod}>
               {isRTL ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </Button>
-            <div className="text-lg font-semibold min-w-[140px] text-center">
+            
+            <div className={`${responsiveText.cardTitle} font-semibold min-w-[120px] sm:min-w-[180px] text-center`}>
               {getHeaderDate()}
             </div>
+            
             <Button variant="outline" size="icon" onClick={isRTL ? prevPeriod : nextPeriod}>
               {isRTL ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </Button>
@@ -311,9 +440,11 @@ export default function CalendarPage() {
         </Tabs>
 
         {/* Legend */}
-        <Card className="p-4 md:p-5 shadow-sm border border-border/40 hover:shadow-md transition-shadow duration-200">
-          <h3 className="text-sm font-semibold mb-3 tracking-tight">{t('calendar.eventTypes')}</h3>
-          <div className={`flex flex-wrap gap-4 text-sm ${isRTL ? 'flex-row-reverse' : ''}`}>
+        <Card className={`${responsiveSize.card} shadow-sm border border-border/40 hover:shadow-md transition-shadow duration-200`}>
+          <h3 className={`${responsiveText.cardTitle} font-semibold mb-4 tracking-tight`}>
+            {t('calendar.eventTypes')}
+          </h3>
+          <div className={`flex flex-wrap gap-4 ${responsiveText.body} ${isRTL ? 'flex-row-reverse' : ''}`}>
             <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
               <div className="w-3 h-3 rounded-full bg-blue-500 shadow-sm" />
               <span className="font-medium">{t('calendar.tasks')}</span>
@@ -342,7 +473,10 @@ export default function CalendarPage() {
         </Card>
 
         {/* Calendar Grid */}
-        <div className={`grid grid-cols-1 ${view === 'month' ? 'lg:grid-cols-3' : ''} gap-6`}>
+        <div 
+          {...(isMobile ? bind() : {})}
+          className={`grid grid-cols-1 ${view === 'month' ? 'lg:grid-cols-3' : ''} ${responsiveSpacing.gridGap} touch-pan-y`}
+        >
           <Card className={`${view === 'month' ? 'lg:col-span-2' : ''} p-4`}>
             {view === 'month' && (
               <Calendar
