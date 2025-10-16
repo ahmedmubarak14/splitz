@@ -8,6 +8,7 @@ import { SEO } from "@/components/SEO";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { withAuthRecovery } from "@/lib/auth-recovery";
 import { SubscriptionCard } from "@/components/SubscriptionCard";
 import { CreateSubscriptionDialog } from "@/components/CreateSubscriptionDialog";
 import EditSubscriptionDialog from "@/components/EditSubscriptionDialog";
@@ -31,7 +32,7 @@ export default function Subscriptions() {
   // Owned subscriptions query
   const { data: subscriptions, isLoading } = useQuery({
     queryKey: ["subscriptions"],
-    queryFn: async () => {
+    queryFn: () => withAuthRecovery(async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -55,13 +56,13 @@ export default function Subscriptions() {
         throw error;
       }
       return data;
-    },
+    }, "Failed to load subscriptions"),
   });
 
   // Shared subscriptions where user is a contributor
   const { data: sharedSubscriptions, isLoading: isLoadingShared } = useQuery({
     queryKey: ['shared-subscriptions'],
-    queryFn: async () => {
+    queryFn: () => withAuthRecovery(async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -84,7 +85,7 @@ export default function Subscriptions() {
 
       if (error) throw error;
       return data?.map(d => d.subscriptions).filter((s: any) => s.user_id !== user.id) || [];
-    },
+    }, "Failed to load shared subscriptions"),
   });
 
   const myActiveSubscriptions = subscriptions?.filter(s => s.status === 'active') || [];
