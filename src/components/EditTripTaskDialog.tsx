@@ -50,16 +50,29 @@ export const EditTripTaskDialog = ({ task, open, onOpenChange }: EditTripTaskDia
   const { data: members } = useQuery({
     queryKey: ["trip-members", task.trip_id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch trip members
+      const { data: tripMembers, error } = await supabase
         .from("trip_members")
-        .select(`
-          user_id,
-          profiles:user_id(id, full_name)
-        `)
+        .select("user_id")
         .eq("trip_id", task.trip_id);
 
       if (error) throw error;
-      return data;
+      if (!tripMembers || tripMembers.length === 0) return [];
+
+      // Fetch profiles separately
+      const userIds = tripMembers.map(m => m.user_id);
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", userIds);
+
+      if (profilesError) throw profilesError;
+
+      // Merge data
+      return tripMembers.map(member => ({
+        user_id: member.user_id,
+        profiles: profiles?.find(p => p.id === member.user_id) || null
+      }));
     },
   });
 

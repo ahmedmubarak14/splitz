@@ -155,6 +155,12 @@ const resources = {
         goBack: 'Go Back',
         day: 'day',
         days: 'days',
+        sending: 'Sending...',
+        generating: 'Generating...',
+        create: 'Create',
+        creating: 'Creating...',
+        update: 'Update',
+        updating: 'Updating...',
       },
       hero: {
         badge: 'All-in-One Productivity Suite',

@@ -114,7 +114,16 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
         // Email failed - show invite link instead
         setInviteCode(result.code);
         const inviteUrl = `${window.location.origin}/join/${result.code}`;
-        navigator.clipboard.writeText(inviteUrl);
+        
+        // Try to copy but don't block on permission errors
+        try {
+          navigator.clipboard.writeText(inviteUrl).catch(() => {
+            // Silent fail - user can use copy button
+          });
+        } catch (e) {
+          // Browser doesn't support clipboard API
+        }
+        
         toast.info(t('trips.inviteFallback'));
       } else {
         toast.success(t('trips.inviteSent'));
