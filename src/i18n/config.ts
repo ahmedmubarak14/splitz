@@ -416,9 +416,9 @@ const resources = {
         },
       },
       final: {
-        title: 'Make better habits with friends',
-        subtitle: 'Join thousands building streaks and splitting life fairly',
-        badge: 'Start Your Journey',
+        title: 'Your Complete Productivity System Awaits',
+        subtitle: 'Join thousands who\'ve transformed their productivity with Splitz',
+        badge: 'Complete System',
       },
       footer: {
         tagline: 'Build habits together. Split life fairly.',
@@ -1342,9 +1342,9 @@ const resources = {
         },
       },
       final: {
-        title: 'كوِّن عادات أفضل مع أصدقائك',
-        subtitle: 'انضم إلى الآلاف الذين يبنون السلاسل ويقسمون الحياة بعدالة',
-        badge: 'ابدأ رحلتك',
+        title: 'نظام الإنتاجية المتكامل في انتظارك',
+        subtitle: 'انضم إلى الآلاف الذين غيّروا إنتاجيتهم مع سبليتز',
+        badge: 'نظام متكامل',
       },
       footer: {
         tagline: 'ابنِ العادات معاً. واقسم المصاريف بعدل.',
