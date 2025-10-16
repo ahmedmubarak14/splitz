@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -144,9 +144,9 @@ export default function CalendarPage() {
     },
   });
 
-  const eventsForDate = (date: Date) => {
+  const eventsForDate = useCallback((date: Date) => {
     return events.filter(event => isSameDay(event.date, date));
-  };
+  }, [events]);
 
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
@@ -237,7 +237,7 @@ export default function CalendarPage() {
                 hasEvents: (date) => eventsForDate(date).length > 0
               }}
               modifiersClassNames={{
-                hasEvents: "font-bold"
+                hasEvents: "font-semibold relative before:absolute before:bottom-1 before:left-1/2 before:-translate-x-1/2 before:w-1.5 before:h-1.5 before:rounded-full before:bg-primary before:shadow-sm"
               }}
             />
           </Card>

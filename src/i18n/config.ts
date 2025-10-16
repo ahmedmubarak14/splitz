@@ -629,6 +629,7 @@ const resources = {
       calendar: {
         title: 'Calendar',
         subtitle: 'All your activities in one place',
+        eventTypes: 'Event Types',
         month: 'Month',
         week: 'Week',
         day: 'Day',
@@ -1720,6 +1721,7 @@ const resources = {
       calendar: {
         title: 'التقويم',
         subtitle: 'جميع أنشطتك في مكان واحد',
+        eventTypes: 'أنواع الأحداث',
         month: 'شهر',
         week: 'أسبوع',
         day: 'يوم',
