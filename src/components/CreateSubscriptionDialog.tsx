@@ -82,6 +82,66 @@ const POPULAR_SUBSCRIPTIONS = [
     category: "software",
     defaultAmount: 7
   },
+  { 
+    name: "HBO Max", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg",
+    category: "streaming",
+    defaultAmount: 10
+  },
+  { 
+    name: "Hulu", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Hulu_Logo.svg",
+    category: "streaming",
+    defaultAmount: 8
+  },
+  { 
+    name: "Paramount+", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Paramount_Plus.svg",
+    category: "streaming",
+    defaultAmount: 6
+  },
+  { 
+    name: "GitHub Pro", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg",
+    category: "software",
+    defaultAmount: 4
+  },
+  { 
+    name: "LinkedIn Premium", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
+    category: "software",
+    defaultAmount: 30
+  },
+  { 
+    name: "Zoom Pro", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Zoom_Communications_Logo.svg",
+    category: "software",
+    defaultAmount: 15
+  },
+  { 
+    name: "Dropbox", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Dropbox_logo_2017.svg",
+    category: "software",
+    defaultAmount: 12
+  },
+  { 
+    name: "Google One", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/4/49/Google_One_icon.svg",
+    category: "software",
+    defaultAmount: 3
+  },
+  { 
+    name: "iCloud+", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/9/98/ICloud_logo.svg",
+    category: "software",
+    defaultAmount: 1
+  },
+  { 
+    name: "Audible", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/3/32/Audible_logo.svg",
+    category: "streaming",
+    defaultAmount: 15
+  },
 ];
 
 
