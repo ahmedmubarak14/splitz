@@ -20,6 +20,7 @@ import {
   User,
   Settings,
   LogOut,
+  Users,
 } from 'lucide-react';
 import { 
   prefetchDashboard, 
@@ -92,6 +93,7 @@ export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: Mobi
     {
       title: t('nav.social'),
       items: [
+        { path: '/friends', icon: Users, label: t('nav.friends'), emoji: '👥' },
         { path: '/challenges', icon: Trophy, label: t('nav.challenges'), emoji: '🏆' },
       ],
     },

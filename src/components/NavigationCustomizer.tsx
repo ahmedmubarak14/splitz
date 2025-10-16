@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Home, ListChecks, Brain, DollarSign, Trophy, CreditCard, Plane, Calendar, Grid3X3, Flame, Settings } from 'lucide-react';
+import { Home, ListChecks, Brain, DollarSign, Trophy, CreditCard, Plane, Calendar, Grid3X3, Flame, Settings, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 
-type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'matrix' | 'focus' | 'calendar' | 'expenses' | 'subscriptions' | 'trips' | 'challenges';
+type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'matrix' | 'focus' | 'calendar' | 'expenses' | 'subscriptions' | 'trips' | 'challenges' | 'friends';
 
 interface NavItem {
   id: NavItemId;
@@ -52,6 +52,7 @@ const NavigationCustomizer = ({ onSave }: NavigationCustomizerProps) => {
     { id: 'subscriptions', path: '/subscriptions', icon: CreditCard, label: t('nav.subscriptions'), description: t('navigation.customize.descriptions.subscriptions') },
     { id: 'trips', path: '/trips', icon: Plane, label: t('nav.trips'), description: t('navigation.customize.descriptions.trips') },
     { id: 'challenges', path: '/challenges', icon: Trophy, label: t('nav.challenges'), description: t('navigation.customize.descriptions.challenges') },
+    { id: 'friends', path: '/friends', icon: Users, label: t('nav.friends'), description: 'Manage your friends and connections' },
   ];
 
   useEffect(() => {

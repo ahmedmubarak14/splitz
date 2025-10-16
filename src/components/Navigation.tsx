@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ListChecks, Brain, DollarSign, Trophy, Menu, CreditCard, Plane, Calendar, Grid3X3, Flame } from 'lucide-react';
+import { Home, ListChecks, Brain, DollarSign, Trophy, Menu, CreditCard, Plane, Calendar, Grid3X3, Flame, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -15,7 +15,7 @@ import {
   prefetchChallenges 
 } from '@/App';
 
-type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'matrix' | 'focus' | 'calendar' | 'expenses' | 'subscriptions' | 'trips' | 'challenges';
+type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'matrix' | 'focus' | 'calendar' | 'expenses' | 'subscriptions' | 'trips' | 'challenges' | 'friends';
 
 const Navigation = () => {
   const location = useLocation();
@@ -51,6 +51,7 @@ const Navigation = () => {
     { id: 'subscriptions' as NavItemId, path: '/subscriptions', icon: CreditCard, label: t('nav.subscriptions') },
     { id: 'trips' as NavItemId, path: '/trips', icon: Plane, label: t('nav.trips') },
     { id: 'challenges' as NavItemId, path: '/challenges', icon: Trophy, label: t('nav.challenges') },
+    { id: 'friends' as NavItemId, path: '/friends', icon: Users, label: t('nav.friends') },
   ];
 
   useEffect(() => {
