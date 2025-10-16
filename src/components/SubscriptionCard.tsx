@@ -27,11 +27,91 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
     new Date()
   );
 
+  const isDueToday = daysUntilRenewal === 0;
+
   const renewalStatus = daysUntilRenewal < 0 
     ? "overdue" 
+    : isDueToday
+    ? "due-today"
     : daysUntilRenewal <= 3 
     ? "due-soon" 
     : "upcoming";
+
+  const calculateNextRenewal = (currentDate: Date, cycle: string, customDays?: number): Date => {
+    const nextDate = new Date(currentDate);
+    
+    switch(cycle) {
+      case 'weekly':
+        nextDate.setDate(nextDate.getDate() + 7);
+        break;
+      case 'monthly':
+        nextDate.setMonth(nextDate.getMonth() + 1);
+        break;
+      case 'quarterly':
+        nextDate.setMonth(nextDate.getMonth() + 3);
+        break;
+      case 'yearly':
+        nextDate.setFullYear(nextDate.getFullYear() + 1);
+        break;
+      case 'custom':
+        nextDate.setDate(nextDate.getDate() + (customDays || 30));
+        break;
+      default:
+        nextDate.setMonth(nextDate.getMonth() + 1);
+    }
+    
+    return nextDate;
+  };
+
+  const markSubscriptionPaid = useMutation({
+    mutationFn: async () => {
+      // Record payment
+      const { error: paymentError } = await supabase
+        .from('subscription_payments')
+        .insert({
+          subscription_id: subscription.id,
+          amount: subscription.amount,
+          notes: `Payment for ${subscription.billing_cycle} cycle`
+        });
+      
+      if (paymentError) throw paymentError;
+
+      // Calculate next renewal date
+      const nextDate = calculateNextRenewal(
+        new Date(subscription.next_renewal_date),
+        subscription.billing_cycle,
+        subscription.custom_cycle_days
+      );
+
+      // Update subscription
+      const { error: updateError } = await supabase
+        .from('subscriptions')
+        .update({ next_renewal_date: nextDate.toISOString().split('T')[0] })
+        .eq('id', subscription.id);
+      
+      if (updateError) throw updateError;
+
+      // If shared, reset all contributors' payment status
+      if (subscription.is_shared) {
+        const { error: resetError } = await supabase
+          .from('subscription_contributors')
+          .update({
+            is_settled: false,
+            payment_submitted: false,
+            paid_at: null,
+            approved_at: null,
+            submission_at: null
+          })
+          .eq('subscription_id', subscription.id);
+        
+        if (resetError) throw resetError;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
+      toast.success(t('subscriptions.paymentRecorded'));
+    },
+  });
 
   const deleteSubscription = useMutation({
     mutationFn: async () => {
@@ -99,18 +179,34 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
 
         <div className={`flex items-center gap-2 text-sm ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <Calendar className="h-4 w-4 text-muted-foreground" />
-          <span className={
-            renewalStatus === "overdue" 
-              ? "text-destructive font-semibold" 
-              : renewalStatus === "due-soon"
-              ? "text-yellow-600 font-semibold"
-              : "text-muted-foreground"
-          }>
-            {renewalStatus === "overdue" 
-              ? `${Math.abs(daysUntilRenewal)} ${t('subscriptions.overdue')}`
-              : `${t('subscriptions.renews')} ${daysUntilRenewal} ${t('subscriptions.days')}`
-            }
-          </span>
+          
+          {isDueToday ? (
+            <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+              <Badge variant="destructive" className="animate-pulse">
+                {t('subscriptions.dueToday')} 🔔
+              </Badge>
+              <Button 
+                size="sm" 
+                onClick={() => markSubscriptionPaid.mutate()}
+                disabled={markSubscriptionPaid.isPending}
+              >
+                {markSubscriptionPaid.isPending ? t('common.processing') : t('subscriptions.markAsPaid')}
+              </Button>
+            </div>
+          ) : (
+            <span className={
+              renewalStatus === "overdue" 
+                ? "text-destructive font-semibold" 
+                : renewalStatus === "due-soon"
+                ? "text-yellow-600 font-semibold"
+                : "text-muted-foreground"
+            }>
+              {renewalStatus === "overdue" 
+                ? `${Math.abs(daysUntilRenewal)} ${t('subscriptions.overdue')}`
+                : `${t('subscriptions.renews')} ${daysUntilRenewal} ${t('subscriptions.days')}`
+              }
+            </span>
+          )}
         </div>
 
         {subscription.is_shared && subscription.subscription_contributors && (

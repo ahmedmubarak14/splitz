@@ -12,6 +12,8 @@ import { toast } from "sonner";
 import { Calendar, Users, Bell, CheckCircle, XCircle, Clock, Check, X, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { withAuthRecovery } from "@/lib/auth-recovery";
+import { formatDateTime } from "@/lib/timezone";
+import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 
 interface SubscriptionDetailsDialogProps {
   open: boolean;
@@ -28,6 +30,7 @@ export const SubscriptionDetailsDialog = ({
 }: SubscriptionDetailsDialogProps) => {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
+  const isRTL = useIsRTL();
 
   // Get current user
   const { data: currentUser } = useQuery({
@@ -69,6 +72,22 @@ export const SubscriptionDetailsDialog = ({
       return data;
     },
     enabled: !!subscription?.user_id
+  });
+
+  // Fetch payment history
+  const { data: paymentHistory = [] } = useQuery({
+    queryKey: ['subscription-payments', subscriptionId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('subscription_payments')
+        .select('*')
+        .eq('subscription_id', subscriptionId)
+        .order('paid_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: open
   });
 
   // Fetch contributors
@@ -179,6 +198,86 @@ export const SubscriptionDetailsDialog = ({
   });
 
   // Send reminder
+  const calculateNextRenewal = (currentDate: Date, cycle: string, customDays?: number): Date => {
+    const nextDate = new Date(currentDate);
+    
+    switch(cycle) {
+      case 'weekly':
+        nextDate.setDate(nextDate.getDate() + 7);
+        break;
+      case 'monthly':
+        nextDate.setMonth(nextDate.getMonth() + 1);
+        break;
+      case 'quarterly':
+        nextDate.setMonth(nextDate.getMonth() + 3);
+        break;
+      case 'yearly':
+        nextDate.setFullYear(nextDate.getFullYear() + 1);
+        break;
+      case 'custom':
+        nextDate.setDate(nextDate.getDate() + (customDays || 30));
+        break;
+      default:
+        nextDate.setMonth(nextDate.getMonth() + 1);
+    }
+    
+    return nextDate;
+  };
+
+  const markCycleAsPaid = useMutation({
+    mutationFn: async () => {
+      if (!subscription) throw new Error('Subscription not found');
+
+      // Record payment
+      const { error: paymentError } = await supabase
+        .from('subscription_payments')
+        .insert({
+          subscription_id: subscriptionId,
+          amount: subscription.amount,
+          notes: `Payment for ${subscription.billing_cycle} cycle`
+        });
+      
+      if (paymentError) throw paymentError;
+
+      // Calculate next renewal date
+      const nextDate = calculateNextRenewal(
+        new Date(subscription.next_renewal_date),
+        subscription.billing_cycle,
+        subscription.custom_cycle_days
+      );
+
+      // Update subscription
+      const { error: updateError } = await supabase
+        .from('subscriptions')
+        .update({ next_renewal_date: nextDate.toISOString().split('T')[0] })
+        .eq('id', subscriptionId);
+      
+      if (updateError) throw updateError;
+
+      // If shared, reset all contributors' payment status
+      if (subscription.is_shared) {
+        const { error: resetError } = await supabase
+          .from('subscription_contributors')
+          .update({
+            is_settled: false,
+            payment_submitted: false,
+            paid_at: null,
+            approved_at: null,
+            submission_at: null
+          })
+          .eq('subscription_id', subscriptionId);
+        
+        if (resetError) throw resetError;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscription-details', subscriptionId] });
+      queryClient.invalidateQueries({ queryKey: ['subscription-payments', subscriptionId] });
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
+      toast.success(t('subscriptions.cycleAdvanced'));
+    },
+  });
+
   const sendReminder = useMutation({
     mutationFn: async (contributorId: string) => {
       const contributor = contributors?.find(c => c.id === contributorId);
@@ -523,10 +622,49 @@ export const SubscriptionDetailsDialog = ({
             })}
           </TabsContent>
 
-          <TabsContent value="history" className="mt-4">
-            <div className="text-center text-muted-foreground py-8">
-              {t('subscriptions.paymentHistoryComingSoon')}
-            </div>
+          <TabsContent value="history" className="space-y-3 mt-4">
+            {paymentHistory.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Calendar className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                <p>{t('subscriptions.noPaymentHistory')}</p>
+              </div>
+            ) : (
+              <>
+                {paymentHistory.map((payment: any) => (
+                  <div key={payment.id} className="p-4 rounded-lg border bg-card">
+                    <div className={`flex items-center justify-between ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                      <div>
+                        <div className="font-medium">
+                          {formatCurrency(Number(payment.amount), subscription?.currency || 'SAR', i18n.language)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {formatDateTime(payment.paid_at)}
+                        </div>
+                      </div>
+                      <Badge variant="outline">
+                        <CheckCircle className={`h-3 w-3 ${isRTL ? 'ml-1' : 'mr-1'}`} />
+                        {t('subscriptions.paid')}
+                      </Badge>
+                    </div>
+                    {payment.notes && (
+                      <p className="text-sm text-muted-foreground mt-2">{payment.notes}</p>
+                    )}
+                  </div>
+                ))}
+              </>
+            )}
+            
+            {isOwner && (
+              <div className="pt-4 border-t">
+                <Button 
+                  onClick={() => markCycleAsPaid.mutate()}
+                  disabled={markCycleAsPaid.isPending}
+                  className="w-full"
+                >
+                  {markCycleAsPaid.isPending ? t('common.processing') : t('subscriptions.markCycleAsPaid')}
+                </Button>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </DialogContent>

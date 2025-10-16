@@ -1356,6 +1356,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      calculate_next_renewal_date: {
+        Args: {
+          p_current_date: string
+          p_custom_days?: number
+          p_cycle: string
+        }
+        Returns: string
+      }
       can_join_via_invite: {
         Args: { _invite_type: string; _resource_id: string; _user_id: string }
         Returns: boolean
