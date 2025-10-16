@@ -42,16 +42,16 @@ const NavigationCustomizer = ({ onSave }: NavigationCustomizerProps) => {
   const [saving, setSaving] = useState(false);
 
   const allNavItems: NavItem[] = [
-    { id: 'dashboard', path: '/dashboard', icon: Home, label: t('nav.dashboard'), description: 'Overview & quick actions' },
-    { id: 'habits', path: '/habits', icon: Flame, label: t('nav.habits'), description: 'Track daily habits' },
-    { id: 'tasks', path: '/tasks', icon: ListChecks, label: t('nav.tasks') || 'Tasks', description: 'Manage your tasks' },
-    { id: 'matrix', path: '/matrix', icon: Grid3X3, label: t('nav.matrix') || 'Matrix', description: 'Eisenhower matrix' },
-    { id: 'focus', path: '/focus', icon: Brain, label: t('nav.focus') || 'Focus', description: 'Pomodoro sessions' },
-    { id: 'calendar', path: '/calendar', icon: Calendar, label: t('nav.calendar') || 'Calendar', description: 'View your schedule' },
-    { id: 'expenses', path: '/expenses', icon: DollarSign, label: t('nav.expenses'), description: 'Split expenses' },
-    { id: 'subscriptions', path: '/subscriptions', icon: CreditCard, label: t('nav.subscriptions'), description: 'Track subscriptions' },
-    { id: 'trips', path: '/trips', icon: Plane, label: t('nav.trips'), description: 'Plan your trips' },
-    { id: 'challenges', path: '/challenges', icon: Trophy, label: t('nav.challenges'), description: 'Join challenges' },
+    { id: 'dashboard', path: '/dashboard', icon: Home, label: t('nav.dashboard'), description: t('navigation.customize.descriptions.dashboard') },
+    { id: 'habits', path: '/habits', icon: Flame, label: t('nav.habits'), description: t('navigation.customize.descriptions.habits') },
+    { id: 'tasks', path: '/tasks', icon: ListChecks, label: t('nav.tasks'), description: t('navigation.customize.descriptions.tasks') },
+    { id: 'matrix', path: '/matrix', icon: Grid3X3, label: t('nav.matrix'), description: t('navigation.customize.descriptions.matrix') },
+    { id: 'focus', path: '/focus', icon: Brain, label: t('nav.focus'), description: t('navigation.customize.descriptions.focus') },
+    { id: 'calendar', path: '/calendar', icon: Calendar, label: t('nav.calendar'), description: t('navigation.customize.descriptions.calendar') },
+    { id: 'expenses', path: '/expenses', icon: DollarSign, label: t('nav.expenses'), description: t('navigation.customize.descriptions.expenses') },
+    { id: 'subscriptions', path: '/subscriptions', icon: CreditCard, label: t('nav.subscriptions'), description: t('navigation.customize.descriptions.subscriptions') },
+    { id: 'trips', path: '/trips', icon: Plane, label: t('nav.trips'), description: t('navigation.customize.descriptions.trips') },
+    { id: 'challenges', path: '/challenges', icon: Trophy, label: t('nav.challenges'), description: t('navigation.customize.descriptions.challenges') },
   ];
 
   useEffect(() => {
@@ -78,13 +78,13 @@ const NavigationCustomizer = ({ onSave }: NavigationCustomizerProps) => {
   const toggleItem = (itemId: NavItemId, checked: boolean) => {
     if (checked) {
       if (selectedItems.length >= 5) {
-        toast.error('Maximum 5 items allowed in navigation');
+        toast.error(t('navigation.customize.maxItemsError'));
         return;
       }
       setSelectedItems([...selectedItems, itemId]);
     } else {
       if (selectedItems.length <= 1) {
-        toast.error('At least 1 item required in navigation');
+        toast.error(t('navigation.customize.minItemsError'));
         return;
       }
       setSelectedItems(selectedItems.filter(id => id !== itemId));
@@ -105,10 +105,10 @@ const NavigationCustomizer = ({ onSave }: NavigationCustomizerProps) => {
       });
 
     if (error) {
-      toast.error('Failed to save preferences');
+      toast.error(t('navigation.customize.saveFailed'));
       console.error(error);
     } else {
-      toast.success('Navigation preferences saved!');
+      toast.success(t('navigation.customize.saveSuccess'));
       setOpen(false);
       onSave?.();
     }
@@ -117,7 +117,7 @@ const NavigationCustomizer = ({ onSave }: NavigationCustomizerProps) => {
 
   const resetToDefault = () => {
     setSelectedItems(['dashboard', 'tasks', 'focus', 'expenses', 'challenges']);
-    toast.success('Reset to default navigation');
+    toast.success(t('navigation.customize.resetSuccess'));
   };
 
   return (
@@ -125,19 +125,19 @@ const NavigationCustomizer = ({ onSave }: NavigationCustomizerProps) => {
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full">
           <Settings className="w-4 h-4 mr-2" />
-          Customize Navigation
+          {t('navigation.customize.title')}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Customize Your Navigation</DialogTitle>
+          <DialogTitle>{t('navigation.customize.dialogTitle')}</DialogTitle>
           <DialogDescription>
-            Choose which features appear in your bottom navigation bar. Select up to 5 items for quick access.
+            {t('navigation.customize.description')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-2">
-          <p className="text-sm font-medium">Select Navigation Items (Max 5)</p>
+          <p className="text-sm font-medium">{t('navigation.customize.selectLabel')}</p>
           {allNavItems.map(item => {
             const Icon = item.icon;
             const isSelected = selectedItems.includes(item.id);
@@ -165,11 +165,11 @@ const NavigationCustomizer = ({ onSave }: NavigationCustomizerProps) => {
         </div>
 
         <div className="mt-4">
-          <p className="text-sm font-medium mb-2">Preview</p>
+          <p className="text-sm font-medium mb-2">{t('navigation.customize.preview')}</p>
           <div className="flex justify-around items-center h-16 bg-muted rounded-lg px-2">
             <div className="flex flex-col items-center gap-0.5">
               <Settings className="w-4 h-4" />
-              <span className="text-[10px]">Menu</span>
+              <span className="text-[10px]">{t('navigation.customize.menu')}</span>
             </div>
             {selectedItems.slice(0, 5).map(itemId => {
               const item = allNavItems.find(i => i.id === itemId);
@@ -187,10 +187,10 @@ const NavigationCustomizer = ({ onSave }: NavigationCustomizerProps) => {
 
         <DialogFooter>
           <Button variant="outline" onClick={resetToDefault}>
-            Reset to Default
+            {t('navigation.customize.resetToDefault')}
           </Button>
           <Button onClick={savePreferences} disabled={saving}>
-            {saving ? 'Saving...' : 'Save Changes'}
+            {saving ? t('navigation.customize.saving') : t('navigation.customize.save')}
           </Button>
         </DialogFooter>
       </DialogContent>

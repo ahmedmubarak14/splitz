@@ -56,21 +56,21 @@ const QuickAddTask = ({ open, onOpenChange, defaultProject = 'Inbox' }: QuickAdd
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['focus-tasks'] });
-      toast.success('Task added successfully');
+      toast.success(t('tasks.quickAdd.success'));
       setTitle('');
       setDescription('');
       onOpenChange(false);
     },
     onError: (error: any) => {
       console.error('Failed to add task:', error);
-      toast.error(error.message || 'Failed to add task');
+      toast.error(error.message || t('tasks.quickAdd.failed'));
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      toast.error('Please enter a task title');
+      toast.error(t('tasks.quickAdd.titleRequired'));
       return;
     }
     addTask.mutate();
@@ -80,43 +80,43 @@ const QuickAddTask = ({ open, onOpenChange, defaultProject = 'Inbox' }: QuickAdd
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Task</DialogTitle>
+          <DialogTitle>{t('tasks.quickAdd.title')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="title">Task Title *</Label>
+            <Label htmlFor="title">{t('tasks.quickAdd.taskTitleRequired')}</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter task title..."
+              placeholder={t('tasks.quickAdd.taskTitlePlaceholder')}
               autoFocus
             />
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('tasks.quickAdd.description')}</Label>
             <Textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Add details..."
+              placeholder={t('tasks.quickAdd.descriptionPlaceholder')}
               rows={3}
             />
           </div>
 
           <div>
-            <Label htmlFor="project">Project</Label>
+            <Label htmlFor="project">{t('tasks.quickAdd.project')}</Label>
             <Select value={project} onValueChange={setProject}>
               <SelectTrigger id="project">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Inbox">📋 Inbox</SelectItem>
-                <SelectItem value="Today">📅 Today</SelectItem>
-                <SelectItem value="Work">💼 Work</SelectItem>
-                <SelectItem value="Personal">👤 Personal</SelectItem>
+                <SelectItem value="Inbox">{t('tasks.quickAdd.projects.inbox')}</SelectItem>
+                <SelectItem value="Today">{t('tasks.quickAdd.projects.today')}</SelectItem>
+                <SelectItem value="Work">{t('tasks.quickAdd.projects.work')}</SelectItem>
+                <SelectItem value="Personal">{t('tasks.quickAdd.projects.personal')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -127,10 +127,10 @@ const QuickAddTask = ({ open, onOpenChange, defaultProject = 'Inbox' }: QuickAdd
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t('tasks.quickAdd.cancel')}
             </Button>
             <Button type="submit" disabled={addTask.isPending}>
-              {addTask.isPending ? 'Adding...' : 'Add Task'}
+              {addTask.isPending ? t('tasks.quickAdd.adding') : t('tasks.quickAdd.add')}
             </Button>
           </div>
         </form>
