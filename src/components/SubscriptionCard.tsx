@@ -14,9 +14,10 @@ interface SubscriptionCardProps {
   subscription: any;
   onEdit?: () => void;
   onManageContributors?: () => void;
+  onViewDetails?: () => void;
 }
 
-export const SubscriptionCard = ({ subscription, onEdit, onManageContributors }: SubscriptionCardProps) => {
+export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, onViewDetails }: SubscriptionCardProps) => {
   const { t, i18n } = useTranslation();
   const isRTL = useIsRTL();
   const queryClient = useQueryClient();
@@ -114,9 +115,28 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors }:
 
         {subscription.is_shared && subscription.subscription_contributors && (
           <div className="pt-2 border-t">
-            <p className="text-xs text-muted-foreground mb-1">
-              {subscription.subscription_contributors.length} {t('subscriptions.contributors')}
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">
+                {subscription.subscription_contributors.length} {t('subscriptions.contributors')}
+              </p>
+              <div className="flex gap-1">
+                {subscription.subscription_contributors.slice(0, 3).map((c: any) => (
+                  <Badge key={c.id} variant={c.is_settled ? "default" : "secondary"} className="text-xs">
+                    {c.is_settled ? '✓' : '○'}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            {onViewDetails && (
+              <Button 
+                variant="link" 
+                size="sm" 
+                className="h-auto p-0 text-xs mt-1"
+                onClick={onViewDetails}
+              >
+                {t('subscriptions.viewDetails')}
+              </Button>
+            )}
           </div>
         )}
 

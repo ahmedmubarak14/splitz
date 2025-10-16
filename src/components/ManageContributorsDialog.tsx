@@ -62,22 +62,35 @@ const ManageContributorsDialog = ({
   // Add contributor
   const addContributor = useMutation({
     mutationFn: async () => {
-      // Find user by email
-      const { data: profiles, error: profileError } = await supabase
+      // Find user by email (using the email column we just added)
+      const { data: user, error: userError } = await supabase
         .from('profiles')
         .select('id')
-        .ilike('email', searchEmail)
+        .eq('email', searchEmail.trim().toLowerCase())
         .single();
 
-      if (profileError || !profiles) {
-        throw new Error('User not found');
+      if (userError || !user) {
+        throw new Error('User not found with this email');
       }
 
+      // Check if already a contributor
+      const { data: existing } = await supabase
+        .from('subscription_contributors')
+        .select('id')
+        .eq('subscription_id', subscriptionId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (existing) {
+        throw new Error('User is already a contributor');
+      }
+
+      // Add contributor
       const { error } = await supabase
         .from('subscription_contributors')
         .insert({
           subscription_id: subscriptionId,
-          user_id: profiles.id,
+          user_id: user.id,
           contribution_amount: parseFloat(contributionAmount),
         });
 

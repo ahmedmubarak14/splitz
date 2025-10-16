@@ -740,6 +740,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          email: string | null
           full_name: string | null
           id: string
           onboarding_completed: boolean
@@ -749,6 +750,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id: string
           onboarding_completed?: boolean
@@ -758,6 +760,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
           onboarding_completed?: boolean
@@ -834,7 +837,9 @@ export type Database = {
           created_at: string
           id: string
           is_settled: boolean | null
+          last_reminder_sent: string | null
           paid_at: string | null
+          split_value: number | null
           subscription_id: string
           user_id: string
         }
@@ -843,7 +848,9 @@ export type Database = {
           created_at?: string
           id?: string
           is_settled?: boolean | null
+          last_reminder_sent?: string | null
           paid_at?: string | null
+          split_value?: number | null
           subscription_id: string
           user_id: string
         }
@@ -852,7 +859,9 @@ export type Database = {
           created_at?: string
           id?: string
           is_settled?: boolean | null
+          last_reminder_sent?: string | null
           paid_at?: string | null
+          split_value?: number | null
           subscription_id?: string
           user_id?: string
         }
@@ -949,6 +958,9 @@ export type Database = {
           notifications_enabled: boolean | null
           paused_at: string | null
           reminder_days_before: number | null
+          split_type:
+            | Database["public"]["Enums"]["subscription_split_type"]
+            | null
           status: Database["public"]["Enums"]["subscription_status"] | null
           updated_at: string
           user_id: string
@@ -971,6 +983,9 @@ export type Database = {
           notifications_enabled?: boolean | null
           paused_at?: string | null
           reminder_days_before?: number | null
+          split_type?:
+            | Database["public"]["Enums"]["subscription_split_type"]
+            | null
           status?: Database["public"]["Enums"]["subscription_status"] | null
           updated_at?: string
           user_id: string
@@ -993,6 +1008,9 @@ export type Database = {
           notifications_enabled?: boolean | null
           paused_at?: string | null
           reminder_days_before?: number | null
+          split_type?:
+            | Database["public"]["Enums"]["subscription_split_type"]
+            | null
           status?: Database["public"]["Enums"]["subscription_status"] | null
           updated_at?: string
           user_id?: string
@@ -1288,6 +1306,10 @@ export type Database = {
         Args: { _group_id: string }
         Returns: undefined
       }
+      recalc_subscription_split: {
+        Args: { _subscription_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       challenge_category:
@@ -1324,6 +1346,7 @@ export type Database = {
         | "urgent_unimportant"
         | "not_urgent_unimportant"
       split_type: "equal" | "percentage" | "custom" | "shares"
+      subscription_split_type: "equal" | "percentage" | "custom" | "shares"
       subscription_status: "active" | "canceled" | "paused" | "archived"
     }
     CompositeTypes: {
@@ -1490,6 +1513,7 @@ export const Constants = {
         "not_urgent_unimportant",
       ],
       split_type: ["equal", "percentage", "custom", "shares"],
+      subscription_split_type: ["equal", "percentage", "custom", "shares"],
       subscription_status: ["active", "canceled", "paused", "archived"],
     },
   },
