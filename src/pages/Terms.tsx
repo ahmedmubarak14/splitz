@@ -133,11 +133,18 @@ const Terms = () => {
 
             <section className="mb-6">
               <h2 className="text-xl font-semibold mb-3">Intellectual Property Rights</h2>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground mb-3">
                 The Service and its original content (excluding user-generated content), features, and functionality 
                 are and will remain the exclusive property of Splitz and its licensors. The Service is protected by 
                 copyright, trademark, and other laws. Our trademarks and trade dress may not be used without our 
                 prior written consent.
+              </p>
+              <p className="text-muted-foreground">
+                For detailed copyright information, please visit our{' '}
+                <a href="/copyright" className="text-primary hover:underline font-medium">
+                  Copyright Information Page
+                </a>
+                .
               </p>
             </section>
 
@@ -239,9 +246,22 @@ const Terms = () => {
               <p className="text-muted-foreground mb-3">
                 If you have any questions, concerns, or complaints about these Terms of Service, please contact us:
               </p>
-              <div className="bg-muted p-4 rounded-lg">
+              <div className="bg-muted p-4 rounded-lg space-y-2">
                 <p className="font-medium">Email: legal@splitz.live</p>
-                <p className="text-sm text-muted-foreground mt-2">
+                <p className="text-sm">Terms of Service URL: https://splitz.live/terms</p>
+                <p className="text-sm">
+                  Privacy Policy:{' '}
+                  <a href="/privacy" className="text-primary hover:underline">
+                    https://splitz.live/privacy
+                  </a>
+                </p>
+                <p className="text-sm">
+                  Copyright Information:{' '}
+                  <a href="/copyright" className="text-primary hover:underline">
+                    https://splitz.live/copyright
+                  </a>
+                </p>
+                <p className="text-sm text-muted-foreground mt-3">
                   We will respond to your inquiry within 48 hours during business days.
                 </p>
               </div>

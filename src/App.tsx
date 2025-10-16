@@ -32,6 +32,7 @@ const Profile = lazy(() => import("./pages/Profile"));
 const DevTools = lazy(() => import("./pages/DevTools"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
+const Copyright = lazy(() => import("./pages/Copyright"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const JoinInvite = lazy(() => import("./pages/JoinInvite"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -114,6 +115,7 @@ const AppContent = () => {
             <Route path="/dev-tools" element={<DevTools />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/copyright" element={<Copyright />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
@@ -181,6 +183,7 @@ const AppContent = () => {
               <Route path="/dev-tools" element={<DevTools />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
+              <Route path="/copyright" element={<Copyright />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
