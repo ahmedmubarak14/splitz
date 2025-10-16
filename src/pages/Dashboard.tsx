@@ -30,6 +30,12 @@ import { HabitStatistics } from '@/components/HabitStatistics';
 import { ChallengeProgressChart } from '@/components/ChallengeProgressChart';
 import { ExpenseAnalytics } from '@/components/ExpenseAnalytics';
 import Navigation from '@/components/Navigation';
+import { TodaysTasksWidget } from '@/components/dashboard/TodaysTasksWidget';
+import { UpcomingSubscriptionsWidget } from '@/components/dashboard/UpcomingSubscriptionsWidget';
+import { PendingExpensesWidget } from '@/components/dashboard/PendingExpensesWidget';
+import { HabitsDueTodayWidget } from '@/components/dashboard/HabitsDueTodayWidget';
+import { QuickActionsHub } from '@/components/dashboard/QuickActionsHub';
+import { addDays } from 'date-fns';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -47,6 +53,11 @@ export default function Dashboard() {
     focusMinutes: 0,
   });
   const [recentExpenseGroups, setRecentExpenseGroups] = useState<any[]>([]);
+  const [todaysTasks, setTodaysTasks] = useState<any[]>([]);
+  const [upcomingSubscriptions, setUpcomingSubscriptions] = useState<any[]>([]);
+  const [netBalances, setNetBalances] = useState<any[]>([]);
+  const [habitsData, setHabitsData] = useState<any[]>([]);
+  const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
     checkAuth();
@@ -81,6 +92,8 @@ export default function Dashboard() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      
+      setUserId(user.id);
 
       const { data: habits } = await supabase
         .from('habits')
@@ -192,6 +205,71 @@ export default function Dashboard() {
       const totalOwed = netBalancesOwed?.reduce((sum, balance) => 
         sum + parseFloat(String(balance.amount || 0)), 0) || 0;
 
+      // Fetch today's tasks (due today or overdue)
+      const today = new Date().toISOString().split('T')[0];
+      const { data: tasks } = await supabase
+        .from('focus_tasks')
+        .select('*')
+        .eq('user_id', user.id)
+        .or(`due_date.lte.${today},due_date.is.null`)
+        .eq('is_completed', false)
+        .order('due_date', { ascending: true });
+
+      // Fetch subscriptions renewing in next 7 days
+      const sevenDaysFromNow = addDays(new Date(), 7).toISOString().split('T')[0];
+      const { data: subscriptions } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .gte('next_renewal_date', today)
+        .lte('next_renewal_date', sevenDaysFromNow)
+        .order('next_renewal_date', { ascending: true });
+
+      // Fetch net balances with user profiles
+      const { data: allNetBalances } = await supabase
+        .from('net_balances')
+        .select('*')
+        .or(`from_user_id.eq.${user.id},to_user_id.eq.${user.id}`);
+
+      // Fetch profiles for net balances
+      const balancesWithNames = await Promise.all((allNetBalances || []).map(async (balance) => {
+        const { data: fromUser } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', balance.from_user_id)
+          .single();
+        
+        const { data: toUser } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', balance.to_user_id)
+          .single();
+
+        return {
+          ...balance,
+          from_user_name: fromUser?.full_name || 'Unknown',
+          to_user_name: toUser?.full_name || 'Unknown'
+        };
+      }));
+
+      // Check today's habit check-ins
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      
+      const { data: todayCheckIns } = await supabase
+        .from('habit_check_ins')
+        .select('habit_id')
+        .eq('user_id', user.id)
+        .gte('checked_in_at', todayStart.toISOString());
+
+      const checkedInHabitIds = new Set(todayCheckIns?.map(ci => ci.habit_id) || []);
+      
+      const habitsWithCheckIns = habits?.map(habit => ({
+        ...habit,
+        hasCheckedInToday: checkedInHabitIds.has(habit.id)
+      })) || [];
+
       setStats({
         activeHabits: habits?.length || 0,
         longestStreak,
@@ -203,6 +281,10 @@ export default function Dashboard() {
         focusMinutes: totalFocusMinutes,
       });
       setRecentExpenseGroups(groupsWithBalances);
+      setTodaysTasks(tasks || []);
+      setUpcomingSubscriptions(subscriptions || []);
+      setNetBalances(balancesWithNames);
+      setHabitsData(habitsWithCheckIns);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       toast.error(t('errors.failedToLoad'));
@@ -274,6 +356,17 @@ export default function Dashboard() {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
+            {/* Widget Grid - 2 Column Layout */}
+            <div className={`grid ${responsiveGrid.twoColumn} gap-6`}>
+              <TodaysTasksWidget tasks={todaysTasks} onRefresh={fetchDashboardData} />
+              <HabitsDueTodayWidget habits={habitsData} onRefresh={fetchDashboardData} />
+              <UpcomingSubscriptionsWidget subscriptions={upcomingSubscriptions} />
+              <PendingExpensesWidget balances={netBalances} userId={userId} />
+            </div>
+
+            {/* Quick Actions Hub */}
+            <QuickActionsHub focusMinutesThisWeek={stats.focusMinutes} />
+
             {/* Stats Grid */}
             <div className={`grid ${responsiveGrid.stats} ${responsiveSpacing.gridGap}`}>
               {statCards.map((stat, idx) => (
@@ -295,103 +388,6 @@ export default function Dashboard() {
                 </Card>
               ))}
             </div>
-
-            {/* Two Column Layout */}
-            <div className={`grid ${responsiveGrid.twoColumn} gap-6`}>
-              <Card className="bg-background border border-border/40">
-                <CardContent className="p-6">
-                  <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <AlertTriangle className="h-5 w-5 text-destructive" />
-                    <h3 className={`text-base font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{t('dashboard.actionRequired')}</h3>
-                  </div>
-                  {stats.pendingExpenses > 0 ? (
-                    <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
-                      <div className={`flex items-center ${isRTL ? 'flex-row-reverse' : ''} justify-between`}>
-                        <div className={isRTL ? 'text-right' : 'text-left'}>
-                          <p className="text-sm font-medium text-foreground">{t('dashboard.pendingExpenses')}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5">{stats.pendingExpenses} {t('dashboard.expensesAwaiting')}</p>
-                        </div>
-                        <Button variant="ghost" size="sm" onClick={() => navigate('/expenses')} className="text-xs">{t('dashboard.review')}</Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-muted/30 border border-border/30 rounded-lg p-4">
-                      <div className={isRTL ? 'text-right' : 'text-left'}>
-                        <p className="text-sm font-medium text-foreground">{t('dashboard.allClear')}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{t('dashboard.noPendingActions')}</p>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-              <Card className="bg-background border border-border/40">
-                <CardContent className="p-6">
-                  <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <CheckCircle className="h-5 w-5 text-success" />
-                    <h3 className={`text-base font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{t('dashboard.quickActions')}</h3>
-                  </div>
-                  <div className="space-y-2">
-                    <Button onClick={() => navigate('/habits')} variant="default" className={`w-full h-auto py-3 ${isRTL ? 'justify-end' : 'justify-start'}`}>
-                      <Plus className={`h-4 w-4 ${isRTL ? 'ml-3' : 'mr-3'}`} />
-                      <div className={isRTL ? 'text-right' : 'text-left'}>
-                        <div className="text-sm font-medium">{t('dashboard.createNewHabit')}</div>
-                        <div className="text-xs opacity-90">{t('dashboard.startNewTracker')}</div>
-                      </div>
-                    </Button>
-                    <button onClick={() => navigate('/focus')} className={`w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                      <Brain className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <div className="text-sm font-medium">{t('dashboard.startFocusSession')}</div>
-                        <div className="text-xs text-muted-foreground">{t('dashboard.startFocusSessionDesc')}</div>
-                      </div>
-                    </button>
-                    <button onClick={() => navigate('/challenges')} className={`w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                      <Eye className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <div className="text-sm font-medium">{t('dashboard.browseChallenges')}</div>
-                        <div className="text-xs text-muted-foreground">{t('dashboard.findActiveChallenges')}</div>
-                      </div>
-                    </button>
-                    <button onClick={() => navigate('/expenses')} className={`w-full flex items-center gap-3 p-3 rounded-lg bg-background border border-border/40 hover:bg-muted/50 transition-colors ${isRTL ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                      <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <div className="text-sm font-medium">{t('dashboard.manageExpenses')}</div>
-                        <div className="text-xs text-muted-foreground">{t('dashboard.trackAndSplit')}</div>
-                      </div>
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-            {recentExpenseGroups.length > 0 && (
-              <Card className="bg-background border border-border/40">
-                <CardHeader>
-                  <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
-                    <CardTitle className="text-lg">{t('dashboard.recentExpenseGroups')}</CardTitle>
-                    <Button variant="ghost" size="sm" onClick={() => navigate('/expenses')} className="text-xs">{t('dashboard.viewAll')}</Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {recentExpenseGroups.map((group) => (
-                    <div key={group.id} onClick={() => navigate('/expenses')} className={`p-4 rounded-lg border border-border/40 bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer ${isRTL ? 'text-right' : 'text-left'}`}>
-                      <div className={`flex items-center justify-between mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                        <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                          <Users className="h-4 w-4 text-primary" />
-                          <h4 className="font-semibold">{group.name}</h4>
-                        </div>
-                        <ArrowRight className={`h-4 w-4 text-muted-foreground ${isRTL ? 'rotate-180' : ''}`} />
-                      </div>
-                      <div className={`flex items-center justify-between text-sm ${isRTL ? 'flex-row-reverse' : ''}`}>
-                        <span className="text-muted-foreground">{group.memberCount} {group.memberCount === 1 ? t('expenses.member') : t('expenses.members')}</span>
-                        <span className={`font-semibold ${group.userBalance > 0 ? 'text-success' : group.userBalance < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                          {group.userBalance > 0 ? '+' : ''}{formatCurrency(group.userBalance, 'SAR', i18n.language)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            )}
           </TabsContent>
 
           {/* Habits Analytics Tab */}
