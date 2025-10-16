@@ -83,7 +83,7 @@ export function UpcomingSubscriptionsWidget({ subscriptions }: UpcomingSubscript
             {t('dashboard.noUpcomingRenewals') || "No renewals in the next 7 days"}
           </p>
           <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-            All your subscriptions are up to date
+            {t('subscriptions.allUpToDate') || 'All your subscriptions are up to date'}
           </p>
           <Button 
             size="sm" 
