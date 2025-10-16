@@ -85,6 +85,21 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     console.log("Sending invite email to:", recipientEmail);
+    console.log("Resource type:", resourceType, "| Resource name:", resourceName);
+    console.log("Inviter:", inviterName);
+
+    // Plain text version for better deliverability
+    const emailText = `
+You're Invited to Splitz!
+
+${inviterName} has invited you to join their ${resourceType}: ${resourceName}
+
+Click here to accept: ${inviteLink}
+
+This invitation will expire in 7 days.
+
+If you didn't expect this invitation, you can safely ignore this email.
+    `.trim();
 
     const emailHtml = `
       <!DOCTYPE html>
@@ -168,8 +183,11 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send using Resend REST API
     if (!resendApiKey) {
+      console.error("RESEND_API_KEY not configured");
       throw new Error("Missing RESEND_API_KEY secret");
     }
+
+    console.log("Calling Resend API...");
 
     const apiRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -178,20 +196,34 @@ const handler = async (req: Request): Promise<Response> => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Splitz <noreply@splitz.live>',
+        from: 'Splitz <onboarding@resend.dev>', // Using Resend's test domain (works without verification)
         to: [recipientEmail],
         subject: `${inviterName} invited you to join "${resourceName}" on Splitz`,
         html: emailHtml,
+        text: emailText,
+        tags: [
+          { name: 'category', value: 'invitation' },
+          { name: 'resource_type', value: resourceType }
+        ]
       })
     });
 
     if (!apiRes.ok) {
       const errText = await apiRes.text();
       console.error('Resend API error:', apiRes.status, errText);
-      throw new Error(`Resend API error ${apiRes.status}`);
+      console.error('Response headers:', Object.fromEntries(apiRes.headers.entries()));
+      
+      // Parse Resend error for better messages
+      try {
+        const errJson = JSON.parse(errText);
+        throw new Error(`Resend: ${errJson.message || errText}`);
+      } catch {
+        throw new Error(`Resend API error ${apiRes.status}: ${errText}`);
+      }
     }
 
     const data = await apiRes.json();
+    console.log('Email sent successfully:', data.id);
 
     return new Response(
       JSON.stringify({ success: true, data }),

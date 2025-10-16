@@ -106,24 +106,29 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
         await generateInviteLink();
       }
 
-      const SEND_INVITE_ENABLED = false;
-      
-      if (SEND_INVITE_ENABLED) {
-        const { error } = await supabase.functions.invoke('send-invite', {
-          body: {
-            recipientEmail,
-            inviteLink: inviteLink || '',
-            resourceName,
-            resourceType,
-            inviterName: inviterName || 'Someone',
-          },
-        });
+      const { data, error } = await supabase.functions.invoke('send-invite', {
+        body: {
+          recipientEmail,
+          inviteLink: inviteLink || '',
+          resourceName,
+          resourceType,
+          inviterName: inviterName || 'Someone',
+        },
+      });
 
-        if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
         
-        toast.success(`Invite sent to ${recipientEmail}`);
-        setRecipientEmail('');
-      } else {
+        // Handle specific errors
+        if (error.message?.includes('domain')) {
+          toast.error('Email domain not verified. Opening email client as fallback...');
+        } else if (error.message?.includes('RESEND_API_KEY')) {
+          toast.error('Email service not configured. Opening email client as fallback...');
+        } else {
+          toast.error(`Failed to send email. Opening email client as fallback...`);
+        }
+        
+        // Fallback to mailto
         const link = inviteLink || `${window.location.origin}/join-invite?code=pending`;
         await navigator.clipboard.writeText(link);
         
@@ -132,13 +137,29 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
         
         window.location.href = `mailto:${recipientEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
         
-        toast.success('Opening your email client... Link copied to clipboard!');
+        toast.success('Link copied to clipboard!');
         setRecipientEmail('');
+        return;
       }
-    } catch (error) {
+
+      toast.success(`✉️ Invite sent to ${recipientEmail}`);
+      setRecipientEmail('');
+    } catch (error: any) {
       console.error('Error sending invite:', error);
       Sentry.captureException(error);
-      toast.error('Failed to send invite email');
+      
+      // Fallback to mailto
+      toast.info('Opening email client as fallback...');
+      const link = inviteLink || `${window.location.origin}/join-invite?code=pending`;
+      await navigator.clipboard.writeText(link);
+      
+      const emailSubject = `You're invited to join ${resourceName}!`;
+      const emailBody = `${inviterName || 'Someone'} has invited you to join ${resourceName}.\n\nClick here to accept: ${link}`;
+      
+      window.location.href = `mailto:${recipientEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+      
+      toast.success('Link copied to clipboard!');
+      setRecipientEmail('');
     } finally {
       setSendingEmail(false);
     }
