@@ -1452,6 +1452,7 @@ const resources = {
         genericError: 'حدث خطأ',
         failedToSignOut: 'فشل تسجيل الخروج',
         failedToLoad: 'فشل تحميل بيانات لوحة التحكم',
+        failedToUpdate: 'فشل التحديث',
       },
       success: {
         welcomeBack: 'مرحباً بعودتك! 🎉',
