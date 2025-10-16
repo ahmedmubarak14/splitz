@@ -839,11 +839,13 @@ export type Database = {
           approved_at: string | null
           contribution_amount: number
           created_at: string
+          daily_reminder_count: number | null
           id: string
           is_settled: boolean | null
           last_reminder_sent: string | null
           paid_at: string | null
           payment_submitted: boolean
+          reminder_count_reset_date: string | null
           split_value: number | null
           submission_at: string | null
           subscription_id: string
@@ -853,11 +855,13 @@ export type Database = {
           approved_at?: string | null
           contribution_amount: number
           created_at?: string
+          daily_reminder_count?: number | null
           id?: string
           is_settled?: boolean | null
           last_reminder_sent?: string | null
           paid_at?: string | null
           payment_submitted?: boolean
+          reminder_count_reset_date?: string | null
           split_value?: number | null
           submission_at?: string | null
           subscription_id: string
@@ -867,11 +871,13 @@ export type Database = {
           approved_at?: string | null
           contribution_amount?: number
           created_at?: string
+          daily_reminder_count?: number | null
           id?: string
           is_settled?: boolean | null
           last_reminder_sent?: string | null
           paid_at?: string | null
           payment_submitted?: boolean
+          reminder_count_reset_date?: string | null
           split_value?: number | null
           submission_at?: string | null
           subscription_id?: string

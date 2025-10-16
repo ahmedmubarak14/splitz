@@ -310,10 +310,30 @@ const ManageContributorsDialog = ({
   // Send reminder mutation - creates in-app notification
   const sendReminder = useMutation({
     mutationFn: async (contributorId: string) => {
-      const contributor = contributors.find(c => c.id === contributorId);
+      const contributor = contributors?.find(c => c.id === contributorId);
       if (!contributor) throw new Error("Contributor not found");
 
-      // Create in-app notification using the database function
+      // Check if we need to reset the daily count
+      const today = new Date().toISOString().split('T')[0];
+      const resetDate = contributor.reminder_count_reset_date 
+        ? new Date(contributor.reminder_count_reset_date).toISOString().split('T')[0]
+        : null;
+      
+      let newCount = (contributor.daily_reminder_count || 0) + 1;
+      
+      // Reset count if it's a new day
+      if (resetDate !== today) {
+        newCount = 1;
+      }
+      
+      // Check if limit exceeded
+      if (newCount > 5 && resetDate === today) {
+        throw new Error("Daily reminder limit reached (5 per day)");
+      }
+
+      console.log("Sending reminder to contributor:", contributorId, "Count:", newCount);
+
+      // Create in-app notification
       const { error: notifError } = await supabase.rpc('create_notification', {
         p_user_id: contributor.user_id,
         p_title: t("subscriptions.reminderTitle"),
@@ -322,25 +342,45 @@ const ManageContributorsDialog = ({
         p_resource_id: subscriptionId
       });
 
-      if (notifError) throw notifError;
+      if (notifError) {
+        console.error("Error creating notification:", notifError);
+        throw notifError;
+      }
 
-      // Update last reminder sent timestamp
+      console.log("Notification created successfully");
+
+      // Update with new count and reset date
       const { error } = await supabase
         .from("subscription_contributors")
         .update({
           last_reminder_sent: new Date().toISOString(),
+          daily_reminder_count: newCount,
+          reminder_count_reset_date: today,
         })
         .eq("id", contributorId);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error updating reminder data:", error);
+        throw error;
+      }
+
+      console.log("Updated reminder data successfully");
+      
+      return { remainingToday: 5 - newCount };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["subscription-contributors", subscriptionId] });
-      toast.success(t("subscriptions.reminderSent"));
+      toast.success(
+        `${t("subscriptions.reminderSent")} (${data.remainingToday} ${t("subscriptions.remainingToday")})`
+      );
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Failed to send reminder:", error);
-      toast.error(t("subscriptions.reminderFailed"));
+      if (error.message.includes("Daily reminder limit")) {
+        toast.error(t("subscriptions.reminderLimitReached"));
+      } else {
+        toast.error(t("subscriptions.reminderFailed"));
+      }
     },
   });
 
@@ -451,8 +491,18 @@ const ManageContributorsDialog = ({
       }
 
       if (!contributor.is_settled) {
-        const canSendReminder = !contributor.last_reminder_sent ||
-          new Date(contributor.last_reminder_sent).getTime() < Date.now() - 24 * 60 * 60 * 1000;
+        // Calculate daily reminder count
+        const today = new Date().toISOString().split('T')[0];
+        const resetDate = contributor.reminder_count_reset_date 
+          ? new Date(contributor.reminder_count_reset_date).toISOString().split('T')[0]
+          : null;
+        
+        // Reset count if new day
+        const currentCount = resetDate === today ? (contributor.daily_reminder_count || 0) : 0;
+        
+        // Can send if under 5 reminders today
+        const canSendReminder = currentCount < 5;
+        const remainingReminders = 5 - currentCount;
 
         return (
           <div className="flex gap-2">
@@ -471,10 +521,13 @@ const ManageContributorsDialog = ({
               variant="outline"
               onClick={() => sendReminder.mutate(contributor.id)}
               disabled={!canSendReminder || sendReminder.isPending}
+              title={canSendReminder 
+                ? `${remainingReminders} reminders remaining today` 
+                : "Daily reminder limit reached (5/5)"}
             >
               {sendReminder.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               <Bell className="h-4 w-4 mr-2" />
-              {t("subscriptions.sendReminder")}
+              {t("subscriptions.sendReminder")} ({currentCount}/5)
             </Button>
           </div>
         );

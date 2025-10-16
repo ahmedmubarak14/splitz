@@ -181,21 +181,64 @@ export const SubscriptionDetailsDialog = ({
   // Send reminder
   const sendReminder = useMutation({
     mutationFn: async (contributorId: string) => {
-      const { error } = await supabase.functions.invoke('send-subscription-reminder', {
-        body: { contributorId }
-      });
-      if (error) throw error;
+      const contributor = contributors?.find(c => c.id === contributorId);
+      if (!contributor) throw new Error("Contributor not found");
 
-      // Update last_reminder_sent
-      await supabase
-        .from('subscription_contributors')
-        .update({ last_reminder_sent: new Date().toISOString() })
-        .eq('id', contributorId);
+      // Check if we need to reset the daily count
+      const today = new Date().toISOString().split('T')[0];
+      const resetDate = contributor.reminder_count_reset_date 
+        ? new Date(contributor.reminder_count_reset_date).toISOString().split('T')[0]
+        : null;
+      
+      let newCount = (contributor.daily_reminder_count || 0) + 1;
+      
+      // Reset count if it's a new day
+      if (resetDate !== today) {
+        newCount = 1;
+      }
+      
+      // Check if limit exceeded
+      if (newCount > 5 && resetDate === today) {
+        throw new Error("Daily reminder limit reached (5 per day)");
+      }
+
+      // Create notification
+      const { error: notifError } = await supabase.rpc('create_notification', {
+        p_user_id: contributor.user_id,
+        p_title: "Payment Reminder",
+        p_message: `Payment reminder for "${subscriptionName}" - ${subscription?.currency} ${contributor.contribution_amount}`,
+        p_type: 'subscription',
+        p_resource_id: subscriptionId
+      });
+
+      if (notifError) throw notifError;
+
+      // Update with new count and reset date
+      const { error } = await supabase
+        .from("subscription_contributors")
+        .update({
+          last_reminder_sent: new Date().toISOString(),
+          daily_reminder_count: newCount,
+          reminder_count_reset_date: today,
+        })
+        .eq("id", contributorId);
+
+      if (error) throw error;
+      
+      return { remainingToday: 5 - newCount };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['subscription-contributors', subscriptionId] });
-      toast.success(t('subscriptions.reminderSent'));
-    }
+      toast.success(`Reminder sent successfully (${data.remainingToday} remaining today)`);
+    },
+    onError: (error: any) => {
+      console.error("Failed to send reminder:", error);
+      if (error.message.includes("Daily reminder limit")) {
+        toast.error("Daily reminder limit reached (5/5). Try again tomorrow.");
+      } else {
+        toast.error("Failed to send reminder");
+      }
+    },
   });
 
   const totalCovered = contributors.reduce((sum, c) => sum + (c.is_settled ? Number(c.contribution_amount) : 0), 0);
@@ -441,17 +484,30 @@ export const SubscriptionDetailsDialog = ({
                         <Check className="h-4 w-4 mr-1" />
                         {t('subscriptions.markAsPaid')}
                       </Button>
-                      {!contributor.payment_submitted && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => sendReminder.mutate(contributor.id)}
-                          disabled={sendReminder.isPending}
-                        >
-                          <Bell className="h-4 w-4 mr-1" />
-                          {t('subscriptions.sendReminder')}
-                        </Button>
-                      )}
+                      {!contributor.payment_submitted && (() => {
+                        const today = new Date().toISOString().split('T')[0];
+                        const resetDate = contributor.reminder_count_reset_date 
+                          ? new Date(contributor.reminder_count_reset_date).toISOString().split('T')[0]
+                          : null;
+                        const currentCount = resetDate === today ? (contributor.daily_reminder_count || 0) : 0;
+                        const canSendReminder = currentCount < 5;
+                        const remainingReminders = 5 - currentCount;
+
+                        return (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => sendReminder.mutate(contributor.id)}
+                            disabled={!canSendReminder || sendReminder.isPending}
+                            title={canSendReminder 
+                              ? `${remainingReminders} reminders remaining today` 
+                              : "Daily reminder limit reached (5/5)"}
+                          >
+                            <Bell className="h-4 w-4 mr-1" />
+                            {t('subscriptions.sendReminder')} ({currentCount}/5)
+                          </Button>
+                        );
+                      })()}
                     </>
                   )}
                 </div>
