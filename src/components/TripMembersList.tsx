@@ -20,19 +20,37 @@ export const TripMembersList = ({ tripId }: TripMembersListProps) => {
   const { data: members, isLoading } = useQuery({
     queryKey: ["trip-members", tripId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First fetch trip members
+      const { data: memberData, error: memberError } = await supabase
         .from("trip_members")
-        .select(`
-          *,
-          profiles:user_id(id, full_name, avatar_url)
-        `)
+        .select("*")
         .eq("trip_id", tripId);
 
-      if (error) {
+      if (memberError) {
         toast.error(t('errors.failedToLoad'));
-        throw error;
+        throw memberError;
       }
-      return data;
+
+      if (!memberData || memberData.length === 0) return [];
+
+      // Then fetch profiles for those users
+      const userIds = memberData.map(m => m.user_id);
+      const { data: profiles, error: profileError } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url")
+        .in("id", userIds);
+
+      if (profileError) {
+        console.error("Failed to load profiles:", profileError);
+        // Return members without profile data
+        return memberData;
+      }
+
+      // Merge members with their profiles
+      return memberData.map(member => ({
+        ...member,
+        profiles: profiles?.find(p => p.id === member.user_id) || null
+      }));
     },
   });
 
@@ -77,7 +95,7 @@ export const TripMembersList = ({ tripId }: TripMembersListProps) => {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium">{member.profiles?.full_name || 'Unknown User'}</p>
+                <p className="font-medium">{member.profiles?.full_name || t('trips.unknownUser')}</p>
                 <p className="text-sm text-muted-foreground capitalize">{member.role}</p>
               </div>
             </div>

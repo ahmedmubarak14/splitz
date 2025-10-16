@@ -163,7 +163,7 @@ export function MobileQuickActionsFAB({
       )}
 
       {/* FAB Menu */}
-      <div className="fixed bottom-20 right-4 z-50 flex flex-col items-end gap-3">
+      <div className="fixed right-4 z-50 flex flex-col items-end gap-3" style={{ bottom: 'calc(72px + env(safe-area-inset-bottom, 0px))' }}>
         {/* Mini FABs */}
         {isExpanded && (
           <div className="flex flex-col gap-3 animate-scale-in">

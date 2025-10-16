@@ -83,11 +83,16 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Native Tab Bar Styling */
+/* Native Tab Bar Styling - Lower z-index to allow FAB to be above */
 .native-tab-bar {
-  border-top: 0.5px solid hsl(var(--border));
-  background: hsl(var(--background));
-  padding-bottom: var(--safe-area-bottom, 0);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--background);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  z-index: 30;
 }
 
 /* Pull to Refresh Indicator */

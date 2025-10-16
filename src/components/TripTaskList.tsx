@@ -16,21 +16,42 @@ export const TripTaskList = ({ tripId }: TripTaskListProps) => {
   const { data: tasks, isLoading } = useQuery({
     queryKey: ["trip-tasks", tripId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch trip tasks
+      const { data: taskData, error } = await supabase
         .from("trip_tasks")
-        .select(`
-          *,
-          assigned_user:profiles!trip_tasks_assigned_to_fkey(id, full_name, avatar_url),
-          creator:profiles!trip_tasks_created_by_fkey(id, full_name)
-        `)
+        .select("*")
         .eq("trip_id", tripId)
         .order("created_at", { ascending: false });
 
       if (error) {
-        toast.error(t('trips.failedToLoadTasks'));
+        toast.error(t('errors.failedToLoad'));
         throw error;
       }
-      return data;
+
+      if (!taskData || taskData.length === 0) return [];
+
+      // Collect unique user IDs
+      const userIds = new Set<string>();
+      taskData.forEach(task => {
+        if (task.assigned_to) userIds.add(task.assigned_to);
+        if (task.created_by) userIds.add(task.created_by);
+      });
+
+      // Fetch profiles for those users
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url")
+        .in("id", Array.from(userIds));
+
+      // Create a map of profiles
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+      // Merge tasks with their related profiles
+      return taskData.map(task => ({
+        ...task,
+        assigned_user: task.assigned_to ? profileMap.get(task.assigned_to) : null,
+        creator: task.created_by ? profileMap.get(task.created_by) : null
+      }));
     },
   });
 

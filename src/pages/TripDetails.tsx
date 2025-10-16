@@ -155,7 +155,8 @@ export default function TripDetails() {
         {/* Mobile FAB */}
         {isMobile && (
           <Button
-            className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg"
+            className="fixed right-6 h-14 w-14 rounded-full shadow-lg z-50"
+            style={{ bottom: 'calc(84px + env(safe-area-inset-bottom, 0px))' }}
             size="icon"
             onClick={() => setCreateTaskOpen(true)}
           >

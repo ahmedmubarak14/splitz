@@ -90,7 +90,7 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
       const inviteUrl = `${window.location.origin}/join/${code}`;
 
       // Call edge function to send email
-      const { error } = await supabase.functions.invoke("send-trip-invite", {
+      const { data, error } = await supabase.functions.invoke("send-trip-invite", {
         body: {
           recipientEmail,
           inviteLink: inviteUrl,
@@ -99,12 +99,26 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Return error and code for fallback handling
+        return { error, code };
+      }
+
+      return { code };
     },
-    onSuccess: () => {
-      toast.success(t('trips.inviteSent'));
+    onSuccess: (result) => {
       setEmail("");
       queryClient.invalidateQueries({ queryKey: ["invitations"] });
+      
+      if (result?.error) {
+        // Email failed - show invite link instead
+        setInviteCode(result.code);
+        const inviteUrl = `${window.location.origin}/join/${result.code}`;
+        navigator.clipboard.writeText(inviteUrl);
+        toast.info(t('trips.inviteFallback'));
+      } else {
+        toast.success(t('trips.inviteSent'));
+      }
     },
     onError: () => {
       toast.error(t('errors.sendFailed'));

@@ -72,7 +72,7 @@ export const TripCard = ({ trip }: TripCardProps) => {
 
         {!isCompleted && !isActive && daysUntilStart > 0 && (
           <p className="text-sm text-center text-muted-foreground">
-            {t('trips.startsIn')} {daysUntilStart} {t('common.days')}
+            {t('trips.startsIn')} {daysUntilStart} {daysUntilStart === 1 ? t('common.day') : t('common.days')}
           </p>
         )}
       </CardContent>

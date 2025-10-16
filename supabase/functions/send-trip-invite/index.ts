@@ -98,6 +98,9 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Use RESEND_FROM if available, otherwise default
+    const fromEmail = Deno.env.get('RESEND_FROM') || 'Splitz <onboarding@resend.dev>';
+
     // Send email using Resend API
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -106,7 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Splitz <onboarding@resend.dev>",
+        from: fromEmail,
         to: [cleanEmail],
         subject: `${cleanSenderName} invited you to ${cleanTripName}`,
         html: `
@@ -169,6 +172,21 @@ This invitation expires in 7 days.
     if (!emailResponse.ok) {
       const errorData = await emailResponse.json();
       console.error("Resend API error:", errorData);
+      
+      // Check if it's a domain verification issue
+      if (emailResponse.status === 403 && errorData.message?.includes('domain')) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'RESEND_DOMAIN_NOT_VERIFIED',
+            message: errorData.message 
+          }),
+          {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+      
       throw new Error(`Failed to send email: ${emailResponse.statusText}`);
     }
 
