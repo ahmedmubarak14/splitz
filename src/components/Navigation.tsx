@@ -32,10 +32,10 @@ const Navigation = () => {
   // Dynamic item limiting based on screen size
   const getMaxVisibleItems = () => {
     const width = window.innerWidth;
-    if (width < 360) return 3; // Menu + 2 items
-    if (width < 400) return 4; // Menu + 3 items
-    if (width < 500) return 5; // Menu + 4 items
-    return 5; // Menu + 4 items (max)
+    if (width < 360) return 4; // Menu + 3 items
+    if (width < 400) return 5; // Menu + 4 items
+    if (width < 500) return 6; // Menu + 5 items
+    return 6; // Menu + 5 items (max)
   };
 
   const [maxItems, setMaxItems] = useState(getMaxVisibleItems());

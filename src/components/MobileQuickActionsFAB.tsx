@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Plus, ListPlus, Brain, DollarSign, CheckCircle, Sparkles } from 'lucide-react';
+import { Plus, ListPlus, Brain, DollarSign, CheckCircle, Sparkles, Trophy, Plane } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -138,6 +138,20 @@ export function MobileQuickActionsFAB({
 
   const actions = getContextualActions();
 
+  // Get contextual icon based on current page
+  const getFABIcon = () => {
+    const path = location.pathname;
+    if (path === '/habits') return CheckCircle;
+    if (path === '/tasks') return ListPlus;
+    if (path === '/expenses') return DollarSign;
+    if (path === '/challenges') return Trophy;
+    if (path === '/trips') return Plane;
+    if (path === '/focus') return Brain;
+    return Plus; // Default
+  };
+
+  const FABIcon = getFABIcon();
+
   return (
     <>
       {/* Backdrop */}
@@ -177,7 +191,7 @@ export function MobileQuickActionsFAB({
           </div>
         )}
 
-        {/* Main FAB */}
+        {/* Main FAB with Contextual Icon */}
         <Button
           size="lg"
           className={cn(
@@ -186,7 +200,7 @@ export function MobileQuickActionsFAB({
           )}
           onClick={() => setIsExpanded(!isExpanded)}
         >
-          <Plus className="w-6 h-6" />
+          <FABIcon className="w-6 h-6" />
         </Button>
       </div>
     </>
