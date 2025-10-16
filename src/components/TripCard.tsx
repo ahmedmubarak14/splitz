@@ -30,8 +30,8 @@ export const TripCard = ({ trip }: TripCardProps) => {
       onClick={() => navigate(`/trips/${trip.id}`)}
     >
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
+        <div className={`flex items-start justify-between ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+          <div className={`flex items-center gap-3 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
             <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center">
               <MapPin className="h-6 w-6 text-white" />
             </div>
@@ -43,27 +43,27 @@ export const TripCard = ({ trip }: TripCardProps) => {
             </div>
           </div>
           <Badge variant={isCompleted ? "default" : isActive ? "secondary" : "outline"}>
-            {isCompleted ? "Completed" : isActive ? "Active" : "Planning"}
+            {isCompleted ? t('trips.completed') : isActive ? t('trips.active') : t('trips.planning')}
           </Badge>
         </div>
       </CardHeader>
       
       <CardContent className="space-y-4">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1">
+        <div className={`flex items-center gap-4 text-sm text-muted-foreground ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+          <div className={`flex items-center gap-1 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
             <Calendar className="h-4 w-4" />
-            <span>{format(new Date(trip.start_date), "MMM d")}</span>
+            <span>{formatDate(trip.start_date, i18n.language)}</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className={`flex items-center gap-1 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
             <Users className="h-4 w-4" />
-            <span>{trip.trip_members?.[0]?.count || 0} members</span>
+            <span>{trip.trip_members?.[0]?.count || 0} {t('trips.members')}</span>
           </div>
         </div>
 
         {totalTasks > 0 && (
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Tasks</span>
+            <div className={`flex items-center justify-between text-sm ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+              <span className="text-muted-foreground">{t('trips.tasks')}</span>
               <span className="font-semibold">{completedTasks}/{totalTasks}</span>
             </div>
             <Progress value={progress} className="h-2" />
@@ -72,7 +72,7 @@ export const TripCard = ({ trip }: TripCardProps) => {
 
         {!isCompleted && !isActive && daysUntilStart > 0 && (
           <p className="text-sm text-center text-muted-foreground">
-            Starts in {daysUntilStart} days
+            {t('trips.startsIn')} {daysUntilStart} {t('common.days')}
           </p>
         )}
       </CardContent>
