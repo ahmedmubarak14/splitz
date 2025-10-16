@@ -56,12 +56,12 @@ export function SmartSearchBar({ onSearch, placeholder }: SmartSearchBarProps) {
   ).length;
 
   const typeOptions = [
-    { value: 'all', label: t('search.all') || 'All', emoji: '🔍' },
-    { value: 'tasks', label: t('nav.tasks') || 'Tasks', emoji: '✅' },
-    { value: 'habits', label: t('nav.habits') || 'Habits', emoji: '🔥' },
+    { value: 'all', label: t('search.all'), emoji: '🔍' },
+    { value: 'tasks', label: t('nav.tasks'), emoji: '✅' },
+    { value: 'habits', label: t('nav.habits'), emoji: '🔥' },
     { value: 'expenses', label: t('nav.expenses'), emoji: '💰' },
     { value: 'challenges', label: t('nav.challenges'), emoji: '🏆' },
-    { value: 'trips', label: t('nav.trips') || 'Trips', emoji: '✈️' },
+    { value: 'trips', label: t('nav.trips'), emoji: '✈️' },
   ];
 
   if (!isExpanded && isMobile) {
@@ -72,7 +72,7 @@ export function SmartSearchBar({ onSearch, placeholder }: SmartSearchBarProps) {
         onClick={() => setIsExpanded(true)}
       >
         <Search className="w-4 h-4 mr-2" />
-        {placeholder || t('search.searchEverything') || 'Search everything...'}
+        {placeholder || t('search.searchEverything')}
       </Button>
     );
   }
@@ -85,7 +85,7 @@ export function SmartSearchBar({ onSearch, placeholder }: SmartSearchBarProps) {
         <Input
           value={query}
           onChange={(e) => handleSearch(e.target.value)}
-          placeholder={placeholder || t('search.searchEverything') || 'Search everything...'}
+          placeholder={placeholder || t('search.searchEverything')}
           className="pl-10 pr-20"
           autoFocus={isMobile && isExpanded}
         />
@@ -103,13 +103,13 @@ export function SmartSearchBar({ onSearch, placeholder }: SmartSearchBarProps) {
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[70vh]">
               <SheetHeader>
-                <SheetTitle>{t('search.filters') || 'Filters'}</SheetTitle>
+                <SheetTitle>{t('search.filters')}</SheetTitle>
               </SheetHeader>
               
               <div className="mt-6 space-y-6">
                 {/* Type Filter */}
                 <div>
-                  <h3 className="text-sm font-medium mb-3">{t('search.type') || 'Type'}</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('search.type')}</h3>
                   <div className="grid grid-cols-2 gap-2">
                     {typeOptions.map((option) => (
                       <Button
@@ -128,20 +128,24 @@ export function SmartSearchBar({ onSearch, placeholder }: SmartSearchBarProps) {
 
                 {/* Status Filter */}
                 <div>
-                  <h3 className="text-sm font-medium mb-3">{t('search.status') || 'Status'}</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('search.status')}</h3>
                   <div className="flex gap-2 flex-wrap">
-                    {['active', 'completed', 'pending'].map((status) => (
+                    {[
+                      { value: 'active', label: t('search.active') },
+                      { value: 'completed', label: t('search.completed') },
+                      { value: 'pending', label: t('search.pending') },
+                    ].map((status) => (
                       <Badge
-                        key={status}
-                        variant={filters.status === status ? 'default' : 'outline'}
+                        key={status.value}
+                        variant={filters.status === status.value ? 'default' : 'outline'}
                         className="cursor-pointer"
                         onClick={() =>
                           handleFilterChange({
-                            status: filters.status === status ? undefined : status as any,
+                            status: filters.status === status.value ? undefined : status.value as any,
                           })
                         }
                       >
-                        {status}
+                        {status.label}
                       </Badge>
                     ))}
                   </div>
@@ -149,20 +153,25 @@ export function SmartSearchBar({ onSearch, placeholder }: SmartSearchBarProps) {
 
                 {/* Date Range Filter */}
                 <div>
-                  <h3 className="text-sm font-medium mb-3">{t('search.dateRange') || 'Date Range'}</h3>
+                  <h3 className="text-sm font-medium mb-3">{t('search.dateRange')}</h3>
                   <div className="flex gap-2 flex-wrap">
-                    {['today', 'week', 'month', 'all'].map((range) => (
+                    {[
+                      { value: 'today', label: t('search.today') },
+                      { value: 'week', label: t('search.week') },
+                      { value: 'month', label: t('search.month') },
+                      { value: 'all', label: t('search.allTime') },
+                    ].map((range) => (
                       <Badge
-                        key={range}
-                        variant={filters.dateRange === range ? 'default' : 'outline'}
+                        key={range.value}
+                        variant={filters.dateRange === range.value ? 'default' : 'outline'}
                         className="cursor-pointer"
                         onClick={() =>
                           handleFilterChange({
-                            dateRange: filters.dateRange === range ? undefined : range as any,
+                            dateRange: filters.dateRange === range.value ? undefined : range.value as any,
                           })
                         }
                       >
-                        {range}
+                        {range.label}
                       </Badge>
                     ))}
                   </div>
@@ -172,7 +181,7 @@ export function SmartSearchBar({ onSearch, placeholder }: SmartSearchBarProps) {
                 {activeFiltersCount > 0 && (
                   <Button variant="outline" onClick={clearFilters} className="w-full">
                     <X className="w-4 h-4 mr-2" />
-                    {t('search.clearFilters') || 'Clear Filters'}
+                    {t('search.clearFilters')}
                   </Button>
                 )}
               </div>
@@ -213,7 +222,7 @@ export function SmartSearchBar({ onSearch, placeholder }: SmartSearchBarProps) {
           )}
           {filters.status && (
             <Badge variant="secondary" className="gap-1">
-              {filters.status}
+              {t(`search.${filters.status}`)}
               <button
                 onClick={() => handleFilterChange({ status: undefined })}
                 className="ml-1 hover:bg-background/20 rounded-full"
@@ -224,7 +233,7 @@ export function SmartSearchBar({ onSearch, placeholder }: SmartSearchBarProps) {
           )}
           {filters.dateRange && (
             <Badge variant="secondary" className="gap-1">
-              {filters.dateRange}
+              {filters.dateRange === 'all' ? t('search.allTime') : t(`search.${filters.dateRange}`)}
               <button
                 onClick={() => handleFilterChange({ dateRange: undefined })}
                 className="ml-1 hover:bg-background/20 rounded-full"

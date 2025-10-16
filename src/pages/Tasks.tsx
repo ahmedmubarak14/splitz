@@ -65,7 +65,7 @@ const Tasks = () => {
     <div className="h-full flex flex-col">
       <div className="p-4 border-b border-border flex items-center justify-between">
         <h2 className={cn('font-semibold', responsiveText.sectionTitle)}>
-          {t('nav.tasks') || 'Tasks'}
+          {t('nav.tasks')}
         </h2>
         <Button
           variant="ghost"
@@ -125,7 +125,7 @@ const Tasks = () => {
                     {selectedProject}
                   </h1>
                   <p className="text-sm text-muted-foreground">
-                    {filteredTasks.length} {filteredTasks.length === 1 ? 'task' : 'tasks'}
+                    {filteredTasks.length} {filteredTasks.length === 1 ? t('tasks.task') : t('tasks.taskPlural')}
                   </p>
                 </div>
               </div>
@@ -133,7 +133,7 @@ const Tasks = () => {
               {!isMobile && (
                 <Button onClick={() => setShowQuickAdd(true)}>
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Task
+                  {t('tasks.addTask')}
                 </Button>
               )}
             </div>
@@ -145,16 +145,16 @@ const Tasks = () => {
               {/* Today & Overdue */}
               {todayTasks.length > 0 && (
                 <CollapsibleSection
-                  title="Today"
+                  title={t('tasks.today')}
                   emoji="🔥"
                   count={todayTasks.length}
                   storageKey={`tasks-today-${selectedProject}`}
                   actions={[
                     {
-                      label: 'Mark all complete',
+                      label: t('tasks.markAllComplete'),
                       onClick: () => {
                         // Mark all as complete
-                        toast.success('All tasks marked complete!');
+                        toast.success(t('tasks.markAllComplete'));
                       },
                     },
                   ]}
@@ -170,7 +170,7 @@ const Tasks = () => {
               {/* This Week */}
               {thisWeekTasks.length > 0 && (
                 <CollapsibleSection
-                  title="This Week"
+                  title={t('tasks.thisWeek')}
                   emoji="📅"
                   count={thisWeekTasks.length}
                   storageKey={`tasks-week-${selectedProject}`}
@@ -186,7 +186,7 @@ const Tasks = () => {
               {/* Later */}
               {laterTasks.length > 0 && (
                 <CollapsibleSection
-                  title="Later"
+                  title={t('tasks.later')}
                   emoji="📌"
                   count={laterTasks.length}
                   defaultOpen={false}
@@ -203,16 +203,16 @@ const Tasks = () => {
               {/* Completed */}
               {completedTasks.length > 0 && (
                 <CollapsibleSection
-                  title="Completed"
+                  title={t('tasks.completed')}
                   emoji="✅"
                   count={completedTasks.length}
                   defaultOpen={false}
                   storageKey={`tasks-completed-${selectedProject}`}
                   actions={[
                     {
-                      label: 'Clear completed',
+                      label: t('tasks.clearCompleted'),
                       onClick: () => {
-                        toast.success('Completed tasks cleared!');
+                        toast.success(t('tasks.clearCompleted'));
                       },
                       variant: 'destructive',
                     },
@@ -243,7 +243,7 @@ const Tasks = () => {
                 onClick={() => setShowQuickAdd(true)}
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Add Task
+                {t('tasks.addTask')}
               </Button>
             </div>
           )}

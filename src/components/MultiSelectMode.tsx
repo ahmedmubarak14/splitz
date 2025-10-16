@@ -13,6 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from './ui/alert-dialog';
+import { useTranslation } from 'react-i18next';
 
 interface MultiSelectModeProps<T> {
   items: T[];
@@ -33,6 +34,7 @@ export function MultiSelectMode<T>({
   getItemId,
   className,
 }: MultiSelectModeProps<T>) {
+  const { t } = useTranslation();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -88,8 +90,8 @@ export function MultiSelectMode<T>({
             />
             <span className="text-sm font-medium">
               {selectedCount > 0
-                ? `${selectedCount} selected`
-                : 'Select All'}
+                ? t('multiSelect.selected', { count: selectedCount })
+                : t('multiSelect.selectAll')}
             </span>
           </div>
 
@@ -103,7 +105,7 @@ export function MultiSelectMode<T>({
                   className="gap-1"
                 >
                   <CheckCircle className="w-4 h-4" />
-                  Complete ({selectedCount})
+                  {t('multiSelect.complete')} ({selectedCount})
                 </Button>
               )}
               {onDelete && (
@@ -114,7 +116,7 @@ export function MultiSelectMode<T>({
                   className="gap-1"
                 >
                   <Trash2 className="w-4 h-4" />
-                  Delete ({selectedCount})
+                  {t('multiSelect.delete')} ({selectedCount})
                 </Button>
               )}
               <Button
@@ -124,7 +126,7 @@ export function MultiSelectMode<T>({
                 className="gap-1"
               >
                 <XCircle className="w-4 h-4" />
-                Cancel
+                {t('multiSelect.cancel')}
               </Button>
             </div>
           )}
@@ -144,15 +146,15 @@ export function MultiSelectMode<T>({
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete {selectedCount} items?</AlertDialogTitle>
+            <AlertDialogTitle>{t('multiSelect.deleteConfirm', { count: selectedCount })}</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the selected items.
+              {t('multiSelect.deleteWarning')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('multiSelect.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
-              Delete
+              {t('multiSelect.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

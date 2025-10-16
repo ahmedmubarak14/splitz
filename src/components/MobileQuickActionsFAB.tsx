@@ -43,7 +43,7 @@ export function MobileQuickActionsFAB({
       return [
         {
           icon: ListPlus,
-          label: 'Add Task',
+          label: t('quickActions.addTask'),
           onClick: () => {
             onAddTask?.();
             setIsExpanded(false);
@@ -51,7 +51,7 @@ export function MobileQuickActionsFAB({
         },
         {
           icon: Brain,
-          label: 'Focus',
+          label: t('quickActions.focus'),
           onClick: () => {
             navigate('/focus');
             setIsExpanded(false);
@@ -64,7 +64,7 @@ export function MobileQuickActionsFAB({
       return [
         {
           icon: CheckCircle,
-          label: 'Add Habit',
+          label: t('quickActions.addHabit'),
           onClick: () => {
             onAddHabit?.();
             setIsExpanded(false);
@@ -72,7 +72,7 @@ export function MobileQuickActionsFAB({
         },
         {
           icon: Sparkles,
-          label: 'Quick Check-in',
+          label: t('quickActions.quickCheckIn'),
           onClick: () => {
             // Quick check-in action
             setIsExpanded(false);
@@ -85,7 +85,7 @@ export function MobileQuickActionsFAB({
       return [
         {
           icon: DollarSign,
-          label: 'Add Expense',
+          label: t('quickActions.addExpense'),
           onClick: () => {
             onAddExpense?.();
             setIsExpanded(false);
@@ -93,7 +93,7 @@ export function MobileQuickActionsFAB({
         },
         {
           icon: Plus,
-          label: 'Create Group',
+          label: t('quickActions.createGroup'),
           onClick: () => {
             // Create group action
             setIsExpanded(false);
@@ -106,7 +106,7 @@ export function MobileQuickActionsFAB({
       return [
         {
           icon: Sparkles,
-          label: 'New Challenge',
+          label: t('quickActions.newChallenge'),
           onClick: () => {
             onAddChallenge?.();
             setIsExpanded(false);
@@ -119,7 +119,7 @@ export function MobileQuickActionsFAB({
     return [
       {
         icon: ListPlus,
-        label: 'Add Task',
+        label: t('quickActions.addTask'),
         onClick: () => {
           navigate('/tasks');
           setIsExpanded(false);
@@ -127,7 +127,7 @@ export function MobileQuickActionsFAB({
       },
       {
         icon: Brain,
-        label: 'Start Focus',
+        label: t('quickActions.startFocus'),
         onClick: () => {
           navigate('/focus');
           setIsExpanded(false);

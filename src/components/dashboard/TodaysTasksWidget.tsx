@@ -54,7 +54,7 @@ export function TodaysTasksWidget({ tasks, onRefresh }: TodaysTasksWidgetProps) 
 
   return (
     <DashboardWidgetCard 
-      title={t('dashboard.todaysTasks') || "Today's Tasks"}
+      title={t('dashboard.todaysTasks')}
       icon={CheckSquare}
       badge={incompleteTasks.length}
     >
@@ -98,21 +98,21 @@ export function TodaysTasksWidget({ tasks, onRefresh }: TodaysTasksWidgetProps) 
             onClick={() => navigate('/tasks')}
             className={`w-full mt-2 ${isRTL ? 'flex-row-reverse' : ''}`}
           >
-            {t('dashboard.viewAll') || 'View All'}
+            {t('dashboard.viewAll')}
             <ArrowRight className={`h-4 w-4 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
           </Button>
         </div>
       ) : (
         <div className={`text-center py-6 ${isRTL ? 'text-right' : 'text-left'}`}>
           <p className="text-sm text-muted-foreground mb-2">
-            {t('dashboard.noTasksToday') || "All caught up! 🎉"}
+            {t('dashboard.noTasksToday')}
           </p>
           <Button 
             variant="outline" 
             size="sm" 
             onClick={() => navigate('/tasks')}
           >
-            {t('dashboard.addTask') || 'Add Task'}
+            {t('dashboard.addTask')}
           </Button>
         </div>
       )}

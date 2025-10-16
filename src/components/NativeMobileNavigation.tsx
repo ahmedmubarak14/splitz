@@ -10,7 +10,7 @@ export const NativeMobileNavigation = () => {
 
   const tabs = [
     { path: '/dashboard', icon: home, label: t('nav.dashboard') },
-    { path: '/tasks', icon: listOutline, label: t('nav.tasks') || 'Tasks' },
+    { path: '/tasks', icon: listOutline, label: t('nav.tasks') },
     { path: '/focus', icon: flash, label: t('nav.focus') },
     { path: '/expenses', icon: wallet, label: t('nav.expenses') },
     { path: '/challenges', icon: trophy, label: t('nav.challenges') },
