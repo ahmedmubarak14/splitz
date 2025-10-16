@@ -55,19 +55,29 @@ export const SubscriptionDetailsDialog = ({
   const { data: contributors = [] } = useQuery({
     queryKey: ['subscription-contributors', subscriptionId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Step 1: Get contributors
+      const { data: contributorsData, error: contributorsError } = await supabase
         .from('subscription_contributors')
-        .select(`
-          *,
-          profiles!subscription_contributors_user_id_fkey (
-            id,
-            full_name,
-            avatar_url
-          )
-        `)
+        .select('*')
         .eq('subscription_id', subscriptionId);
-      if (error) throw error;
-      return data;
+
+      if (contributorsError) throw contributorsError;
+      if (!contributorsData || contributorsData.length === 0) return [];
+
+      // Step 2: Get profiles separately
+      const userIds = contributorsData.map(c => c.user_id);
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url, email')
+        .in('id', userIds);
+
+      if (profilesError) throw profilesError;
+
+      // Step 3: Merge data
+      return contributorsData.map(contributor => ({
+        ...contributor,
+        profiles: profiles?.find(p => p.id === contributor.user_id) || null
+      }));
     },
     enabled: open
   });
