@@ -8,8 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
-import { Plus, Target, TrendingUp, MoreVertical, Pencil, Trash2, CheckCircle2, Calendar } from 'lucide-react';
+import { Plus, Target, TrendingUp, MoreVertical, Pencil, Trash2, CheckCircle2, Calendar, Snowflake } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import Navigation from '@/components/Navigation';
@@ -22,6 +24,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
 import { HabitCheckInCelebration } from '@/components/HabitCheckInCelebration';
+import EmojiPicker from 'emoji-picker-react';
 
 type Habit = {
   id: string;
@@ -30,6 +33,7 @@ type Habit = {
   streak_count: number | null;
   best_streak: number | null;
   target_days?: number;
+  streak_freezes_available?: number;
 };
 
 const Habits = () => {
@@ -37,11 +41,17 @@ const Habits = () => {
   const [loading, setLoading] = useState(true);
   const [newHabitTitle, setNewHabitTitle] = useState('');
   const [newHabitIcon, setNewHabitIcon] = useState('🔥');
+  const [newHabitTargetDays, setNewHabitTargetDays] = useState<string>('30');
+  const [customTargetDays, setCustomTargetDays] = useState<string>('');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editIcon, setEditIcon] = useState('🔥');
+  const [editTargetDays, setEditTargetDays] = useState<string>('30');
+  const [editCustomTargetDays, setEditCustomTargetDays] = useState<string>('');
+  const [showEditEmojiPicker, setShowEditEmojiPicker] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingHabit, setDeletingHabit] = useState<Habit | null>(null);
   const [calendarDialogOpen, setCalendarDialogOpen] = useState(false);
@@ -69,7 +79,7 @@ const Habits = () => {
     try {
       const { data, error } = await supabase
         .from('habits')
-        .select('id, name, icon, streak_count, best_streak, target_days, created_at')
+        .select('id, name, icon, streak_count, best_streak, target_days, streak_freezes_available, created_at')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -81,6 +91,7 @@ const Habits = () => {
         streak_count: row.streak_count,
         best_streak: (row as any).best_streak ?? null,
         target_days: (row as any).target_days ?? 30,
+        streak_freezes_available: (row as any).streak_freezes_available ?? 2,
       }));
 
       setHabits(mapped);
@@ -98,10 +109,15 @@ const Habits = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      const targetDays = newHabitTargetDays === 'custom' 
+        ? parseInt(customTargetDays) || 30 
+        : parseInt(newHabitTargetDays);
+
       const payload: TablesInsert<'habits'> = {
         user_id: user.id,
         name: newHabitTitle,
         icon: newHabitIcon,
+        target_days: targetDays,
       };
       const { error } = await supabase.from('habits').insert(payload);
       if (error) throw error;
@@ -109,6 +125,8 @@ const Habits = () => {
       toast.success('Habit created');
       setNewHabitTitle('');
       setNewHabitIcon('🔥');
+      setNewHabitTargetDays('30');
+      setCustomTargetDays('');
       setDialogOpen(false);
       fetchHabits();
     } catch (error: unknown) {
@@ -133,16 +151,13 @@ const Habits = () => {
           throw error;
         }
       } else {
-        // Find the habit to celebrate
         const habit = habits.find(h => h.id === habitId);
         
         if (habit) {
-          // Trigger celebration
           setCelebratedHabit(habit);
           setCelebrating(true);
         }
         
-        // Refresh data
         fetchHabits();
       }
     } catch (error: unknown) {
@@ -154,6 +169,14 @@ const Habits = () => {
     setEditingHabit(habit);
     setEditTitle(habit.name);
     setEditIcon(habit.icon || '🔥');
+    const targetDays = habit.target_days || 30;
+    if ([7, 21, 30, 66, 90, 365].includes(targetDays)) {
+      setEditTargetDays(targetDays.toString());
+      setEditCustomTargetDays('');
+    } else {
+      setEditTargetDays('custom');
+      setEditCustomTargetDays(targetDays.toString());
+    }
     setEditDialogOpen(true);
   };
 
@@ -161,9 +184,14 @@ const Habits = () => {
     if (!editingHabit || !editTitle.trim()) return;
 
     try {
+      const targetDays = editTargetDays === 'custom' 
+        ? parseInt(editCustomTargetDays) || 30 
+        : parseInt(editTargetDays);
+
       const payload: TablesUpdate<'habits'> = {
         name: editTitle.trim(),
         icon: editIcon,
+        target_days: targetDays,
       };
 
       const { error } = await supabase
@@ -240,58 +268,86 @@ const Habits = () => {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
-              <div>
-                <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('habits.chooseEmoji')}</label>
-                <div className="flex items-center gap-4">
-                  <button
-                    type="button"
-                    onClick={() => document.getElementById('emoji-input-create')?.focus()}
-                    className="text-6xl p-4 rounded-xl bg-muted hover:bg-accent transition-all hover:scale-105 active:scale-95 shadow-sm border border-border/40"
-                  >
-                    {newHabitIcon}
-                  </button>
-                  <input
-                    id="emoji-input-create"
-                    type="text"
-                    inputMode="none"
-                    maxLength={2}
-                    value={newHabitIcon}
-                    onChange={(e) => {
-                      const emoji = e.target.value.slice(-2);
-                      if (emoji) setNewHabitIcon(emoji);
-                    }}
-                    className="sr-only"
-                  />
-                  <div className="flex-1">
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {t('habits.tapToSelectEmoji') || 'Tap the emoji to open your device emoji picker'}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {emojiOptions.map((emoji) => (
-                        <button
-                          key={emoji}
-                          type="button"
-                          onClick={() => setNewHabitIcon(emoji)}
-                          className={cn(
-                            "text-2xl p-2 rounded-lg transition-all duration-200",
-                            newHabitIcon === emoji 
-                              ? 'bg-primary/10 ring-2 ring-primary shadow-sm' 
-                              : 'bg-muted/50 hover:bg-accent hover:scale-105 active:scale-95'
-                          )}
-                        >
-                          {emoji}
-                        </button>
-                      ))}
+                <div>
+                  <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('habits.chooseEmoji')}</label>
+                  <div className="flex items-center gap-4">
+                    <button
+                      type="button"
+                      className="text-6xl p-4 rounded-xl bg-muted hover:bg-accent transition-all hover:scale-105 active:scale-95 shadow-sm border border-border/40"
+                    >
+                      {newHabitIcon}
+                    </button>
+                    <div className="flex-1 space-y-2">
+                      <Dialog open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" className="w-full">Choose Any Emoji 🎨</Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-sm p-0">
+                          <EmojiPicker
+                            onEmojiClick={(emojiData) => {
+                              setNewHabitIcon(emojiData.emoji);
+                              setShowEmojiPicker(false);
+                            }}
+                            width="100%"
+                            height={400}
+                          />
+                        </DialogContent>
+                      </Dialog>
+                      <p className="text-sm text-muted-foreground">Quick select:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {emojiOptions.map((emoji) => (
+                          <button
+                            key={emoji}
+                            type="button"
+                            onClick={() => setNewHabitIcon(emoji)}
+                            className={cn(
+                              "text-2xl p-2 rounded-lg transition-all duration-200",
+                              newHabitIcon === emoji 
+                                ? 'bg-primary/10 ring-2 ring-primary shadow-sm' 
+                                : 'bg-muted/50 hover:bg-accent hover:scale-105 active:scale-95'
+                            )}
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
                 <Input
                   placeholder={t('habits.habitNamePlaceholder')}
                   value={newHabitTitle}
                   onChange={(e) => setNewHabitTitle(e.target.value)}
                   className={isRTL ? 'text-right' : 'text-left'}
                 />
+                <div>
+                  <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>Duration Goal</label>
+                  <Select value={newHabitTargetDays} onValueChange={setNewHabitTargetDays}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select duration" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="7">📅 1 Week - Quick win</SelectItem>
+                      <SelectItem value="21">🎯 21 Days - Habit forming</SelectItem>
+                      <SelectItem value="30">📆 1 Month - Standard</SelectItem>
+                      <SelectItem value="66">💪 66 Days - Scientific</SelectItem>
+                      <SelectItem value="90">🏆 90 Days - Master</SelectItem>
+                      <SelectItem value="365">🌟 1 Year - Ultimate</SelectItem>
+                      <SelectItem value="custom">✏️ Custom duration</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {newHabitTargetDays === 'custom' && (
+                    <Input
+                      type="number"
+                      min="1"
+                      max="365"
+                      placeholder="Enter number of days"
+                      value={customTargetDays}
+                      onChange={(e) => setCustomTargetDays(e.target.value)}
+                      className="mt-2"
+                    />
+                  )}
+                </div>
                 <Button onClick={createHabit} className="w-full">
                   {t('common.add')}
                 </Button>
@@ -321,8 +377,10 @@ const Habits = () => {
                       <div className="text-4xl group-hover:scale-110 transition-transform duration-200">{habit.icon || '🔥'}</div>
                       <div>
                         <CardTitle className={`${responsiveText.cardTitle} font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{habit.name}</CardTitle>
-                        <p className={`${responsiveText.caption} text-muted-foreground mt-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                          {habit.streak_count ?? 0} {t('habits.dayStreak')}
+                        <p className={`${responsiveText.caption} text-muted-foreground mt-1 flex items-center gap-2 ${isRTL ? 'text-right flex-row-reverse' : 'text-left'}`}>
+                          <span>{habit.streak_count ?? 0} / {habit.target_days || 30} days</span>
+                          <Snowflake className="w-3 h-3 text-blue-400" />
+                          <span>{habit.streak_freezes_available ?? 0}</span>
                         </p>
                       </div>
                     </div>
@@ -368,18 +426,13 @@ const Habits = () => {
                       <div className={`flex items-center justify-between ${responsiveText.caption} ${isRTL ? 'flex-row-reverse' : ''}`}>
                         <span className="text-muted-foreground">{t('habits.goalProgress')}</span>
                         <span className="font-semibold text-primary">
-                          {habit.streak_count ?? 0} / {habit.target_days} {t('habits.days')}
+                          {((habit.streak_count ?? 0) / habit.target_days * 100).toFixed(0)}%
                         </span>
                       </div>
-                      <div className="h-2 bg-muted rounded-full overflow-hidden shadow-inner">
-                        <div 
-                          className={`h-full bg-gradient-to-r from-primary to-accent transition-all duration-700 ease-out shadow-sm ${isRTL ? 'float-right' : ''}`}
-                          style={{ width: `${Math.min(((habit.streak_count ?? 0) / habit.target_days) * 100, 100)}%` }}
-                        />
-                      </div>
-                      <div className={`${responsiveText.caption} text-muted-foreground text-center`}>
-                        {((habit.streak_count ?? 0) / habit.target_days * 100).toFixed(0)}% {t('habits.complete')}
-                      </div>
+                      <Progress
+                        value={((habit.streak_count ?? 0) / habit.target_days) * 100}
+                        className="h-2"
+                      />
                     </div>
                   )}
                   <div className={`flex items-center justify-between p-3 bg-accent rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}>
@@ -401,7 +454,6 @@ const Habits = () => {
         )}
       </div>
 
-      {/* Edit Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent className="sm:max-w-md" dir={isRTL ? 'rtl' : 'ltr'}>
           <DialogHeader>
@@ -414,27 +466,27 @@ const Habits = () => {
               <div className="flex items-center gap-4">
                 <button
                   type="button"
-                  onClick={() => document.getElementById('emoji-input-edit')?.focus()}
                   className="text-6xl p-4 rounded-xl bg-muted hover:bg-accent transition-all hover:scale-105 active:scale-95 shadow-sm border border-border/40"
                 >
                   {editIcon}
                 </button>
-                <input
-                  id="emoji-input-edit"
-                  type="text"
-                  inputMode="none"
-                  maxLength={2}
-                  value={editIcon}
-                  onChange={(e) => {
-                    const emoji = e.target.value.slice(-2);
-                    if (emoji) setEditIcon(emoji);
-                  }}
-                  className="sr-only"
-                />
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {t('habits.tapToSelectEmoji') || 'Tap the emoji to open your device emoji picker'}
-                  </p>
+                <div className="flex-1 space-y-2">
+                  <Dialog open={showEditEmojiPicker} onOpenChange={setShowEditEmojiPicker}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full">Choose Any Emoji 🎨</Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-sm p-0">
+                      <EmojiPicker
+                        onEmojiClick={(emojiData) => {
+                          setEditIcon(emojiData.emoji);
+                          setShowEditEmojiPicker(false);
+                        }}
+                        width="100%"
+                        height={400}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                  <p className="text-sm text-muted-foreground">Quick select:</p>
                   <div className="flex flex-wrap gap-2">
                     {emojiOptions.map((emoji) => (
                       <button
@@ -456,35 +508,57 @@ const Habits = () => {
               </div>
             </div>
             <Input
-              placeholder={t('habits.habitName')}
+              placeholder={t('habits.habitNamePlaceholder')}
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
               className={isRTL ? 'text-right' : 'text-left'}
             />
-            <div className={`flex gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-              <Button onClick={updateHabit} className="flex-1">
-                {t('habits.updateHabit')}
-              </Button>
-              <Button onClick={() => setEditDialogOpen(false)} variant="outline">
-                {t('common.cancel')}
-              </Button>
+            <div>
+              <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>Duration Goal</label>
+              <Select value={editTargetDays} onValueChange={setEditTargetDays}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select duration" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7">📅 1 Week - Quick win</SelectItem>
+                  <SelectItem value="21">🎯 21 Days - Habit forming</SelectItem>
+                  <SelectItem value="30">📆 1 Month - Standard</SelectItem>
+                  <SelectItem value="66">💪 66 Days - Scientific</SelectItem>
+                  <SelectItem value="90">🏆 90 Days - Master</SelectItem>
+                  <SelectItem value="365">🌟 1 Year - Ultimate</SelectItem>
+                  <SelectItem value="custom">✏️ Custom duration</SelectItem>
+                </SelectContent>
+              </Select>
+              {editTargetDays === 'custom' && (
+                <Input
+                  type="number"
+                  min="1"
+                  max="365"
+                  placeholder="Enter number of days"
+                  value={editCustomTargetDays}
+                  onChange={(e) => setEditCustomTargetDays(e.target.value)}
+                  className="mt-2"
+                />
+              )}
             </div>
+            <Button onClick={updateHabit} className="w-full">
+              {t('common.save')}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent dir={isRTL ? 'rtl' : 'ltr'}>
           <AlertDialogHeader>
             <AlertDialogTitle className={isRTL ? 'text-right' : 'text-left'}>{t('habits.deleteHabit')}</AlertDialogTitle>
             <AlertDialogDescription className={isRTL ? 'text-right' : 'text-left'}>
-              {t('habits.deleteConfirm').replace('"{deletingHabit?.name}"', `"${deletingHabit?.name}"`)}
+              {t('habits.deleteConfirmation')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className={isRTL ? 'flex-row-reverse' : ''}>
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={deleteHabit} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction onClick={deleteHabit} className="bg-destructive hover:bg-destructive/90">
               {t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -492,22 +566,25 @@ const Habits = () => {
       </AlertDialog>
 
       {selectedHabit && (
-        <>
-          <HabitCalendar
-            habitId={selectedHabit.id}
-            habitName={selectedHabit.name}
-            open={calendarDialogOpen}
-            onOpenChange={setCalendarDialogOpen}
-          />
-          <Dialog open={statsDialogOpen} onOpenChange={setStatsDialogOpen}>
-            <DialogContent className="sm:max-w-2xl">
-              <HabitStatistics />
-            </DialogContent>
-          </Dialog>
-        </>
+        <HabitCalendar
+          habitId={selectedHabit.id}
+          habitName={selectedHabit.name}
+          open={calendarDialogOpen}
+          onOpenChange={setCalendarDialogOpen}
+        />
       )}
 
-      {/* Celebration */}
+      <Dialog open={statsDialogOpen} onOpenChange={setStatsDialogOpen}>
+        <DialogContent className="max-w-3xl" dir={isRTL ? 'rtl' : 'ltr'}>
+          <DialogHeader>
+            <DialogTitle className={isRTL ? 'text-right' : 'text-left'}>
+              {selectedHabit?.icon} {selectedHabit?.name} - {t('habits.statistics')}
+            </DialogTitle>
+          </DialogHeader>
+          <HabitStatistics />
+        </DialogContent>
+      </Dialog>
+
       {celebratedHabit && (
         <HabitCheckInCelebration
           show={celebrating}
@@ -516,13 +593,16 @@ const Habits = () => {
           streakCount={(celebratedHabit.streak_count || 0) + 1}
           onComplete={() => {
             setCelebrating(false);
-            setCelebratedHabit(null);
+            setTimeout(() => setCelebratedHabit(null), 300);
           }}
         />
       )}
 
-      {/* Mobile Quick Actions FAB */}
-      <MobileQuickActionsFAB onAddHabit={() => setDialogOpen(true)} />
+      {isMobile && (
+        <MobileQuickActionsFAB
+          onAddHabit={() => setDialogOpen(true)}
+        />
+      )}
 
       <Navigation />
     </div>

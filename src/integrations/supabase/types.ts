@@ -468,10 +468,12 @@ export type Database = {
           icon: string | null
           id: string
           last_completed_at: string | null
+          last_freeze_used_at: string | null
           name: string
           reminder_enabled: boolean | null
           reminder_time: string | null
           streak_count: number | null
+          streak_freezes_available: number | null
           tags: string[] | null
           target_days: number | null
           updated_at: string
@@ -486,10 +488,12 @@ export type Database = {
           icon?: string | null
           id?: string
           last_completed_at?: string | null
+          last_freeze_used_at?: string | null
           name: string
           reminder_enabled?: boolean | null
           reminder_time?: string | null
           streak_count?: number | null
+          streak_freezes_available?: number | null
           tags?: string[] | null
           target_days?: number | null
           updated_at?: string
@@ -504,10 +508,12 @@ export type Database = {
           icon?: string | null
           id?: string
           last_completed_at?: string | null
+          last_freeze_used_at?: string | null
           name?: string
           reminder_enabled?: boolean | null
           reminder_time?: string | null
           streak_count?: number | null
+          streak_freezes_available?: number | null
           tags?: string[] | null
           target_days?: number | null
           updated_at?: string
@@ -759,6 +765,41 @@ export type Database = {
           window_start?: string | null
         }
         Relationships: []
+      }
+      streak_freeze_history: {
+        Row: {
+          created_at: string | null
+          habit_id: string
+          id: string
+          streak_saved: number
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          habit_id: string
+          id?: string
+          streak_saved: number
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          habit_id?: string
+          id?: string
+          streak_saved?: number
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "streak_freeze_history_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscription_contributors: {
         Row: {
