@@ -5,11 +5,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Link, useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
-import { HeaderActions } from "@/components/HeaderActions";
-import Navigation from "@/components/Navigation";
-import { NativeMobileNavigation } from "@/components/NativeMobileNavigation";
-import { MobileAppRouter } from "@/components/MobileAppRouter";
+
+// Lazy load heavy components for better initial bundle size
+const AppSidebar = lazy(() => import("@/components/AppSidebar").then(m => ({ default: m.AppSidebar })));
+const HeaderActions = lazy(() => import("@/components/HeaderActions").then(m => ({ default: m.HeaderActions })));
+const Navigation = lazy(() => import("@/components/Navigation"));
+const NativeMobileNavigation = lazy(() => import("@/components/NativeMobileNavigation").then(m => ({ default: m.NativeMobileNavigation })));
+const MobileAppRouter = lazy(() => import("@/components/MobileAppRouter").then(m => ({ default: m.MobileAppRouter })));
 import { Home } from "lucide-react";
 import splitzLogo from "@/assets/splitz-logo.png";
 import { useIsRTL } from "@/lib/rtl-utils";
@@ -79,7 +81,11 @@ const AppContent = () => {
 
   // Native app: Skip landing page, go straight to auth/dashboard
   if (isNativeApp && isLandingPage) {
-    return <MobileAppRouter />;
+    return (
+      <Suspense fallback={<PageLoader />}>
+        <MobileAppRouter />
+      </Suspense>
+    );
   }
 
   const handleLogoClick = () => {
@@ -133,7 +139,9 @@ const AppContent = () => {
     <SidebarProvider>
       <div className={`flex min-h-screen w-full ${getPlatformClass()}`}>
         <div className="hidden md:block">
-          <AppSidebar />
+          <Suspense fallback={<div className="w-[280px]" />}>
+            <AppSidebar />
+          </Suspense>
         </div>
         <main className="flex-1 w-full bg-background">
           <header className="sticky top-0 z-40 bg-background border-b border-border/30" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -149,8 +157,10 @@ const AppContent = () => {
                       <img src={splitzLogo} alt="Splitz" className="h-8" loading="lazy" />
                     </button>
                   </div>
-                  <div className="flex items-center">
-                    <HeaderActions />
+                   <div className="flex items-center">
+                    <Suspense fallback={<div className="h-9 w-20" />}>
+                      <HeaderActions />
+                    </Suspense>
                   </div>
                 </>
               ) : (
@@ -164,8 +174,10 @@ const AppContent = () => {
                       <img src={splitzLogo} alt="Splitz" className="h-8" loading="lazy" />
                     </button>
                   </div>
-                  <div className="flex items-center">
-                    <HeaderActions />
+                   <div className="flex items-center">
+                    <Suspense fallback={<div className="h-9 w-20" />}>
+                      <HeaderActions />
+                    </Suspense>
                   </div>
                 </>
               )}
@@ -196,7 +208,9 @@ const AppContent = () => {
             <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
-          {isNativeApp ? <NativeMobileNavigation /> : <Navigation />}
+          <Suspense fallback={<div className="h-16" />}>
+            {isNativeApp ? <NativeMobileNavigation /> : <Navigation />}
+          </Suspense>
         </main>
       </div>
     </SidebarProvider>
