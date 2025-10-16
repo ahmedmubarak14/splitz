@@ -47,10 +47,10 @@ const Matrix = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['focus-tasks'] });
-      toast.success('Task priority updated');
+      toast.success(t('matrix.taskPriorityUpdated'));
     },
     onError: () => {
-      toast.error('Failed to update task priority');
+      toast.error(t('matrix.taskPriorityUpdateFailed'));
     },
   });
 
@@ -74,7 +74,7 @@ const Matrix = () => {
           
           <Button onClick={() => setQuickAddOpen(true)} className="shadow-sm hover:shadow-md transition-all duration-200">
             <Plus className="w-4 h-4 mr-2" />
-            Add Task
+            {t('matrix.addTask')}
           </Button>
         </div>
 

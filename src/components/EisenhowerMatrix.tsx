@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
@@ -28,39 +29,40 @@ interface EisenhowerMatrixProps {
   onMoveTask: (taskId: string, quadrant: string | null) => void;
 }
 
-const QUADRANTS = [
-  {
-    id: 'urgent_important',
-    title: 'Do First',
-    subtitle: 'Urgent & Important',
-    color: 'border-red-500/50 bg-red-500/5',
-    headerColor: 'bg-red-500/10 text-red-700 dark:text-red-400',
-  },
-  {
-    id: 'not_urgent_important',
-    title: 'Schedule',
-    subtitle: 'Not Urgent & Important',
-    color: 'border-orange-500/50 bg-orange-500/5',
-    headerColor: 'bg-orange-500/10 text-orange-700 dark:text-orange-400',
-  },
-  {
-    id: 'urgent_unimportant',
-    title: 'Delegate',
-    subtitle: 'Urgent & Not Important',
-    color: 'border-blue-500/50 bg-blue-500/5',
-    headerColor: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
-  },
-  {
-    id: 'not_urgent_unimportant',
-    title: 'Eliminate',
-    subtitle: 'Not Urgent & Not Important',
-    color: 'border-green-500/50 bg-green-500/5',
-    headerColor: 'bg-green-500/10 text-green-700 dark:text-green-400',
-  },
-];
-
 const EisenhowerMatrix = ({ tasks, isLoading, onMoveTask }: EisenhowerMatrixProps) => {
+  const { t } = useTranslation();
   const isMobile = useIsMobile();
+
+  const QUADRANTS = [
+    {
+      id: 'urgent_important',
+      title: t('matrix.quadrants.urgent_important.title'),
+      subtitle: t('matrix.quadrants.urgent_important.subtitle'),
+      color: 'border-red-500/50 bg-red-500/5',
+      headerColor: 'bg-red-500/10 text-red-700 dark:text-red-400',
+    },
+    {
+      id: 'not_urgent_important',
+      title: t('matrix.quadrants.not_urgent_important.title'),
+      subtitle: t('matrix.quadrants.not_urgent_important.subtitle'),
+      color: 'border-orange-500/50 bg-orange-500/5',
+      headerColor: 'bg-orange-500/10 text-orange-700 dark:text-orange-400',
+    },
+    {
+      id: 'urgent_unimportant',
+      title: t('matrix.quadrants.urgent_unimportant.title'),
+      subtitle: t('matrix.quadrants.urgent_unimportant.subtitle'),
+      color: 'border-blue-500/50 bg-blue-500/5',
+      headerColor: 'bg-blue-500/10 text-blue-700 dark:text-blue-400',
+    },
+    {
+      id: 'not_urgent_unimportant',
+      title: t('matrix.quadrants.not_urgent_unimportant.title'),
+      subtitle: t('matrix.quadrants.not_urgent_unimportant.subtitle'),
+      color: 'border-green-500/50 bg-green-500/5',
+      headerColor: 'bg-green-500/10 text-green-700 dark:text-green-400',
+    },
+  ];
 
   const getTasksByQuadrant = (quadrantId: string) => {
     return tasks.filter(t => t.priority_quadrant === quadrantId && !t.is_completed);
@@ -77,14 +79,14 @@ const EisenhowerMatrix = ({ tasks, isLoading, onMoveTask }: EisenhowerMatrixProp
           <h3 className="font-bold text-lg">{quadrant.title}</h3>
           <p className="text-xs opacity-80">{quadrant.subtitle}</p>
           <Badge variant="secondary" className="mt-2">
-            {quadrantTasks.length} tasks
+            {quadrantTasks.length} {t('matrix.tasks')}
           </Badge>
         </div>
 
         <div className="flex-1 overflow-y-auto space-y-2">
           {quadrantTasks.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">
-              No tasks in this quadrant
+              {t('matrix.noTasksInQuadrant')}
             </p>
           ) : (
             quadrantTasks.map((task) => (
@@ -136,11 +138,11 @@ const EisenhowerMatrix = ({ tasks, isLoading, onMoveTask }: EisenhowerMatrixProp
                   onClick={() => onMove(q.id)}
                   disabled={task.priority_quadrant === q.id}
                 >
-                  Move to {q.title}
+                  {t('matrix.moveTo')} {q.title}
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem onClick={() => onMove(null)}>
-                Remove from matrix
+                {t('matrix.removeFromMatrix')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -154,7 +156,7 @@ const EisenhowerMatrix = ({ tasks, isLoading, onMoveTask }: EisenhowerMatrixProp
       {/* Unassigned Tasks */}
       {unassignedTasks.length > 0 && (
         <Card className="p-4 border-dashed">
-          <h3 className="font-semibold mb-3">Unassigned Tasks ({unassignedTasks.length})</h3>
+          <h3 className="font-semibold mb-3">{t('matrix.unassignedTasks')} ({unassignedTasks.length})</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {unassignedTasks.map((task) => (
               <TaskCard

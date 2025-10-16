@@ -103,6 +103,36 @@ const resources = {
         noExpenses: 'All settled up! 💰',
         viewExpenses: 'View Expenses',
       },
+      matrix: {
+        title: 'Eisenhower Matrix',
+        subtitle: 'Prioritize your tasks using the Eisenhower Matrix',
+        addTask: 'Add Task',
+        tasks: 'tasks',
+        unassignedTasks: 'Unassigned Tasks',
+        noTasksInQuadrant: 'No tasks in this quadrant',
+        moveTo: 'Move to',
+        removeFromMatrix: 'Remove from matrix',
+        taskPriorityUpdated: 'Task priority updated',
+        taskPriorityUpdateFailed: 'Failed to update task priority',
+        quadrants: {
+          urgent_important: {
+            title: 'Do First',
+            subtitle: 'Urgent & Important',
+          },
+          not_urgent_important: {
+            title: 'Schedule',
+            subtitle: 'Not Urgent & Important',
+          },
+          urgent_unimportant: {
+            title: 'Delegate',
+            subtitle: 'Urgent & Not Important',
+          },
+          not_urgent_unimportant: {
+            title: 'Eliminate',
+            subtitle: 'Not Urgent & Not Important',
+          },
+        },
+      },
       common: {
         save: 'Save',
         cancel: 'Cancel',
@@ -919,6 +949,36 @@ const resources = {
         manageSubscriptions: 'إدارة الاشتراكات',
         noExpenses: 'تم التسوية بالكامل! 💰',
         viewExpenses: 'عرض المصاريف',
+      },
+      matrix: {
+        title: 'مصفوفة أيزنهاور',
+        subtitle: 'رتب أولويات مهامك باستخدام مصفوفة أيزنهاور',
+        addTask: 'إضافة مهمة',
+        tasks: 'مهام',
+        unassignedTasks: 'مهام غير مخصصة',
+        noTasksInQuadrant: 'لا توجد مهام في هذا الربع',
+        moveTo: 'نقل إلى',
+        removeFromMatrix: 'إزالة من المصفوفة',
+        taskPriorityUpdated: 'تم تحديث أولوية المهمة',
+        taskPriorityUpdateFailed: 'فشل تحديث أولوية المهمة',
+        quadrants: {
+          urgent_important: {
+            title: 'افعل أولاً',
+            subtitle: 'عاجل ومهم',
+          },
+          not_urgent_important: {
+            title: 'جدولة',
+            subtitle: 'غير عاجل ومهم',
+          },
+          urgent_unimportant: {
+            title: 'تفويض',
+            subtitle: 'عاجل وغير مهم',
+          },
+          not_urgent_unimportant: {
+            title: 'إلغاء',
+            subtitle: 'غير عاجل وغير مهم',
+          },
+        },
       },
       common: {
         save: 'حفظ',
