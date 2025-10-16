@@ -57,26 +57,28 @@ export function QuickActionsHub({ focusMinutesThisWeek }: QuickActionsHubProps) 
   ];
 
   return (
-    <Card className="bg-background border border-border/40">
+    <Card className="bg-background border border-border/40 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
       <CardContent className="p-4 md:p-5">
-        <div className={`flex items-center gap-2 mb-3 md:mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-          <Zap className="h-5 w-5 text-primary" />
-          <h3 className="text-sm md:text-base font-semibold">
+        <div className={`flex items-center gap-2 md:gap-3 mb-4 md:mb-5 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className="inline-flex p-2 rounded-lg bg-primary/10">
+            <Zap className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+          </div>
+          <h3 className="text-base md:text-lg font-semibold tracking-tight">
             {t('dashboard.quickActions') || 'Quick Actions'}
           </h3>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 md:gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 md:gap-4">
           {quickActions.map((action, idx) => (
             <button
               key={idx}
               onClick={action.onClick}
-              className={`${action.bgColor} rounded-lg p-3 md:p-4 text-left hover:scale-105 transition-transform ${isRTL ? 'text-right' : 'text-left'}`}
+              className={`${action.bgColor} rounded-lg p-4 md:p-5 hover:scale-105 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md focus-visible:ring-2 ring-primary/20 ring-offset-2 ${isRTL ? 'text-right' : 'text-left'}`}
             >
-              <action.icon className={`h-6 w-6 ${action.color} mb-2`} />
-              <div className="text-sm font-medium text-foreground mb-0.5">
+              <action.icon className={`h-6 w-6 md:h-7 md:w-7 ${action.color} mb-3`} />
+              <div className="text-sm md:text-base font-medium text-foreground mb-1">
                 {action.title}
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-muted-foreground leading-relaxed">
                 {action.subtitle}
               </div>
             </button>

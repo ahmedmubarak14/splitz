@@ -37,7 +37,7 @@ export function UpcomingSubscriptionsWidget({ subscriptions }: UpcomingSubscript
       badge={subscriptions.length}
     >
       {subscriptions.length > 0 ? (
-        <div className="space-y-1.5 md:space-y-2">
+        <div className="space-y-2">
           {subscriptions.map((sub) => {
             const daysUntil = differenceInDays(new Date(sub.next_renewal_date), new Date());
             
@@ -45,16 +45,16 @@ export function UpcomingSubscriptionsWidget({ subscriptions }: UpcomingSubscript
               <div
                 key={sub.id}
                 onClick={() => navigate('/subscriptions')}
-                className={`p-2.5 md:p-3 rounded-lg border cursor-pointer transition-colors hover:bg-muted/40 ${getUrgencyColor(daysUntil)} ${isRTL ? 'text-right' : 'text-left'}`}
+                className={`p-3 rounded-lg border cursor-pointer hover:shadow-sm transition-all duration-200 ${getUrgencyColor(daysUntil)} ${isRTL ? 'text-right' : 'text-left'}`}
               >
-                <div className={`flex items-center justify-between mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <p className="text-sm font-medium">{sub.name}</p>
-                  <span className="text-sm font-semibold">
+                <div className={`flex items-center justify-between mb-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <p className="text-sm font-semibold">{sub.name}</p>
+                  <span className="text-base font-bold">
                     {formatCurrency(sub.amount, sub.currency, i18n.language)}
                   </span>
                 </div>
-                <div className={`flex items-center gap-1 text-xs ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <Clock className="h-3 w-3" />
+                <div className={`flex items-center gap-1.5 text-xs font-medium ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <Clock className="h-3.5 w-3.5" />
                   <span>
                     {daysUntil === 0 ? t('dashboard.today') || 'Today' :
                      daysUntil === 1 ? t('dashboard.tomorrow') || 'Tomorrow' :
@@ -68,21 +68,27 @@ export function UpcomingSubscriptionsWidget({ subscriptions }: UpcomingSubscript
             variant="ghost" 
             size="sm" 
             onClick={() => navigate('/subscriptions')}
-            className={`w-full mt-2 ${isRTL ? 'flex-row-reverse' : ''}`}
+            className={`w-full mt-2 hover:bg-accent/50 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
           >
             {t('dashboard.viewAll') || 'View All'}
             <ArrowRight className={`h-4 w-4 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
           </Button>
         </div>
       ) : (
-        <div className={`text-center py-6 ${isRTL ? 'text-right' : 'text-left'}`}>
-          <p className="text-sm text-muted-foreground mb-2">
+        <div className="text-center py-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted/50 mb-4">
+            <CreditCard className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <p className="text-sm font-medium text-foreground mb-2">
             {t('dashboard.noUpcomingRenewals') || "No renewals in the next 7 days"}
           </p>
+          <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+            All your subscriptions are up to date
+          </p>
           <Button 
-            variant="outline" 
             size="sm" 
             onClick={() => navigate('/subscriptions')}
+            className="shadow-sm hover:shadow-md transition-all"
           >
             {t('dashboard.manageSubscriptions') || 'Manage Subscriptions'}
           </Button>

@@ -59,32 +59,32 @@ export function TodaysTasksWidget({ tasks, onRefresh }: TodaysTasksWidgetProps) 
       badge={incompleteTasks.length}
     >
       {incompleteTasks.length > 0 ? (
-        <div className="space-y-1.5 md:space-y-2">
+        <div className="space-y-2">
           {incompleteTasks.map((task) => (
             <div
               key={task.id}
-              className={`flex items-center gap-3 p-2.5 md:p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+              className={`flex items-center gap-3 p-3 rounded-lg bg-muted/20 hover:bg-muted/40 border border-transparent hover:border-border/40 transition-all duration-200 ${isRTL ? 'flex-row-reverse' : ''}`}
             >
               <button
                 onClick={() => handleToggleTask(task.id, task.is_completed)}
                 disabled={updating === task.id}
-                className="flex-shrink-0"
+                className="flex-shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center focus-visible:ring-2 ring-primary/20 rounded transition-all"
               >
                 {task.is_completed ? (
                   <CheckSquare className="h-5 w-5 text-success" />
                 ) : (
-                  <Square className="h-5 w-5 text-muted-foreground hover:text-foreground" />
+                  <Square className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
                 )}
               </button>
-              <div className={`flex-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                <p className={`text-sm font-medium ${task.is_completed ? 'line-through text-muted-foreground' : ''}`}>
+              <div className={`flex-1 min-w-0 ${isRTL ? 'text-right' : 'text-left'}`}>
+                <p className={`text-sm font-medium leading-tight mb-1 ${task.is_completed ? 'line-through text-muted-foreground' : ''}`}>
                   {task.title}
                 </p>
                 {task.priority_quadrant && (
-                  <span className={`text-xs ${
-                    task.priority_quadrant === 'urgent_important' ? 'text-destructive' :
-                    task.priority_quadrant === 'not_urgent_important' ? 'text-primary' :
-                    'text-muted-foreground'
+                  <span className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${
+                    task.priority_quadrant === 'urgent_important' ? 'bg-destructive/10 text-destructive border border-destructive/20' :
+                    task.priority_quadrant === 'not_urgent_important' ? 'bg-primary/10 text-primary border border-primary/20' :
+                    'bg-muted text-muted-foreground'
                   }`}>
                     {task.priority_quadrant.replace('_', ' & ').replace(/\b\w/g, l => l.toUpperCase())}
                   </span>
@@ -96,21 +96,27 @@ export function TodaysTasksWidget({ tasks, onRefresh }: TodaysTasksWidgetProps) 
             variant="ghost" 
             size="sm" 
             onClick={() => navigate('/tasks')}
-            className={`w-full mt-2 ${isRTL ? 'flex-row-reverse' : ''}`}
+            className={`w-full mt-2 hover:bg-accent/50 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
           >
             {t('dashboard.viewAll')}
             <ArrowRight className={`h-4 w-4 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
           </Button>
         </div>
       ) : (
-        <div className={`text-center py-8 ${isRTL ? 'text-right' : 'text-left'}`}>
-          <p className="text-sm text-muted-foreground mb-2">
+        <div className="text-center py-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted/50 mb-4">
+            <CheckSquare className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <p className="text-sm font-medium text-foreground mb-2">
             {t('dashboard.noTasksToday')}
           </p>
+          <p className="text-xs text-muted-foreground mb-4 max-w-xs mx-auto leading-relaxed">
+            Get started by creating your first task
+          </p>
           <Button 
-            variant="outline" 
             size="sm" 
             onClick={() => navigate('/tasks')}
+            className="shadow-sm hover:shadow-md transition-all"
           >
             {t('dashboard.addTask')}
           </Button>

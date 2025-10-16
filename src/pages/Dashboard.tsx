@@ -281,8 +281,11 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-foreground border-t-transparent"></div>
+      <div className="min-h-screen flex items-center justify-center bg-muted/20">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-3 border-primary border-t-transparent shadow-lg"></div>
+          <p className="text-sm text-muted-foreground animate-pulse">Loading your dashboard...</p>
+        </div>
       </div>
     );
   }
@@ -321,13 +324,13 @@ export default function Dashboard() {
   return (
     <>
       <SEO {...pageSEO.dashboard} />
-      <div className={`min-h-screen bg-muted/20 overflow-x-hidden`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className={`min-h-screen bg-gradient-to-b from-muted/30 via-muted/10 to-background overflow-x-hidden`} dir={isRTL ? 'rtl' : 'ltr'}>
       <div className={`max-w-[1400px] mx-auto ${responsiveSpacing.pageContainer} ${responsiveSpacing.sectionGap} pb-20 md:pb-6`}>
         
         {/* Header */}
-        <div className="mb-4 md:mb-6">
-          <h1 className="text-3xl font-bold mb-2">{t('dashboard.title')}</h1>
-          <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">{t('dashboard.title')}</h1>
+          <p className="text-muted-foreground leading-relaxed">{t('dashboard.subtitle')}</p>
         </div>
 
         {/* Widget Grid - 2 Column Layout */}
@@ -344,19 +347,25 @@ export default function Dashboard() {
         {/* Stats Grid */}
         <div className={`grid ${responsiveGrid.stats} ${responsiveSpacing.gridGap}`}>
           {statCards.map((stat, idx) => (
-            <Card key={idx} className="bg-background border border-border/40">
-              <CardContent className={responsiveSpacing.pageContainer}>
-                <div className={`flex items-start justify-between mb-3 md:mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Card key={idx} className="bg-background border border-border/40 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group">
+              <CardContent className="p-4 md:p-5">
+                <div className={`flex items-start justify-between mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <div className="flex-1">
                     <p className={`text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
                       {stat.label}
                     </p>
                   </div>
-                  <stat.icon className={`h-4 w-4 md:h-5 md:h-5 ${stat.color} ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                  <div className="inline-flex p-2.5 rounded-lg bg-muted/30 group-hover:bg-muted/50 transition-colors">
+                    <stat.icon className={`h-4 w-4 md:h-5 md:w-5 ${stat.color}`} />
+                  </div>
                 </div>
                 <div className="space-y-1">
-                  <div className={`text-2xl md:text-3xl font-bold text-foreground ${isRTL ? 'text-right' : 'text-left'}`}>{stat.value}</div>
-                  <p className={`text-xs text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>{stat.subtitle}</p>
+                  <div className={`text-2xl md:text-3xl font-bold text-foreground tracking-tight ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {stat.value}
+                  </div>
+                  <p className={`text-xs text-muted-foreground leading-relaxed ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {stat.subtitle}
+                  </p>
                 </div>
               </CardContent>
             </Card>
