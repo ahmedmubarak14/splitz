@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Button } from './ui/button';
@@ -8,6 +8,7 @@ import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Switch } from './ui/switch';
 import { toast } from 'sonner';
+import { SubscriptionSplitTypeSelector } from './SubscriptionSplitTypeSelector';
 
 interface Subscription {
   id: string;
@@ -41,6 +42,43 @@ const EditSubscriptionDialog = ({ open, onOpenChange, subscription }: EditSubscr
   const [reminderDays, setReminderDays] = useState(subscription.reminder_days_before.toString());
   const [status, setStatus] = useState(subscription.status);
   const [notes, setNotes] = useState(subscription.notes || '');
+  const [splitType, setSplitType] = useState<'equal' | 'percentage' | 'custom' | 'shares'>('equal');
+  const [memberSplits, setMemberSplits] = useState<any[]>([]);
+
+  // Fetch contributors for split type selector
+  const { data: contributors } = useQuery({
+    queryKey: ['subscription-contributors', subscription.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('subscription_contributors')
+        .select(`
+          id,
+          user_id,
+          contribution_amount,
+          split_value
+        `)
+        .eq('subscription_id', subscription.id);
+
+      if (error) throw error;
+
+      // Fetch profiles
+      if (data && data.length > 0) {
+        const userIds = data.map(c => c.user_id);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', userIds);
+
+        return data.map(contributor => ({
+          user_id: contributor.user_id,
+          full_name: profiles?.find(p => p.id === contributor.user_id)?.full_name || 'Unknown',
+          split_value: contributor.split_value
+        }));
+      }
+      return [];
+    },
+    enabled: open && isShared,
+  });
 
   useEffect(() => {
     setName(subscription.name);
@@ -53,6 +91,7 @@ const EditSubscriptionDialog = ({ open, onOpenChange, subscription }: EditSubscr
     setReminderDays(subscription.reminder_days_before.toString());
     setStatus(subscription.status);
     setNotes(subscription.notes || '');
+    setSplitType((subscription as any).split_type || 'equal');
   }, [subscription]);
 
   const updateSubscription = useMutation({
@@ -68,6 +107,7 @@ const EditSubscriptionDialog = ({ open, onOpenChange, subscription }: EditSubscr
         reminder_days_before: parseInt(reminderDays),
         status,
         notes: notes || null,
+        split_type: isShared ? splitType : null,
       };
 
       if (status === 'canceled' && subscription.status !== 'canceled') {
@@ -231,7 +271,7 @@ const EditSubscriptionDialog = ({ open, onOpenChange, subscription }: EditSubscr
             </div>
           )}
 
-          <div className="border-t pt-4">
+          <div className="border-t pt-4 space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="shared">Shared Subscription</Label>
@@ -245,6 +285,23 @@ const EditSubscriptionDialog = ({ open, onOpenChange, subscription }: EditSubscr
                 onCheckedChange={setIsShared}
               />
             </div>
+
+            {isShared && contributors && contributors.length > 0 && (
+              <SubscriptionSplitTypeSelector
+                totalAmount={parseFloat(amount) || 0}
+                currency={currency}
+                members={contributors}
+                onSplitsChange={(splits, newSplitType) => {
+                  setMemberSplits(splits);
+                  setSplitType(newSplitType);
+                }}
+                initialSplitType={splitType}
+                initialSplits={contributors.map(c => ({
+                  user_id: c.user_id,
+                  split_value: c.split_value
+                }))}
+              />
+            )}
           </div>
 
           <div>

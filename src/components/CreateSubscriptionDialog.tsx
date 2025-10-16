@@ -607,6 +607,7 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
         billing_cycle: formData.billing_cycle,
         category: formData.category,
         is_shared: formData.is_shared,
+        split_type: formData.is_shared ? 'equal' : null,
         next_renewal_date: format(formData.next_renewal_date, "yyyy-MM-dd"),
         user_id: user.id,
         logo_url: formData.logo_url || null,
@@ -756,13 +757,20 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
             </Popover>
           </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="is_shared">{t('subscriptions.sharedSubscription')}</Label>
-            <Switch
-              id="is_shared"
-              checked={formData.is_shared}
-              onCheckedChange={(checked) => setFormData({ ...formData, is_shared: checked })}
-            />
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="is_shared">{t('subscriptions.sharedSubscription')}</Label>
+              <Switch
+                id="is_shared"
+                checked={formData.is_shared}
+                onCheckedChange={(checked) => setFormData({ ...formData, is_shared: checked })}
+              />
+            </div>
+            {formData.is_shared && (
+              <p className="text-xs text-muted-foreground">
+                Add contributors and configure split type after creating the subscription.
+              </p>
+            )}
           </div>
 
           <div className="flex gap-2">

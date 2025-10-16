@@ -12,6 +12,7 @@ import { SubscriptionCard } from "@/components/SubscriptionCard";
 import { CreateSubscriptionDialog } from "@/components/CreateSubscriptionDialog";
 import EditSubscriptionDialog from "@/components/EditSubscriptionDialog";
 import ManageContributorsDialog from "@/components/ManageContributorsDialog";
+import { SubscriptionDetailsDialog } from "@/components/SubscriptionDetailsDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
@@ -23,6 +24,7 @@ export default function Subscriptions() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [contributorsDialogOpen, setContributorsDialogOpen] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState<any>(null);
   const [selectedTab, setSelectedTab] = useState("active");
 
@@ -71,6 +73,11 @@ export default function Subscriptions() {
   const handleManageContributors = (subscription: any) => {
     setSelectedSubscription(subscription);
     setContributorsDialogOpen(true);
+  };
+
+  const handleViewDetails = (subscription: any) => {
+    setSelectedSubscription(subscription);
+    setDetailsDialogOpen(true);
   };
 
   return (
@@ -256,6 +263,7 @@ export default function Subscriptions() {
                     subscription={subscription}
                     onEdit={() => handleEditSubscription(subscription)}
                     onManageContributors={() => handleManageContributors(subscription)}
+                    onViewDetails={() => handleViewDetails(subscription)}
                   />
                 ))}
               </div>
@@ -277,6 +285,7 @@ export default function Subscriptions() {
                     subscription={subscription}
                     onEdit={() => handleEditSubscription(subscription)}
                     onManageContributors={() => handleManageContributors(subscription)}
+                    onViewDetails={() => handleViewDetails(subscription)}
                   />
                 ))}
               </div>
@@ -298,6 +307,7 @@ export default function Subscriptions() {
                     subscription={subscription}
                     onEdit={() => handleEditSubscription(subscription)}
                     onManageContributors={() => handleManageContributors(subscription)}
+                    onViewDetails={() => handleViewDetails(subscription)}
                   />
                 ))}
               </div>
@@ -319,6 +329,7 @@ export default function Subscriptions() {
                     subscription={subscription}
                     onEdit={() => handleEditSubscription(subscription)}
                     onManageContributors={() => handleManageContributors(subscription)}
+                    onViewDetails={() => handleViewDetails(subscription)}
                   />
                 ))}
               </div>
@@ -345,6 +356,13 @@ export default function Subscriptions() {
               subscriptionId={selectedSubscription.id}
               subscriptionName={selectedSubscription.name}
               totalAmount={selectedSubscription.amount}
+            />
+
+            <SubscriptionDetailsDialog
+              open={detailsDialogOpen}
+              onOpenChange={setDetailsDialogOpen}
+              subscriptionId={selectedSubscription.id}
+              subscriptionName={selectedSubscription.name}
             />
           </>
         )}

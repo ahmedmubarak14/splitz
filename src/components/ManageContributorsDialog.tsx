@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { UserPlus, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { SubscriptionSplitTypeSelector } from './SubscriptionSplitTypeSelector';
 
 interface ManageContributorsDialogProps {
   open: boolean;
@@ -29,13 +30,29 @@ const ManageContributorsDialog = ({
   const [contributionAmount, setContributionAmount] = useState('');
   const [searchEmail, setSearchEmail] = useState('');
 
+  // Fetch subscription details for split type
+  const { data: subscription } = useQuery({
+    queryKey: ['subscription-details', subscriptionId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('split_type, currency')
+        .eq('id', subscriptionId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: open,
+  });
+
   // Fetch contributors
   const { data: contributors } = useQuery({
     queryKey: ['subscription-contributors', subscriptionId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('subscription_contributors')
-        .select('*')
+        .select('id, user_id, contribution_amount, is_settled, paid_at, split_value')
         .eq('subscription_id', subscriptionId);
 
       if (error) throw error;
@@ -146,6 +163,49 @@ const ManageContributorsDialog = ({
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Split Type Selector */}
+          {subscription && contributors && contributors.length > 0 && (
+            <div className="border rounded-lg p-4">
+              <h3 className="font-semibold mb-4">Split Configuration</h3>
+              <SubscriptionSplitTypeSelector
+                totalAmount={totalAmount}
+                currency={subscription.currency}
+                members={contributors.map(c => ({
+                  user_id: c.user_id,
+                  full_name: (c as any).profile?.full_name || 'Unknown'
+                }))}
+                onSplitsChange={async (splits, splitType) => {
+                  // Update split type in subscription
+                  await supabase
+                    .from('subscriptions')
+                    .update({ split_type: splitType })
+                    .eq('id', subscriptionId);
+
+                  // Update contributor split values and amounts
+                  for (const split of splits) {
+                    await supabase
+                      .from('subscription_contributors')
+                      .update({
+                        split_value: split.split_value,
+                        contribution_amount: split.calculated_amount
+                      })
+                      .eq('subscription_id', subscriptionId)
+                      .eq('user_id', split.user_id);
+                  }
+
+                  queryClient.invalidateQueries({ queryKey: ['subscription-contributors'] });
+                  queryClient.invalidateQueries({ queryKey: ['subscription-details'] });
+                  toast.success('Split updated successfully');
+                }}
+                initialSplitType={subscription.split_type || 'equal'}
+                initialSplits={contributors.map(c => ({
+                  user_id: c.user_id,
+                  split_value: c.split_value
+                }))}
+              />
+            </div>
+          )}
+
           {/* Summary */}
           <div className="grid grid-cols-3 gap-4">
             <div className="bg-card border rounded-lg p-4">
@@ -154,11 +214,11 @@ const ManageContributorsDialog = ({
             </div>
             <div className="bg-card border rounded-lg p-4">
               <p className="text-sm text-muted-foreground">Covered</p>
-              <p className="text-2xl font-bold text-green-600">{totalContributions.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-success">{totalContributions.toFixed(2)}</p>
             </div>
             <div className="bg-card border rounded-lg p-4">
               <p className="text-sm text-muted-foreground">Remaining</p>
-              <p className="text-2xl font-bold text-orange-600">{remainingAmount.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-warning">{remainingAmount.toFixed(2)}</p>
             </div>
           </div>
 
