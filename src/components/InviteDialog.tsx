@@ -45,13 +45,13 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
     }
   }, [open]);
 
-  const generateInviteLink = async () => {
+  const generateInviteLink = async (): Promise<string | null> => {
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast.error('You must be logged in to create an invite');
-        return;
+        return null;
       }
 
       const inviteCode = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -71,20 +71,27 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
       const link = `${window.location.origin}/join-invite?code=${inviteCode}`;
       setInviteLink(link);
       toast.success('Invite link generated!');
+      return link;
     } catch (error) {
       console.error('Error generating invite link:', error);
       Sentry.captureException(error);
       toast.error('Failed to generate invite link');
+      return null;
     } finally {
       setLoading(false);
     }
   };
 
   const copyToClipboard = async () => {
-    if (!inviteLink) return;
+    let linkToCopy = inviteLink;
+    if (!linkToCopy) {
+      const generatedLink = await generateInviteLink();
+      if (!generatedLink) return;
+      linkToCopy = generatedLink;
+    }
     
     try {
-      await navigator.clipboard.writeText(inviteLink);
+      await navigator.clipboard.writeText(linkToCopy);
       setCopied(true);
       toast.success('Link copied to clipboard!');
       setTimeout(() => setCopied(false), 2000);
@@ -102,14 +109,22 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
 
     setSendingEmail(true);
     try {
-      if (!inviteLink) {
-        await generateInviteLink();
+      // Generate link and get the actual value
+      let linkToSend = inviteLink;
+      if (!linkToSend) {
+        const generatedLink = await generateInviteLink();
+        if (!generatedLink) {
+          toast.error('Failed to generate invite link');
+          setSendingEmail(false);
+          return;
+        }
+        linkToSend = generatedLink;
       }
 
       const { data, error } = await supabase.functions.invoke('send-invite', {
         body: {
           recipientEmail,
-          inviteLink: inviteLink || '',
+          inviteLink: linkToSend,
           resourceName,
           resourceType,
           inviterName: inviterName || 'Someone',
@@ -129,11 +144,10 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
         }
         
         // Fallback to mailto
-        const link = inviteLink || `${window.location.origin}/join-invite?code=pending`;
-        await navigator.clipboard.writeText(link);
+        await navigator.clipboard.writeText(linkToSend);
         
         const emailSubject = `You're invited to join ${resourceName}!`;
-        const emailBody = `${inviterName || 'Someone'} has invited you to join ${resourceName}.\n\nClick here to accept: ${link}`;
+        const emailBody = `${inviterName || 'Someone'} has invited you to join ${resourceName}.\n\nClick here to accept: ${linkToSend}`;
         
         window.location.href = `mailto:${recipientEmail}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
         
