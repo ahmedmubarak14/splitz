@@ -28,11 +28,13 @@ export const SubscriptionDetailsDialog = ({
   const queryClient = useQueryClient();
 
   // Get current user
-  const { data: userData } = useQuery({
-    queryKey: ['current-user'],
-    queryFn: async () => await supabase.auth.getUser()
+  const { data: currentUser } = useQuery({
+    queryKey: ["current-user"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
+    },
   });
-  const user = userData?.data?.user;
 
   // Fetch subscription details
   const { data: subscription } = useQuery({
@@ -49,7 +51,23 @@ export const SubscriptionDetailsDialog = ({
     enabled: open
   });
 
-  const isOwner = user?.id === subscription?.user_id;
+  const isOwner = currentUser?.id === subscription?.user_id;
+
+  // Fetch owner profile
+  const { data: ownerProfile } = useQuery({
+    queryKey: ['profile', subscription?.user_id],
+    queryFn: async () => {
+      if (!subscription?.user_id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .eq('id', subscription.user_id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!subscription?.user_id
+  });
 
   // Fetch contributors
   const { data: contributors = [] } = useQuery({
@@ -228,6 +246,32 @@ export const SubscriptionDetailsDialog = ({
               </div>
             </div>
 
+            <div className="border-b pb-4 mb-4">
+              <h3 className="text-lg font-semibold mb-3">{t("subscriptions.subscriptionDetails")}</h3>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={ownerProfile?.avatar_url || ""} />
+                    <AvatarFallback>{ownerProfile?.full_name?.[0]?.toUpperCase() || "?"}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="text-sm text-muted-foreground">{t("subscriptions.owner")}</div>
+                    <div className="font-medium">{ownerProfile?.full_name || t("common.unknown")}</div>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">{t("subscriptions.createdOn")}:</span>
+                  <span>{new Date(subscription.created_at).toLocaleDateString()}</span>
+                </div>
+                {subscription.notes && (
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">{t("subscriptions.notes")}:</div>
+                    <p className="text-sm">{subscription.notes}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="p-4 rounded-lg bg-card border space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -254,7 +298,7 @@ export const SubscriptionDetailsDialog = ({
           <TabsContent value="contributors" className="space-y-3 mt-4">
             {contributors.map((contributor) => {
               const profile = (contributor as any).profiles;
-              const isCurrentUser = user?.id === contributor.user_id;
+              const isCurrentUser = currentUser?.id === contributor.user_id;
               const isOwnerContribution = contributor.user_id === subscription?.user_id;
               
               const getStatusBadge = () => {
