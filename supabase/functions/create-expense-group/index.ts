@@ -173,7 +173,7 @@ const handler = async (req: Request): Promise<Response> => {
                 Authorization: `Bearer ${resendApiKey}`,
               },
               body: JSON.stringify({
-                from: "LinkUp <onboarding@resend.dev>",
+                from: "Splitz <noreply@splitz.live>",
                 to: [email],
                 subject: `${inviterName} invited you to split expenses`,
                 html: `

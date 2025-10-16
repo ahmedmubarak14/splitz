@@ -88,7 +88,7 @@ const handler = async (req: Request): Promise<Response> => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Splitz <onboarding@resend.dev>',
+        from: 'Splitz <noreply@splitz.live>',
         to: [profile.email],
         subject: `Payment Reminder: ${subscription.name}`,
         html: emailHtml,

@@ -196,7 +196,7 @@ If you didn't expect this invitation, you can safely ignore this email.
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Splitz <onboarding@resend.dev>', // Using Resend's test domain (works without verification)
+        from: 'Splitz <noreply@splitz.live>', // Using Resend's test domain (works without verification)
         to: [recipientEmail],
         subject: `${inviterName} invited you to join "${resourceName}" on Splitz`,
         html: emailHtml,
