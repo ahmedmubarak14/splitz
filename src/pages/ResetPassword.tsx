@@ -81,7 +81,15 @@ const ResetPassword = () => {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-4">
           <div className="flex justify-center">
-            <img src={splitzLogo} alt="Splitz" className="h-12" loading="eager" />
+            <img 
+              src={splitzLogo} 
+              alt="Splitz" 
+              width={48}
+              height={48}
+              className="h-12" 
+              loading="eager"
+              decoding="async"
+            />
           </div>
           <div className="space-y-2 text-center">
             <CardTitle className="text-2xl font-bold flex items-center justify-center gap-2">

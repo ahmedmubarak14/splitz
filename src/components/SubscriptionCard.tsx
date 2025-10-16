@@ -62,6 +62,10 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors }:
                 <img 
                   src={subscription.logo_url} 
                   alt={subscription.name} 
+                  width={32}
+                  height={32}
+                  loading="lazy"
+                  decoding="async"
                   className="h-8 w-8 object-contain"
                 />
               ) : (

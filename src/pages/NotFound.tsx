@@ -76,7 +76,11 @@ const NotFound = () => {
         <div className="flex justify-center mb-8 animate-fade-in">
           <img 
             src={splitzLogo} 
-            alt="Splitz" 
+            alt="Splitz"
+            width={64}
+            height={64}
+            loading="eager"
+            decoding="async"
             className="h-12 md:h-16 opacity-80 hover:opacity-100 transition-opacity cursor-pointer" 
             onClick={() => navigate('/')}
           />

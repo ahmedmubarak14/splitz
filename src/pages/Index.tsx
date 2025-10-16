@@ -57,8 +57,11 @@ const Index = () => {
             <img
               src={splitzLogo}
               alt={t('common.logoAlt')}
+              width={32}
+              height={32}
               className="h-8 w-auto rounded-none cursor-pointer hover:opacity-80 transition-opacity"
               loading="eager"
+              decoding="async"
             />
           </Link>
 
@@ -688,6 +691,10 @@ const Index = () => {
             <img
               src={splitzLogo}
               alt={t('common.logoAlt')}
+              width={32}
+              height={32}
+              loading="lazy"
+              decoding="async"
               className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
             />
           </Link>

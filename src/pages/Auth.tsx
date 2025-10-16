@@ -157,6 +157,10 @@ const Auth = () => {
             <img
               src={splitzLogo}
               alt="Splitz"
+              width={48}
+              height={48}
+              loading="eager"
+              decoding="async"
               className="h-12 md:h-14 w-auto hover:opacity-80 transition-opacity"
             />
           </Link>

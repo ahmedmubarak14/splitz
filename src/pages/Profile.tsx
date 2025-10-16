@@ -150,7 +150,15 @@ const Profile = () => {
               <div className="relative group">
                 <div className="w-24 h-24 rounded-full overflow-hidden ring-4 ring-primary/10 shadow-md group-hover:ring-primary/20 transition-all duration-200 bg-accent flex items-center justify-center">
                   {profile?.avatar_url ? (
-                    <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" loading="lazy" />
+                    <img 
+                      src={profile.avatar_url} 
+                      alt="Avatar" 
+                      width={96}
+                      height={96}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover" 
+                    />
                   ) : (
                     <div className="text-foreground text-3xl font-semibold">
                       {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase()}

@@ -106,7 +106,15 @@ export default function Onboarding() {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl">
         <div className="text-center mb-8">
-          <img src={splitzLogo} alt="Splitz" className="h-12 mx-auto mb-4" />
+          <img 
+            src={splitzLogo} 
+            alt="Splitz" 
+            width={48}
+            height={48}
+            className="h-12 mx-auto mb-4"
+            loading="eager"
+            decoding="async"
+          />
           <div className="flex justify-center gap-2 mb-6">
             {steps.map((_, index) => (
               <div

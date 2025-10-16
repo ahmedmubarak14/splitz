@@ -109,7 +109,11 @@ export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: Mobi
         <SheetHeader className="p-6 bg-gradient-to-br from-primary/10 to-accent/10 border-b">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16 border-2 border-primary/20">
-              <AvatarImage src={profile?.avatar_url} />
+              <AvatarImage 
+                src={profile?.avatar_url} 
+                loading="lazy"
+                decoding="async"
+              />
               <AvatarFallback className="bg-primary/20 text-primary text-xl">
                 {profile?.full_name?.charAt(0) || 'U'}
               </AvatarFallback>
