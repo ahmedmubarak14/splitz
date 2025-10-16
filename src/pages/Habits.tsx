@@ -21,6 +21,7 @@ import { responsiveText, responsiveSpacing, responsiveGrid } from '@/lib/respons
 import { EmptyState } from '@/components/EmptyState';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
+import { HabitCheckInCelebration } from '@/components/HabitCheckInCelebration';
 
 type Habit = {
   id: string;
@@ -46,6 +47,8 @@ const Habits = () => {
   const [calendarDialogOpen, setCalendarDialogOpen] = useState(false);
   const [statsDialogOpen, setStatsDialogOpen] = useState(false);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
+  const [celebrating, setCelebrating] = useState(false);
+  const [celebratedHabit, setCelebratedHabit] = useState<Habit | null>(null);
   
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -130,7 +133,16 @@ const Habits = () => {
           throw error;
         }
       } else {
-        toast.success('Checked in');
+        // Find the habit to celebrate
+        const habit = habits.find(h => h.id === habitId);
+        
+        if (habit) {
+          // Trigger celebration
+          setCelebratedHabit(habit);
+          setCelebrating(true);
+        }
+        
+        // Refresh data
         fetchHabits();
       }
     } catch (error: unknown) {
@@ -228,26 +240,52 @@ const Habits = () => {
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 pt-4">
-                <div>
-                  <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('habits.chooseEmoji')}</label>
-          <div className="grid grid-cols-5 gap-2">
-                    {emojiOptions.map((emoji) => (
-                      <button
-                        key={emoji}
-                        type="button"
-                        onClick={() => setNewHabitIcon(emoji)}
-                        className={cn(
-                          "text-3xl p-3 rounded-lg transition-all duration-200 aspect-square flex items-center justify-center",
-                          newHabitIcon === emoji 
-                            ? 'bg-primary/10 ring-2 ring-primary shadow-sm' 
-                            : 'bg-muted hover:bg-accent hover:scale-105 active:scale-95'
-                        )}
-                      >
-                        {emoji}
-                      </button>
-                    ))}
+              <div>
+                <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('habits.chooseEmoji')}</label>
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById('emoji-input-create')?.focus()}
+                    className="text-6xl p-4 rounded-xl bg-muted hover:bg-accent transition-all hover:scale-105 active:scale-95 shadow-sm border border-border/40"
+                  >
+                    {newHabitIcon}
+                  </button>
+                  <input
+                    id="emoji-input-create"
+                    type="text"
+                    inputMode="none"
+                    maxLength={2}
+                    value={newHabitIcon}
+                    onChange={(e) => {
+                      const emoji = e.target.value.slice(-2);
+                      if (emoji) setNewHabitIcon(emoji);
+                    }}
+                    className="sr-only"
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {t('habits.tapToSelectEmoji') || 'Tap the emoji to open your device emoji picker'}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {emojiOptions.map((emoji) => (
+                        <button
+                          key={emoji}
+                          type="button"
+                          onClick={() => setNewHabitIcon(emoji)}
+                          className={cn(
+                            "text-2xl p-2 rounded-lg transition-all duration-200",
+                            newHabitIcon === emoji 
+                              ? 'bg-primary/10 ring-2 ring-primary shadow-sm' 
+                              : 'bg-muted/50 hover:bg-accent hover:scale-105 active:scale-95'
+                          )}
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
+              </div>
                 <Input
                   placeholder={t('habits.habitNamePlaceholder')}
                   value={newHabitTitle}
@@ -373,22 +411,48 @@ const Habits = () => {
           <div className="space-y-4 pt-4">
             <div>
               <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('habits.chooseEmoji')}</label>
-              <div className="grid grid-cols-5 gap-2">
-                {emojiOptions.map((emoji) => (
-                  <button
-                    key={emoji}
-                    type="button"
-                    onClick={() => setEditIcon(emoji)}
-                    className={cn(
-                      "text-3xl p-3 rounded-lg transition-all aspect-square flex items-center justify-center",
-                      editIcon === emoji 
-                        ? 'bg-primary/10 ring-2 ring-primary' 
-                        : 'bg-muted hover:bg-accent hover:scale-105'
-                    )}
-                  >
-                    {emoji}
-                  </button>
-                ))}
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('emoji-input-edit')?.focus()}
+                  className="text-6xl p-4 rounded-xl bg-muted hover:bg-accent transition-all hover:scale-105 active:scale-95 shadow-sm border border-border/40"
+                >
+                  {editIcon}
+                </button>
+                <input
+                  id="emoji-input-edit"
+                  type="text"
+                  inputMode="none"
+                  maxLength={2}
+                  value={editIcon}
+                  onChange={(e) => {
+                    const emoji = e.target.value.slice(-2);
+                    if (emoji) setEditIcon(emoji);
+                  }}
+                  className="sr-only"
+                />
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {t('habits.tapToSelectEmoji') || 'Tap the emoji to open your device emoji picker'}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {emojiOptions.map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        onClick={() => setEditIcon(emoji)}
+                        className={cn(
+                          "text-2xl p-2 rounded-lg transition-all duration-200",
+                          editIcon === emoji 
+                            ? 'bg-primary/10 ring-2 ring-primary shadow-sm' 
+                            : 'bg-muted/50 hover:bg-accent hover:scale-105 active:scale-95'
+                        )}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
             <Input
@@ -428,11 +492,32 @@ const Habits = () => {
       </AlertDialog>
 
       {selectedHabit && (
-        <HabitCalendar
-          habitId={selectedHabit.id}
-          habitName={selectedHabit.name}
-          open={calendarDialogOpen}
-          onOpenChange={setCalendarDialogOpen}
+        <>
+          <HabitCalendar
+            habitId={selectedHabit.id}
+            habitName={selectedHabit.name}
+            open={calendarDialogOpen}
+            onOpenChange={setCalendarDialogOpen}
+          />
+          <Dialog open={statsDialogOpen} onOpenChange={setStatsDialogOpen}>
+            <DialogContent className="sm:max-w-2xl">
+              <HabitStatistics />
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
+
+      {/* Celebration */}
+      {celebratedHabit && (
+        <HabitCheckInCelebration
+          show={celebrating}
+          habitName={celebratedHabit.name}
+          habitIcon={celebratedHabit.icon || '🔥'}
+          streakCount={(celebratedHabit.streak_count || 0) + 1}
+          onComplete={() => {
+            setCelebrating(false);
+            setCelebratedHabit(null);
+          }}
         />
       )}
 

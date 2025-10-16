@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { Button } from '@/components/ui/button';
+import { HabitCheckInCelebration } from '@/components/HabitCheckInCelebration';
 
 interface Habit {
   id: string;
@@ -27,6 +28,8 @@ export function HabitsDueTodayWidget({ habits, onRefresh }: HabitsDueTodayWidget
   const { t } = useTranslation();
   const isRTL = useIsRTL();
   const [checking, setChecking] = useState<string | null>(null);
+  const [celebrating, setCelebrating] = useState(false);
+  const [celebratedHabit, setCelebratedHabit] = useState<Habit | null>(null);
 
   const handleCheckIn = async (habitId: string) => {
     setChecking(habitId);
@@ -44,7 +47,15 @@ export function HabitsDueTodayWidget({ habits, onRefresh }: HabitsDueTodayWidget
 
       if (error) throw error;
       
-      toast.success(t('habits.checkedIn') || 'Habit checked in! 🎉');
+      // Find the habit to celebrate
+      const habit = habits.find(h => h.id === habitId);
+      
+      if (habit) {
+        // Trigger mini celebration
+        setCelebratedHabit(habit);
+        setCelebrating(true);
+      }
+      
       onRefresh();
     } catch (error) {
       console.error('Error checking in habit:', error);
@@ -152,6 +163,20 @@ export function HabitsDueTodayWidget({ habits, onRefresh }: HabitsDueTodayWidget
             {t('dashboard.createHabit')}
           </Button>
         </div>
+      )}
+
+      {/* Celebration */}
+      {celebratedHabit && (
+        <HabitCheckInCelebration
+          show={celebrating}
+          habitName={celebratedHabit.name}
+          habitIcon={celebratedHabit.icon}
+          streakCount={celebratedHabit.streak_count + 1}
+          onComplete={() => {
+            setCelebrating(false);
+            setCelebratedHabit(null);
+          }}
+        />
       )}
     </DashboardWidgetCard>
   );
