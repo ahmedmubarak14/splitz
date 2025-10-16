@@ -3,32 +3,18 @@ import { SEO, pageSEO } from '@/components/SEO';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
   FileText, 
   Clock, 
   CheckCircle, 
-  ShoppingCart,
-  Eye,
-  MessageSquare,
-  AlertTriangle,
-  Plus,
-  Users,
-  ArrowRight,
-  Brain,
-  Trees,
-  BarChart3,
-  TrendingUp
+  Brain
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing, responsiveGrid } from '@/lib/responsive-utils';
 import { formatCurrency } from '@/lib/formatters';
-import { HabitStatistics } from '@/components/HabitStatistics';
-import { ChallengeProgressChart } from '@/components/ChallengeProgressChart';
-import { ExpenseAnalytics } from '@/components/ExpenseAnalytics';
 import Navigation from '@/components/Navigation';
 import { TodaysTasksWidget } from '@/components/dashboard/TodaysTasksWidget';
 import { UpcomingSubscriptionsWidget } from '@/components/dashboard/UpcomingSubscriptionsWidget';
@@ -344,103 +330,38 @@ export default function Dashboard() {
           <p className="text-muted-foreground">{t('dashboard.subtitle')}</p>
         </div>
 
-        {/* Tabs for different views */}
-        <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className={`${isRTL ? 'flex flex-row-reverse' : 'flex'} w-full`}>
-              <TabsTrigger className="flex-1" value="overview">{t('dashboard.overview')}</TabsTrigger>
-              <TabsTrigger className="flex-1" value="habits">{t('dashboard.habits')}</TabsTrigger>
-              <TabsTrigger className="flex-1" value="focus">{t('dashboard.focus') || 'Focus'}</TabsTrigger>
-              <TabsTrigger className="flex-1" value="expenses">{t('dashboard.expenses')}</TabsTrigger>
-              <TabsTrigger className="flex-1" value="challenges">{t('dashboard.challenges')}</TabsTrigger>
-            </TabsList>
+        {/* Widget Grid - 2 Column Layout */}
+        <div className={`grid ${responsiveGrid.twoColumn} gap-4 md:gap-6`}>
+          <TodaysTasksWidget tasks={todaysTasks} onRefresh={fetchDashboardData} />
+          <HabitsDueTodayWidget habits={habitsData} onRefresh={fetchDashboardData} />
+          <UpcomingSubscriptionsWidget subscriptions={upcomingSubscriptions} />
+          <PendingExpensesWidget balances={netBalances} userId={userId} />
+        </div>
 
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            {/* Widget Grid - 2 Column Layout */}
-            <div className={`grid ${responsiveGrid.twoColumn} gap-4 md:gap-6`}>
-              <TodaysTasksWidget tasks={todaysTasks} onRefresh={fetchDashboardData} />
-              <HabitsDueTodayWidget habits={habitsData} onRefresh={fetchDashboardData} />
-              <UpcomingSubscriptionsWidget subscriptions={upcomingSubscriptions} />
-              <PendingExpensesWidget balances={netBalances} userId={userId} />
-            </div>
+        {/* Quick Actions Hub */}
+        <QuickActionsHub focusMinutesThisWeek={stats.focusMinutes} />
 
-            {/* Quick Actions Hub */}
-            <QuickActionsHub focusMinutesThisWeek={stats.focusMinutes} />
-
-            {/* Stats Grid */}
-            <div className={`grid ${responsiveGrid.stats} ${responsiveSpacing.gridGap}`}>
-              {statCards.map((stat, idx) => (
-                <Card key={idx} className="bg-background border border-border/40">
-                  <CardContent className={responsiveSpacing.pageContainer}>
-                    <div className={`flex items-start justify-between mb-3 md:mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                      <div className="flex-1">
-                        <p className={`text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                          {stat.label}
-                        </p>
-                      </div>
-                      <stat.icon className={`h-4 w-4 md:h-5 md:h-5 ${stat.color} ${isRTL ? 'ml-2' : 'mr-2'}`} />
-                    </div>
-                    <div className="space-y-1">
-                      <div className={`text-2xl md:text-3xl font-bold text-foreground ${isRTL ? 'text-right' : 'text-left'}`}>{stat.value}</div>
-                      <p className={`text-xs text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>{stat.subtitle}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Habits Analytics Tab */}
-          <TabsContent value="habits"><HabitStatistics /></TabsContent>
-
-          {/* Focus Tab */}
-          <TabsContent value="focus" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Brain className="w-5 h-5" />
-                  {t('dashboard.focusSessions') || 'Focus Sessions'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-muted/50 rounded-lg">
-                    <div className="text-2xl font-bold">{stats.focusSessions}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {t('focus.totalSessions') || 'Total Sessions'}
-                    </div>
+        {/* Stats Grid */}
+        <div className={`grid ${responsiveGrid.stats} ${responsiveSpacing.gridGap}`}>
+          {statCards.map((stat, idx) => (
+            <Card key={idx} className="bg-background border border-border/40">
+              <CardContent className={responsiveSpacing.pageContainer}>
+                <div className={`flex items-start justify-between mb-3 md:mb-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <div className="flex-1">
+                    <p className={`text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                      {stat.label}
+                    </p>
                   </div>
-                  <div className="text-center p-4 bg-muted/50 rounded-lg">
-                    <div className="text-2xl font-bold">{stats.focusMinutes}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {t('focus.minutesFocused') || 'Minutes'}
-                    </div>
-                  </div>
-                  <div className="text-center p-4 bg-muted/50 rounded-lg col-span-2 md:col-span-1">
-                    <div className="text-2xl font-bold">
-                      {Math.floor(stats.focusMinutes / 60)}h {stats.focusMinutes % 60}m
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {t('focus.totalTime') || 'Total Time'}
-                    </div>
-                  </div>
+                  <stat.icon className={`h-4 w-4 md:h-5 md:h-5 ${stat.color} ${isRTL ? 'ml-2' : 'mr-2'}`} />
                 </div>
-                <div className="flex justify-center pt-2">
-                  <Button onClick={() => navigate('/focus')} className="gap-2">
-                    <Brain className="w-4 h-4" />
-                    {t('dashboard.startFocus') || 'Start Focus Session'}
-                  </Button>
+                <div className="space-y-1">
+                  <div className={`text-2xl md:text-3xl font-bold text-foreground ${isRTL ? 'text-right' : 'text-left'}`}>{stat.value}</div>
+                  <p className={`text-xs text-muted-foreground ${isRTL ? 'text-right' : 'text-left'}`}>{stat.subtitle}</p>
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
-
-          {/* Expenses Tab */}
-          <TabsContent value="expenses"><ExpenseAnalytics /></TabsContent>
-
-          {/* Challenges Tab */}
-          <TabsContent value="challenges"><ChallengeProgressChart /></TabsContent>
-        </Tabs>
+          ))}
+        </div>
       </div>
       <Navigation />
       </div>
