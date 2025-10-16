@@ -3,13 +3,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
 import { formatCurrency } from "@/lib/formatters";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Calendar, Users, Bell, CheckCircle, XCircle, Clock, Check, X } from "lucide-react";
+import { Calendar, Users, Bell, CheckCircle, XCircle, Clock, Check, X, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
+import { withAuthRecovery } from "@/lib/auth-recovery";
 
 interface SubscriptionDetailsDialogProps {
   open: boolean;
@@ -37,9 +39,9 @@ export const SubscriptionDetailsDialog = ({
   });
 
   // Fetch subscription details
-  const { data: subscription } = useQuery({
+  const { data: subscription, isLoading: isLoadingSubscription, error: subscriptionError } = useQuery({
     queryKey: ['subscription-details', subscriptionId],
-    queryFn: async () => {
+    queryFn: () => withAuthRecovery(async () => {
       const { data, error } = await supabase
         .from('subscriptions')
         .select('*')
@@ -47,7 +49,7 @@ export const SubscriptionDetailsDialog = ({
         .single();
       if (error) throw error;
       return data;
-    },
+    }, "Failed to load subscription details"),
     enabled: open
   });
 
@@ -70,9 +72,9 @@ export const SubscriptionDetailsDialog = ({
   });
 
   // Fetch contributors
-  const { data: contributors = [] } = useQuery({
+  const { data: contributors = [], isLoading: isLoadingContributors } = useQuery({
     queryKey: ['subscription-contributors', subscriptionId],
-    queryFn: async () => {
+    queryFn: () => withAuthRecovery(async () => {
       // Step 1: Get contributors
       const { data: contributorsData, error: contributorsError } = await supabase
         .from('subscription_contributors')
@@ -96,7 +98,7 @@ export const SubscriptionDetailsDialog = ({
         ...contributor,
         profiles: profiles?.find(p => p.id === contributor.user_id) || null
       }));
-    },
+    }, "Failed to load contributors"),
     enabled: open
   });
 
@@ -200,6 +202,49 @@ export const SubscriptionDetailsDialog = ({
   const totalRemaining = Number(subscription?.amount || 0) - totalCovered;
   const settledCount = contributors.filter(c => c.is_settled).length;
 
+  // Loading state
+  if (isLoadingSubscription || isLoadingContributors) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">{subscriptionName}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-32 w-full" />
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Error state
+  if (subscriptionError || !subscription) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">{subscriptionName}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center justify-center py-12 gap-4">
+            <AlertCircle className="h-12 w-12 text-destructive" />
+            <div className="text-center">
+              <p className="text-lg font-medium">{t('common.error')}</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {t('subscriptions.failedToLoad')}
+              </p>
+            </div>
+            <Button onClick={() => queryClient.invalidateQueries({ queryKey: ['subscription-details', subscriptionId] })}>
+              {t('common.retry')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -261,7 +306,7 @@ export const SubscriptionDetailsDialog = ({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t("subscriptions.createdOn")}:</span>
-                  <span>{new Date(subscription.created_at).toLocaleDateString()}</span>
+                  <span>{subscription?.created_at ? new Date(subscription.created_at).toLocaleDateString() : '-'}</span>
                 </div>
                 {subscription.notes && (
                   <div>
