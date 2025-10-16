@@ -68,7 +68,7 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
 
       if (error) throw error;
 
-      const link = `${window.location.origin}/join-invite?code=${inviteCode}`;
+      const link = `${window.location.origin}/join/${inviteCode}`;
       setInviteLink(link);
       toast.success('Invite link generated!');
       return link;
@@ -164,7 +164,7 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
       
       // Fallback to mailto
       toast.info('Opening email client as fallback...');
-      const link = inviteLink || `${window.location.origin}/join-invite?code=pending`;
+      const link = inviteLink || `${window.location.origin}/join/pending`;
       await navigator.clipboard.writeText(link);
       
       const emailSubject = `You're invited to join ${resourceName}!`;

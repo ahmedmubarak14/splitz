@@ -71,6 +71,20 @@ const JoinInvite = () => {
           .eq('id', inviteData.resource_id)
           .single();
         setResourceDetails(expense);
+      } else if (inviteData.invite_type === 'subscription') {
+        const { data: subscription } = await supabase
+          .from('subscriptions')
+          .select('*')
+          .eq('id', inviteData.resource_id)
+          .single();
+        setResourceDetails(subscription);
+      } else if (inviteData.invite_type === 'trip') {
+        const { data: trip } = await supabase
+          .from('trips')
+          .select('*')
+          .eq('id', inviteData.resource_id)
+          .single();
+        setResourceDetails(trip);
       }
     } catch (error) {
       console.error('Error fetching invitation:', error);
@@ -113,11 +127,9 @@ const JoinInvite = () => {
             throw error;
           }
         } else {
-          // Update invitation uses via RPC to bypass RLS
           await supabase.rpc('increment_invitation_uses', { 
             _invitation_id: invitation.id 
           });
-
           toast.success('Successfully joined the challenge! 🎉');
           navigate('/challenges');
         }
@@ -137,13 +149,56 @@ const JoinInvite = () => {
             throw error;
           }
         } else {
-          // Update invitation uses via RPC to bypass RLS
           await supabase.rpc('increment_invitation_uses', { 
             _invitation_id: invitation.id 
           });
-
           toast.success('Successfully joined the expense group! 💰');
           navigate('/expenses');
+        }
+      } else if (invitation.invite_type === 'subscription') {
+        // Add user as subscription contributor
+        const { error } = await supabase
+          .from('subscription_contributors')
+          .insert({
+            subscription_id: invitation.resource_id,
+            user_id: user.id,
+            contribution_amount: 0,
+          });
+
+        if (error) {
+          if (error.code === '23505') {
+            toast.error('You are already a contributor to this subscription');
+          } else {
+            throw error;
+          }
+        } else {
+          await supabase.rpc('increment_invitation_uses', { 
+            _invitation_id: invitation.id 
+          });
+          toast.success('Successfully joined the subscription! 💳');
+          navigate('/subscriptions');
+        }
+      } else if (invitation.invite_type === 'trip') {
+        // Add user as trip member
+        const { error } = await supabase
+          .from('trip_members')
+          .insert({
+            trip_id: invitation.resource_id,
+            user_id: user.id,
+          });
+
+        if (error) {
+          if (error.code === '23505') {
+            toast.error('You are already a member of this trip');
+          } else {
+            throw error;
+          }
+        } else {
+          await supabase.rpc('increment_invitation_uses', { 
+            _invitation_id: invitation.id 
+          });
+          toast.success('Successfully joined the trip! ✈️');
+          navigate('/trips');
         }
       }
     } catch (error) {
@@ -170,7 +225,9 @@ const JoinInvite = () => {
             <UserPlus className="w-8 h-8 text-primary-foreground" />
           </div>
           <CardTitle className="text-3xl font-bold">
-            {invitation?.invite_type === 'challenge' ? 'Join Challenge' : 'Join Expense Group'}
+            {invitation?.invite_type === 'challenge' ? 'Join Challenge' : 
+             invitation?.invite_type === 'subscription' ? 'Join Subscription' :
+             invitation?.invite_type === 'trip' ? 'Join Trip' : 'Join Expense Group'}
           </CardTitle>
           <CardDescription className="text-base mt-2">
             You've been invited to join
