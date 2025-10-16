@@ -54,6 +54,7 @@ export const formatDate = (
     month: 'long',
     day: 'numeric',
     timeZone: 'Asia/Riyadh',
+    calendar: 'gregory', // Always use Gregorian calendar, even for Arabic
     ...options,
   };
   

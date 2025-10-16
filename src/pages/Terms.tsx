@@ -10,7 +10,7 @@ const Terms = () => {
       <div className="max-w-4xl mx-auto space-y-6">
         <div className={isRTL ? 'text-right' : 'text-left'}>
           <h1 className={`${responsiveText.pageTitle} font-bold mb-2`}>Terms of Service</h1>
-          <p className="text-sm text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</p>
+          <p className="text-sm text-muted-foreground">Last updated: {new Date().toLocaleDateString(undefined, { calendar: 'gregory' })}</p>
         </div>
 
         <Card>

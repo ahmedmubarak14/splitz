@@ -110,7 +110,7 @@ const ChallengeDetailsDialog = ({
                   Start Date
                 </div>
                 <div className="font-bold">
-                  {new Date(challenge.start_date).toLocaleDateString()}
+                  {new Date(challenge.start_date).toLocaleDateString(undefined, { calendar: 'gregory' })}
                 </div>
               </CardContent>
             </Card>
@@ -122,7 +122,7 @@ const ChallengeDetailsDialog = ({
                   End Date
                 </div>
                 <div className="font-bold">
-                  {new Date(challenge.end_date).toLocaleDateString()}
+                  {new Date(challenge.end_date).toLocaleDateString(undefined, { calendar: 'gregory' })}
                 </div>
               </CardContent>
             </Card>
@@ -262,7 +262,7 @@ const ChallengeDetailsDialog = ({
                             {participant.user_email || 'Anonymous'}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Joined {new Date(participant.joined_at).toLocaleDateString()}
+                            Joined {new Date(participant.joined_at).toLocaleDateString(undefined, { calendar: 'gregory' })}
                           </div>
                         </div>
                         <div className="text-right">

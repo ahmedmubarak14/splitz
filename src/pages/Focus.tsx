@@ -892,7 +892,7 @@ const Focus = () => {
                           {task.due_date && (
                             <span className={`text-xs flex items-center gap-1 text-muted-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
                               <Calendar className="w-3 h-3" />
-                              {new Date(task.due_date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
+                              {new Date(task.due_date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { calendar: 'gregory' })}
                             </span>
                           )}
                           {task.has_reminder && (

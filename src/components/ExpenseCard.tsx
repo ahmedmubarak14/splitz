@@ -73,7 +73,7 @@ const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps)
               <span className="truncate">{t('components.expenseCard.created')}</span>
             </div>
             <div className={`${responsiveText.caption} md:text-sm font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>
-              {new Date(expense.created_at).toLocaleDateString()}
+              {new Date(expense.created_at).toLocaleDateString(undefined, { calendar: 'gregory' })}
             </div>
           </div>
         </div>

@@ -100,7 +100,7 @@ const ExpenseDetailsDialog = ({
                   Created
                 </div>
                 <div className="font-bold text-sm">
-                  {new Date(expense.created_at).toLocaleDateString()}
+                  {new Date(expense.created_at).toLocaleDateString(undefined, { calendar: 'gregory' })}
                 </div>
               </CardContent>
             </Card>

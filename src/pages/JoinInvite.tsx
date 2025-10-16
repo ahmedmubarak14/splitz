@@ -187,7 +187,7 @@ const JoinInvite = () => {
                 <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                   <CheckCircle className="w-4 h-4 text-primary" />
                   <span>
-                    {new Date(resourceDetails.start_date).toLocaleDateString()} - {new Date(resourceDetails.end_date).toLocaleDateString()}
+                    {new Date(resourceDetails.start_date).toLocaleDateString(undefined, { calendar: 'gregory' })} - {new Date(resourceDetails.end_date).toLocaleDateString(undefined, { calendar: 'gregory' })}
                   </span>
                 </div>
               )}
