@@ -3,12 +3,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Copy, Share2, Mail } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Copy, Share2, Mail, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Separator } from "@/components/ui/separator";
+import { FriendSelector } from "@/components/FriendSelector";
 
 interface InviteTripMemberDialogProps {
   tripId: string;
@@ -21,6 +22,7 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
   const queryClient = useQueryClient();
   const [inviteCode, setInviteCode] = useState("");
   const [email, setEmail] = useState("");
+  const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
 
   const createInviteMutation = useMutation({
     mutationFn: async () => {
@@ -134,6 +136,31 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
     },
   });
 
+  const addFriendsMutation = useMutation({
+    mutationFn: async (friendIds: string[]) => {
+      for (const friendId of friendIds) {
+        const { error } = await (supabase as any)
+          .from("trip_members")
+          .insert({
+            trip_id: tripId,
+            user_id: friendId,
+          });
+        
+        if (error && !error.message.includes("duplicate")) {
+          throw error;
+        }
+      }
+    },
+    onSuccess: () => {
+      setSelectedFriends([]);
+      queryClient.invalidateQueries({ queryKey: ["trip-members"] });
+      toast.success("Friends added to trip!");
+    },
+    onError: () => {
+      toast.error("Failed to add friends");
+    },
+  });
+
   const handleGenerateInvite = () => {
     createInviteMutation.mutate();
   };
@@ -144,6 +171,14 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
       return;
     }
     sendEmailInviteMutation.mutate(email);
+  };
+
+  const handleAddFriends = () => {
+    if (selectedFriends.length === 0) {
+      toast.error("Please select at least one friend");
+      return;
+    }
+    addFriendsMutation.mutate(selectedFriends);
   };
 
   const inviteUrl = inviteCode ? `${window.location.origin}/join/${inviteCode}` : "";
@@ -181,66 +216,96 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
           <DialogTitle>{t('trips.inviteMember')}</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6">
-          {/* Email Invitation */}
-          <div className="space-y-3">
-            <Label htmlFor="email">{t('trips.inviteByEmail')}</Label>
-            <div className="flex gap-2">
-              <Input
-                id="email"
-                type="email"
-                placeholder={t('trips.emailPlaceholder')}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Button 
-                onClick={handleSendEmail} 
-                disabled={sendEmailInviteMutation.isPending}
-              >
-                <Mail className="h-4 w-4 mr-2" />
-                {sendEmailInviteMutation.isPending ? t('common.sending') : t('trips.sendInvite')}
-              </Button>
-            </div>
-          </div>
+        <Tabs defaultValue="friends" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="friends">
+              <Users className="h-4 w-4 mr-2" />
+              Friends
+            </TabsTrigger>
+            <TabsTrigger value="invite">
+              <Mail className="h-4 w-4 mr-2" />
+              Invite
+            </TabsTrigger>
+          </TabsList>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                {t('trips.orDivider')}
-              </span>
-            </div>
-          </div>
-
-          {/* Link Invitation */}
-          {!inviteCode ? (
-            <Button onClick={handleGenerateInvite} disabled={createInviteMutation.isPending} className="w-full">
-              {createInviteMutation.isPending ? t('common.generating') : t('trips.generateInviteLink')}
+          <TabsContent value="friends" className="space-y-4 mt-4">
+            <FriendSelector
+              selectedFriends={selectedFriends}
+              onSelectionChange={setSelectedFriends}
+              multiSelect={true}
+            />
+            <Button
+              onClick={handleAddFriends}
+              disabled={selectedFriends.length === 0 || addFriendsMutation.isPending}
+              className="w-full"
+            >
+              {addFriendsMutation.isPending
+                ? "Adding..."
+                : `Add ${selectedFriends.length} Friend${selectedFriends.length !== 1 ? "s" : ""}`}
             </Button>
-          ) : (
-            <>
-              <div className="space-y-2">
-                <Label>{t('trips.inviteLink')}</Label>
-                <div className="flex gap-2">
-                  <Input value={inviteUrl} readOnly />
-                  <Button variant="outline" size="icon" onClick={handleCopy}>
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                  {navigator.share && (
-                    <Button variant="outline" size="icon" onClick={handleShare}>
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
+          </TabsContent>
+
+          <TabsContent value="invite" className="space-y-6 mt-4">
+            {/* Email Invitation */}
+            <div className="space-y-3">
+              <Label htmlFor="email">{t('trips.inviteByEmail')}</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder={t('trips.emailPlaceholder')}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <Button 
+                  onClick={handleSendEmail} 
+                  disabled={sendEmailInviteMutation.isPending}
+                >
+                  <Mail className="h-4 w-4 mr-2" />
+                  {sendEmailInviteMutation.isPending ? t('common.sending') : t('trips.sendInvite')}
+                </Button>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {t('trips.inviteExpires')}
-              </p>
-            </>
-          )}
-        </div>
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  {t('trips.orDivider')}
+                </span>
+              </div>
+            </div>
+
+            {/* Link Invitation */}
+            {!inviteCode ? (
+              <Button onClick={handleGenerateInvite} disabled={createInviteMutation.isPending} className="w-full">
+                {createInviteMutation.isPending ? t('common.generating') : t('trips.generateInviteLink')}
+              </Button>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label>{t('trips.inviteLink')}</Label>
+                  <div className="flex gap-2">
+                    <Input value={inviteUrl} readOnly />
+                    <Button variant="outline" size="icon" onClick={handleCopy}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                    {navigator.share && (
+                      <Button variant="outline" size="icon" onClick={handleShare}>
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {t('trips.inviteExpires')}
+                </p>
+              </>
+            )}
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
