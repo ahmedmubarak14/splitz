@@ -73,7 +73,7 @@
       // Register service worker only in production, not in preview
       if ('serviceWorker' in navigator) {
         const host = location.hostname;
-        const isPreview = /localhost|127\.0\.0\.1|lovableproject\.com/i.test(host);
+        const isPreview = /localhost|127\.0\.0\.1|lovableproject\.com|lovable\.app/i.test(host);
         
         if (!isPreview) {
           window.addEventListener('load', () => {

@@ -157,12 +157,14 @@ const JoinInvite = () => {
         }
       } else if (invitation.invite_type === 'subscription') {
         // Add user as subscription contributor
+        const splitValue = invitation.payload?.split_value || 0;
         const { error } = await supabase
           .from('subscription_contributors')
           .insert({
             subscription_id: invitation.resource_id,
             user_id: user.id,
             contribution_amount: 0,
+            split_value: splitValue,
           });
 
         if (error) {

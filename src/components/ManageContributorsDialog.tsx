@@ -397,6 +397,10 @@ const ManageContributorsDialog = ({
         resourceId={subscriptionId}
         resourceType="subscription"
         resourceName={subscriptionName}
+        payload={{
+          split_type: subscription?.split_type || 'equal',
+          split_value: splitType === 'equal' ? 0 : (totalAmount / ((contributors?.length || 0) + 1))
+        }}
       />
     </>
   );

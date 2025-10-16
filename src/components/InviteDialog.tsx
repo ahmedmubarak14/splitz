@@ -14,9 +14,10 @@ interface InviteDialogProps {
   resourceId: string;
   resourceType: 'challenge' | 'expense' | 'trip' | 'subscription';
   resourceName: string;
+  payload?: Record<string, any>;
 }
 
-export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, resourceName }: InviteDialogProps) => {
+export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, resourceName, payload }: InviteDialogProps) => {
   const [inviteLink, setInviteLink] = useState('');
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -64,6 +65,7 @@ export const InviteDialog = ({ open, onOpenChange, resourceId, resourceType, res
           resource_id: resourceId,
           created_by: user.id,
           expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          payload: payload || {},
         });
 
       if (error) throw error;

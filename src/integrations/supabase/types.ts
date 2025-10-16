@@ -531,6 +531,7 @@ export type Database = {
           invite_code: string
           invite_type: string
           max_uses: number | null
+          payload: Json | null
           resource_id: string
         }
         Insert: {
@@ -542,6 +543,7 @@ export type Database = {
           invite_code: string
           invite_type: string
           max_uses?: number | null
+          payload?: Json | null
           resource_id: string
         }
         Update: {
@@ -553,6 +555,7 @@ export type Database = {
           invite_code?: string
           invite_type?: string
           max_uses?: number | null
+          payload?: Json | null
           resource_id?: string
         }
         Relationships: []
@@ -833,35 +836,44 @@ export type Database = {
       }
       subscription_contributors: {
         Row: {
+          approved_at: string | null
           contribution_amount: number
           created_at: string
           id: string
           is_settled: boolean | null
           last_reminder_sent: string | null
           paid_at: string | null
+          payment_submitted: boolean
           split_value: number | null
+          submission_at: string | null
           subscription_id: string
           user_id: string
         }
         Insert: {
+          approved_at?: string | null
           contribution_amount: number
           created_at?: string
           id?: string
           is_settled?: boolean | null
           last_reminder_sent?: string | null
           paid_at?: string | null
+          payment_submitted?: boolean
           split_value?: number | null
+          submission_at?: string | null
           subscription_id: string
           user_id: string
         }
         Update: {
+          approved_at?: string | null
           contribution_amount?: number
           created_at?: string
           id?: string
           is_settled?: boolean | null
           last_reminder_sent?: string | null
           paid_at?: string | null
+          payment_submitted?: boolean
           split_value?: number | null
+          submission_at?: string | null
           subscription_id?: string
           user_id?: string
         }

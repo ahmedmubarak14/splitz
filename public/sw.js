@@ -1,4 +1,4 @@
-const CACHE_NAME = 'splitz-v1';
+const CACHE_NAME = 'splitz-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -34,6 +34,12 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   // Skip cross-origin requests
   if (!event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
+  // Skip caching JS modules and hashed assets to prevent stale chunks
+  const url = new URL(event.request.url);
+  if (event.request.destination === 'script' || url.pathname.includes('/assets/')) {
     return;
   }
 
