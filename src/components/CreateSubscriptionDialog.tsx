@@ -22,47 +22,12 @@ interface CreateSubscriptionDialogProps {
 }
 
 const POPULAR_SUBSCRIPTIONS = [
+  // Streaming Video
   { 
     name: "Netflix", 
     logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
     category: "streaming",
     defaultAmount: 15
-  },
-  { 
-    name: "Spotify Premium", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
-    category: "streaming",
-    defaultAmount: 10
-  },
-  { 
-    name: "Apple Music", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Apple_Music_icon.svg",
-    category: "streaming",
-    defaultAmount: 11
-  },
-  { 
-    name: "Apple TV+", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/28/Apple_TV_Plus_Logo.svg",
-    category: "streaming",
-    defaultAmount: 7
-  },
-  { 
-    name: "ChatGPT Pro", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg",
-    category: "software",
-    defaultAmount: 20
-  },
-  { 
-    name: "YouTube Premium", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg",
-    category: "streaming",
-    defaultAmount: 12
-  },
-  { 
-    name: "Amazon Prime", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg",
-    category: "streaming",
-    defaultAmount: 14
   },
   { 
     name: "Disney+", 
@@ -71,15 +36,15 @@ const POPULAR_SUBSCRIPTIONS = [
     defaultAmount: 8
   },
   { 
-    name: "Adobe Creative Cloud", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Adobe_Creative_Cloud_rainbow_icon.svg",
-    category: "software",
-    defaultAmount: 55
+    name: "Amazon Prime", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg",
+    category: "streaming",
+    defaultAmount: 14
   },
   { 
-    name: "Microsoft 365", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/51/Microsoft_365_logo.svg",
-    category: "software",
+    name: "Apple TV+", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/2/28/Apple_TV_Plus_Logo.svg",
+    category: "streaming",
     defaultAmount: 7
   },
   { 
@@ -101,16 +66,80 @@ const POPULAR_SUBSCRIPTIONS = [
     defaultAmount: 6
   },
   { 
+    name: "YouTube Premium", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg",
+    category: "streaming",
+    defaultAmount: 12
+  },
+  
+  // Music Streaming
+  { 
+    name: "Spotify Premium", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
+    category: "streaming",
+    defaultAmount: 10
+  },
+  { 
+    name: "Apple Music", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Apple_Music_icon.svg",
+    category: "streaming",
+    defaultAmount: 11
+  },
+  { 
+    name: "Tidal", 
+    logo: "https://upload.wikimedia.org/wikipedia/en/1/19/Tidal_%28service%29_logo.svg",
+    category: "streaming",
+    defaultAmount: 10
+  },
+  { 
+    name: "Audible", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/3/32/Audible_logo.svg",
+    category: "streaming",
+    defaultAmount: 15
+  },
+  
+  // Software & Productivity
+  { 
+    name: "Microsoft 365", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/5/51/Microsoft_365_logo.svg",
+    category: "software",
+    defaultAmount: 7
+  },
+  { 
+    name: "Adobe Creative Cloud", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Adobe_Creative_Cloud_rainbow_icon.svg",
+    category: "software",
+    defaultAmount: 55
+  },
+  { 
+    name: "ChatGPT Pro", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg",
+    category: "software",
+    defaultAmount: 20
+  },
+  { 
     name: "GitHub Pro", 
     logo: "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg",
     category: "software",
     defaultAmount: 4
   },
   { 
-    name: "LinkedIn Premium", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
+    name: "Notion", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg",
     category: "software",
-    defaultAmount: 30
+    defaultAmount: 8
+  },
+  { 
+    name: "Canva Pro", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Canva_icon_2021.svg",
+    category: "software",
+    defaultAmount: 13
+  },
+  { 
+    name: "Grammarly Premium", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/f/f8/Grammarly_Logo.svg",
+    category: "software",
+    defaultAmount: 12
   },
   { 
     name: "Zoom Pro", 
@@ -118,6 +147,14 @@ const POPULAR_SUBSCRIPTIONS = [
     category: "software",
     defaultAmount: 15
   },
+  { 
+    name: "Slack", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg",
+    category: "software",
+    defaultAmount: 8
+  },
+  
+  // Cloud Storage
   { 
     name: "Dropbox", 
     logo: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Dropbox_logo_2017.svg",
@@ -136,11 +173,125 @@ const POPULAR_SUBSCRIPTIONS = [
     category: "software",
     defaultAmount: 1
   },
+  
+  // Education
   { 
-    name: "Audible", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/3/32/Audible_logo.svg",
+    name: "Coursera Plus", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e5/Coursera_logo.svg",
+    category: "education",
+    defaultAmount: 59
+  },
+  { 
+    name: "Udemy", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e3/Udemy_logo.svg",
+    category: "education",
+    defaultAmount: 17
+  },
+  { 
+    name: "Skillshare", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/7/75/Skillshare_logo_2020.svg",
+    category: "education",
+    defaultAmount: 14
+  },
+  { 
+    name: "MasterClass", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/6/6b/MasterClass_logo.svg",
+    category: "education",
+    defaultAmount: 20
+  },
+  { 
+    name: "Duolingo Plus", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/d/d0/Duolingo_logo.svg",
+    category: "education",
+    defaultAmount: 7
+  },
+  { 
+    name: "LinkedIn Learning", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
+    category: "education",
+    defaultAmount: 30
+  },
+  
+  // Gaming
+  { 
+    name: "PlayStation Plus", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg",
+    category: "streaming",
+    defaultAmount: 10
+  },
+  { 
+    name: "Xbox Game Pass", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg",
     category: "streaming",
     defaultAmount: 15
+  },
+  { 
+    name: "Nintendo Switch Online", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/7/76/Nintendo_switch_logo.svg",
+    category: "streaming",
+    defaultAmount: 4
+  },
+  { 
+    name: "EA Play", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/8/89/EA_Play_logo.svg",
+    category: "streaming",
+    defaultAmount: 5
+  },
+  
+  // News & Media
+  { 
+    name: "The New York Times", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/5/58/NewYorkTimes.svg",
+    category: "other",
+    defaultAmount: 17
+  },
+  { 
+    name: "Medium", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Medium_logo_Monogram.svg",
+    category: "other",
+    defaultAmount: 5
+  },
+  
+  // Social Media
+  { 
+    name: "X Premium", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/5/57/X_logo_2023_%28white%29.png",
+    category: "other",
+    defaultAmount: 8
+  },
+  { 
+    name: "LinkedIn Premium", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
+    category: "software",
+    defaultAmount: 30
+  },
+  
+  // VPN & Security
+  { 
+    name: "NordVPN", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/3/3d/NordVPN_logo.svg",
+    category: "software",
+    defaultAmount: 12
+  },
+  { 
+    name: "ExpressVPN", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e6/ExpressVPN_Logo.svg",
+    category: "software",
+    defaultAmount: 13
+  },
+  
+  // Fitness
+  { 
+    name: "Peloton", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/6/64/Peloton_logo.svg",
+    category: "fitness",
+    defaultAmount: 44
+  },
+  { 
+    name: "Strava Premium", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Strava_Logo.svg",
+    category: "fitness",
+    defaultAmount: 8
   },
 ];
 
