@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useCallback } from 'react';
 import TaskItem from './TaskItem';
 import { Skeleton } from './ui/skeleton';
 import { EmptyState } from './EmptyState';
@@ -23,7 +23,11 @@ interface TaskListProps {
   onTaskComplete: (taskId: string) => void;
 }
 
-const TaskList = ({ tasks, isLoading, onTaskComplete }: TaskListProps) => {
+const TaskList = memo(({ tasks, isLoading, onTaskComplete }: TaskListProps) => {
+  const handleTaskComplete = useCallback((taskId: string) => {
+    onTaskComplete(taskId);
+  }, [onTaskComplete]);
+
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -56,7 +60,7 @@ const TaskList = ({ tasks, isLoading, onTaskComplete }: TaskListProps) => {
             <TaskItem
               key={task.id}
               task={task}
-              onComplete={() => onTaskComplete(task.id)}
+              onComplete={() => handleTaskComplete(task.id)}
             />
           ))}
         </div>
@@ -72,13 +76,15 @@ const TaskList = ({ tasks, isLoading, onTaskComplete }: TaskListProps) => {
             <TaskItem
               key={task.id}
               task={task}
-              onComplete={() => onTaskComplete(task.id)}
+              onComplete={() => handleTaskComplete(task.id)}
             />
           ))}
         </div>
       )}
     </div>
   );
-};
+});
+
+TaskList.displayName = 'TaskList';
 
 export default TaskList;

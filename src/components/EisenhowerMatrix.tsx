@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Card } from './ui/card';
@@ -29,11 +29,11 @@ interface EisenhowerMatrixProps {
   onMoveTask: (taskId: string, quadrant: string | null) => void;
 }
 
-const EisenhowerMatrix = ({ tasks, isLoading, onMoveTask }: EisenhowerMatrixProps) => {
+const EisenhowerMatrix = memo(({ tasks, isLoading, onMoveTask }: EisenhowerMatrixProps) => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
 
-  const QUADRANTS = [
+  const QUADRANTS = useMemo(() => [
     {
       id: 'urgent_important',
       title: t('matrix.quadrants.urgent_important.title'),
@@ -62,13 +62,16 @@ const EisenhowerMatrix = ({ tasks, isLoading, onMoveTask }: EisenhowerMatrixProp
       color: 'border-green-500/50 bg-green-500/5',
       headerColor: 'bg-green-500/10 text-green-700 dark:text-green-400',
     },
-  ];
+  ], [t]);
 
-  const getTasksByQuadrant = (quadrantId: string) => {
+  const getTasksByQuadrant = useCallback((quadrantId: string) => {
     return tasks.filter(t => t.priority_quadrant === quadrantId && !t.is_completed);
-  };
+  }, [tasks]);
 
-  const unassignedTasks = tasks.filter(t => !t.priority_quadrant && !t.is_completed);
+  const unassignedTasks = useMemo(() => 
+    tasks.filter(t => !t.priority_quadrant && !t.is_completed),
+    [tasks]
+  );
 
   const QuadrantCard = ({ quadrant }: { quadrant: typeof QUADRANTS[0] }) => {
     const quadrantTasks = getTasksByQuadrant(quadrant.id);
@@ -180,6 +183,8 @@ const EisenhowerMatrix = ({ tasks, isLoading, onMoveTask }: EisenhowerMatrixProp
       </div>
     </div>
   );
-};
+});
+
+EisenhowerMatrix.displayName = 'EisenhowerMatrix';
 
 export default EisenhowerMatrix;

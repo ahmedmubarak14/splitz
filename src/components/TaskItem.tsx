@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -35,10 +35,21 @@ const QUADRANT_CONFIG = {
   not_urgent_unimportant: { label: 'Eliminate', emoji: '🗑️', color: 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20' },
 };
 
-const TaskItem = ({ task, onComplete }: TaskItemProps) => {
+const TaskItem = memo(({ task, onComplete }: TaskItemProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [showActions, setShowActions] = useState(false);
+
+  const handleToggleComplete = useCallback(() => {
+    toggleComplete.mutate();
+  }, []);
+
+  const handleDeleteTask = useCallback(() => {
+    deleteTask.mutate();
+  }, []);
+
+  const handleNavigateToFocus = useCallback(() => {
+    navigate(`/focus?task=${task.id}`);
+  }, [navigate, task.id]);
 
   const toggleComplete = useMutation({
     mutationFn: async () => {
@@ -87,7 +98,7 @@ const TaskItem = ({ task, onComplete }: TaskItemProps) => {
       <div className="flex items-start gap-3">
         <Checkbox
           checked={task.is_completed}
-          onCheckedChange={() => toggleComplete.mutate()}
+          onCheckedChange={handleToggleComplete}
           className="mt-1 h-5 w-5"
         />
 
@@ -104,7 +115,7 @@ const TaskItem = ({ task, onComplete }: TaskItemProps) => {
               variant="ghost"
               size="icon"
               className="h-8 w-8 shrink-0"
-              onClick={() => navigate(`/focus?task=${task.id}`)}
+              onClick={handleNavigateToFocus}
             >
               <Play className="w-4 h-4" />
             </Button>
@@ -151,7 +162,7 @@ const TaskItem = ({ task, onComplete }: TaskItemProps) => {
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={() => deleteTask.mutate()}
+            onClick={handleDeleteTask}
           >
             <Trash2 className="w-4 h-4" />
           </Button>
@@ -159,6 +170,8 @@ const TaskItem = ({ task, onComplete }: TaskItemProps) => {
       </div>
     </Card>
   );
-};
+});
+
+TaskItem.displayName = 'TaskItem';
 
 export default TaskItem;

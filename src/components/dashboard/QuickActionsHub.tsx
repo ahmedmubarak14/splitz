@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Brain, Plus, DollarSign, CheckCircle, Trophy, Zap } from 'lucide-react';
@@ -13,7 +14,7 @@ export function QuickActionsHub({ focusMinutesThisWeek }: QuickActionsHubProps) 
   const { t } = useTranslation();
   const isRTL = useIsRTL();
 
-  const quickActions = [
+  const quickActions = useMemo(() => [
     {
       icon: Brain,
       title: t('dashboard.startFocusSession'),
@@ -54,7 +55,7 @@ export function QuickActionsHub({ focusMinutesThisWeek }: QuickActionsHubProps) 
       bgColor: 'bg-orange-50 dark:bg-orange-950/20',
       onClick: () => navigate('/challenges')
     }
-  ];
+  ], [navigate, t, focusMinutesThisWeek]);
 
   return (
     <Card className="bg-background border border-border/40 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden">
