@@ -24,10 +24,10 @@ const Navigation = () => {
   const allNavItems = [
     { id: 'dashboard' as NavItemId, path: '/dashboard', icon: Home, label: t('nav.dashboard') },
     { id: 'habits' as NavItemId, path: '/habits', icon: Flame, label: t('nav.habits') },
-    { id: 'tasks' as NavItemId, path: '/tasks', icon: ListChecks, label: t('nav.tasks') || 'Tasks' },
-    { id: 'matrix' as NavItemId, path: '/matrix', icon: Grid3X3, label: t('nav.matrix') || 'Matrix' },
-    { id: 'focus' as NavItemId, path: '/focus', icon: Brain, label: t('nav.focus') || 'Focus' },
-    { id: 'calendar' as NavItemId, path: '/calendar', icon: Calendar, label: t('nav.calendar') || 'Calendar' },
+    { id: 'tasks' as NavItemId, path: '/tasks', icon: ListChecks, label: t('nav.tasks') },
+    { id: 'matrix' as NavItemId, path: '/matrix', icon: Grid3X3, label: t('nav.matrix') },
+    { id: 'focus' as NavItemId, path: '/focus', icon: Brain, label: t('nav.focus') },
+    { id: 'calendar' as NavItemId, path: '/calendar', icon: Calendar, label: t('nav.calendar') },
     { id: 'expenses' as NavItemId, path: '/expenses', icon: DollarSign, label: t('nav.expenses') },
     { id: 'subscriptions' as NavItemId, path: '/subscriptions', icon: CreditCard, label: t('nav.subscriptions') },
     { id: 'trips' as NavItemId, path: '/trips', icon: Plane, label: t('nav.trips') },
@@ -67,7 +67,7 @@ const Navigation = () => {
             className="flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all hover:bg-accent/50"
           >
             <Menu className="w-[18px] h-[18px]" />
-            <span className="text-[10px] font-medium">{t('nav.menu') || 'Menu'}</span>
+            <span className="text-[10px] font-medium">{t('nav.menu')}</span>
           </Button>
 
           {visibleNavItems.map((item) => {

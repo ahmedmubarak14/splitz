@@ -58,39 +58,39 @@ export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: Mobi
 
   const navigationGroups = [
     {
-      title: t('nav.quickAccess') || 'Quick Access',
+      title: t('nav.quickAccess'),
       items: [
         { path: '/dashboard', icon: Home, label: t('nav.dashboard'), emoji: '🏠' },
       ],
     },
     {
-      title: t('nav.productivity') || 'Productivity',
+      title: t('nav.productivity'),
       items: [
-        { path: '/tasks', icon: ListChecks, label: t('nav.tasks') || 'Tasks', emoji: '✅' },
-        { path: '/matrix', icon: Grid3x3, label: t('nav.matrix') || 'Matrix', emoji: '📊' },
-        { path: '/focus', icon: Brain, label: t('nav.focus') || 'Focus', emoji: '🎯' },
-        { path: '/habits', icon: Trophy, label: t('nav.habits') || 'Habits', emoji: '🔥' },
-        { path: '/calendar', icon: CalendarDays, label: t('nav.calendar') || 'Calendar', emoji: '📅' },
+        { path: '/tasks', icon: ListChecks, label: t('nav.tasks'), emoji: '✅' },
+        { path: '/matrix', icon: Grid3x3, label: t('nav.matrix'), emoji: '📊' },
+        { path: '/focus', icon: Brain, label: t('nav.focus'), emoji: '🎯' },
+        { path: '/habits', icon: Trophy, label: t('nav.habits'), emoji: '🔥' },
+        { path: '/calendar', icon: CalendarDays, label: t('nav.calendar'), emoji: '📅' },
       ],
     },
     {
-      title: t('nav.financial') || 'Financial',
+      title: t('nav.financial'),
       items: [
         { path: '/expenses', icon: DollarSign, label: t('nav.expenses'), emoji: '💰' },
-        { path: '/subscriptions', icon: CreditCard, label: t('nav.subscriptions') || 'Subscriptions', emoji: '💳' },
-        { path: '/trips', icon: MapPin, label: t('nav.trips') || 'Trips', emoji: '✈️' },
+        { path: '/subscriptions', icon: CreditCard, label: t('nav.subscriptions'), emoji: '💳' },
+        { path: '/trips', icon: MapPin, label: t('nav.trips'), emoji: '✈️' },
       ],
     },
     {
-      title: t('nav.social') || 'Social',
+      title: t('nav.social'),
       items: [
         { path: '/challenges', icon: Trophy, label: t('nav.challenges'), emoji: '🏆' },
       ],
     },
     {
-      title: t('nav.account') || 'Account',
+      title: t('nav.account'),
       items: [
-        { path: '/profile', icon: User, label: t('nav.profile') || 'Profile', emoji: '👤' },
+        { path: '/profile', icon: User, label: t('nav.profile'), emoji: '👤' },
       ],
     },
   ];
@@ -116,10 +116,10 @@ export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: Mobi
             </Avatar>
             <div className="flex-1 min-w-0">
               <SheetTitle className="text-lg font-semibold truncate">
-                {profile?.full_name || t('profile.welcome') || 'Welcome'}
+                {profile?.full_name || t('profile.welcome')}
               </SheetTitle>
               <p className="text-sm text-muted-foreground">
-                {t('nav.manageYourLife') || 'Manage your life'}
+                {t('nav.manageYourLife')}
               </p>
             </div>
           </div>
@@ -181,7 +181,7 @@ export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: Mobi
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-destructive hover:bg-destructive/10 transition-all"
           >
             <LogOut className="w-5 h-5" />
-            <span className="text-sm font-medium">{t('auth.signOut') || 'Sign Out'}</span>
+            <span className="text-sm font-medium">{t('auth.signOut')}</span>
           </button>
         </div>
       </SheetContent>

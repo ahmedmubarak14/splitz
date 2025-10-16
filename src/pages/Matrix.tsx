@@ -65,10 +65,10 @@ const Matrix = () => {
         <div className="mb-6 md:mb-8 flex items-center justify-between">
           <div>
             <h1 className={cn('font-bold tracking-tight mb-2', responsiveText.pageTitle)}>
-              {t('matrix.title') || 'Eisenhower Matrix'}
+              {t('matrix.title')}
             </h1>
             <p className="text-muted-foreground text-sm md:text-base">
-              {t('matrix.subtitle') || 'Prioritize your tasks using the Eisenhower Matrix'}
+              {t('matrix.subtitle')}
             </p>
           </div>
           

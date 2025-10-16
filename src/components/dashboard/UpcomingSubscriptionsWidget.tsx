@@ -32,7 +32,7 @@ export function UpcomingSubscriptionsWidget({ subscriptions }: UpcomingSubscript
 
   return (
     <DashboardWidgetCard 
-      title={t('dashboard.upcomingRenewals') || "Upcoming Renewals"}
+      title={t('dashboard.upcomingRenewals')}
       icon={CreditCard}
       badge={subscriptions.length}
     >
@@ -56,9 +56,9 @@ export function UpcomingSubscriptionsWidget({ subscriptions }: UpcomingSubscript
                 <div className={`flex items-center gap-1.5 text-xs font-medium ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Clock className="h-3.5 w-3.5" />
                   <span>
-                    {daysUntil === 0 ? t('dashboard.today') || 'Today' :
-                     daysUntil === 1 ? t('dashboard.tomorrow') || 'Tomorrow' :
-                     `${t('dashboard.in') || 'in'} ${daysUntil} ${t('dashboard.days') || 'days'}`}
+                    {daysUntil === 0 ? t('dashboard.today') :
+                     daysUntil === 1 ? t('dashboard.tomorrow') :
+                     `${t('dashboard.in')} ${daysUntil} ${t('dashboard.days')}`}
                   </span>
                 </div>
               </div>
@@ -70,7 +70,7 @@ export function UpcomingSubscriptionsWidget({ subscriptions }: UpcomingSubscript
             onClick={() => navigate('/subscriptions')}
             className={`w-full mt-2 hover:bg-accent/50 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
           >
-            {t('dashboard.viewAll') || 'View All'}
+            {t('dashboard.viewAll')}
             <ArrowRight className={`h-4 w-4 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
           </Button>
         </div>
@@ -80,17 +80,17 @@ export function UpcomingSubscriptionsWidget({ subscriptions }: UpcomingSubscript
             <CreditCard className="w-8 h-8 text-muted-foreground" />
           </div>
           <p className="text-sm font-medium text-foreground mb-2">
-            {t('dashboard.noUpcomingRenewals') || "No renewals in the next 7 days"}
+            {t('dashboard.noUpcomingRenewals')}
           </p>
           <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-            {t('subscriptions.allUpToDate') || 'All your subscriptions are up to date'}
+            {t('subscriptions.allUpToDate')}
           </p>
           <Button 
             size="sm" 
             onClick={() => navigate('/subscriptions')}
             className="shadow-sm hover:shadow-md transition-all"
           >
-            {t('dashboard.manageSubscriptions') || 'Manage Subscriptions'}
+            {t('dashboard.manageSubscriptions')}
           </Button>
         </div>
       )}

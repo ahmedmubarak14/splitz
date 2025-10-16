@@ -33,7 +33,7 @@ export function PendingExpensesWidget({ balances, userId }: PendingExpensesWidge
 
   return (
     <DashboardWidgetCard 
-      title={t('dashboard.pendingExpenses') || "Pending Expenses"}
+      title={t('dashboard.pendingExpenses')}
       icon={DollarSign}
       badge={balances.length}
     >
@@ -43,7 +43,7 @@ export function PendingExpensesWidget({ balances, userId }: PendingExpensesWidge
           <div className={`p-3 rounded-lg border transition-all duration-200 ${totalOwing - totalOwed >= 0 ? 'bg-success/10 border-success/30 shadow-sm' : 'bg-destructive/10 border-destructive/30 shadow-sm'}`}>
             <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                {t('dashboard.netBalance') || 'Net Balance'}
+                {t('dashboard.netBalance')}
               </span>
               <div className={`flex items-center gap-1.5 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 {totalOwing - totalOwed >= 0 ? (
@@ -63,7 +63,7 @@ export function PendingExpensesWidget({ balances, userId }: PendingExpensesWidge
         {youOwe.length > 0 && (
           <div className={isRTL ? 'text-right' : 'text-left'}>
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
-              {t('dashboard.youOwe') || 'You Owe'}
+              {t('dashboard.youOwe')}
             </p>
             <div className="space-y-2">
               {youOwe.map((balance) => (
@@ -85,7 +85,7 @@ export function PendingExpensesWidget({ balances, userId }: PendingExpensesWidge
         {owesYou.length > 0 && (
           <div className={isRTL ? 'text-right' : 'text-left'}>
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
-              {t('dashboard.owesYou') || 'Owes You'}
+              {t('dashboard.owesYou')}
             </p>
             <div className="space-y-2">
               {owesYou.map((balance) => (
@@ -109,7 +109,7 @@ export function PendingExpensesWidget({ balances, userId }: PendingExpensesWidge
               <DollarSign className="w-8 h-8 text-muted-foreground" />
             </div>
             <p className="text-sm font-medium text-success mb-2">
-              {t('dashboard.noExpenses') || "All settled up! 💰"}
+              {t('dashboard.noExpenses')}
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {t('dashboard.noPendingBalances')}
@@ -123,7 +123,7 @@ export function PendingExpensesWidget({ balances, userId }: PendingExpensesWidge
           onClick={() => navigate('/expenses')}
           className={`w-full hover:bg-accent/50 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
         >
-          {t('dashboard.viewExpenses') || 'View Expenses'}
+          {t('dashboard.viewExpenses')}
           <ArrowRight className={`h-4 w-4 ${isRTL ? 'mr-2 rotate-180' : 'ml-2'}`} />
         </Button>
       </div>
