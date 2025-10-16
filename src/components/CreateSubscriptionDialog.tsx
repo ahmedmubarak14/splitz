@@ -25,273 +25,471 @@ const POPULAR_SUBSCRIPTIONS = [
   // Streaming Video
   { 
     name: "Netflix", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/netflix.svg",
     category: "streaming",
     defaultAmount: 15
   },
   { 
     name: "Disney+", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/disneyplus.svg",
     category: "streaming",
     defaultAmount: 8
   },
   { 
     name: "Amazon Prime", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/primevideo.svg",
     category: "streaming",
     defaultAmount: 14
   },
   { 
     name: "Apple TV+", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/28/Apple_TV_Plus_Logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/appletv.svg",
     category: "streaming",
     defaultAmount: 7
   },
   { 
     name: "HBO Max", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/1/17/HBO_Max_Logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/hbo.svg",
     category: "streaming",
     defaultAmount: 10
   },
   { 
     name: "Hulu", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Hulu_Logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/hulu.svg",
     category: "streaming",
     defaultAmount: 8
   },
   { 
     name: "Paramount+", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Paramount_Plus.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/paramount.svg",
     category: "streaming",
     defaultAmount: 6
   },
   { 
     name: "YouTube Premium", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/youtube.svg",
     category: "streaming",
     defaultAmount: 12
+  },
+  { 
+    name: "Crunchyroll", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/crunchyroll.svg",
+    category: "streaming",
+    defaultAmount: 8
+  },
+  { 
+    name: "Twitch Turbo", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/twitch.svg",
+    category: "streaming",
+    defaultAmount: 9
+  },
+  { 
+    name: "Peacock", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/peacock.svg",
+    category: "streaming",
+    defaultAmount: 5
   },
   
   // Music Streaming
   { 
     name: "Spotify Premium", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/spotify.svg",
     category: "streaming",
     defaultAmount: 10
   },
   { 
     name: "Apple Music", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Apple_Music_icon.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/applemusic.svg",
     category: "streaming",
     defaultAmount: 11
   },
   { 
     name: "Tidal", 
-    logo: "https://upload.wikimedia.org/wikipedia/en/1/19/Tidal_%28service%29_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tidal.svg",
     category: "streaming",
     defaultAmount: 10
   },
   { 
     name: "Audible", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/3/32/Audible_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/audible.svg",
     category: "streaming",
     defaultAmount: 15
+  },
+  { 
+    name: "SoundCloud", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/soundcloud.svg",
+    category: "streaming",
+    defaultAmount: 5
+  },
+  { 
+    name: "Deezer", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/deezer.svg",
+    category: "streaming",
+    defaultAmount: 10
   },
   
   // Software & Productivity
   { 
     name: "Microsoft 365", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/51/Microsoft_365_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/microsoft.svg",
     category: "software",
     defaultAmount: 7
   },
   { 
     name: "Adobe Creative Cloud", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Adobe_Creative_Cloud_rainbow_icon.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/adobe.svg",
     category: "software",
     defaultAmount: 55
   },
   { 
-    name: "ChatGPT Pro", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg",
+    name: "ChatGPT Plus", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/openai.svg",
     category: "software",
     defaultAmount: 20
   },
   { 
     name: "GitHub Pro", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/github.svg",
     category: "software",
     defaultAmount: 4
   },
   { 
     name: "Notion", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/notion.svg",
     category: "software",
     defaultAmount: 8
   },
   { 
     name: "Canva Pro", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Canva_icon_2021.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/canva.svg",
     category: "software",
     defaultAmount: 13
   },
   { 
     name: "Grammarly Premium", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/f/f8/Grammarly_Logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/grammarly.svg",
     category: "software",
     defaultAmount: 12
   },
   { 
     name: "Zoom Pro", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Zoom_Communications_Logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/zoom.svg",
     category: "software",
     defaultAmount: 15
   },
   { 
     name: "Slack", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/slack.svg",
     category: "software",
     defaultAmount: 8
+  },
+  { 
+    name: "Trello", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/trello.svg",
+    category: "software",
+    defaultAmount: 10
+  },
+  { 
+    name: "Asana", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/asana.svg",
+    category: "software",
+    defaultAmount: 11
+  },
+  { 
+    name: "Monday.com", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/monday.svg",
+    category: "software",
+    defaultAmount: 10
+  },
+  { 
+    name: "Figma", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/figma.svg",
+    category: "software",
+    defaultAmount: 12
+  },
+  { 
+    name: "1Password", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/1password.svg",
+    category: "software",
+    defaultAmount: 3
+  },
+  { 
+    name: "LastPass", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/lastpass.svg",
+    category: "software",
+    defaultAmount: 3
   },
   
   // Cloud Storage
   { 
     name: "Dropbox", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Dropbox_logo_2017.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/dropbox.svg",
     category: "software",
     defaultAmount: 12
   },
   { 
     name: "Google One", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/4/49/Google_One_icon.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg",
     category: "software",
     defaultAmount: 3
   },
   { 
     name: "iCloud+", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/9/98/ICloud_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/icloud.svg",
     category: "software",
     defaultAmount: 1
+  },
+  { 
+    name: "OneDrive", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/microsoftonedrive.svg",
+    category: "software",
+    defaultAmount: 2
   },
   
   // Education
   { 
     name: "Coursera Plus", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e5/Coursera_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/coursera.svg",
     category: "education",
     defaultAmount: 59
   },
   { 
     name: "Udemy", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e3/Udemy_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/udemy.svg",
     category: "education",
     defaultAmount: 17
   },
   { 
     name: "Skillshare", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/7/75/Skillshare_logo_2020.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/skillshare.svg",
     category: "education",
     defaultAmount: 14
   },
   { 
     name: "MasterClass", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/6/6b/MasterClass_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/mastercard.svg",
     category: "education",
     defaultAmount: 20
   },
   { 
     name: "Duolingo Plus", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/d/d0/Duolingo_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/duolingo.svg",
     category: "education",
     defaultAmount: 7
   },
   { 
     name: "LinkedIn Learning", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg",
     category: "education",
     defaultAmount: 30
+  },
+  { 
+    name: "Brilliant", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/brilliant.svg",
+    category: "education",
+    defaultAmount: 13
   },
   
   // Gaming
   { 
     name: "PlayStation Plus", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/00/PlayStation_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/playstation.svg",
     category: "streaming",
     defaultAmount: 10
   },
   { 
     name: "Xbox Game Pass", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/f/f9/Xbox_one_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/xbox.svg",
     category: "streaming",
     defaultAmount: 15
   },
   { 
     name: "Nintendo Switch Online", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/7/76/Nintendo_switch_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/nintendo.svg",
     category: "streaming",
     defaultAmount: 4
   },
   { 
     name: "EA Play", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/8/89/EA_Play_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/ea.svg",
     category: "streaming",
     defaultAmount: 5
+  },
+  { 
+    name: "Steam", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/steam.svg",
+    category: "streaming",
+    defaultAmount: 0
+  },
+  { 
+    name: "Epic Games", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/epicgames.svg",
+    category: "streaming",
+    defaultAmount: 0
   },
   
   // News & Media
   { 
     name: "The New York Times", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/58/NewYorkTimes.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/nytimes.svg",
     category: "other",
     defaultAmount: 17
   },
   { 
     name: "Medium", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Medium_logo_Monogram.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/medium.svg",
     category: "other",
     defaultAmount: 5
   },
+  { 
+    name: "Bloomberg", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/bloomberg.svg",
+    category: "other",
+    defaultAmount: 35
+  },
+  { 
+    name: "The Economist", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/theconversation.svg",
+    category: "other",
+    defaultAmount: 13
+  },
   
-  // Social Media
+  // Social Media & Communication
   { 
     name: "X Premium", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/5/57/X_logo_2023_%28white%29.png",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg",
     category: "other",
     defaultAmount: 8
   },
   { 
     name: "LinkedIn Premium", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg",
     category: "software",
     defaultAmount: 30
+  },
+  { 
+    name: "Telegram Premium", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg",
+    category: "other",
+    defaultAmount: 5
+  },
+  { 
+    name: "Discord Nitro", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg",
+    category: "other",
+    defaultAmount: 10
   },
   
   // VPN & Security
   { 
     name: "NordVPN", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/3/3d/NordVPN_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/nordvpn.svg",
     category: "software",
     defaultAmount: 12
   },
   { 
     name: "ExpressVPN", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e6/ExpressVPN_Logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/expressvpn.svg",
     category: "software",
     defaultAmount: 13
   },
+  { 
+    name: "Surfshark", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/surfshark.svg",
+    category: "software",
+    defaultAmount: 10
+  },
+  { 
+    name: "ProtonVPN", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/protonvpn.svg",
+    category: "software",
+    defaultAmount: 10
+  },
   
-  // Fitness
+  // Fitness & Health
   { 
     name: "Peloton", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/6/64/Peloton_logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/peloton.svg",
     category: "fitness",
     defaultAmount: 44
   },
   { 
     name: "Strava Premium", 
-    logo: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Strava_Logo.svg",
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/strava.svg",
     category: "fitness",
     defaultAmount: 8
+  },
+  { 
+    name: "MyFitnessPal", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/myfitnesspal.svg",
+    category: "fitness",
+    defaultAmount: 10
+  },
+  { 
+    name: "Calm", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/calm.svg",
+    category: "fitness",
+    defaultAmount: 15
+  },
+  { 
+    name: "Headspace", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/headspace.svg",
+    category: "fitness",
+    defaultAmount: 13
+  },
+  
+  // Food Delivery
+  { 
+    name: "Uber Eats Pass", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/ubereats.svg",
+    category: "other",
+    defaultAmount: 10
+  },
+  { 
+    name: "DoorDash DashPass", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/doordash.svg",
+    category: "other",
+    defaultAmount: 10
+  },
+  { 
+    name: "Grubhub+", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/grubhub.svg",
+    category: "other",
+    defaultAmount: 10
+  },
+  
+  // Finance & Banking
+  { 
+    name: "Revolut Premium", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/revolut.svg",
+    category: "other",
+    defaultAmount: 8
+  },
+  { 
+    name: "N26 You", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/n26.svg",
+    category: "other",
+    defaultAmount: 10
+  },
+  { 
+    name: "YNAB", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/ynab.svg",
+    category: "software",
+    defaultAmount: 15
+  },
+  
+  // Reading & Books
+  { 
+    name: "Kindle Unlimited", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/amazon.svg",
+    category: "other",
+    defaultAmount: 10
+  },
+  { 
+    name: "Scribd", 
+    logo: "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/scribd.svg",
+    category: "other",
+    defaultAmount: 12
   },
 ];
 
