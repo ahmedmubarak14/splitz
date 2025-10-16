@@ -112,7 +112,7 @@ export function PendingExpensesWidget({ balances, userId }: PendingExpensesWidge
               {t('dashboard.noExpenses') || "All settled up! 💰"}
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              No pending expenses or balances
+              {t('dashboard.noPendingBalances')}
             </p>
           </div>
         )}

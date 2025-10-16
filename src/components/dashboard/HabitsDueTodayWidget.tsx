@@ -153,7 +153,7 @@ export function HabitsDueTodayWidget({ habits, onRefresh }: HabitsDueTodayWidget
             {t('dashboard.noHabits')}
           </p>
           <p className="text-xs text-muted-foreground mb-4 max-w-xs mx-auto leading-relaxed">
-            Start building positive habits today
+            {t('dashboard.startBuildingHabits')}
           </p>
           <Button 
             size="sm" 
