@@ -233,6 +233,26 @@ const resources = {
           title: 'Expense Splitter',
           desc: 'Split expenses fairly with smart settlement links',
         },
+        calendar: {
+          title: 'Smart Calendar',
+          desc: 'Visualize everything in Month, Week, or Day view. Color-coded events, swipe navigation, and unified timeline for all your activities.',
+        },
+        tasks: {
+          title: 'Task Management',
+          desc: 'Organize tasks with projects, subtasks, due dates, and Pomodoro tracking. Stay productive with detailed time analytics.',
+        },
+        matrix: {
+          title: 'Priority Matrix',
+          desc: 'Organize tasks by urgency and importance using the proven Eisenhower Matrix. Focus on what truly matters.',
+        },
+        subscriptions: {
+          title: 'Subscription Tracking',
+          desc: 'Track all recurring payments in one place. Get renewal reminders, manage shared subscriptions, and never miss a payment.',
+        },
+        trips: {
+          title: 'Trip Planning',
+          desc: 'Collaborate on trips with friends. Share tasks, track expenses, and plan together with real-time updates.',
+        },
         reminders: {
           title: 'Push + WhatsApp',
           desc: 'Get timely nudges where you actually see them',
@@ -1136,6 +1156,26 @@ const resources = {
         splitter: {
           title: 'تقسيم المصاريف',
           desc: 'قسّم المصاريف بعدالة مع روابط تسوية ذكية',
+        },
+        calendar: {
+          title: 'تقويم ذكي',
+          desc: 'تصور كل شيء في عرض الشهر أو الأسبوع أو اليوم. أحداث ملونة، تنقل بالسحب، وجدول زمني موحد لجميع أنشطتك.',
+        },
+        tasks: {
+          title: 'إدارة المهام',
+          desc: 'نظم المهام مع المشاريع والمهام الفرعية والمواعيد النهائية وتتبع بومودورو. ابقَ منتجاً مع تحليلات تفصيلية للوقت.',
+        },
+        matrix: {
+          title: 'مصفوفة الأولويات',
+          desc: 'نظم المهام حسب الإلحاح والأهمية باستخدام مصفوفة أيزنهاور المثبتة. ركز على ما يهم حقاً.',
+        },
+        subscriptions: {
+          title: 'تتبع الاشتراكات',
+          desc: 'تتبع جميع المدفوعات المتكررة في مكان واحد. احصل على تذكيرات التجديد، أدر الاشتراكات المشتركة، ولا تفوت أي دفعة.',
+        },
+        trips: {
+          title: 'تخطيط الرحلات',
+          desc: 'تعاون في الرحلات مع الأصدقاء. شارك المهام، تتبع النفقات، وخطط معاً مع التحديثات الفورية.',
         },
         reminders: {
           title: 'إشعارات + واتساب',

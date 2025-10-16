@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { 
   Sparkles, Target, DollarSign, Trophy, Users, Zap, 
   Star, Clock, Shield, TrendingUp, MessageCircle, CheckCircle2,
-  Rocket, Menu, X
+  Rocket, Menu, X, Calendar, CheckSquare, Grid3x3, CreditCard, Plane
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -506,7 +506,7 @@ const Index = () => {
             <p className="text-xl text-muted-foreground">{t('features.subtitle')}</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
               <div className="px-5 py-4 border-b border-border bg-muted/30">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -552,6 +552,66 @@ const Index = () => {
               <CardContent className="p-5">
                 <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.splitter.title')}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{t('features.splitter.desc')}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-blue-600" />
+                </div>
+              </div>
+              <CardContent className="p-5">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.calendar.title')}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.calendar.desc')}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                  <CheckSquare className="w-5 h-5 text-green-600" />
+                </div>
+              </div>
+              <CardContent className="p-5">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.tasks.title')}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.tasks.desc')}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+                  <Grid3x3 className="w-5 h-5 text-indigo-600" />
+                </div>
+              </div>
+              <CardContent className="p-5">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.matrix.title')}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.matrix.desc')}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                  <CreditCard className="w-5 h-5 text-orange-600" />
+                </div>
+              </div>
+              <CardContent className="p-5">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.subscriptions.title')}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.subscriptions.desc')}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center">
+                  <Plane className="w-5 h-5 text-teal-600" />
+                </div>
+              </div>
+              <CardContent className="p-5">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.trips.title')}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.trips.desc')}</p>
               </CardContent>
             </Card>
           </div>
