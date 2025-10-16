@@ -176,36 +176,155 @@ All colors MUST be HSL.
   
   .gradient-success {
     background: var(--gradient-success);
+  /* Stagger Animations */
+  @keyframes stagger-fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  .gradient-accent {
-    background: var(--gradient-accent);
+  @keyframes bounce-in {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
   }
-  
-  .gradient-hero {
-    background: var(--gradient-hero);
+
+  @keyframes shrink-out {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
   }
-  
-  /* Shadow Utilities */
-  .shadow-sm {
-    box-shadow: var(--shadow-sm);
+
+  @keyframes slide-in-left {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
-  
-  .shadow-md {
-    box-shadow: var(--shadow-md);
+
+  @keyframes slide-in-right {
+    0% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
-  
-  .shadow-lg {
-    box-shadow: var(--shadow-lg);
+
+  @keyframes slide-out-left {
+    0% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
   }
-  
-  .shadow-xl {
-    box-shadow: var(--shadow-xl);
+
+  @keyframes slide-out-right {
+    0% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
   }
-  
-  .shadow-primary {
-    box-shadow: var(--shadow-primary);
+
+  @keyframes rubber-band {
+    0% {
+      transform: scale(1);
+    }
+    30% {
+      transform: scale(1.1);
+    }
+    40% {
+      transform: scale(0.9);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    65% {
+      transform: scale(0.95);
+    }
+    75% {
+      transform: scale(1.02);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
+
+  .animate-stagger-fade-in {
+    animation: stagger-fade-in 0.4s ease-out forwards;
+  }
+
+  .animate-bounce-in {
+    animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .animate-shrink-out {
+    animation: shrink-out 0.3s ease-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.3s ease-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.3s ease-out;
+  }
+
+  .animate-slide-out-left {
+    animation: slide-out-left 0.3s ease-out forwards;
+  }
+
+  .animate-slide-out-right {
+    animation: slide-out-right 0.3s ease-out forwards;
+  }
+
+  .animate-rubber-band {
+    animation: rubber-band 0.8s ease-in-out;
+  }
+
+  /* Stagger children animations */
+  .stagger-children > * {
+    animation: stagger-fade-in 0.4s ease-out forwards;
+    opacity: 0;
+  }
+
+  .stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+  .stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+  .stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+  .stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+  .stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+  .stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+  .stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+  .stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+  .stagger-children > *:nth-child(9) { animation-delay: 0.45s; }
+  .stagger-children > *:nth-child(10) { animation-delay: 0.5s; }
+}
   
   .shadow-secondary {
     box-shadow: var(--shadow-secondary);
