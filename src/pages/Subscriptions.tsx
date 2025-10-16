@@ -9,6 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { SubscriptionCard } from "@/components/SubscriptionCard";
 import { CreateSubscriptionDialog } from "@/components/CreateSubscriptionDialog";
+import EditSubscriptionDialog from "@/components/EditSubscriptionDialog";
+import ManageContributorsDialog from "@/components/ManageContributorsDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
@@ -18,7 +20,10 @@ export default function Subscriptions() {
   const { t, i18n } = useTranslation();
   const isRTL = useIsRTL();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [selectedTab, setSelectedTab] = useState("personal");
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [contributorsDialogOpen, setContributorsDialogOpen] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] = useState<any>(null);
+  const [selectedTab, setSelectedTab] = useState("active");
 
   const { data: subscriptions, isLoading } = useQuery({
     queryKey: ["subscriptions"],
@@ -35,7 +40,6 @@ export default function Subscriptions() {
             paid_at
           )
         `)
-        .eq("is_active", true)
         .order("next_renewal_date", { ascending: true });
 
       if (error) {
@@ -46,15 +50,27 @@ export default function Subscriptions() {
     },
   });
 
-  const personalSubscriptions = subscriptions?.filter(s => !s.is_shared) || [];
-  const sharedSubscriptions = subscriptions?.filter(s => s.is_shared) || [];
+  const activeSubscriptions = subscriptions?.filter(s => s.status === 'active') || [];
+  const pausedSubscriptions = subscriptions?.filter(s => s.status === 'paused') || [];
+  const canceledSubscriptions = subscriptions?.filter(s => s.status === 'canceled') || [];
+  const archivedSubscriptions = subscriptions?.filter(s => s.status === 'archived') || [];
 
-  const totalMonthly = personalSubscriptions.reduce((sum, sub) => {
+  const totalMonthly = activeSubscriptions.reduce((sum, sub) => {
     if (sub.billing_cycle === "monthly") return sum + Number(sub.amount);
     if (sub.billing_cycle === "yearly") return sum + Number(sub.amount) / 12;
     if (sub.billing_cycle === "weekly") return sum + Number(sub.amount) * 4;
     return sum;
   }, 0);
+
+  const handleEditSubscription = (subscription: any) => {
+    setSelectedSubscription(subscription);
+    setEditDialogOpen(true);
+  };
+
+  const handleManageContributors = (subscription: any) => {
+    setSelectedSubscription(subscription);
+    setContributorsDialogOpen(true);
+  };
 
   return (
     <>
@@ -63,7 +79,7 @@ export default function Subscriptions() {
         description={t('subscriptions.subtitle')}
       />
       
-      <div className={`min-h-screen p-4 md:p-6 space-y-6 ${isRTL ? 'rtl' : 'ltr'}`}>
+      <div className={`min-h-screen p-4 md:p-6 space-y-6 pb-24 md:pb-6 ${isRTL ? 'rtl' : 'ltr'}`}>
         {/* Header */}
         <div className={`flex justify-between items-center ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <div>
@@ -81,7 +97,7 @@ export default function Subscriptions() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -98,12 +114,12 @@ export default function Subscriptions() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t('subscriptions.activeSubscriptions')}
+                Active
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {personalSubscriptions.length}
+              <div className="text-2xl font-bold text-green-600">
+                {activeSubscriptions.length}
               </div>
             </CardContent>
           </Card>
@@ -111,12 +127,25 @@ export default function Subscriptions() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                {t('subscriptions.sharedSubscriptions')}
+                Paused
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {sharedSubscriptions.length}
+              <div className="text-2xl font-bold text-orange-600">
+                {pausedSubscriptions.length}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Canceled
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-red-600">
+                {canceledSubscriptions.length}
               </div>
             </CardContent>
           </Card>
@@ -124,46 +153,96 @@ export default function Subscriptions() {
 
         {/* Subscriptions List */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="personal">{t('subscriptions.personalSubscriptions')}</TabsTrigger>
-            <TabsTrigger value="shared">{t('subscriptions.sharedSubscriptions')}</TabsTrigger>
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
+            <TabsTrigger value="active">🟢 Active ({activeSubscriptions.length})</TabsTrigger>
+            <TabsTrigger value="paused">⏸️ Paused ({pausedSubscriptions.length})</TabsTrigger>
+            <TabsTrigger value="canceled">🔴 Canceled ({canceledSubscriptions.length})</TabsTrigger>
+            <TabsTrigger value="archived">📦 Archived ({archivedSubscriptions.length})</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="personal" className="space-y-4 mt-6">
+          <TabsContent value="active" className="space-y-4 mt-6">
             {isLoading ? (
               <div className="text-center py-12">{t('common.loading')}</div>
-            ) : personalSubscriptions.length === 0 ? (
+            ) : activeSubscriptions.length === 0 ? (
               <EmptyState
                 icon={CreditCard}
-                title={t('subscriptions.noPersonalSubscriptions')}
-                description={t('subscriptions.startTracking')}
+                title="No active subscriptions"
+                description="Start tracking your subscriptions"
                 actionLabel={t('subscriptions.addFirstSubscription')}
                 onAction={() => setCreateDialogOpen(true)}
               />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {personalSubscriptions.map((subscription) => (
-                  <SubscriptionCard key={subscription.id} subscription={subscription} />
+                {activeSubscriptions.map((subscription) => (
+                  <SubscriptionCard 
+                    key={subscription.id} 
+                    subscription={subscription}
+                    onEdit={() => handleEditSubscription(subscription)}
+                    onManageContributors={() => handleManageContributors(subscription)}
+                  />
                 ))}
               </div>
             )}
           </TabsContent>
 
-          <TabsContent value="shared" className="space-y-4 mt-6">
-            {isLoading ? (
-              <div className="text-center py-12">{t('common.loading')}</div>
-            ) : sharedSubscriptions.length === 0 ? (
+          <TabsContent value="paused" className="space-y-4 mt-6">
+            {pausedSubscriptions.length === 0 ? (
               <EmptyState
                 icon={CreditCard}
-                title={t('subscriptions.noSharedSubscriptions')}
-                description={t('subscriptions.splitCosts')}
-                actionLabel={t('subscriptions.createSharedSubscription')}
-                onAction={() => setCreateDialogOpen(true)}
+                title="No paused subscriptions"
+                description="Subscriptions you've paused will appear here"
               />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {sharedSubscriptions.map((subscription) => (
-                  <SubscriptionCard key={subscription.id} subscription={subscription} />
+                {pausedSubscriptions.map((subscription) => (
+                  <SubscriptionCard 
+                    key={subscription.id} 
+                    subscription={subscription}
+                    onEdit={() => handleEditSubscription(subscription)}
+                    onManageContributors={() => handleManageContributors(subscription)}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="canceled" className="space-y-4 mt-6">
+            {canceledSubscriptions.length === 0 ? (
+              <EmptyState
+                icon={CreditCard}
+                title="No canceled subscriptions"
+                description="Canceled subscriptions will appear here"
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {canceledSubscriptions.map((subscription) => (
+                  <SubscriptionCard 
+                    key={subscription.id} 
+                    subscription={subscription}
+                    onEdit={() => handleEditSubscription(subscription)}
+                    onManageContributors={() => handleManageContributors(subscription)}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="archived" className="space-y-4 mt-6">
+            {archivedSubscriptions.length === 0 ? (
+              <EmptyState
+                icon={CreditCard}
+                title="No archived subscriptions"
+                description="Archive old subscriptions for record keeping"
+              />
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {archivedSubscriptions.map((subscription) => (
+                  <SubscriptionCard 
+                    key={subscription.id} 
+                    subscription={subscription}
+                    onEdit={() => handleEditSubscription(subscription)}
+                    onManageContributors={() => handleManageContributors(subscription)}
+                  />
                 ))}
               </div>
             )}
@@ -174,6 +253,24 @@ export default function Subscriptions() {
           open={createDialogOpen}
           onOpenChange={setCreateDialogOpen}
         />
+
+        {selectedSubscription && (
+          <>
+            <EditSubscriptionDialog
+              open={editDialogOpen}
+              onOpenChange={setEditDialogOpen}
+              subscription={selectedSubscription}
+            />
+
+            <ManageContributorsDialog
+              open={contributorsDialogOpen}
+              onOpenChange={setContributorsDialogOpen}
+              subscriptionId={selectedSubscription.id}
+              subscriptionName={selectedSubscription.name}
+              totalAmount={selectedSubscription.amount}
+            />
+          </>
+        )}
       </div>
     </>
   );

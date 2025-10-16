@@ -1,4 +1,4 @@
-import { CreditCard, Calendar, Users } from "lucide-react";
+import { CreditCard, Calendar, Users, Edit, UserPlus, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,14 +6,21 @@ import { differenceInDays } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 import { formatCurrency } from "@/lib/formatters";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface SubscriptionCardProps {
   subscription: any;
+  onEdit?: () => void;
+  onManageContributors?: () => void;
 }
 
-export const SubscriptionCard = ({ subscription }: SubscriptionCardProps) => {
+export const SubscriptionCard = ({ subscription, onEdit, onManageContributors }: SubscriptionCardProps) => {
   const { t, i18n } = useTranslation();
   const isRTL = useIsRTL();
+  const queryClient = useQueryClient();
+
   const daysUntilRenewal = differenceInDays(
     new Date(subscription.next_renewal_date),
     new Date()
@@ -24,6 +31,26 @@ export const SubscriptionCard = ({ subscription }: SubscriptionCardProps) => {
     : daysUntilRenewal <= 3 
     ? "due-soon" 
     : "upcoming";
+
+  const deleteSubscription = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('subscriptions')
+        .delete()
+        .eq('id', subscription.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
+      toast.success('Subscription deleted');
+    },
+  });
+
+  const handleDelete = () => {
+    if (confirm('Are you sure you want to delete this subscription?')) {
+      deleteSubscription.mutate();
+    }
+  };
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -89,9 +116,28 @@ export const SubscriptionCard = ({ subscription }: SubscriptionCardProps) => {
           </div>
         )}
 
-        <Button variant="outline" className="w-full">
-          {t('subscriptions.markAsPaid')}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={onEdit} className="flex-1">
+            <Edit className="w-4 h-4 mr-2" />
+            Edit
+          </Button>
+
+          {subscription.is_shared && onManageContributors && (
+            <Button variant="outline" size="sm" onClick={onManageContributors} className="flex-1">
+              <UserPlus className="w-4 h-4 mr-2" />
+              Contributors
+            </Button>
+          )}
+
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleDelete}
+            className="text-destructive hover:text-destructive"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

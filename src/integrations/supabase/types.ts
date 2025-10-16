@@ -866,6 +866,7 @@ export type Database = {
         Row: {
           amount: number
           billing_cycle: string
+          canceled_at: string | null
           category: string | null
           created_at: string
           currency: string
@@ -877,12 +878,17 @@ export type Database = {
           name: string
           next_renewal_date: string
           notes: string | null
+          notifications_enabled: boolean | null
+          paused_at: string | null
+          reminder_days_before: number | null
+          status: Database["public"]["Enums"]["subscription_status"] | null
           updated_at: string
           user_id: string
         }
         Insert: {
           amount: number
           billing_cycle: string
+          canceled_at?: string | null
           category?: string | null
           created_at?: string
           currency?: string
@@ -894,12 +900,17 @@ export type Database = {
           name: string
           next_renewal_date: string
           notes?: string | null
+          notifications_enabled?: boolean | null
+          paused_at?: string | null
+          reminder_days_before?: number | null
+          status?: Database["public"]["Enums"]["subscription_status"] | null
           updated_at?: string
           user_id: string
         }
         Update: {
           amount?: number
           billing_cycle?: string
+          canceled_at?: string | null
           category?: string | null
           created_at?: string
           currency?: string
@@ -911,6 +922,10 @@ export type Database = {
           name?: string
           next_renewal_date?: string
           notes?: string | null
+          notifications_enabled?: boolean | null
+          paused_at?: string | null
+          reminder_days_before?: number | null
+          status?: Database["public"]["Enums"]["subscription_status"] | null
           updated_at?: string
           user_id?: string
         }
@@ -1193,6 +1208,10 @@ export type Database = {
         Args: { _trip_id: string; _user_id: string }
         Returns: boolean
       }
+      notify_upcoming_subscriptions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       recalc_expense_split: {
         Args: { _expense_id: string }
         Returns: undefined
@@ -1237,6 +1256,7 @@ export type Database = {
         | "urgent_unimportant"
         | "not_urgent_unimportant"
       split_type: "equal" | "percentage" | "custom" | "shares"
+      subscription_status: "active" | "canceled" | "paused" | "archived"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1402,6 +1422,7 @@ export const Constants = {
         "not_urgent_unimportant",
       ],
       split_type: ["equal", "percentage", "custom", "shares"],
+      subscription_status: ["active", "canceled", "paused", "archived"],
     },
   },
 } as const
