@@ -18,6 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { FriendSelector } from "./FriendSelector";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { toast } from "sonner";
 
 interface CreateSharedHabitDialogProps {
@@ -26,7 +29,6 @@ interface CreateSharedHabitDialogProps {
   onCreated: () => void;
 }
 
-const HABIT_ICONS = ["⭐", "🏃", "📚", "💪", "🧘", "💧", "🥗", "😴", "🎯", "✍️"];
 const CATEGORIES = [
   { value: "health", label: "Health & Fitness" },
   { value: "productivity", label: "Productivity" },
@@ -34,6 +36,13 @@ const CATEGORIES = [
   { value: "learning", label: "Learning" },
   { value: "social", label: "Social" },
   { value: "other", label: "Other" },
+];
+
+const TARGET_DAYS_PRESETS = [
+  { value: "30", label: "30 days" },
+  { value: "60", label: "60 days" },
+  { value: "90", label: "90 days" },
+  { value: "custom", label: "Custom" },
 ];
 
 export function CreateSharedHabitDialog({
@@ -47,6 +56,9 @@ export function CreateSharedHabitDialog({
   const [category, setCategory] = useState("other");
   const [visibility, setVisibility] = useState("friends_only");
   const [targetDays, setTargetDays] = useState("30");
+  const [customDays, setCustomDays] = useState("");
+  const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [creating, setCreating] = useState(false);
 
   const handleCreate = async () => {
@@ -55,10 +67,24 @@ export function CreateSharedHabitDialog({
       return;
     }
 
+    const finalTargetDays = targetDays === "custom" ? parseInt(customDays) : parseInt(targetDays);
+    
+    if (!finalTargetDays || finalTargetDays < 1 || finalTargetDays > 365) {
+      toast.error("Please enter a valid number of days (1-365)");
+      return;
+    }
+
     setCreating(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
+
+      // Get user's name for notifications
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
 
       // Create the habit
       const { data: habit, error: habitError } = await (supabase as any)
@@ -69,7 +95,7 @@ export function CreateSharedHabitDialog({
           icon,
           category,
           visibility,
-          target_days: parseInt(targetDays),
+          target_days: finalTargetDays,
           created_by: user.id,
         })
         .select()
@@ -86,6 +112,29 @@ export function CreateSharedHabitDialog({
         });
 
       if (participantError) throw participantError;
+
+      // Add selected friends as participants
+      if (selectedFriends.length > 0) {
+        const friendParticipants = selectedFriends.map(friendId => ({
+          habit_id: habit.id,
+          user_id: friendId,
+        }));
+        
+        await (supabase as any)
+          .from("shared_habit_participants")
+          .insert(friendParticipants);
+        
+        // Send notifications to invited friends
+        for (const friendId of selectedFriends) {
+          await supabase.rpc('create_notification', {
+            p_user_id: friendId,
+            p_title: 'New Habit Invitation',
+            p_message: `${profile?.full_name || 'Someone'} invited you to join "${habit.name}"`,
+            p_type: 'habit',
+            p_resource_id: habit.id,
+          });
+        }
+      }
 
       toast.success("Shared habit created!");
       resetForm();
@@ -106,11 +155,19 @@ export function CreateSharedHabitDialog({
     setCategory("other");
     setVisibility("friends_only");
     setTargetDays("30");
+    setCustomDays("");
+    setSelectedFriends([]);
+    setShowEmojiPicker(false);
+  };
+
+  const handleEmojiClick = (emojiData: EmojiClickData) => {
+    setIcon(emojiData.emoji);
+    setShowEmojiPicker(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create Shared Habit</DialogTitle>
           <DialogDescription>
@@ -118,80 +175,102 @@ export function CreateSharedHabitDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
+          {/* Emoji Selection */}
           <div>
-            <Label>Icon</Label>
-            <div className="flex gap-2 mt-2">
-              {HABIT_ICONS.map((emoji) => (
-                <button
-                  key={emoji}
-                  onClick={() => setIcon(emoji)}
-                  className={`text-2xl p-2 rounded-lg border transition-all ${
-                    icon === emoji
-                      ? "border-primary bg-primary/10 scale-110"
-                      : "border-border hover:border-primary/50"
-                  }`}
-                >
-                  {emoji}
-                </button>
-              ))}
+            <Label>Choose Icon</Label>
+            <div className="flex items-center gap-4 mt-2">
+              <div className="text-6xl">{icon}</div>
+              <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    Change Icon
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0 border-none shadow-lg">
+                  <EmojiPicker onEmojiClick={handleEmojiClick} width={350} />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
+          {/* Habit Name */}
           <div>
-            <Label>Habit Name</Label>
+            <Label htmlFor="habit-name">Habit Name *</Label>
             <Input
-              placeholder="e.g., Daily Exercise"
+              id="habit-name"
+              placeholder="e.g., Morning Meditation"
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={50}
+              className="mt-2"
             />
           </div>
 
+          {/* Description */}
           <div>
-            <Label>Description (optional)</Label>
+            <Label htmlFor="description">Description (optional)</Label>
             <Textarea
+              id="description"
               placeholder="What does this habit involve?"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
               maxLength={200}
+              className="mt-2"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Category</Label>
-              <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map((cat) => (
-                    <SelectItem key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label>Target Days</Label>
+          {/* Target Days */}
+          <div>
+            <Label htmlFor="target-days">Target Days</Label>
+            <Select value={targetDays} onValueChange={setTargetDays}>
+              <SelectTrigger id="target-days" className="mt-2">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {TARGET_DAYS_PRESETS.map((preset) => (
+                  <SelectItem key={preset.value} value={preset.value}>
+                    {preset.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {targetDays === "custom" && (
               <Input
                 type="number"
                 min="1"
                 max="365"
-                value={targetDays}
-                onChange={(e) => setTargetDays(e.target.value)}
+                placeholder="Enter number of days"
+                value={customDays}
+                onChange={(e) => setCustomDays(e.target.value)}
+                className="mt-2"
               />
-            </div>
+            )}
           </div>
 
+          {/* Category */}
           <div>
-            <Label>Visibility</Label>
+            <Label htmlFor="category">Category</Label>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger id="category" className="mt-2">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CATEGORIES.map((cat) => (
+                  <SelectItem key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Visibility */}
+          <div>
+            <Label htmlFor="visibility">Visibility</Label>
             <Select value={visibility} onValueChange={setVisibility}>
-              <SelectTrigger>
+              <SelectTrigger id="visibility" className="mt-2">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -202,6 +281,20 @@ export function CreateSharedHabitDialog({
             </Select>
           </div>
 
+          {/* Invite Friends */}
+          <div>
+            <Label>Invite Friends (optional)</Label>
+            <p className="text-sm text-muted-foreground mt-1 mb-3">
+              Select friends to invite to this habit
+            </p>
+            <FriendSelector
+              selectedFriends={selectedFriends}
+              onSelectionChange={setSelectedFriends}
+              multiSelect={true}
+            />
+          </div>
+
+          {/* Action Buttons */}
           <div className="flex gap-2 pt-4">
             <Button
               variant="outline"
@@ -215,7 +308,7 @@ export function CreateSharedHabitDialog({
               disabled={creating || !name.trim()}
               className="flex-1"
             >
-              {creating ? "Creating..." : "Create Habit"}
+              {creating ? "Creating..." : selectedFriends.length > 0 ? "Create & Invite" : "Create Habit"}
             </Button>
           </div>
         </div>
