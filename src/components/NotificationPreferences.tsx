@@ -9,6 +9,7 @@ interface Preferences {
   habit_reminders: boolean;
   challenge_updates: boolean;
   expense_alerts: boolean;
+  subscription_reminders: boolean;
   push_notifications: boolean;
   email_notifications: boolean;
   reminder_time: string;
@@ -19,6 +20,7 @@ export default function NotificationPreferences() {
     habit_reminders: true,
     challenge_updates: true,
     expense_alerts: true,
+    subscription_reminders: true,
     push_notifications: false,
     email_notifications: false,
     reminder_time: '09:00:00',
@@ -47,6 +49,7 @@ export default function NotificationPreferences() {
           habit_reminders: data.habit_reminders,
           challenge_updates: data.challenge_updates,
           expense_alerts: data.expense_alerts,
+          subscription_reminders: data.subscription_reminders ?? true,
           push_notifications: data.push_notifications,
           email_notifications: data.email_notifications,
           reminder_time: data.reminder_time,
@@ -134,6 +137,20 @@ export default function NotificationPreferences() {
               id="expense_alerts"
               checked={preferences.expense_alerts}
               onCheckedChange={(checked) => updatePreference('expense_alerts', checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="subscription_reminders" className="flex flex-col gap-1">
+              <span>Subscription Reminders</span>
+              <span className="font-normal text-sm text-muted-foreground">
+                Get notified about subscription payment reminders
+              </span>
+            </Label>
+            <Switch
+              id="subscription_reminders"
+              checked={preferences.subscription_reminders}
+              onCheckedChange={(checked) => updatePreference('subscription_reminders', checked)}
             />
           </div>
         </CardContent>

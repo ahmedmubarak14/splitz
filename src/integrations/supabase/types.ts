@@ -635,6 +635,7 @@ export type Database = {
           id: string
           push_notifications: boolean
           reminder_time: string
+          subscription_reminders: boolean | null
           updated_at: string
           user_id: string
         }
@@ -647,6 +648,7 @@ export type Database = {
           id?: string
           push_notifications?: boolean
           reminder_time?: string
+          subscription_reminders?: boolean | null
           updated_at?: string
           user_id: string
         }
@@ -659,6 +661,7 @@ export type Database = {
           id?: string
           push_notifications?: boolean
           reminder_time?: string
+          subscription_reminders?: boolean | null
           updated_at?: string
           user_id?: string
         }

@@ -101,6 +101,9 @@ export function NotificationList({ onRead }: NotificationListProps) {
         case 'expense':
           navigate('/expenses');
           break;
+        case 'subscription':
+          navigate('/subscriptions');
+          break;
       }
     }
   };
