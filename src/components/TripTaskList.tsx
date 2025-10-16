@@ -27,7 +27,7 @@ export const TripTaskList = ({ tripId }: TripTaskListProps) => {
         .order("created_at", { ascending: false });
 
       if (error) {
-        toast.error(t('errors.failedToLoad'));
+        toast.error(t('trips.failedToLoadTasks'));
         throw error;
       }
       return data;

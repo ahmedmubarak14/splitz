@@ -3,11 +3,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Copy, Share2 } from "lucide-react";
+import { Copy, Share2, Mail } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Separator } from "@/components/ui/separator";
 
 interface InviteTripMemberDialogProps {
   tripId: string;
@@ -19,6 +20,7 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [inviteCode, setInviteCode] = useState("");
+  const [email, setEmail] = useState("");
 
   const createInviteMutation = useMutation({
     mutationFn: async () => {
@@ -52,8 +54,73 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
     },
   });
 
+  const sendEmailInviteMutation = useMutation({
+    mutationFn: async (recipientEmail: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      // Get trip details
+      const { data: trip } = await supabase
+        .from("trips")
+        .select("name")
+        .eq("id", tripId)
+        .single();
+
+      // Get sender name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
+      // Generate invite code
+      const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+      
+      // Save invitation
+      await supabase
+        .from("invitations")
+        .insert({
+          invite_code: code,
+          invite_type: "trip",
+          resource_id: tripId,
+          created_by: user.id,
+          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        });
+
+      const inviteUrl = `${window.location.origin}/join/${code}`;
+
+      // Call edge function to send email
+      const { error } = await supabase.functions.invoke("send-trip-invite", {
+        body: {
+          recipientEmail,
+          inviteLink: inviteUrl,
+          tripName: trip?.name || "Trip",
+          senderName: profile?.full_name || "Someone",
+        },
+      });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(t('trips.inviteSent'));
+      setEmail("");
+      queryClient.invalidateQueries({ queryKey: ["invitations"] });
+    },
+    onError: () => {
+      toast.error(t('errors.sendFailed'));
+    },
+  });
+
   const handleGenerateInvite = () => {
     createInviteMutation.mutate();
+  };
+
+  const handleSendEmail = () => {
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    sendEmailInviteMutation.mutate(email);
   };
 
   const inviteUrl = inviteCode ? `${window.location.origin}/join/${inviteCode}` : "";
@@ -86,7 +153,40 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
           <DialogTitle>{t('trips.inviteMember')}</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-4">
+        <div className="space-y-6">
+          {/* Email Invitation */}
+          <div className="space-y-3">
+            <Label htmlFor="email">{t('trips.inviteByEmail')}</Label>
+            <div className="flex gap-2">
+              <Input
+                id="email"
+                type="email"
+                placeholder={t('trips.emailPlaceholder')}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Button 
+                onClick={handleSendEmail} 
+                disabled={sendEmailInviteMutation.isPending}
+              >
+                <Mail className="h-4 w-4 mr-2" />
+                {sendEmailInviteMutation.isPending ? t('common.sending') : t('trips.sendInvite')}
+              </Button>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                {t('trips.orDivider')}
+              </span>
+            </div>
+          </div>
+
+          {/* Link Invitation */}
           {!inviteCode ? (
             <Button onClick={handleGenerateInvite} disabled={createInviteMutation.isPending} className="w-full">
               {createInviteMutation.isPending ? t('common.generating') : t('trips.generateInviteLink')}

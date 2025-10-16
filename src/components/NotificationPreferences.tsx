@@ -10,6 +10,7 @@ interface Preferences {
   challenge_updates: boolean;
   expense_alerts: boolean;
   subscription_reminders: boolean;
+  trip_updates: boolean;
   push_notifications: boolean;
   email_notifications: boolean;
   reminder_time: string;
@@ -21,6 +22,7 @@ export default function NotificationPreferences() {
     challenge_updates: true,
     expense_alerts: true,
     subscription_reminders: true,
+    trip_updates: true,
     push_notifications: false,
     email_notifications: false,
     reminder_time: '09:00:00',
@@ -50,6 +52,7 @@ export default function NotificationPreferences() {
           challenge_updates: data.challenge_updates,
           expense_alerts: data.expense_alerts,
           subscription_reminders: data.subscription_reminders ?? true,
+          trip_updates: data.trip_updates ?? true,
           push_notifications: data.push_notifications,
           email_notifications: data.email_notifications,
           reminder_time: data.reminder_time,
@@ -151,6 +154,20 @@ export default function NotificationPreferences() {
               id="subscription_reminders"
               checked={preferences.subscription_reminders}
               onCheckedChange={(checked) => updatePreference('subscription_reminders', checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="trip_updates" className="flex flex-col gap-1">
+              <span>Trip Updates</span>
+              <span className="font-normal text-sm text-muted-foreground">
+                Get notified about trip invites and task assignments
+              </span>
+            </Label>
+            <Switch
+              id="trip_updates"
+              checked={preferences.trip_updates}
+              onCheckedChange={(checked) => updatePreference('trip_updates', checked)}
             />
           </div>
         </CardContent>

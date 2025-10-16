@@ -365,6 +365,7 @@ export type Database = {
           repeat_pattern: string | null
           title: string
           total_time_spent: number | null
+          trip_task_id: string | null
           updated_at: string
           user_id: string
         }
@@ -389,6 +390,7 @@ export type Database = {
           repeat_pattern?: string | null
           title: string
           total_time_spent?: number | null
+          trip_task_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -413,6 +415,7 @@ export type Database = {
           repeat_pattern?: string | null
           title?: string
           total_time_spent?: number | null
+          trip_task_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -422,6 +425,13 @@ export type Database = {
             columns: ["parent_task_id"]
             isOneToOne: false
             referencedRelation: "focus_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "focus_tasks_trip_task_id_fkey"
+            columns: ["trip_task_id"]
+            isOneToOne: false
+            referencedRelation: "trip_tasks"
             referencedColumns: ["id"]
           },
         ]
@@ -636,6 +646,7 @@ export type Database = {
           push_notifications: boolean
           reminder_time: string
           subscription_reminders: boolean | null
+          trip_updates: boolean | null
           updated_at: string
           user_id: string
         }
@@ -649,6 +660,7 @@ export type Database = {
           push_notifications?: boolean
           reminder_time?: string
           subscription_reminders?: boolean | null
+          trip_updates?: boolean | null
           updated_at?: string
           user_id: string
         }
@@ -662,6 +674,7 @@ export type Database = {
           push_notifications?: boolean
           reminder_time?: string
           subscription_reminders?: boolean | null
+          trip_updates?: boolean | null
           updated_at?: string
           user_id?: string
         }
