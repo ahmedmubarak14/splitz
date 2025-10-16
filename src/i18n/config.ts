@@ -146,9 +146,9 @@ const resources = {
         currency: 'SAR',
       },
       hero: {
-        badge: 'Habits · Focus · Challenges · Expense Splitter',
-        title: 'Build habits together. Stay focused. Split life fairly.',
-        subtitle: 'Grow stronger as a team. Maintain focus. Settle up effortlessly.',
+        badge: 'All-in-One Productivity Suite',
+        title: 'Track Tasks. Build Habits. Manage Life.',
+        subtitle: 'Complete productivity app with task management, habit tracking, calendar, expense splitting, trip planning, and subscription tracking—all in one place.',
       },
       cta: {
         start: 'Start Free',
@@ -216,7 +216,7 @@ const resources = {
       },
       features: {
         title: 'Everything You Need',
-        subtitle: 'All your daily essentials in one beautiful app',
+        subtitle: 'A complete productivity toolkit for managing every aspect of your life',
         streaks: {
           title: 'Habit Streaks',
           desc: 'Build consistency with streak tracking and daily check-ins',
@@ -1070,9 +1070,9 @@ const resources = {
         currency: 'ريال',
       },
       hero: {
-        badge: 'عادات · تحديات · تقسيم المصاريف',
-        title: 'ابنِ العادات معاً. واقسم المصاريف بعدل.',
-        subtitle: 'تقدّم أقوى كفريق. سوّي بسهولة.',
+        badge: 'مجموعة إنتاجية شاملة',
+        title: 'تتبع المهام. ابنِ العادات. أدر حياتك.',
+        subtitle: 'تطبيق إنتاجية متكامل يشمل إدارة المهام، تتبع العادات، التقويم، تقسيم المصاريف، تخطيط الرحلات، وتتبع الاشتراكات—كل شيء في مكان واحد.',
       },
       cta: {
         start: 'ابدأ مجاناً',
@@ -1140,7 +1140,7 @@ const resources = {
       },
       features: {
         title: 'كل ما تحتاجه',
-        subtitle: 'كل احتياجاتك اليومية في تطبيق واحد جميل',
+        subtitle: 'مجموعة أدوات إنتاجية كاملة لإدارة كل جانب من جوانب حياتك',
         streaks: {
           title: 'سلاسل العادات',
           desc: 'بناء الاستمرارية مع تتبع السلاسل والتسجيل اليومي',
