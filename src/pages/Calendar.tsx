@@ -148,6 +148,21 @@ export default function CalendarPage() {
     return events.filter(event => isSameDay(event.date, date));
   }, [events]);
 
+  const getEventTypesForDate = useCallback((date: Date) => {
+    const dayEvents = eventsForDate(date);
+    const uniqueTypes = new Set(dayEvents.map(e => e.type));
+    return Array.from(uniqueTypes).slice(0, 4); // Max 4 dots
+  }, [eventsForDate]);
+
+  const eventTypeColors: Record<string, string> = {
+    task: 'bg-blue-500',
+    habit: 'bg-green-500',
+    subscription: 'bg-red-500',
+    focus: 'bg-purple-500',
+    trip: 'bg-orange-500',
+    challenge: 'bg-yellow-500',
+  };
+
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
 
@@ -233,11 +248,27 @@ export default function CalendarPage() {
               month={currentDate}
               onMonthChange={setCurrentDate}
               className="w-full"
-              modifiers={{
-                hasEvents: (date) => eventsForDate(date).length > 0
-              }}
-              modifiersClassNames={{
-                hasEvents: "font-semibold relative before:absolute before:bottom-1 before:left-1/2 before:-translate-x-1/2 before:w-1.5 before:h-1.5 before:rounded-full before:bg-primary before:shadow-sm"
+              components={{
+                DayContent: ({ date }) => {
+                  const eventTypes = getEventTypesForDate(date);
+                  return (
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <span className={eventTypes.length > 0 ? 'font-semibold' : ''}>
+                        {format(date, 'd')}
+                      </span>
+                      {eventTypes.length > 0 && (
+                        <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5">
+                          {eventTypes.map((type) => (
+                            <div
+                              key={type}
+                              className={`w-1 h-1 rounded-full ${eventTypeColors[type]} shadow-sm`}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
               }}
             />
           </Card>
