@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Plus, CreditCard } from "lucide-react";
+import { Plus, CreditCard, Pause, XCircle, Archive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/SEO";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,88 +80,91 @@ export default function Subscriptions() {
         description={t('subscriptions.subtitle')}
       />
       
-      <div className={`min-h-screen p-4 md:p-6 space-y-6 pb-24 md:pb-6 ${isRTL ? 'rtl' : 'ltr'}`}>
+      <div className={`min-h-screen bg-gradient-to-b from-muted/30 via-muted/10 to-background p-4 md:p-6 space-y-6 md:space-y-8 pb-24 md:pb-6 ${isRTL ? 'rtl' : 'ltr'}`}>
         {/* Header */}
-        <div className={`flex justify-between items-center ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+        <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
               {t('subscriptions.title')}
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-sm md:text-base text-muted-foreground mt-1.5">
               {t('subscriptions.subtitle')}
             </p>
           </div>
-          <Button onClick={() => setCreateDialogOpen(true)}>
+          <Button 
+            onClick={() => setCreateDialogOpen(true)}
+            className="w-full sm:w-auto shadow-sm hover:shadow-md active:scale-95 transition-all duration-200"
+          >
             <Plus className={`${isRTL ? 'ml-2' : 'mr-2'} h-4 w-4`} />
             {t('subscriptions.addSubscription')}
           </Button>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full" />
+            <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-bl-full" />
             <CardHeader className="pb-3">
-              <div className="inline-flex p-2 rounded-lg bg-primary/10 mb-2">
-                <CreditCard className="h-4 w-4 text-primary" />
+              <div className="inline-flex p-2.5 rounded-xl bg-primary/20 mb-3 group-hover:bg-primary/30 transition-colors">
+                <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-primary" />
               </div>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {t('subscriptions.monthlyTotal')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl md:text-3xl font-bold tracking-tight">
+              <div className="text-3xl md:text-4xl font-bold tracking-tight">
                 {formatCurrency(totalMonthly, 'SAR', i18n.language)}
               </div>
             </CardContent>
           </Card>
           
           <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-success/5 rounded-bl-full" />
+            <div className="absolute top-0 right-0 w-20 h-20 bg-success/10 rounded-bl-full" />
             <CardHeader className="pb-3">
-              <div className="inline-flex p-2 rounded-lg bg-success/10 mb-2">
-                <Plus className="h-4 w-4 text-success" />
+              <div className="inline-flex p-2.5 rounded-xl bg-success/20 mb-3 group-hover:bg-success/30 transition-colors">
+                <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-success" />
               </div>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Active
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl md:text-3xl font-bold text-success tracking-tight">
+              <div className="text-3xl md:text-4xl font-bold text-success tracking-tight">
                 {activeSubscriptions.length}
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-warning/5 rounded-bl-full" />
+            <div className="absolute top-0 right-0 w-20 h-20 bg-warning/10 rounded-bl-full" />
             <CardHeader className="pb-3">
-              <div className="inline-flex p-2 rounded-lg bg-warning/10 mb-2">
-                <CreditCard className="h-4 w-4 text-warning" />
+              <div className="inline-flex p-2.5 rounded-xl bg-warning/20 mb-3 group-hover:bg-warning/30 transition-colors">
+                <Pause className="h-5 w-5 md:h-6 md:w-6 text-warning" />
               </div>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Paused
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl md:text-3xl font-bold text-warning tracking-tight">
+              <div className="text-3xl md:text-4xl font-bold text-warning tracking-tight">
                 {pausedSubscriptions.length}
               </div>
             </CardContent>
           </Card>
 
           <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-destructive/5 rounded-full" />
+            <div className="absolute top-0 right-0 w-20 h-20 bg-destructive/10 rounded-bl-full" />
             <CardHeader className="pb-3">
-              <div className="inline-flex p-2 rounded-lg bg-destructive/10 mb-2">
-                <CreditCard className="h-4 w-4 text-destructive" />
+              <div className="inline-flex p-2.5 rounded-xl bg-destructive/20 mb-3 group-hover:bg-destructive/30 transition-colors">
+                <XCircle className="h-5 w-5 md:h-6 md:w-6 text-destructive" />
               </div>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Canceled
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl md:text-3xl font-bold text-destructive tracking-tight">
+              <div className="text-3xl md:text-4xl font-bold text-destructive tracking-tight">
                 {canceledSubscriptions.length}
               </div>
             </CardContent>
@@ -169,24 +173,81 @@ export default function Subscriptions() {
 
         {/* Subscriptions List */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="grid w-full max-w-2xl grid-cols-4">
-            <TabsTrigger value="active">🟢 Active ({activeSubscriptions.length})</TabsTrigger>
-            <TabsTrigger value="paused">⏸️ Paused ({pausedSubscriptions.length})</TabsTrigger>
-            <TabsTrigger value="canceled">🔴 Canceled ({canceledSubscriptions.length})</TabsTrigger>
-            <TabsTrigger value="archived">📦 Archived ({archivedSubscriptions.length})</TabsTrigger>
+          <TabsList className="grid w-full max-w-4xl grid-cols-4 bg-muted/50 p-1 rounded-lg border border-border/40">
+            <TabsTrigger 
+              value="active"
+              className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-success" />
+                <span className="hidden sm:inline font-medium">Active</span>
+                <Badge variant="secondary" className="ml-1">{activeSubscriptions.length}</Badge>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="paused"
+              className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-warning" />
+                <span className="hidden sm:inline font-medium">Paused</span>
+                <Badge variant="secondary" className="ml-1">{pausedSubscriptions.length}</Badge>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="canceled"
+              className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-destructive" />
+                <span className="hidden sm:inline font-medium">Canceled</span>
+                <Badge variant="secondary" className="ml-1">{canceledSubscriptions.length}</Badge>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="archived"
+              className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-muted-foreground" />
+                <span className="hidden sm:inline font-medium">Archived</span>
+                <Badge variant="secondary" className="ml-1">{archivedSubscriptions.length}</Badge>
+              </div>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="active" className="space-y-4 mt-6">
             {isLoading ? (
-              <div className="text-center py-12">{t('common.loading')}</div>
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[1, 2, 3].map(i => (
+                    <Card key={i} className="animate-pulse">
+                      <CardContent className="p-6 space-y-3">
+                        <div className="h-4 bg-muted rounded w-2/3"></div>
+                        <div className="h-3 bg-muted rounded w-full"></div>
+                        <div className="h-3 bg-muted rounded w-5/6"></div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             ) : activeSubscriptions.length === 0 ? (
-              <EmptyState
-                icon={CreditCard}
-                title="No active subscriptions"
-                description="Start tracking your subscriptions"
-                actionLabel={t('subscriptions.addFirstSubscription')}
-                onAction={() => setCreateDialogOpen(true)}
-              />
+              <div className="text-center py-16">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted/50 mb-6">
+                  <CreditCard className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No active subscriptions</h3>
+                <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto leading-relaxed">
+                  Start tracking your recurring payments and never miss a renewal date again
+                </p>
+                <Button 
+                  onClick={() => setCreateDialogOpen(true)}
+                  className="shadow-sm hover:shadow-md"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  {t('subscriptions.addFirstSubscription')}
+                </Button>
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {activeSubscriptions.map((subscription) => (
