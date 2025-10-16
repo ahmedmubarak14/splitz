@@ -141,8 +141,13 @@ export const InviteTripMemberDialog = ({ tripId, open, onOpenChange }: InviteTri
 
   const handleCopy = async () => {
     if (inviteUrl) {
-      await navigator.clipboard.writeText(inviteUrl);
-      toast.success(t('trips.linkCopied'));
+      try {
+        await navigator.clipboard.writeText(inviteUrl);
+        toast.success(t('trips.linkCopied'));
+      } catch (error) {
+        console.error('Copy failed:', error);
+        toast.error('Failed to copy link');
+      }
     }
   };
 

@@ -31,7 +31,7 @@ export const EditTripTaskDialog = ({ task, open, onOpenChange }: EditTripTaskDia
   const [description, setDescription] = useState(task.description || "");
   const [priority, setPriority] = useState(task.priority);
   const [status, setStatus] = useState(task.status);
-  const [assignedTo, setAssignedTo] = useState(task.assigned_to || "");
+  const [assignedTo, setAssignedTo] = useState<string | undefined>(task.assigned_to || undefined);
   const [assignedToGroup, setAssignedToGroup] = useState(task.assigned_to_group || false);
   const [dueDate, setDueDate] = useState<Date | undefined>(
     task.due_date ? new Date(task.due_date) : undefined
@@ -42,7 +42,7 @@ export const EditTripTaskDialog = ({ task, open, onOpenChange }: EditTripTaskDia
     setDescription(task.description || "");
     setPriority(task.priority);
     setStatus(task.status);
-    setAssignedTo(task.assigned_to || "");
+    setAssignedTo(task.assigned_to || undefined);
     setAssignedToGroup(task.assigned_to_group || false);
     setDueDate(task.due_date ? new Date(task.due_date) : undefined);
   }, [task]);
@@ -70,7 +70,7 @@ export const EditTripTaskDialog = ({ task, open, onOpenChange }: EditTripTaskDia
         description: description || null,
         priority,
         status,
-        assigned_to: assignedToGroup ? null : (assignedTo || null),
+        assigned_to: assignedToGroup ? null : (assignedTo === "unassigned" || !assignedTo ? null : assignedTo),
         assigned_to_group: assignedToGroup,
         due_date: dueDate ? format(dueDate, 'yyyy-MM-dd') : null,
       }).eq("id", task.id);
@@ -187,7 +187,7 @@ export const EditTripTaskDialog = ({ task, open, onOpenChange }: EditTripTaskDia
                   <SelectValue placeholder={t('trips.selectMember')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">{t('trips.unassigned')}</SelectItem>
+                  <SelectItem value="unassigned">{t('trips.unassigned')}</SelectItem>
                   {members?.map((member: any) => (
                     <SelectItem key={member.user_id} value={member.user_id}>
                       {member.profiles?.full_name || 'Unknown'}

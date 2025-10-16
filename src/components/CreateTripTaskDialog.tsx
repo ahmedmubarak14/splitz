@@ -31,7 +31,7 @@ export const CreateTripTaskDialog = ({ tripId, open, onOpenChange }: CreateTripT
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
   const [status, setStatus] = useState("todo");
-  const [assignedTo, setAssignedTo] = useState("");
+  const [assignedTo, setAssignedTo] = useState<string | undefined>(undefined);
   const [assignedToGroup, setAssignedToGroup] = useState(false);
   const [dueDate, setDueDate] = useState<Date>();
 
@@ -62,7 +62,7 @@ export const CreateTripTaskDialog = ({ tripId, open, onOpenChange }: CreateTripT
         description: description || null,
         priority,
         status,
-        assigned_to: assignedToGroup ? null : (assignedTo || null),
+        assigned_to: assignedToGroup ? null : (assignedTo === "unassigned" || !assignedTo ? null : assignedTo),
         assigned_to_group: assignedToGroup,
         due_date: dueDate ? format(dueDate, 'yyyy-MM-dd') : null,
         created_by: user.id,
@@ -87,7 +87,7 @@ export const CreateTripTaskDialog = ({ tripId, open, onOpenChange }: CreateTripT
     setDescription("");
     setPriority("medium");
     setStatus("todo");
-    setAssignedTo("");
+    setAssignedTo(undefined);
     setAssignedToGroup(false);
     setDueDate(undefined);
   };
@@ -193,7 +193,7 @@ export const CreateTripTaskDialog = ({ tripId, open, onOpenChange }: CreateTripT
                   <SelectValue placeholder={t('trips.selectMember')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">{t('trips.unassigned')}</SelectItem>
+                  <SelectItem value="unassigned">{t('trips.unassigned')}</SelectItem>
                   {members?.map((member: any) => (
                     <SelectItem key={member.user_id} value={member.user_id}>
                       {member.profiles?.full_name || 'Unknown'}
