@@ -27,6 +27,8 @@ const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Habits = lazy(() => import("./pages/Habits"));
+const Tasks = lazy(() => import("./pages/Tasks"));
+const Matrix = lazy(() => import("./pages/Matrix"));
 const Focus = lazy(() => import("./pages/Focus"));
 const Expenses = lazy(() => import("./pages/Expenses"));
 const Challenges = lazy(() => import("./pages/Challenges"));
@@ -194,6 +196,8 @@ const AppContent = () => {
               <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/habits" element={<Habits />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/matrix" element={<Matrix />} />
             <Route path="/focus" element={<Focus />} />
             <Route path="/expenses" element={<Expenses />} />
             <Route path="/challenges" element={<Challenges />} />

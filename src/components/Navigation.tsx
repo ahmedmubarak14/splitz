@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Target, DollarSign, Trophy, User, Brain } from 'lucide-react';
+import { Home, ListChecks, Brain, DollarSign, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
@@ -9,7 +9,7 @@ const Navigation = () => {
 
   const navItems = [
     { path: '/dashboard', icon: Home, label: t('nav.dashboard') },
-    { path: '/habits', icon: Target, label: t('nav.habits') },
+    { path: '/tasks', icon: ListChecks, label: t('nav.tasks') || 'Tasks' },
     { path: '/focus', icon: Brain, label: t('nav.focus') || 'Focus' },
     { path: '/expenses', icon: DollarSign, label: t('nav.expenses') },
     { path: '/challenges', icon: Trophy, label: t('nav.challenges') },

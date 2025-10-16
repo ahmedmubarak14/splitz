@@ -352,12 +352,19 @@ export type Database = {
           due_date: string | null
           estimated_pomodoros: number | null
           has_reminder: boolean | null
+          icon: string | null
           id: string
           is_completed: boolean | null
+          order_index: number | null
           parent_task_id: string | null
+          priority_quadrant:
+            | Database["public"]["Enums"]["priority_quadrant"]
+            | null
+          project: string | null
           reminder_time: string | null
           repeat_pattern: string | null
           title: string
+          total_time_spent: number | null
           updated_at: string
           user_id: string
         }
@@ -369,12 +376,19 @@ export type Database = {
           due_date?: string | null
           estimated_pomodoros?: number | null
           has_reminder?: boolean | null
+          icon?: string | null
           id?: string
           is_completed?: boolean | null
+          order_index?: number | null
           parent_task_id?: string | null
+          priority_quadrant?:
+            | Database["public"]["Enums"]["priority_quadrant"]
+            | null
+          project?: string | null
           reminder_time?: string | null
           repeat_pattern?: string | null
           title: string
+          total_time_spent?: number | null
           updated_at?: string
           user_id: string
         }
@@ -386,12 +400,19 @@ export type Database = {
           due_date?: string | null
           estimated_pomodoros?: number | null
           has_reminder?: boolean | null
+          icon?: string | null
           id?: string
           is_completed?: boolean | null
+          order_index?: number | null
           parent_task_id?: string | null
+          priority_quadrant?:
+            | Database["public"]["Enums"]["priority_quadrant"]
+            | null
+          project?: string | null
           reminder_time?: string | null
           repeat_pattern?: string | null
           title?: string
+          total_time_spent?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -1210,6 +1231,11 @@ export type Database = {
         | "mindfulness"
         | "finance"
         | "other"
+      priority_quadrant:
+        | "urgent_important"
+        | "not_urgent_important"
+        | "urgent_unimportant"
+        | "not_urgent_unimportant"
       split_type: "equal" | "percentage" | "custom" | "shares"
     }
     CompositeTypes: {
@@ -1368,6 +1394,12 @@ export const Constants = {
         "mindfulness",
         "finance",
         "other",
+      ],
+      priority_quadrant: [
+        "urgent_important",
+        "not_urgent_important",
+        "urgent_unimportant",
+        "not_urgent_unimportant",
       ],
       split_type: ["equal", "percentage", "custom", "shares"],
     },

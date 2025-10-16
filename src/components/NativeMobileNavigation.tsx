@@ -1,5 +1,5 @@
 import { IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/react';
-import { home, checkmarkCircle, flash, wallet, trophy } from 'ionicons/icons';
+import { home, listOutline, flash, wallet, trophy } from 'ionicons/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +10,7 @@ export const NativeMobileNavigation = () => {
 
   const tabs = [
     { path: '/dashboard', icon: home, label: t('nav.dashboard') },
-    { path: '/habits', icon: checkmarkCircle, label: t('nav.habits') },
+    { path: '/tasks', icon: listOutline, label: t('nav.tasks') || 'Tasks' },
     { path: '/focus', icon: flash, label: t('nav.focus') },
     { path: '/expenses', icon: wallet, label: t('nav.expenses') },
     { path: '/challenges', icon: trophy, label: t('nav.challenges') },
