@@ -21,10 +21,75 @@ interface CreateSubscriptionDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const POPULAR_SUBSCRIPTIONS = [
+  { 
+    name: "Netflix", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
+    category: "streaming",
+    defaultAmount: 15
+  },
+  { 
+    name: "Spotify Premium", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
+    category: "streaming",
+    defaultAmount: 10
+  },
+  { 
+    name: "Apple Music", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Apple_Music_icon.svg",
+    category: "streaming",
+    defaultAmount: 11
+  },
+  { 
+    name: "Apple TV+", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/2/28/Apple_TV_Plus_Logo.svg",
+    category: "streaming",
+    defaultAmount: 7
+  },
+  { 
+    name: "ChatGPT Pro", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg",
+    category: "software",
+    defaultAmount: 20
+  },
+  { 
+    name: "YouTube Premium", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg",
+    category: "streaming",
+    defaultAmount: 12
+  },
+  { 
+    name: "Amazon Prime", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg",
+    category: "streaming",
+    defaultAmount: 14
+  },
+  { 
+    name: "Disney+", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg",
+    category: "streaming",
+    defaultAmount: 8
+  },
+  { 
+    name: "Adobe Creative Cloud", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/4/4c/Adobe_Creative_Cloud_rainbow_icon.svg",
+    category: "software",
+    defaultAmount: 55
+  },
+  { 
+    name: "Microsoft 365", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/5/51/Microsoft_365_logo.svg",
+    category: "software",
+    defaultAmount: 7
+  },
+];
+
+
 export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscriptionDialogProps) => {
   const { t, i18n } = useTranslation();
   const isRTL = useIsRTL();
   const queryClient = useQueryClient();
+  const [selectedService, setSelectedService] = useState<string>("custom");
   const [formData, setFormData] = useState({
     name: "",
     amount: "",
@@ -33,7 +98,33 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
     category: "other",
     is_shared: false,
     next_renewal_date: new Date(),
+    logo_url: "",
   });
+
+
+  const handleServiceSelect = (value: string) => {
+    setSelectedService(value);
+    if (value !== "custom") {
+      const subscription = POPULAR_SUBSCRIPTIONS.find(s => s.name === value);
+      if (subscription) {
+        setFormData({
+          ...formData,
+          name: subscription.name,
+          amount: subscription.defaultAmount.toString(),
+          category: subscription.category,
+          logo_url: subscription.logo,
+        });
+      }
+    } else {
+      setFormData({
+        ...formData,
+        name: "",
+        amount: "",
+        category: "other",
+        logo_url: "",
+      });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +146,7 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
         is_shared: formData.is_shared,
         next_renewal_date: format(formData.next_renewal_date, "yyyy-MM-dd"),
         user_id: user.id,
+        logo_url: formData.logo_url || null,
       }]);
 
     if (error) {
@@ -65,6 +157,7 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
     toast.success(t('toast.subscriptionCreated'));
     queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
     onOpenChange(false);
+    setSelectedService("custom");
     setFormData({
       name: "",
       amount: "",
@@ -73,6 +166,7 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
       category: "other",
       is_shared: false,
       next_renewal_date: new Date(),
+      logo_url: "",
     });
   };
 
@@ -85,15 +179,42 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">{t('subscriptions.name')}</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder={t('subscriptions.namePlaceholder')}
-              required
-            />
+            <Label htmlFor="service">{t('subscriptions.selectService')}</Label>
+            <Select value={selectedService} onValueChange={handleServiceSelect}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border z-50">
+                {POPULAR_SUBSCRIPTIONS.map((sub) => (
+                  <SelectItem key={sub.name} value={sub.name}>
+                    <div className="flex items-center gap-2">
+                      <img src={sub.logo} alt={sub.name} className="w-5 h-5 object-contain" />
+                      <span>{sub.name}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+                <SelectItem value="custom">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded bg-muted flex items-center justify-center text-xs">?</div>
+                    <span>{t('subscriptions.customService')}</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+
+          {selectedService === "custom" && (
+            <div>
+              <Label htmlFor="name">{t('subscriptions.name')}</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder={t('subscriptions.namePlaceholder')}
+                required
+              />
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>

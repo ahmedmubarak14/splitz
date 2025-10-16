@@ -30,8 +30,16 @@ export const SubscriptionCard = ({ subscription }: SubscriptionCardProps) => {
       <CardHeader className="pb-3">
         <div className={`flex items-start justify-between ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <div className={`flex items-center gap-3 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-            <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-              <CreditCard className="h-6 w-6 text-primary" />
+            <div className="h-12 w-12 rounded-lg bg-card border border-border flex items-center justify-center overflow-hidden">
+              {subscription.logo_url ? (
+                <img 
+                  src={subscription.logo_url} 
+                  alt={subscription.name} 
+                  className="h-8 w-8 object-contain"
+                />
+              ) : (
+                <CreditCard className="h-6 w-6 text-primary" />
+              )}
             </div>
             <div>
               <h3 className="font-semibold">{subscription.name}</h3>
