@@ -22,6 +22,7 @@ import { PendingExpensesWidget } from '@/components/dashboard/PendingExpensesWid
 import { HabitsDueTodayWidget } from '@/components/dashboard/HabitsDueTodayWidget';
 import { QuickActionsHub } from '@/components/dashboard/QuickActionsHub';
 import { addDays } from 'date-fns';
+import { prefetchTasks, prefetchHabits, prefetchExpenses, prefetchFocus } from '@/App';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -47,6 +48,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     checkAuth();
+    // Prefetch commonly accessed pages from Dashboard
+    prefetchTasks();
+    prefetchHabits();
+    prefetchExpenses();
   }, []);
 
   const checkAuth = async () => {

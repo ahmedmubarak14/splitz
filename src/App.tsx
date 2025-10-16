@@ -45,6 +45,14 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const JoinInvite = lazy(() => import("./pages/JoinInvite"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
+// Prefetch functions for critical routes
+export const prefetchDashboard = () => import("./pages/Dashboard");
+export const prefetchTasks = () => import("./pages/Tasks");
+export const prefetchHabits = () => import("./pages/Habits");
+export const prefetchExpenses = () => import("./pages/Expenses");
+export const prefetchFocus = () => import("./pages/Focus");
+export const prefetchChallenges = () => import("./pages/Challenges");
+
 // Enhanced loading fallback with brand styling
 const PageLoader = () => (
   <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">

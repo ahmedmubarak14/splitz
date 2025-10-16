@@ -6,6 +6,14 @@ import { useState, useEffect } from 'react';
 import { MobileDrawerNav } from './MobileDrawerNav';
 import { Button } from './ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { 
+  prefetchDashboard, 
+  prefetchTasks, 
+  prefetchHabits, 
+  prefetchExpenses, 
+  prefetchFocus, 
+  prefetchChallenges 
+} from '@/App';
 
 type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'matrix' | 'focus' | 'calendar' | 'expenses' | 'subscriptions' | 'trips' | 'challenges';
 
@@ -53,6 +61,18 @@ const Navigation = () => {
     }
   };
 
+  // Prefetch handler
+  const handlePrefetch = (path: string) => {
+    switch(path) {
+      case '/dashboard': prefetchDashboard(); break;
+      case '/tasks': prefetchTasks(); break;
+      case '/habits': prefetchHabits(); break;
+      case '/expenses': prefetchExpenses(); break;
+      case '/focus': prefetchFocus(); break;
+      case '/challenges': prefetchChallenges(); break;
+    }
+  };
+
   const visibleNavItems = allNavItems.filter(item => visibleNavIds.includes(item.id));
 
   return (
@@ -78,6 +98,8 @@ const Navigation = () => {
               <Link
                 key={item.path}
                 to={item.path}
+                onMouseEnter={() => handlePrefetch(item.path)}
+                onTouchStart={() => handlePrefetch(item.path)}
                 className={cn(
                   'flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all',
                   isActive

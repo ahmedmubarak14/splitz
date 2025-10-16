@@ -13,6 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import splitzLogo from '@/assets/splitz-logo.png';
 import { formatRelativeTime, formatAmount } from '@/lib/formatters';
 import { generateLiveStreaks, generateRecentSplits } from '@/lib/sampleData';
+import { prefetchDashboard } from '@/App';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const Index = () => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
+        prefetchDashboard();
         navigate('/habits');
       }
     });

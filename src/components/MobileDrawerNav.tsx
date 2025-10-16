@@ -21,6 +21,14 @@ import {
   Settings,
   LogOut,
 } from 'lucide-react';
+import { 
+  prefetchDashboard, 
+  prefetchTasks, 
+  prefetchHabits, 
+  prefetchExpenses, 
+  prefetchFocus, 
+  prefetchChallenges 
+} from '@/App';
 
 interface MobileDrawerNavProps {
   open: boolean;
@@ -97,6 +105,17 @@ export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: Mobi
 
   const isActive = (path: string) => location.pathname === path;
 
+  const handlePrefetch = (path: string) => {
+    switch(path) {
+      case '/dashboard': prefetchDashboard(); break;
+      case '/tasks': prefetchTasks(); break;
+      case '/habits': prefetchHabits(); break;
+      case '/expenses': prefetchExpenses(); break;
+      case '/focus': prefetchFocus(); break;
+      case '/challenges': prefetchChallenges(); break;
+    }
+  };
+
   const handleNavigate = (path: string) => {
     navigate(path);
     onOpenChange(false);
@@ -155,6 +174,8 @@ export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: Mobi
                     <button
                       key={item.path}
                       onClick={() => handleNavigate(item.path)}
+                      onMouseEnter={() => handlePrefetch(item.path)}
+                      onTouchStart={() => handlePrefetch(item.path)}
                       className={cn(
                         'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all',
                         active
