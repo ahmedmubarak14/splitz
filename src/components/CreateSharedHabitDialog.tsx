@@ -61,7 +61,7 @@ export function CreateSharedHabitDialog({
       if (!user) throw new Error("Not authenticated");
 
       // Create the habit
-      const { data: habit, error: habitError } = await supabase
+      const { data: habit, error: habitError } = await (supabase as any)
         .from("shared_habits")
         .insert({
           name: name.trim(),
@@ -78,7 +78,7 @@ export function CreateSharedHabitDialog({
       if (habitError) throw habitError;
 
       // Add creator as participant
-      const { error: participantError } = await supabase
+      const { error: participantError } = await (supabase as any)
         .from("shared_habit_participants")
         .insert({
           habit_id: habit.id,

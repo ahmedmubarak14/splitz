@@ -74,7 +74,7 @@ export default function SharedHabits() {
       if (!user) return;
 
       // Get all shared habits user is part of
-      const { data: habitsData, error } = await supabase
+      const { data: habitsData, error } = await (supabase as any)
         .from("shared_habits")
         .select(`
           *,
@@ -90,19 +90,19 @@ export default function SharedHabits() {
 
       // Get participant counts and check-in status for each habit
       const enrichedHabits = await Promise.all(
-        (habitsData || []).map(async (habit) => {
-          const { count } = await supabase
+        (habitsData || []).map(async (habit: any) => {
+          const { count } = await (supabase as any)
             .from("shared_habit_participants")
             .select("*", { count: "exact", head: true })
             .eq("habit_id", habit.id);
 
-          const { data: todayCheckin } = await supabase
+          const { data: todayCheckin } = await (supabase as any)
             .from("shared_habit_checkins")
             .select("id")
             .eq("habit_id", habit.id)
             .eq("user_id", user.id)
             .gte("checked_in_at", new Date().toISOString().split("T")[0])
-            .single();
+            .maybeSingle();
 
           return {
             id: habit.id,
@@ -133,7 +133,7 @@ export default function SharedHabits() {
       if (!user) return;
 
       // Get recent check-ins from habits user is part of
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("shared_habit_checkins")
         .select(`
           id,
@@ -156,7 +156,7 @@ export default function SharedHabits() {
       // Get reactions for each check-in
       const feed = await Promise.all(
         (data || []).map(async (item: any) => {
-          const { data: reactions } = await supabase
+          const { data: reactions } = await (supabase as any)
             .from("shared_habit_reactions")
             .select("emoji")
             .eq("checkin_id", item.id);
@@ -193,10 +193,12 @@ export default function SharedHabits() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase.from("shared_habit_checkins").insert({
-        habit_id: habitId,
-        user_id: user.id,
-      });
+      const { error } = await (supabase as any)
+        .from("shared_habit_checkins")
+        .insert({
+          habit_id: habitId,
+          user_id: user.id,
+        });
 
       if (error) throw error;
 
@@ -214,27 +216,29 @@ export default function SharedHabits() {
       if (!user) return;
 
       // Check if already reacted
-      const { data: existing } = await supabase
+      const { data: existing } = await (supabase as any)
         .from("shared_habit_reactions")
         .select("id")
         .eq("checkin_id", checkinId)
         .eq("user_id", user.id)
         .eq("emoji", emoji)
-        .single();
+        .maybeSingle();
 
       if (existing) {
         // Remove reaction
-        await supabase
+        await (supabase as any)
           .from("shared_habit_reactions")
           .delete()
           .eq("id", existing.id);
       } else {
         // Add reaction
-        await supabase.from("shared_habit_reactions").insert({
-          checkin_id: checkinId,
-          user_id: user.id,
-          emoji,
-        });
+        await (supabase as any)
+          .from("shared_habit_reactions")
+          .insert({
+            checkin_id: checkinId,
+            user_id: user.id,
+            emoji,
+          });
       }
 
       fetchActivityFeed();
