@@ -1,23 +1,59 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ListChecks, Brain, DollarSign, Trophy, Menu } from 'lucide-react';
+import { Home, ListChecks, Brain, DollarSign, Trophy, Menu, CreditCard, Plane, Calendar, Grid3X3, Flame } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MobileDrawerNav } from './MobileDrawerNav';
 import { Button } from './ui/button';
+import { supabase } from '@/integrations/supabase/client';
+
+type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'matrix' | 'focus' | 'calendar' | 'expenses' | 'subscriptions' | 'trips' | 'challenges';
 
 const Navigation = () => {
   const location = useLocation();
   const { t } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [visibleNavIds, setVisibleNavIds] = useState<NavItemId[]>([
+    'dashboard',
+    'tasks',
+    'focus',
+    'expenses',
+    'challenges',
+  ]);
 
-  const navItems = [
-    { path: '/dashboard', icon: Home, label: t('nav.dashboard') },
-    { path: '/tasks', icon: ListChecks, label: t('nav.tasks') || 'Tasks' },
-    { path: '/focus', icon: Brain, label: t('nav.focus') || 'Focus' },
-    { path: '/expenses', icon: DollarSign, label: t('nav.expenses') },
-    { path: '/challenges', icon: Trophy, label: t('nav.challenges') },
+  const allNavItems = [
+    { id: 'dashboard' as NavItemId, path: '/dashboard', icon: Home, label: t('nav.dashboard') },
+    { id: 'habits' as NavItemId, path: '/habits', icon: Flame, label: t('nav.habits') },
+    { id: 'tasks' as NavItemId, path: '/tasks', icon: ListChecks, label: t('nav.tasks') || 'Tasks' },
+    { id: 'matrix' as NavItemId, path: '/matrix', icon: Grid3X3, label: t('nav.matrix') || 'Matrix' },
+    { id: 'focus' as NavItemId, path: '/focus', icon: Brain, label: t('nav.focus') || 'Focus' },
+    { id: 'calendar' as NavItemId, path: '/calendar', icon: Calendar, label: t('nav.calendar') || 'Calendar' },
+    { id: 'expenses' as NavItemId, path: '/expenses', icon: DollarSign, label: t('nav.expenses') },
+    { id: 'subscriptions' as NavItemId, path: '/subscriptions', icon: CreditCard, label: t('nav.subscriptions') },
+    { id: 'trips' as NavItemId, path: '/trips', icon: Plane, label: t('nav.trips') },
+    { id: 'challenges' as NavItemId, path: '/challenges', icon: Trophy, label: t('nav.challenges') },
   ];
+
+  useEffect(() => {
+    fetchNavPreferences();
+  }, []);
+
+  const fetchNavPreferences = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('navigation_preferences')
+      .select('visible_nav_items')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (data?.visible_nav_items) {
+      setVisibleNavIds(data.visible_nav_items as NavItemId[]);
+    }
+  };
+
+  const visibleNavItems = allNavItems.filter(item => visibleNavIds.includes(item.id));
 
   return (
     <>
@@ -34,7 +70,7 @@ const Navigation = () => {
             <span className="text-[10px] font-medium">{t('nav.menu') || 'Menu'}</span>
           </Button>
 
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
             
@@ -58,7 +94,11 @@ const Navigation = () => {
       </nav>
 
       {/* Drawer Navigation */}
-      <MobileDrawerNav open={drawerOpen} onOpenChange={setDrawerOpen} />
+      <MobileDrawerNav 
+        open={drawerOpen} 
+        onOpenChange={setDrawerOpen}
+        onNavigationChange={fetchNavPreferences}
+      />
     </>
   );
 };

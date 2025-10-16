@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import NavigationCustomizer from './NavigationCustomizer';
 import {
   Home,
   ListChecks,
@@ -24,9 +25,10 @@ import {
 interface MobileDrawerNavProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onNavigationChange?: () => void;
 }
 
-export function MobileDrawerNav({ open, onOpenChange }: MobileDrawerNavProps) {
+export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: MobileDrawerNavProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -122,6 +124,16 @@ export function MobileDrawerNav({ open, onOpenChange }: MobileDrawerNavProps) {
             </div>
           </div>
         </SheetHeader>
+
+        {/* Navigation Customizer */}
+        <div className="px-4 pt-4">
+          <NavigationCustomizer onSave={() => {
+            onNavigationChange?.();
+            onOpenChange(false);
+          }} />
+        </div>
+
+        <Separator className="my-4" />
 
         {/* Navigation Groups */}
         <div className="py-4">

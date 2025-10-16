@@ -557,6 +557,33 @@ export type Database = {
         }
         Relationships: []
       }
+      navigation_preferences: {
+        Row: {
+          created_at: string | null
+          id: string
+          nav_order: Json | null
+          updated_at: string | null
+          user_id: string
+          visible_nav_items: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          nav_order?: Json | null
+          updated_at?: string | null
+          user_id: string
+          visible_nav_items?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          nav_order?: Json | null
+          updated_at?: string | null
+          user_id?: string
+          visible_nav_items?: Json | null
+        }
+        Relationships: []
+      }
       net_balances: {
         Row: {
           amount: number
