@@ -108,9 +108,31 @@ export default {
         "scale-in": "scale-in 0.4s ease-out",
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        display: ["Inter", "Cairo", "system-ui", "sans-serif"],
-        arabic: ["Noto Sans Arabic", "Cairo", "sans-serif"],
+        sans: [
+          "Inter", 
+          "-apple-system", 
+          "BlinkMacSystemFont", 
+          "Segoe UI", 
+          "Roboto", 
+          "Helvetica Neue", 
+          "Arial", 
+          "sans-serif"
+        ],
+        display: [
+          "Inter", 
+          "Cairo", 
+          "-apple-system", 
+          "BlinkMacSystemFont", 
+          "Segoe UI", 
+          "sans-serif"
+        ],
+        arabic: [
+          "Noto Sans Arabic", 
+          "Cairo", 
+          "Tahoma", 
+          "Arial", 
+          "sans-serif"
+        ],
       },
     },
   },
