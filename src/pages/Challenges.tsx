@@ -9,6 +9,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Trophy, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -376,23 +377,23 @@ const Challenges = () => {
     : challenges;
 
   return (
-    <div className={`min-h-screen bg-background ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className={`min-h-screen bg-gradient-to-b from-muted/30 via-muted/10 to-background ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
       
-      <div className={`max-w-7xl mx-auto ${responsiveSpacing.sectionGap}`}>
+      <div className={`max-w-7xl mx-auto space-y-6 md:space-y-8`}>
         {/* Header */}
         <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
           <div className={`space-y-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-            <h1 className={`${responsiveText.pageTitle} font-semibold text-foreground`}>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
               {t('challenges.title')}
             </h1>
-            <p className={`${responsiveText.small} text-muted-foreground`}>
+            <p className="text-sm md:text-base text-muted-foreground">
               {t('challenges.competeAndGrow')}
             </p>
           </div>
           
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="shadow-sm hover:shadow-md active:scale-95 transition-all duration-200">
                 <Plus className="w-4 h-4 mr-2" />
                 {t('challenges.createChallenge')}
               </Button>
@@ -452,9 +453,21 @@ const Challenges = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'all' | 'joined')} className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2 bg-muted/50 p-1 rounded-lg border border-border/40">
-            <TabsTrigger value="all" className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200">{t('challenges.allChallenges')}</TabsTrigger>
-            <TabsTrigger value="joined" className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200">{t('challenges.myChallenges')}</TabsTrigger>
+          <TabsList className="grid w-full max-w-4xl grid-cols-2 bg-muted/50 p-1 rounded-lg border border-border/40">
+            <TabsTrigger value="all" className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-primary shadow-sm" />
+                <span className="font-medium">{t('challenges.allChallenges')}</span>
+                <Badge variant="secondary" className="ml-1">{challenges.length}</Badge>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="joined" className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-success shadow-sm" />
+                <span className="font-medium">{t('challenges.myChallenges')}</span>
+                <Badge variant="secondary" className="ml-1">{challenges.filter(c => c.is_participant).length}</Badge>
+              </div>
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value={activeTab} className="mt-6">

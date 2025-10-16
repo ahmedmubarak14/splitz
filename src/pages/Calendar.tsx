@@ -158,14 +158,14 @@ export default function CalendarPage() {
         description={t('calendar.subtitle')}
       />
       
-      <div className={`min-h-screen p-4 md:p-6 space-y-6 ${isRTL ? 'rtl' : 'ltr'}`}>
+      <div className={`min-h-screen bg-gradient-to-b from-muted/30 via-muted/10 to-background p-4 md:p-6 space-y-6 md:space-y-8 ${isRTL ? 'rtl' : 'ltr'}`}>
         {/* Header */}
         <div className={`flex justify-between items-center ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
               {t('calendar.title')}
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-sm md:text-base text-muted-foreground mt-1">
               {t('calendar.subtitle')}
             </p>
           </div>
@@ -193,7 +193,8 @@ export default function CalendarPage() {
         </Tabs>
 
         {/* Legend */}
-        <Card className="p-4 shadow-sm border border-border/40">
+        <Card className="p-4 md:p-5 shadow-sm border border-border/40 hover:shadow-md transition-shadow duration-200">
+          <h3 className="text-sm font-semibold mb-3 tracking-tight">{t('calendar.eventTypes')}</h3>
           <div className={`flex flex-wrap gap-4 text-sm ${isRTL ? 'flex-row-reverse' : ''}`}>
             <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
               <div className="w-3 h-3 rounded-full bg-blue-500 shadow-sm" />

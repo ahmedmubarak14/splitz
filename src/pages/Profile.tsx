@@ -130,15 +130,15 @@ const Profile = () => {
 
 
   return (
-    <div className={`min-h-screen bg-background ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className={`min-h-screen bg-gradient-to-b from-muted/30 via-muted/10 to-background ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
       
-      <div className={`max-w-4xl mx-auto ${responsiveSpacing.pageContainer} ${responsiveSpacing.sectionGap}`}>
+      <div className={`max-w-4xl mx-auto ${responsiveSpacing.pageContainer} space-y-6 md:space-y-8`}>
         {/* Header */}
         <div className={`space-y-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-          <h1 className={`${responsiveText.pageTitle} font-semibold text-foreground`}>
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
             {t('nav.profile')}
           </h1>
-          <p className={`${responsiveText.small} text-muted-foreground`}>
+          <p className="text-sm md:text-base text-muted-foreground">
             {t('profile.subtitle')}
           </p>
         </div>
@@ -231,7 +231,14 @@ const Profile = () => {
               </div>
 
               <Button onClick={saveProfile} disabled={saving} className="w-full shadow-sm hover:shadow-md active:scale-95 transition-all duration-200">
-                {saving ? t('profile.saving') : t('profile.saveChanges')}
+                {saving ? (
+                  <span className="flex items-center gap-2">
+                    <div className="h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                    {t('profile.saving')}
+                  </span>
+                ) : (
+                  t('profile.saveChanges')
+                )}
               </Button>
 
               <div className="pt-4 space-y-3">

@@ -198,16 +198,16 @@ const Habits = () => {
   const emojiOptions = ['🔥', '💪', '🎯', '📚', '🏃', '🧘', '💧', '🌱', '⭐', '🎨'];
 
   return (
-    <div className={`min-h-screen bg-background ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className={`min-h-screen bg-gradient-to-b from-muted/30 via-muted/10 to-background ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
       
-      <div className={`max-w-7xl mx-auto ${responsiveSpacing.sectionGap}`}>
+      <div className={`max-w-7xl mx-auto space-y-6 md:space-y-8`}>
         {/* Header */}
         <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
           <div className={`space-y-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-            <h1 className={`${responsiveText.pageTitle} font-semibold text-foreground`}>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
               {t('habits.title')}
             </h1>
-            <p className={`${responsiveText.small} text-muted-foreground flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <p className={`text-sm md:text-base text-muted-foreground flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <TrendingUp className="w-4 h-4" />
               {t('habits.myHabits')}
             </p>
@@ -215,7 +215,7 @@ const Habits = () => {
           
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="shadow-sm hover:shadow-md active:scale-95 transition-all duration-200">
                 <Plus className="w-4 h-4 mr-2" />
                 {t('habits.createNew')}
               </Button>

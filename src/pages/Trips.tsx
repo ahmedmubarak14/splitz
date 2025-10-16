@@ -43,18 +43,18 @@ export default function Trips() {
         description={t('trips.subtitle')}
       />
       
-      <div className={`min-h-screen p-4 md:p-6 space-y-6 ${isRTL ? 'rtl' : 'ltr'}`}>
+      <div className={`min-h-screen bg-gradient-to-b from-muted/30 via-muted/10 to-background p-4 md:p-6 space-y-6 md:space-y-8 ${isRTL ? 'rtl' : 'ltr'}`}>
         {/* Header */}
         <div className={`flex justify-between items-center ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
               {t('trips.title')}
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-sm md:text-base text-muted-foreground mt-1">
               {t('trips.subtitle')}
             </p>
           </div>
-          <Button onClick={() => setCreateDialogOpen(true)}>
+          <Button onClick={() => setCreateDialogOpen(true)} className="shadow-sm hover:shadow-md active:scale-95 transition-all duration-200">
             <Plus className={`${isRTL ? 'ml-2' : 'mr-2'} h-4 w-4`} />
             {t('trips.planTrip')}
           </Button>
