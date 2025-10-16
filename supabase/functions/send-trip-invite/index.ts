@@ -98,9 +98,13 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Use the same sender as subscriptions (can be overridden by RESEND_FROM)
-    const fromEmail = Deno.env.get('RESEND_FROM') || 'Splitz <noreply@splitz.live>';
-
+    // Build a safe "from" sender. Validate format to avoid Resend 422.
+    const rawFrom = (Deno.env.get('RESEND_FROM') || '').replace(/[\r\n]/g, ' ').trim();
+    const emailOnly = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const nameAddr = /^[^<>]*<\s*[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+\s*>$/;
+    const fromEmail = (rawFrom && (emailOnly.test(rawFrom) || nameAddr.test(rawFrom)))
+      ? rawFrom
+      : 'Splitz <onboarding@resend.dev>';
     // Send email using Resend API
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
