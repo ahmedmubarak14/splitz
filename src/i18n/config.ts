@@ -411,16 +411,16 @@ const resources = {
         title: 'How It Works',
         subtitle: 'Three simple steps to organize your entire life',
         step1: {
-          title: 'Master Productivity',
-          desc: 'Organize tasks with Eisenhower Matrix, plan with unified calendar, focus with Pomodoro timer, and manage trips—all in one place.',
+          title: 'Organize Everything',
+          desc: 'Add tasks, habits, expenses, and trips. Your calendar shows everything in one unified timeline with color-coded events.',
         },
         step2: {
-          title: 'Build Better Habits',
-          desc: 'Track daily habits, maintain streaks, join group challenges with friends, and celebrate milestones together.',
+          title: 'Track Progress',
+          desc: 'Monitor habit streaks, challenge leaderboards, subscription renewals, and task completion. Stay motivated with real-time updates.',
         },
         step3: {
-          title: 'Split Expenses Fairly',
-          desc: 'Manage group expenses, track recurring subscriptions, split bills easily, and keep everyone\'s balance transparent.',
+          title: 'Collaborate & Achieve',
+          desc: 'Share trips, split expenses, compete in challenges with friends. Achieve more together with seamless collaboration.',
         },
       },
       pricing: {
@@ -1502,16 +1502,16 @@ const resources = {
         title: 'كيف يعمل',
         subtitle: 'ثلاث خطوات بسيطة لتنظيم حياتك بالكامل',
         step1: {
-          title: 'أتقن الإنتاجية',
-          desc: 'نظّم المهام بمصفوفة أيزنهاور، خطط بتقويم موحد، ركّز بمؤقت بومودورو، وأدِر الرحلات—كل شيء في مكان واحد.',
+          title: 'نظم كل شيء',
+          desc: 'أضف المهام والعادات والمصاريف والرحلات. يعرض التقويم كل شيء في جدول زمني موحد مع أحداث ملونة.',
         },
         step2: {
-          title: 'ابنِ عادات أفضل',
-          desc: 'تتبع العادات اليومية، حافظ على السلاسل، انضم لتحديات جماعية مع الأصدقاء، واحتفل بالإنجازات معاً.',
+          title: 'تتبع التقدم',
+          desc: 'راقب سلاسل العادات، لوحات المتصدرين للتحديات، تجديدات الاشتراكات، وإتمام المهام. ابقَ متحفزاً مع التحديثات الفورية.',
         },
         step3: {
-          title: 'اقسم المصاريف بعدل',
-          desc: 'أدِر المصاريف الجماعية، تتبع الاشتراكات المتكررة، اقسم الفواتير بسهولة، واحتفظ بالأرصدة واضحة للجميع.',
+          title: 'تعاون وحقق',
+          desc: 'شارك الرحلات، قسّم المصاريف، تنافس في التحديات مع الأصدقاء. حقق المزيد معاً مع التعاون السلس.',
         },
       },
       pricing: {
