@@ -29,8 +29,11 @@ const translateNotificationTitle = (title: string, type: string, t: any): string
 };
 
 const parseNotificationMessage = (message: string, type: string, t: any): string => {
+  // Helper: match both straight and curly quotes
+  const quotePattern = '[""]';
+  
   // "You were added to "X" - Your share: Y"
-  const addedToSubMatch = message.match(/You were added to "([^"]+)" - Your share: (.+)/);
+  const addedToSubMatch = message.match(new RegExp(`You were added to ${quotePattern}([^""]+)${quotePattern} - Your share: (.+)`));
   if (addedToSubMatch) {
     return t('notificationMessages.addedToSubscription', {
       name: addedToSubMatch[1],
@@ -47,7 +50,7 @@ const parseNotificationMessage = (message: string, type: string, t: any): string
   }
   
   // "Payment approved for "X""
-  const paymentStatusMatch = message.match(/Payment approved for "([^"]+)"/);
+  const paymentStatusMatch = message.match(new RegExp(`Payment approved for ${quotePattern}([^""]+)${quotePattern}`));
   if (paymentStatusMatch) {
     return t('notificationMessages.paymentStatus', {
       name: paymentStatusMatch[1]
@@ -55,7 +58,7 @@ const parseNotificationMessage = (message: string, type: string, t: any): string
   }
   
   // "X submitted payment for "Y""
-  const paymentSubmittedMatch = message.match(/(.+) submitted payment for "([^"]+)"/);
+  const paymentSubmittedMatch = message.match(new RegExp(`(.+) submitted payment for ${quotePattern}([^""]+)${quotePattern}`));
   if (paymentSubmittedMatch) {
     return t('notificationMessages.paymentSubmitted', {
       name: paymentSubmittedMatch[1],
@@ -64,7 +67,7 @@ const parseNotificationMessage = (message: string, type: string, t: any): string
   }
   
   // "Payment needs review for "X""
-  const paymentReviewMatch = message.match(/Payment needs review for "([^"]+)"/);
+  const paymentReviewMatch = message.match(new RegExp(`Payment needs review for ${quotePattern}([^""]+)${quotePattern}`));
   if (paymentReviewMatch) {
     return t('notificationMessages.paymentReview', {
       name: paymentReviewMatch[1]
