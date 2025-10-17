@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Users, UserPlus, Search, Link2, Check, X, Clock } from "lucide-react";
 import { AddFriendDialog } from "@/components/AddFriendDialog";
 import { SEO } from "@/components/SEO";
+import { useTranslation } from "react-i18next";
 
 interface Friend {
   id: string;
@@ -24,6 +25,7 @@ interface Friend {
 }
 
 export default function Friends() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [friends, setFriends] = useState<Friend[]>([]);
   const [pendingSent, setPendingSent] = useState<Friend[]>([]);
@@ -119,7 +121,7 @@ export default function Friends() {
       setPendingReceived(receivedPending);
     } catch (error) {
       console.error("Error fetching friends:", error);
-      toast.error("Failed to load friends");
+      toast.error(t('friends.failedToLoad'));
     } finally {
       setLoading(false);
     }
@@ -139,11 +141,11 @@ export default function Friends() {
 
       if (error) throw error;
 
-      toast.success("Friend request accepted!");
+      toast.success(t('friends.requestAccepted'));
       fetchFriends();
     } catch (error) {
       console.error("Error accepting friend request:", error);
-      toast.error("Failed to accept friend request");
+      toast.error(t('friends.failedToAccept'));
     }
   };
 
@@ -156,11 +158,11 @@ export default function Friends() {
 
       if (error) throw error;
 
-      toast.success("Friend request declined");
+      toast.success(t('friends.requestDeclined'));
       fetchFriends();
     } catch (error) {
       console.error("Error declining friend request:", error);
-      toast.error("Failed to decline friend request");
+      toast.error(t('friends.failedToDecline'));
     }
   };
 
@@ -173,11 +175,11 @@ export default function Friends() {
 
       if (error) throw error;
 
-      toast.success("Friend removed");
+      toast.success(t('friends.friendRemoved'));
       fetchFriends();
     } catch (error) {
       console.error("Error removing friend:", error);
-      toast.error("Failed to remove friend");
+      toast.error(t('friends.failedToRemove'));
     }
   };
 
@@ -207,28 +209,28 @@ export default function Friends() {
             <div>
               <h1 className="text-3xl font-bold flex items-center gap-2">
                 <Users className="h-8 w-8" />
-                Friends
+                {t('friends.title')}
               </h1>
               <p className="text-muted-foreground mt-1">
-                Connect with friends and share experiences
+                {t('friends.subtitle')}
               </p>
             </div>
             <Button onClick={() => setAddFriendOpen(true)}>
               <UserPlus className="h-4 w-4 mr-2" />
-              Add Friend
+              {t('friends.addFriend')}
             </Button>
           </div>
 
           <Tabs defaultValue="all" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="all">
-                All Friends ({friends.length})
+                {t('friends.allFriends')} ({friends.length})
               </TabsTrigger>
               <TabsTrigger value="pending">
-                Requests ({pendingReceived.length})
+                {t('friends.requests')} ({pendingReceived.length})
               </TabsTrigger>
               <TabsTrigger value="sent">
-                Sent ({pendingSent.length})
+                {t('friends.sent')} ({pendingSent.length})
               </TabsTrigger>
             </TabsList>
 
@@ -236,7 +238,7 @@ export default function Friends() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search friends..."
+                  placeholder={t('friends.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -246,13 +248,13 @@ export default function Friends() {
               {filteredFriends.length === 0 ? (
                 <Card className="p-12 text-center">
                   <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold mb-2">No friends yet</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('friends.noFriendsTitle')}</h3>
                   <p className="text-muted-foreground mb-4">
-                    Start adding friends to share habits and challenges!
+                    {t('friends.noFriendsDesc')}
                   </p>
                   <Button onClick={() => setAddFriendOpen(true)}>
                     <UserPlus className="h-4 w-4 mr-2" />
-                    Add Your First Friend
+                    {t('friends.addFirstFriend')}
                   </Button>
                 </Card>
               ) : (
@@ -277,7 +279,7 @@ export default function Friends() {
                           size="sm"
                           onClick={() => removeFriend(friend.id)}
                         >
-                          Remove
+                          {t('friends.remove')}
                         </Button>
                       </div>
                     </Card>
@@ -290,9 +292,9 @@ export default function Friends() {
               {pendingReceived.length === 0 ? (
                 <Card className="p-12 text-center">
                   <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold mb-2">No pending requests</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('friends.noPendingRequestsTitle')}</h3>
                   <p className="text-muted-foreground">
-                    You don't have any friend requests at the moment
+                    {t('friends.noPendingRequestsDesc')}
                   </p>
                 </Card>
               ) : (
@@ -318,7 +320,7 @@ export default function Friends() {
                             onClick={() => acceptFriendRequest(friend.id)}
                           >
                             <Check className="h-4 w-4 mr-1" />
-                            Accept
+                            {t('friends.accept')}
                           </Button>
                           <Button
                             size="sm"
@@ -326,7 +328,7 @@ export default function Friends() {
                             onClick={() => declineFriendRequest(friend.id)}
                           >
                             <X className="h-4 w-4 mr-1" />
-                            Decline
+                            {t('friends.decline')}
                           </Button>
                         </div>
                       </div>
@@ -340,9 +342,9 @@ export default function Friends() {
               {pendingSent.length === 0 ? (
                 <Card className="p-12 text-center">
                   <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold mb-2">No pending requests</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t('friends.noPendingRequestsTitle')}</h3>
                   <p className="text-muted-foreground">
-                    You haven't sent any friend requests
+                    {t('friends.noSentRequestsDesc')}
                   </p>
                 </Card>
               ) : (
@@ -361,14 +363,14 @@ export default function Friends() {
                               @{friend.username}
                             </div>
                           </div>
-                          <Badge variant="secondary">Pending</Badge>
+                          <Badge variant="secondary">{t('friends.pending')}</Badge>
                         </div>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => declineFriendRequest(friend.id)}
                         >
-                          Cancel
+                          {t('friends.cancel')}
                         </Button>
                       </div>
                     </Card>

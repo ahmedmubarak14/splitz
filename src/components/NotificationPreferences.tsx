@@ -4,6 +4,8 @@ import { Switch } from "./ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useTranslation } from 'react-i18next';
+import { useIsRTL } from '@/lib/rtl-utils';
 
 interface Preferences {
   habit_reminders: boolean;
@@ -18,6 +20,8 @@ interface Preferences {
 }
 
 export default function NotificationPreferences() {
+  const { t } = useTranslation();
+  const isRTL = useIsRTL();
   const [preferences, setPreferences] = useState<Preferences>({
     habit_reminders: true,
     challenge_updates: true,
@@ -85,30 +89,30 @@ export default function NotificationPreferences() {
       if (error) throw error;
 
       setPreferences(prev => ({ ...prev, [key]: value }));
-      toast.success("Preferences updated");
+      toast.success(t('notifications.preferencesUpdated'));
     } catch (error) {
       console.error('Error updating preferences:', error);
-      toast.error("Failed to update preferences");
+      toast.error(t('notifications.updateFailed'));
     }
   };
 
   if (loading) {
-    return <div className="p-4">Loading...</div>;
+    return <div className="p-4">{t('notifications.loading')}</div>;
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
       <Card>
         <CardHeader>
-          <CardTitle>Notification Types</CardTitle>
-          <CardDescription>Choose what you want to be notified about</CardDescription>
+          <CardTitle>{t('notifications.types.title')}</CardTitle>
+          <CardDescription>{t('notifications.types.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="habit_reminders" className="flex flex-col gap-1">
-              <span>Habit Reminders</span>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Label htmlFor="habit_reminders" className={`flex flex-col gap-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+              <span>{t('notifications.types.habitReminders')}</span>
               <span className="font-normal text-sm text-muted-foreground">
-                Get reminded to complete your daily habits
+                {t('notifications.types.habitRemindersDesc')}
               </span>
             </Label>
             <Switch
@@ -118,11 +122,11 @@ export default function NotificationPreferences() {
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="challenge_updates" className="flex flex-col gap-1">
-              <span>Challenge Updates</span>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Label htmlFor="challenge_updates" className={`flex flex-col gap-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+              <span>{t('notifications.types.challengeUpdates')}</span>
               <span className="font-normal text-sm text-muted-foreground">
-                Get notified about challenge progress and milestones
+                {t('notifications.types.challengeUpdatesDesc')}
               </span>
             </Label>
             <Switch
@@ -132,11 +136,11 @@ export default function NotificationPreferences() {
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="expense_alerts" className="flex flex-col gap-1">
-              <span>Expense Alerts</span>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Label htmlFor="expense_alerts" className={`flex flex-col gap-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+              <span>{t('notifications.types.expenseAlerts')}</span>
               <span className="font-normal text-sm text-muted-foreground">
-                Get notified about new expenses and settlements
+                {t('notifications.types.expenseAlertsDesc')}
               </span>
             </Label>
             <Switch
@@ -146,11 +150,11 @@ export default function NotificationPreferences() {
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="subscription_reminders" className="flex flex-col gap-1">
-              <span>Subscription Reminders</span>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Label htmlFor="subscription_reminders" className={`flex flex-col gap-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+              <span>{t('notifications.types.subscriptionReminders')}</span>
               <span className="font-normal text-sm text-muted-foreground">
-                Get notified about subscription payment reminders
+                {t('notifications.types.subscriptionRemindersDesc')}
               </span>
             </Label>
             <Switch
@@ -160,11 +164,11 @@ export default function NotificationPreferences() {
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="trip_updates" className="flex flex-col gap-1">
-              <span>Trip Updates</span>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Label htmlFor="trip_updates" className={`flex flex-col gap-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+              <span>{t('notifications.types.tripUpdates')}</span>
               <span className="font-normal text-sm text-muted-foreground">
-                Get notified about trip invites and task assignments
+                {t('notifications.types.tripUpdatesDesc')}
               </span>
             </Label>
             <Switch
@@ -174,11 +178,11 @@ export default function NotificationPreferences() {
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="friend_requests" className="flex flex-col gap-1">
-              <span>Friend Requests</span>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Label htmlFor="friend_requests" className={`flex flex-col gap-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+              <span>{t('notifications.types.friendRequests')}</span>
               <span className="font-normal text-sm text-muted-foreground">
-                Get notified when someone sends you a friend request
+                {t('notifications.types.friendRequestsDesc')}
               </span>
             </Label>
             <Switch
@@ -192,15 +196,15 @@ export default function NotificationPreferences() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Delivery Methods</CardTitle>
-          <CardDescription>Choose how you want to receive notifications</CardDescription>
+          <CardTitle>{t('notifications.delivery.title')}</CardTitle>
+          <CardDescription>{t('notifications.delivery.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="push_notifications" className="flex flex-col gap-1">
-              <span>Push Notifications</span>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Label htmlFor="push_notifications" className={`flex flex-col gap-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+              <span>{t('notifications.delivery.push')}</span>
               <span className="font-normal text-sm text-muted-foreground">
-                Receive notifications in your browser
+                {t('notifications.delivery.pushDesc')}
               </span>
             </Label>
             <Switch
@@ -210,11 +214,11 @@ export default function NotificationPreferences() {
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="email_notifications" className="flex flex-col gap-1">
-              <span>Email Notifications</span>
+          <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+            <Label htmlFor="email_notifications" className={`flex flex-col gap-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+              <span>{t('notifications.delivery.email')}</span>
               <span className="font-normal text-sm text-muted-foreground">
-                Receive notifications via email
+                {t('notifications.delivery.emailDesc')}
               </span>
             </Label>
             <Switch

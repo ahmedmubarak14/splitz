@@ -1,6 +1,7 @@
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import { Inbox, Briefcase, User, Calendar, FolderOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ProjectSelectorProps {
   projects: string[];
@@ -16,6 +17,14 @@ const PROJECT_ICONS: Record<string, any> = {
 };
 
 const ProjectSelector = ({ projects, selectedProject, onSelectProject }: ProjectSelectorProps) => {
+  const { t } = useTranslation();
+  
+  const getProjectDisplayName = (project: string) => {
+    if (project === 'Inbox') return t('projects.inbox');
+    if (project === 'Today') return t('projects.today');
+    return project;
+  };
+  
   return (
     <div className="flex-1 overflow-y-auto p-2">
       <div className="space-y-1">
@@ -34,7 +43,7 @@ const ProjectSelector = ({ projects, selectedProject, onSelectProject }: Project
               onClick={() => onSelectProject(project)}
             >
               <Icon className="w-4 h-4 mr-3" />
-              <span className="flex-1">{project}</span>
+              <span className="flex-1">{getProjectDisplayName(project)}</span>
             </Button>
           );
         })}

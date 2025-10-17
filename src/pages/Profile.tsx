@@ -287,13 +287,13 @@ const Profile = () => {
               </div>
 
               <div>
-                <Label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>Username</Label>
+                <Label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('profile.username')}</Label>
                 <div className="relative">
                   <Input
                     type="text"
                     value={username}
                     onChange={handleUsernameChange}
-                    placeholder="your_username"
+                    placeholder={t('profile.usernamePlaceholder')}
                     className={isRTL ? 'text-right' : 'text-left'}
                     maxLength={20}
                   />
@@ -313,7 +313,7 @@ const Profile = () => {
                   )}
                 </div>
                 <p className={`text-xs text-muted-foreground mt-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  3-20 characters, lowercase letters, numbers, and underscores only
+                  {t('profile.usernameHelp')}
                 </p>
               </div>
 
