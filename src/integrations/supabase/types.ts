@@ -769,6 +769,7 @@ export type Database = {
           created_at: string
           email_notifications: boolean
           expense_alerts: boolean
+          friend_requests: boolean
           habit_reminders: boolean
           id: string
           push_notifications: boolean
@@ -783,6 +784,7 @@ export type Database = {
           created_at?: string
           email_notifications?: boolean
           expense_alerts?: boolean
+          friend_requests?: boolean
           habit_reminders?: boolean
           id?: string
           push_notifications?: boolean
@@ -797,6 +799,7 @@ export type Database = {
           created_at?: string
           email_notifications?: boolean
           expense_alerts?: boolean
+          friend_requests?: boolean
           habit_reminders?: boolean
           id?: string
           push_notifications?: boolean

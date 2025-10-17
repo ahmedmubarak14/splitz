@@ -11,6 +11,7 @@ interface Preferences {
   expense_alerts: boolean;
   subscription_reminders: boolean;
   trip_updates: boolean;
+  friend_requests: boolean;
   push_notifications: boolean;
   email_notifications: boolean;
   reminder_time: string;
@@ -23,6 +24,7 @@ export default function NotificationPreferences() {
     expense_alerts: true,
     subscription_reminders: true,
     trip_updates: true,
+    friend_requests: true,
     push_notifications: false,
     email_notifications: false,
     reminder_time: '09:00:00',
@@ -53,6 +55,7 @@ export default function NotificationPreferences() {
           expense_alerts: data.expense_alerts,
           subscription_reminders: data.subscription_reminders ?? true,
           trip_updates: data.trip_updates ?? true,
+          friend_requests: data.friend_requests ?? true,
           push_notifications: data.push_notifications,
           email_notifications: data.email_notifications,
           reminder_time: data.reminder_time,
@@ -168,6 +171,20 @@ export default function NotificationPreferences() {
               id="trip_updates"
               checked={preferences.trip_updates}
               onCheckedChange={(checked) => updatePreference('trip_updates', checked)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="friend_requests" className="flex flex-col gap-1">
+              <span>Friend Requests</span>
+              <span className="font-normal text-sm text-muted-foreground">
+                Get notified when someone sends you a friend request
+              </span>
+            </Label>
+            <Switch
+              id="friend_requests"
+              checked={preferences.friend_requests}
+              onCheckedChange={(checked) => updatePreference('friend_requests', checked)}
             />
           </div>
         </CardContent>

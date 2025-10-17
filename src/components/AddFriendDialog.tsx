@@ -90,6 +90,7 @@ export function AddFriendDialog({ open, onOpenChange, onFriendAdded }: AddFriend
       setSearchTerm("");
       setSearchResults([]);
       onFriendAdded();
+      await new Promise(resolve => setTimeout(resolve, 300));
       onOpenChange(false);
     } catch (error) {
       console.error("Error sending friend request:", error);

@@ -107,6 +107,9 @@ export function NotificationList({ onRead }: NotificationListProps) {
         case 'trip':
           navigate(`/trips/${notification.resource_id}`);
           break;
+        case 'friendship':
+          navigate('/friends');
+          break;
       }
     }
   };
