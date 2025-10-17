@@ -151,91 +151,21 @@ export default function Subscriptions() {
           </Button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-bl-full" />
-            <CardHeader className="pb-3">
-              <div className="inline-flex p-2.5 rounded-xl bg-primary/20 mb-3 group-hover:bg-primary/30 transition-colors">
-                <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-              </div>
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {t('subscriptions.monthlyTotal')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl md:text-4xl font-bold tracking-tight">
-                {formatCurrency(totalMonthly, 'SAR', i18n.language)}
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-success/10 rounded-bl-full" />
-            <CardHeader className="pb-3">
-              <div className="inline-flex p-2.5 rounded-xl bg-success/20 mb-3 group-hover:bg-success/30 transition-colors">
-                <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-success" />
-              </div>
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                My Active
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl md:text-4xl font-bold text-success tracking-tight">
-                {myActiveSubscriptions.length}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-info/10 rounded-bl-full" />
-            <CardHeader className="pb-3">
-              <div className="inline-flex p-2.5 rounded-xl bg-info/20 mb-3 group-hover:bg-info/30 transition-colors">
-                <Users className="h-5 w-5 md:h-6 md:w-6 text-info" />
-              </div>
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Shared with Me
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl md:text-4xl font-bold text-info tracking-tight">
-                {sharedWithMe.length}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden group border border-border/40">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-warning/10 rounded-bl-full" />
-            <CardHeader className="pb-3">
-              <div className="inline-flex p-2.5 rounded-xl bg-warning/20 mb-3 group-hover:bg-warning/30 transition-colors">
-                <Pause className="h-5 w-5 md:h-6 md:w-6 text-warning" />
-              </div>
-              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Paused
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl md:text-4xl font-bold text-warning tracking-tight">
-                {pausedSubscriptions.length}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Subscriptions List */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
           <TabsList className="grid w-full grid-cols-4 md:grid-cols-4 bg-muted/50 p-1 rounded-lg border border-border/40">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="overview">{t('common.overview')}</TabsTrigger>
             <TabsTrigger value="trials">
-              Trials
+              {t('subscriptions.trials')}
               {(subscriptions?.filter(s => s.trial_ends_at && new Date(s.trial_ends_at) > new Date()) || []).length > 0 && (
-                <Badge variant="destructive" className="ml-2">
+                <Badge variant="destructive" className={rtlClass(isRTL, 'mr-2', 'ml-2')}>
                   {(subscriptions?.filter(s => s.trial_ends_at && new Date(s.trial_ends_at) > new Date()) || []).length}
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="calendar">Calendar</TabsTrigger>
-            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="calendar">{t('common.calendar')}</TabsTrigger>
+            <TabsTrigger value="all">{t('common.all')}</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -247,7 +177,7 @@ export default function Subscriptions() {
 
             {/* My Active Subscriptions */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">My Subscriptions</h2>
+              <h2 className="text-xl font-semibold mb-4">{t('subscriptions.mySubscriptions')}</h2>
               {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[1, 2, 3].map((i) => (

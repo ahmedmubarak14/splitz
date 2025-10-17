@@ -73,7 +73,7 @@ export const SubscriptionAnalyticsDashboard = ({ subscriptions, currency = 'SAR'
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Total</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('subscriptions.monthlyTotal')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -86,33 +86,33 @@ export const SubscriptionAnalyticsDashboard = ({ subscriptions, currency = 'SAR'
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('subscriptions.activeCount')}</CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activeCount}</div>
             <p className="text-xs text-muted-foreground">
-              {sharedCount} shared
+              {sharedCount} {t('subscriptions.sharedWithMe').toLowerCase()}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Free Trials</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('subscriptions.trials')}</CardTitle>
             <AlertTriangle className="h-4 w-4 text-warning" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{trialCount}</div>
             <p className="text-xs text-muted-foreground">
-              Active trials
+              {t('subscriptions.trials').toLowerCase()}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg per Subscription</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('subscriptions.avgPerSub')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
@@ -120,58 +120,8 @@ export const SubscriptionAnalyticsDashboard = ({ subscriptions, currency = 'SAR'
               {activeCount > 0 ? formatCurrency(calculateMonthlyTotal() / activeCount, currency, i18n.language) : formatCurrency(0, currency, i18n.language)}
             </div>
             <p className="text-xs text-muted-foreground">
-              Per month
+              {t('subscriptions.monthly').toLowerCase()}
             </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Category Breakdown */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Spending by Category</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }: any) => `${name} ${((percent as number) * 100).toFixed(0)}%`}
-                  outerRadius={80}
-                  fill="hsl(var(--primary))"
-                  dataKey="value"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value: number) => formatCurrency(value, currency, i18n.language)} />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Monthly Trend */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Spending Trend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={monthlyTrend}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                <XAxis dataKey="month" className="text-muted-foreground" />
-                <YAxis className="text-muted-foreground" />
-                <Tooltip formatter={(value: number) => formatCurrency(value, currency, i18n.language)} />
-                <Legend />
-                <Bar dataKey="amount" fill="hsl(var(--primary))" name="Monthly Total" />
-              </BarChart>
-            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>

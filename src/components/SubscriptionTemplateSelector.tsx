@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useTranslation } from "react-i18next";
+import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 
 interface SubscriptionTemplateSelectorProps {
   onSelect: (template: any) => void;
@@ -16,6 +18,8 @@ export const SubscriptionTemplateSelector = ({
   onSelect, 
   selectedTemplate 
 }: SubscriptionTemplateSelectorProps) => {
+  const { t } = useTranslation();
+  const isRTL = useIsRTL();
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: templates = [], isLoading } = useQuery({
@@ -46,9 +50,9 @@ export const SubscriptionTemplateSelector = ({
   return (
     <div className="space-y-4">
       <div className="relative">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+        <Search className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 h-4 w-4 text-muted-foreground`} />
         <Input
-          placeholder="Search services..."
+          placeholder={t('subscriptions.searchServices')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-9"
@@ -109,7 +113,7 @@ export const SubscriptionTemplateSelector = ({
             
             {filteredTemplates.length === 0 && (
               <div className="text-center text-muted-foreground py-8">
-                No services found
+                {t('subscriptions.noServicesFound')}
               </div>
             )}
           </div>

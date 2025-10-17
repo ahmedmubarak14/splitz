@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -88,7 +88,7 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
     }
   }, [formData.name, existingSubscriptions]);
 
-  const handleTemplateSelect = (template: any) => {
+  const handleTemplateSelect = useCallback((template: any) => {
     setFormData({
       ...formData,
       name: template.name,
@@ -98,7 +98,7 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
       logo_url: template.logo_url || "",
     });
     setSelectedTemplate(template.id);
-  };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
