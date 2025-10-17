@@ -5,3 +5,19 @@ verify_jwt = true
 
 [functions.create-expense-group]
 verify_jwt = true
+
+# Authentication Email Configuration
+[auth.email]
+enable_signup = true
+enable_confirmations = true
+double_confirm_changes = true
+
+# SMTP Configuration for Resend
+[auth.smtp]
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+pass = "env(RESEND_API_KEY)"
+admin_email = "noreply@splitz.live"
+sender_name = "Splitz"
+max_frequency = "1h"
