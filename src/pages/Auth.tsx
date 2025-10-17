@@ -549,19 +549,19 @@ const Auth = () => {
 
           <div className="space-y-6">
             <FeatureItem 
-              emoji="🔥"
-              title={t('auth.showcase.trackHabits')}
-              description={t('auth.showcase.trackHabitsDesc')}
+              emoji="🎯"
+              title={t('auth.showcase.productivity')}
+              description={t('auth.showcase.productivityDesc')}
             />
             <FeatureItem 
-              emoji="🏆"
-              title={t('auth.showcase.joinChallenges')}
-              description={t('auth.showcase.joinChallengesDesc')}
+              emoji="🔥"
+              title={t('auth.showcase.habits')}
+              description={t('auth.showcase.habitsDesc')}
             />
             <FeatureItem 
               emoji="💰"
-              title={t('auth.showcase.splitExpenses')}
-              description={t('auth.showcase.splitExpensesDesc')}
+              title={t('auth.showcase.financial')}
+              description={t('auth.showcase.financialDesc')}
             />
           </div>
 
