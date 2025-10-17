@@ -289,7 +289,7 @@ export default function Dashboard() {
       <div className="min-h-screen flex items-center justify-center bg-muted/20">
         <div className="flex flex-col items-center gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-3 border-primary border-t-transparent shadow-lg"></div>
-          <p className="text-sm text-muted-foreground animate-pulse">Loading your dashboard...</p>
+          <p className="text-sm text-muted-foreground animate-pulse">{t('dashboard.loadingMessage')}</p>
         </div>
       </div>
     );
