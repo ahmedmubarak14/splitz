@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -34,6 +34,19 @@ export function AddFriendDialog({ open, onOpenChange, onFriendAdded }: AddFriend
   const [searching, setSearching] = useState(false);
   const [inviteLink, setInviteLink] = useState("");
   const [linkCopied, setLinkCopied] = useState(false);
+
+  // Auto-search as user types with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchTerm.trim()) {
+        searchUsers();
+      } else {
+        setSearchResults([]);
+      }
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const searchUsers = async () => {
     if (!searchTerm.trim()) {
@@ -169,16 +182,18 @@ export function AddFriendDialog({ open, onOpenChange, onFriendAdded }: AddFriend
           </TabsList>
 
           <TabsContent value="username" className="space-y-4 mt-4">
-            <div className="flex gap-2">
+            <div className="relative">
               <Input
                 placeholder="Search by username..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && searchUsers()}
+                className="pr-10"
               />
-              <Button onClick={searchUsers} disabled={searching}>
-                <Search className="h-4 w-4" />
-              </Button>
+              {searching && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
             </div>
 
             {searchResults.length > 0 && (
