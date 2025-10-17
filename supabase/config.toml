@@ -7,17 +7,19 @@ verify_jwt = true
 verify_jwt = true
 
 # Authentication Email Configuration
+[auth]
+external_email_enabled = true
+mailer_autoconfirm = false
+mailer_secure_email_change_enabled = true
+
 [auth.email]
-enable_signup = true
-enable_confirmations = true
-double_confirm_changes = true
+max_frequency = "1h"
 
 # SMTP Configuration for Resend
 [auth.smtp]
 host = "smtp.resend.com"
-port = 465
+port = 587
 user = "resend"
-pass = "env(RESEND_API_KEY)"
+password = "env(RESEND_API_KEY)"
 admin_email = "noreply@splitz.live"
 sender_name = "Splitz"
-max_frequency = "1h"
