@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { formatCurrency } from "@/lib/formatters";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 
 interface RenewalCalendarProps {
   subscriptions: any[];
@@ -14,6 +15,7 @@ interface RenewalCalendarProps {
 
 export const RenewalCalendar = ({ subscriptions, onSelectSubscription }: RenewalCalendarProps) => {
   const { t, i18n } = useTranslation();
+  const isRTL = useIsRTL();
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const monthStart = startOfMonth(currentMonth);
@@ -38,23 +40,31 @@ export const RenewalCalendar = ({ subscriptions, onSelectSubscription }: Renewal
     setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1));
   };
 
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weekDays = [
+    t('subscriptions.sun'),
+    t('subscriptions.mon'),
+    t('subscriptions.tue'),
+    t('subscriptions.wed'),
+    t('subscriptions.thu'),
+    t('subscriptions.fri'),
+    t('subscriptions.sat'),
+  ];
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
             <CalendarIcon className="h-5 w-5" />
-            Renewal Calendar
+            {t('subscriptions.renewalCalendar')}
           </CardTitle>
-          <div className="flex items-center gap-2">
+          <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
             <Button variant="outline" size="sm" onClick={goToPreviousMonth}>
-              Previous
+              {t('subscriptions.previous')}
             </Button>
             <span className="font-semibold">{format(currentMonth, 'MMMM yyyy')}</span>
             <Button variant="outline" size="sm" onClick={goToNextMonth}>
-              Next
+              {t('subscriptions.next')}
             </Button>
           </div>
         </div>
@@ -108,7 +118,7 @@ export const RenewalCalendar = ({ subscriptions, onSelectSubscription }: Renewal
                     ))}
                     {daySubscriptions.length > 2 && (
                       <div className="text-[10px] text-muted-foreground">
-                        +{daySubscriptions.length - 2} more
+                        +{daySubscriptions.length - 2} {t('subscriptions.more')}
                       </div>
                     )}
                   </div>
@@ -119,14 +129,14 @@ export const RenewalCalendar = ({ subscriptions, onSelectSubscription }: Renewal
         </div>
 
         {/* Legend */}
-        <div className="mt-4 flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-2">
+        <div className={`mt-4 flex items-center gap-4 text-sm ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+          <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
             <div className="w-3 h-3 rounded bg-primary/10 border border-primary" />
-            <span className="text-muted-foreground">Has renewals</span>
+            <span className="text-muted-foreground">{t('subscriptions.hasRenewals')}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
             <div className="w-3 h-3 rounded border-2 border-primary" />
-            <span className="text-muted-foreground">Today</span>
+            <span className="text-muted-foreground">{t('subscriptions.today')}</span>
           </div>
         </div>
       </CardContent>

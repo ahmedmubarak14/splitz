@@ -358,10 +358,10 @@ export default function Subscriptions() {
                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted/50 mb-6">
                   <CreditCard className="w-10 h-10 text-muted-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">No active subscriptions</h3>
-                <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto leading-relaxed">
-                  Start tracking your recurring payments and never miss a renewal date again
-                </p>
+                  <h3 className="text-xl font-semibold mb-2">{t('subscriptions.noActiveTitle')}</h3>
+                  <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto leading-relaxed">
+                    {t('subscriptions.noActiveDesc')}
+                  </p>
                 <Button 
                   onClick={() => setCreateDialogOpen(true)}
                   className="shadow-sm hover:shadow-md"
@@ -405,10 +405,10 @@ export default function Subscriptions() {
                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted/50 mb-6">
                   <Users className="w-10 h-10 text-muted-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">No shared subscriptions</h3>
-                <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
-                  You haven't been added to any shared subscriptions yet
-                </p>
+                  <h3 className="text-xl font-semibold mb-2">{t('subscriptions.noSharedTitle')}</h3>
+                  <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
+                    {t('subscriptions.noSharedDesc')}
+                  </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -425,11 +425,11 @@ export default function Subscriptions() {
 
           <TabsContent value="paused" className="space-y-4 mt-6">
             {pausedSubscriptions.length === 0 ? (
-              <EmptyState
-                icon={CreditCard}
-                title="No paused subscriptions"
-                description="Subscriptions you've paused will appear here"
-              />
+                <EmptyState
+                  icon={CreditCard}
+                  title={t('subscriptions.noPausedTitle')}
+                  description={t('subscriptions.noPausedDesc')}
+                />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {pausedSubscriptions.map((subscription) => (
@@ -447,11 +447,11 @@ export default function Subscriptions() {
 
           <TabsContent value="canceled" className="space-y-4 mt-6">
             {canceledSubscriptions.length === 0 ? (
-              <EmptyState
-                icon={XCircle}
-                title="No canceled subscriptions"
-                description="Canceled subscriptions will appear here"
-              />
+                <EmptyState
+                  icon={XCircle}
+                  title={t('subscriptions.noCanceledTitle')}
+                  description={t('subscriptions.noCanceledDesc')}
+                />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {canceledSubscriptions.map((subscription) => (
@@ -469,11 +469,11 @@ export default function Subscriptions() {
 
           <TabsContent value="archived" className="space-y-4 mt-6">
             {archivedSubscriptions.length === 0 ? (
-              <EmptyState
-                icon={Archive}
-                title="No archived subscriptions"
-                description="Archive old subscriptions for record keeping"
-              />
+                <EmptyState
+                  icon={Archive}
+                  title={t('subscriptions.noArchivedTitle')}
+                  description={t('subscriptions.noArchivedDesc')}
+                />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {archivedSubscriptions.map((subscription) => (
