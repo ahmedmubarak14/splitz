@@ -257,25 +257,22 @@ export default function Subscriptions() {
               ) : myActiveSubscriptions.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {myActiveSubscriptions.slice(0, 6).map((subscription) => (
-                    <SubscriptionCard
-                      key={subscription.id}
-                      subscription={subscription}
-                      onEdit={() => handleEdit(subscription)}
-                      onManageContributors={() => handleManageContributors(subscription)}
-                      onViewDetails={() => handleViewDetails(subscription)}
-                    />
+                  <SubscriptionCard
+                    key={subscription.id}
+                    subscription={subscription}
+                    onEdit={() => handleEditSubscription(subscription)}
+                    onManageContributors={() => handleManageContributors(subscription)}
+                    onViewDetails={() => handleViewDetails(subscription)}
+                  />
                   ))}
                 </div>
               ) : (
                 <EmptyState
+                  icon={CreditCard}
                   title="No Active Subscriptions"
                   description="Start tracking your subscriptions by adding your first one"
-                  action={
-                    <Button onClick={() => setCreateDialogOpen(true)}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Subscription
-                    </Button>
-                  }
+                  actionLabel="Add Subscription"
+                  onAction={() => setCreateDialogOpen(true)}
                 />
               )}
             </div>
@@ -285,7 +282,7 @@ export default function Subscriptions() {
           <TabsContent value="trials" className="mt-6">
             <TrialTracker 
               subscriptions={[...(subscriptions || []), ...(sharedSubscriptions || [])]}
-              onEdit={handleEdit}
+              onEdit={handleEditSubscription}
             />
           </TabsContent>
 
@@ -426,10 +423,10 @@ export default function Subscriptions() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {myActiveSubscriptions.map((subscription) => (
-                  <SubscriptionCard 
-                    key={subscription.id} 
+                  <SubscriptionCard
+                    key={subscription.id}
                     subscription={subscription}
-                     onEdit={() => handleEdit(subscription)}
+                    onEdit={() => handleEditSubscription(subscription)}
                     onManageContributors={() => handleManageContributors(subscription)}
                     onViewDetails={() => handleViewDetails(subscription)}
                   />
@@ -499,18 +496,9 @@ export default function Subscriptions() {
           </TabsContent>
 
           <TabsContent value="canceled" className="space-y-4 mt-6">
-            <EmptyState title="Canceled Subscriptions" description="No canceled subscriptions" />
-          </TabsContent>
-
-          <TabsContent value="archived" className="space-y-4 mt-6">
-            <EmptyState title="Archived Subscriptions" description="No archived subscriptions" />
-          </TabsContent>
-        </Tabs>
-      </TabsContent>
-    </Tabs>
             {canceledSubscriptions.length === 0 ? (
               <EmptyState
-                icon={CreditCard}
+                icon={XCircle}
                 title="No canceled subscriptions"
                 description="Canceled subscriptions will appear here"
               />
@@ -520,7 +508,7 @@ export default function Subscriptions() {
                   <SubscriptionCard 
                     key={subscription.id} 
                     subscription={subscription}
-                     onEdit={() => handleEdit(subscription)}
+                    onEdit={() => handleEditSubscription(subscription)}
                     onManageContributors={() => handleManageContributors(subscription)}
                     onViewDetails={() => handleViewDetails(subscription)}
                   />
@@ -532,7 +520,7 @@ export default function Subscriptions() {
           <TabsContent value="archived" className="space-y-4 mt-6">
             {archivedSubscriptions.length === 0 ? (
               <EmptyState
-                icon={CreditCard}
+                icon={Archive}
                 title="No archived subscriptions"
                 description="Archive old subscriptions for record keeping"
               />
@@ -542,21 +530,17 @@ export default function Subscriptions() {
                   <SubscriptionCard 
                     key={subscription.id} 
                     subscription={subscription}
-                     onEdit={() => handleEdit(subscription)}
+                    onEdit={() => handleEditSubscription(subscription)}
                     onManageContributors={() => handleManageContributors(subscription)}
                     onViewDetails={() => handleViewDetails(subscription)}
                   />
                 ))}
               </div>
             )}
-           </TabsContent>
-            </Tabs>
           </TabsContent>
         </Tabs>
-      </div>
-    </>
-  );
-}
+      </TabsContent>
+    </Tabs>
 
         <CreateSubscriptionDialog
           open={createDialogOpen}
