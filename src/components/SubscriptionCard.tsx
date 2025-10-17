@@ -1,4 +1,4 @@
-import { CreditCard, Calendar, Users, Edit, UserPlus, Trash2 } from "lucide-react";
+import { CreditCard, Calendar, Users, Edit, UserPlus, Trash2, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { formatCurrency } from "@/lib/formatters";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { calculateNextRenewalDate, daysUntilRenewal } from "@/lib/renewalCalculations";
 
 interface SubscriptionCardProps {
   subscription: any;
@@ -22,20 +23,16 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
   const isRTL = useIsRTL();
   const queryClient = useQueryClient();
 
-  const daysUntilRenewal = differenceInDays(
-    new Date(subscription.next_renewal_date),
-    new Date()
-  );
-
-  const isDueToday = daysUntilRenewal === 0;
+  const daysLeft = daysUntilRenewal(subscription.next_renewal_date);
+  const isDueToday = daysLeft === 0;
   const isTrial = subscription.trial_ends_at && new Date(subscription.trial_ends_at) > new Date();
-  const trialDaysLeft = isTrial ? differenceInDays(new Date(subscription.trial_ends_at), new Date()) : 0;
+  const trialDaysLeft = isTrial ? daysUntilRenewal(subscription.trial_ends_at) : 0;
 
-  const renewalStatus = daysUntilRenewal < 0 
+  const renewalStatus = daysLeft < 0 
     ? "overdue" 
     : isDueToday
     ? "due-today"
-    : daysUntilRenewal <= 3 
+    : daysLeft <= 3 
     ? "due-soon" 
     : "upcoming";
 
@@ -43,32 +40,6 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
   const daysSinceLastUsed = subscription.last_used_at 
     ? differenceInDays(new Date(), new Date(subscription.last_used_at))
     : null;
-
-  const calculateNextRenewal = (currentDate: Date, cycle: string, customDays?: number): Date => {
-    const nextDate = new Date(currentDate);
-    
-    switch(cycle) {
-      case 'weekly':
-        nextDate.setDate(nextDate.getDate() + 7);
-        break;
-      case 'monthly':
-        nextDate.setMonth(nextDate.getMonth() + 1);
-        break;
-      case 'quarterly':
-        nextDate.setMonth(nextDate.getMonth() + 3);
-        break;
-      case 'yearly':
-        nextDate.setFullYear(nextDate.getFullYear() + 1);
-        break;
-      case 'custom':
-        nextDate.setDate(nextDate.getDate() + (customDays || 30));
-        break;
-      default:
-        nextDate.setMonth(nextDate.getMonth() + 1);
-    }
-    
-    return nextDate;
-  };
 
   const markSubscriptionPaid = useMutation({
     mutationFn: async () => {
@@ -84,8 +55,8 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
       if (paymentError) throw paymentError;
 
       // Calculate next renewal date
-      const nextDate = calculateNextRenewal(
-        new Date(subscription.next_renewal_date),
+      const nextDate = calculateNextRenewalDate(
+        subscription.next_renewal_date,
         subscription.billing_cycle,
         subscription.custom_cycle_days
       );
@@ -192,20 +163,20 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
         </div>
 
         {/* Renewal Progress Bar */}
-        {!isTrial && daysUntilRenewal >= 0 && (
+        {!isTrial && daysLeft >= 0 && (
           <div className="space-y-1">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Next renewal</span>
-              <span>{daysUntilRenewal} days</span>
+              <span>{daysLeft} days</span>
             </div>
             <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
               <div 
                 className={`h-full transition-all ${
-                  daysUntilRenewal <= 3 ? 'bg-destructive' : 
-                  daysUntilRenewal <= 7 ? 'bg-warning' : 'bg-primary'
+                  daysLeft <= 3 ? 'bg-destructive' : 
+                  daysLeft <= 7 ? 'bg-warning' : 'bg-primary'
                 }`}
                 style={{ 
-                  width: `${Math.max(10, 100 - (daysUntilRenewal / 30 * 100))}%` 
+                  width: `${Math.max(10, 100 - (daysLeft / 30 * 100))}%` 
                 }}
               />
             </div>
@@ -244,8 +215,8 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
                 : "text-muted-foreground"
             }>
               {renewalStatus === "overdue" 
-                ? `${Math.abs(daysUntilRenewal)} ${t('subscriptions.overdue')}`
-                : `${t('subscriptions.renews')} ${daysUntilRenewal} ${t('subscriptions.days')}`
+                ? `${Math.abs(daysLeft)} ${t('subscriptions.overdue')}`
+                : `${t('subscriptions.renews')} ${daysLeft} ${t('subscriptions.days')}`
               }
             </span>
           )}

@@ -245,9 +245,9 @@ export default function Subscriptions() {
               currency="SAR"
             />
 
-            {/* Active Subscriptions */}
+            {/* My Active Subscriptions */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">Active Subscriptions</h2>
+              <h2 className="text-xl font-semibold mb-4">My Subscriptions</h2>
               {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[1, 2, 3].map((i) => (
@@ -257,13 +257,13 @@ export default function Subscriptions() {
               ) : myActiveSubscriptions.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {myActiveSubscriptions.slice(0, 6).map((subscription) => (
-                  <SubscriptionCard
-                    key={subscription.id}
-                    subscription={subscription}
-                    onEdit={() => handleEditSubscription(subscription)}
-                    onManageContributors={() => handleManageContributors(subscription)}
-                    onViewDetails={() => handleViewDetails(subscription)}
-                  />
+                    <SubscriptionCard
+                      key={subscription.id}
+                      subscription={subscription}
+                      onEdit={() => handleEditSubscription(subscription)}
+                      onManageContributors={() => handleManageContributors(subscription)}
+                      onViewDetails={() => handleViewDetails(subscription)}
+                    />
                   ))}
                 </div>
               ) : (
@@ -276,6 +276,26 @@ export default function Subscriptions() {
                 />
               )}
             </div>
+
+            {/* Shared with Me Section */}
+            {sharedWithMe.length > 0 && (
+              <div className="border-t pt-6">
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                  <Users className="h-5 w-5 text-info" />
+                  Shared with Me
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {sharedWithMe.slice(0, 6).map((subscription) => (
+                    <SubscriptionCard
+                      key={subscription.id}
+                      subscription={subscription}
+                      onEdit={() => handleEditSubscription(subscription)}
+                      onViewDetails={() => handleViewDetails(subscription)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </TabsContent>
 
           {/* Trials Tab */}
