@@ -3,6 +3,7 @@ import TaskItem from './TaskItem';
 import { Skeleton } from './ui/skeleton';
 import { EmptyState } from './EmptyState';
 import { ListTodo } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Task {
   id: string;
@@ -24,6 +25,8 @@ interface TaskListProps {
 }
 
 const TaskList = memo(({ tasks, isLoading, onTaskComplete }: TaskListProps) => {
+  const { t } = useTranslation();
+  
   const handleTaskComplete = useCallback((taskId: string) => {
     onTaskComplete(taskId);
   }, [onTaskComplete]);
@@ -70,7 +73,7 @@ const TaskList = memo(({ tasks, isLoading, onTaskComplete }: TaskListProps) => {
       {completedTasks.length > 0 && (
         <div className="space-y-2">
           <h3 className="text-sm font-medium text-muted-foreground px-2">
-            Completed ({completedTasks.length})
+            {t('tasks.completed')} ({completedTasks.length})
           </h3>
           {completedTasks.map((task) => (
             <TaskItem

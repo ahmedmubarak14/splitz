@@ -55,13 +55,13 @@ const resources = {
       'friendship': 'Friend Request',
     },
     notificationMessages: {
-      addedToSubscription: 'You were added to "{name}" - Your share: {amount}',
-      friendRequest: '{name} sent you a friend request',
-      paymentStatus: 'Payment approved for "{name}"',
-      paymentSubmitted: '{name} submitted payment for "{subscription}"',
-      paymentReview: 'Payment needs review for "{name}"',
-      streakFreeze: 'Your streak was saved! You have {count} freezes remaining.',
-      generic: '{message}',
+      addedToSubscription: 'You were added to "{{name}}" - Your share: {{amount}}',
+      friendRequest: '{{name}} sent you a friend request',
+      paymentStatus: 'Payment approved for "{{name}}"',
+      paymentSubmitted: '{{name}} submitted payment for "{{subscription}}"',
+      paymentReview: 'Payment needs review for "{{name}}"',
+      streakFreeze: 'Your streak was saved! You have {{count}} freezes remaining.',
+      generic: '{{message}}',
     },
       dashboard: {
         welcome: 'Welcome back!',
@@ -206,6 +206,34 @@ const resources = {
         approve: 'Approve',
         reject: 'Reject',
         processing: 'Processing...',
+      },
+      time: {
+        hoursShort: 'h',
+        minutesShort: 'm',
+        durationShort: '{{hours}}h {{minutes}}m',
+      },
+      toasts: {
+        tasks: {
+          reopened: 'Task reopened',
+          completed: 'Task completed!',
+          deleted: 'Task deleted',
+        },
+      },
+      sharedHabits: {
+        completed: 'completed',
+      },
+      invites: {
+        generated: 'Invite link generated!',
+        copied: 'Link copied to clipboard!',
+        sendFailed: 'Failed to send email',
+        fallbackOpeningEmail: 'Opening email client as fallback...',
+      },
+      account: {
+        delete: {
+          typeDeleteConfirm: 'Please type DELETE to confirm',
+          success: 'Account deleted successfully',
+          allNotificationsPreferences: 'All notifications and preferences',
+        },
       },
       hero: {
         badge: 'All-in-One Productivity Suite',
@@ -549,6 +577,9 @@ const resources = {
           checkIns: 'check-ins',
           rate: 'rate',
           weeklyActivity: 'Weekly Activity',
+        },
+        calendar: {
+          loadFailed: 'Failed to load check-in history',
         },
       },
       expenses: {
@@ -1120,6 +1151,14 @@ const resources = {
           testimonial: '"Splitz helped me stay accountable and reach my goals faster than ever!"',
           testimonialAuthor: '— Sarah K.',
         },
+        changePassword: {
+          allFieldsRequired: 'Please fill in all fields',
+          passwordTooShort: 'New password must be at least 6 characters',
+          passwordsNoMatch: 'New passwords do not match',
+          incorrectPassword: 'Current password is incorrect',
+          success: 'Password changed successfully!',
+          failed: 'Failed to change password',
+        },
       },
       forgotPassword: {
         title: 'Forgot Password',
@@ -1271,6 +1310,7 @@ const resources = {
         },
       },
       notifications: {
+        title: 'Notifications',
         types: {
           title: 'Notification Types',
           description: 'Choose what you want to be notified about',
@@ -1325,6 +1365,11 @@ const resources = {
         failedToDecline: 'Failed to decline friend request',
         failedToRemove: 'Failed to remove friend',
         failedToLoad: 'Failed to load friends',
+        searchFailed: 'Failed to search users',
+        alreadyFriends: 'Already friends',
+        requestSent: 'Friend request sent!',
+        inviteGenerated: 'Invite link generated!',
+        linkCopied: 'Link copied to clipboard!',
       },
       projects: {
       inbox: 'Inbox',
@@ -1391,13 +1436,13 @@ const resources = {
       'friendship': 'طلب صداقة',
     },
     notificationMessages: {
-      addedToSubscription: 'تمت إضافتك إلى "{name}" - حصتك: {amount}',
-      friendRequest: '{name} أرسل لك طلب صداقة',
-      paymentStatus: 'تم الموافقة على الدفع لـ "{name}"',
-      paymentSubmitted: '{name} قدم الدفع لـ "{subscription}"',
-      paymentReview: 'الدفع يحتاج إلى مراجعة لـ "{name}"',
-      streakFreeze: 'تم حفظ سلسلتك! لديك {count} تجميدات متبقية.',
-      generic: '{message}',
+      addedToSubscription: 'تمت إضافتك إلى "{{name}}" - حصتك: {{amount}}',
+      friendRequest: '{{name}} أرسل لك طلب صداقة',
+      paymentStatus: 'تم الموافقة على الدفع لـ "{{name}}"',
+      paymentSubmitted: '{{name}} قدم الدفع لـ "{{subscription}}"',
+      paymentReview: 'الدفع يحتاج إلى مراجعة لـ "{{name}}"',
+      streakFreeze: 'تم حفظ سلسلتك! لديك {{count}} تجميدات متبقية.',
+      generic: '{{message}}',
     },
       dashboard: {
         welcome: 'مرحباً بعودتك!',
@@ -2008,6 +2053,7 @@ const resources = {
         daysLeft: 'يوم متبقي',
       },
       notifications: {
+        title: 'الإشعارات',
         types: {
           title: 'أنواع الإشعارات',
           description: 'اختر ما تريد أن يتم إخطارك به',

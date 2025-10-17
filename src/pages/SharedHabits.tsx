@@ -13,7 +13,8 @@ import { Users, Plus, Flame, Trophy, MessageCircle, Heart, CheckCircle } from "l
 import { CreateSharedHabitDialog } from "@/components/CreateSharedHabitDialog";
 import { SharedHabitDetailsDialog } from "@/components/SharedHabitDetailsDialog";
 import { SEO } from "@/components/SEO";
-import { formatDistanceToNow } from "date-fns";
+import { formatRelativeTime } from "@/lib/formatters";
+import { useTranslation } from "react-i18next";
 
 interface SharedHabit {
   id: string;
@@ -41,6 +42,7 @@ interface ActivityItem {
 }
 
 export default function SharedHabits() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [habits, setHabits] = useState<SharedHabit[]>([]);
   const [activityFeed, setActivityFeed] = useState<ActivityItem[]>([]);
@@ -382,16 +384,14 @@ export default function SharedHabits() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="font-semibold">{activity.user_name}</span>
-                            <span className="text-muted-foreground">completed</span>
+                            <span className="text-muted-foreground">{t('sharedHabits.completed')}</span>
                             <span className="flex items-center gap-1">
                               <span className="text-lg">{activity.habit_icon}</span>
                               <span className="font-medium">{activity.habit_name}</span>
                             </span>
                           </div>
                           <div className="text-sm text-muted-foreground mb-3">
-                            {formatDistanceToNow(new Date(activity.checked_in_at), {
-                              addSuffix: true,
-                            })}
+                            {formatRelativeTime(new Date(activity.checked_in_at), i18n.language)}
                           </div>
                           <div className="flex items-center gap-2">
                             {["🔥", "💪", "👏", "❤️", "🎉"].map((emoji) => {

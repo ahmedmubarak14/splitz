@@ -9,7 +9,8 @@ import { Button } from './ui/button';
 import { Clock, Calendar, Trash2, Edit, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '@/lib/formatters';
 
 interface Task {
   id: string;
@@ -29,13 +30,14 @@ interface TaskItemProps {
 }
 
 const QUADRANT_CONFIG = {
-  urgent_important: { label: 'Do First', emoji: '🔥', color: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20' },
-  not_urgent_important: { label: 'Schedule', emoji: '⏰', color: 'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20' },
-  urgent_unimportant: { label: 'Delegate', emoji: '👥', color: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20' },
-  not_urgent_unimportant: { label: 'Eliminate', emoji: '🗑️', color: 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20' },
+  urgent_important: { key: 'urgent_important', emoji: '🔥', color: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20' },
+  not_urgent_important: { key: 'not_urgent_important', emoji: '⏰', color: 'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20' },
+  urgent_unimportant: { key: 'urgent_unimportant', emoji: '👥', color: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20' },
+  not_urgent_unimportant: { key: 'not_urgent_unimportant', emoji: '🗑️', color: 'bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20' },
 };
 
 const TaskItem = memo(({ task, onComplete }: TaskItemProps) => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -66,7 +68,7 @@ const TaskItem = memo(({ task, onComplete }: TaskItemProps) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['focus-tasks'] });
       onComplete();
-      toast.success(task.is_completed ? 'Task reopened' : 'Task completed!');
+      toast.success(task.is_completed ? t('toasts.tasks.reopened') : t('toasts.tasks.completed'));
     },
   });
 
@@ -81,7 +83,7 @@ const TaskItem = memo(({ task, onComplete }: TaskItemProps) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['focus-tasks'] });
-      toast.success('Task deleted');
+      toast.success(t('toasts.tasks.deleted'));
     },
   });
 
@@ -131,21 +133,21 @@ const TaskItem = memo(({ task, onComplete }: TaskItemProps) => {
             {quadrantConfig && (
               <Badge variant="outline" className={cn(quadrantConfig.color, 'text-xs')}>
                 <span className="mr-1">{quadrantConfig.emoji}</span>
-                {quadrantConfig.label}
+                {t(`matrix.quadrants.${quadrantConfig.key}.title`)}
               </Badge>
             )}
 
             {task.due_date && (
               <Badge variant="outline" className="text-xs">
                 <Calendar className="w-3 h-3 mr-1" />
-                {format(new Date(task.due_date), 'MMM d')}
+                {formatDate(new Date(task.due_date), i18n.language, { month: 'short', day: 'numeric' })}
               </Badge>
             )}
 
             {totalMinutes > 0 && (
               <Badge variant="outline" className="text-xs">
                 <Clock className="w-3 h-3 mr-1" />
-                {hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`}
+                {hours > 0 ? `${hours}${t('time.hoursShort')} ${minutes}${t('time.minutesShort')}` : `${minutes}${t('time.minutesShort')}`}
               </Badge>
             )}
 

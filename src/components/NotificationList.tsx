@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { formatDistanceToNow } from "date-fns";
 import { Bell, Check, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
@@ -8,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import { useIsRTL } from '@/lib/rtl-utils';
+import { formatRelativeTime } from '@/lib/formatters';
 
 const translateNotificationTitle = (title: string, type: string, t: any): string => {
   // Try exact title match first
@@ -36,8 +36,8 @@ const parseNotificationMessage = (message: string, type: string, t: any): string
   const addedToSubMatch = message.match(new RegExp(`You were added to ${quotePattern}([^""]+)${quotePattern} - Your share: (.+)`));
   if (addedToSubMatch) {
     return t('notificationMessages.addedToSubscription', {
-      name: addedToSubMatch[1],
-      amount: addedToSubMatch[2]
+      name: addedToSubMatch[1].trim(),
+      amount: addedToSubMatch[2].trim()
     });
   }
   
@@ -45,7 +45,7 @@ const parseNotificationMessage = (message: string, type: string, t: any): string
   const friendRequestMatch = message.match(/(.+) sent you a friend request/);
   if (friendRequestMatch) {
     return t('notificationMessages.friendRequest', {
-      name: friendRequestMatch[1]
+      name: friendRequestMatch[1].trim()
     });
   }
   
@@ -53,7 +53,7 @@ const parseNotificationMessage = (message: string, type: string, t: any): string
   const paymentStatusMatch = message.match(new RegExp(`Payment approved for ${quotePattern}([^""]+)${quotePattern}`));
   if (paymentStatusMatch) {
     return t('notificationMessages.paymentStatus', {
-      name: paymentStatusMatch[1]
+      name: paymentStatusMatch[1].trim()
     });
   }
   
@@ -61,8 +61,8 @@ const parseNotificationMessage = (message: string, type: string, t: any): string
   const paymentSubmittedMatch = message.match(new RegExp(`(.+) submitted payment for ${quotePattern}([^""]+)${quotePattern}`));
   if (paymentSubmittedMatch) {
     return t('notificationMessages.paymentSubmitted', {
-      name: paymentSubmittedMatch[1],
-      subscription: paymentSubmittedMatch[2]
+      name: paymentSubmittedMatch[1].trim(),
+      subscription: paymentSubmittedMatch[2].trim()
     });
   }
   
@@ -70,7 +70,7 @@ const parseNotificationMessage = (message: string, type: string, t: any): string
   const paymentReviewMatch = message.match(new RegExp(`Payment needs review for ${quotePattern}([^""]+)${quotePattern}`));
   if (paymentReviewMatch) {
     return t('notificationMessages.paymentReview', {
-      name: paymentReviewMatch[1]
+      name: paymentReviewMatch[1].trim()
     });
   }
   
@@ -78,7 +78,7 @@ const parseNotificationMessage = (message: string, type: string, t: any): string
   const streakFreezeMatch = message.match(/Your streak was saved! You have (\d+) freezes? remaining\./);
   if (streakFreezeMatch) {
     return t('notificationMessages.streakFreeze', {
-      count: streakFreezeMatch[1]
+      count: streakFreezeMatch[1].trim()
     });
   }
   
@@ -104,7 +104,7 @@ export function NotificationList({ onRead }: NotificationListProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isRTL = useIsRTL();
 
   useEffect(() => {
@@ -221,14 +221,12 @@ export function NotificationList({ onRead }: NotificationListProps) {
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1">
-                <h4 className="font-medium text-sm">{translateNotificationTitle(notification.title, notification.type, t)}</h4>
+                <h4 className="font-medium text-sm">{t('notificationTitles.' + notification.type)}</h4>
                 <p className="text-sm text-muted-foreground mt-1">
                   {parseNotificationMessage(notification.message, notification.type, t)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-2">
-                  {formatDistanceToNow(new Date(notification.created_at), {
-                    addSuffix: true,
-                  })}
+                  {formatRelativeTime(new Date(notification.created_at), i18n.language)}
                 </p>
               </div>
               <div className="flex gap-1">

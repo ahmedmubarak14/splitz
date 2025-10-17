@@ -23,8 +23,10 @@ import {
   Calendar,
   Send,
 } from "lucide-react";
-import { format, formatDistanceToNow } from "date-fns";
+import { format } from "date-fns";
 import { FriendSelector } from "./FriendSelector";
+import { formatRelativeTime } from "@/lib/formatters";
+import { useTranslation } from "react-i18next";
 
 interface SharedHabitDetailsDialogProps {
   habitId: string;
@@ -59,6 +61,7 @@ export function SharedHabitDetailsDialog({
   onOpenChange,
   onUpdate,
 }: SharedHabitDetailsDialogProps) {
+  const { i18n } = useTranslation();
   const [habit, setHabit] = useState<any>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -364,10 +367,7 @@ export function SharedHabitDetailsDialog({
                               {comment.full_name}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              {formatDistanceToNow(
-                                new Date(comment.created_at),
-                                { addSuffix: true }
-                              )}
+                              {formatRelativeTime(new Date(comment.created_at), i18n.language)}
                             </span>
                           </div>
                           <p className="text-sm">{comment.comment}</p>

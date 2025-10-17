@@ -5,8 +5,10 @@ import { Badge } from "./ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { NotificationList } from "./NotificationList";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 
 export default function NotificationBell() {
+  const { t } = useTranslation();
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
 
@@ -61,7 +63,7 @@ export default function NotificationBell() {
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>Notifications</SheetTitle>
+          <SheetTitle>{t('notifications.title')}</SheetTitle>
         </SheetHeader>
         <NotificationList onRead={fetchUnreadCount} />
       </SheetContent>
