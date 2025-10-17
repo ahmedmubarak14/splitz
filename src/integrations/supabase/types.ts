@@ -991,6 +991,36 @@ export type Database = {
           },
         ]
       }
+      subscription_budgets: {
+        Row: {
+          alert_threshold: number | null
+          category_limits: Json | null
+          created_at: string | null
+          id: string
+          monthly_limit: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_threshold?: number | null
+          category_limits?: Json | null
+          created_at?: string | null
+          id?: string
+          monthly_limit: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_threshold?: number | null
+          category_limits?: Json | null
+          created_at?: string | null
+          id?: string
+          monthly_limit?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscription_contributors: {
         Row: {
           approved_at: string | null
@@ -1001,7 +1031,10 @@ export type Database = {
           is_settled: boolean | null
           last_reminder_sent: string | null
           paid_at: string | null
+          payment_proof_url: string | null
           payment_submitted: boolean
+          payment_verified: boolean | null
+          payment_verified_at: string | null
           reminder_count_reset_date: string | null
           split_value: number | null
           submission_at: string | null
@@ -1017,7 +1050,10 @@ export type Database = {
           is_settled?: boolean | null
           last_reminder_sent?: string | null
           paid_at?: string | null
+          payment_proof_url?: string | null
           payment_submitted?: boolean
+          payment_verified?: boolean | null
+          payment_verified_at?: string | null
           reminder_count_reset_date?: string | null
           split_value?: number | null
           submission_at?: string | null
@@ -1033,7 +1069,10 @@ export type Database = {
           is_settled?: boolean | null
           last_reminder_sent?: string | null
           paid_at?: string | null
+          payment_proof_url?: string | null
           payment_submitted?: boolean
+          payment_verified?: boolean | null
+          payment_verified_at?: string | null
           reminder_count_reset_date?: string | null
           split_value?: number | null
           submission_at?: string | null
@@ -1043,6 +1082,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "subscription_contributors_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_documents: {
+        Row: {
+          document_type: string
+          file_name: string
+          file_size: number | null
+          file_url: string
+          id: string
+          notes: string | null
+          subscription_id: string
+          uploaded_at: string | null
+          user_id: string
+        }
+        Insert: {
+          document_type: string
+          file_name: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          notes?: string | null
+          subscription_id: string
+          uploaded_at?: string | null
+          user_id: string
+        }
+        Update: {
+          document_type?: string
+          file_name?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          notes?: string | null
+          subscription_id?: string
+          uploaded_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_documents_subscription_id_fkey"
             columns: ["subscription_id"]
             isOneToOne: false
             referencedRelation: "subscriptions"
@@ -1149,11 +1232,117 @@ export type Database = {
           },
         ]
       }
+      subscription_spending_history: {
+        Row: {
+          category_breakdown: Json | null
+          created_at: string | null
+          id: string
+          month: string
+          subscription_count: number | null
+          total_spending: number
+          user_id: string
+        }
+        Insert: {
+          category_breakdown?: Json | null
+          created_at?: string | null
+          id?: string
+          month: string
+          subscription_count?: number | null
+          total_spending: number
+          user_id: string
+        }
+        Update: {
+          category_breakdown?: Json | null
+          created_at?: string | null
+          id?: string
+          month?: string
+          subscription_count?: number | null
+          total_spending?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscription_templates: {
+        Row: {
+          billing_cycles: string[] | null
+          cancellation_steps: string | null
+          cancellation_url: string | null
+          category: string | null
+          created_at: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          popularity_score: number | null
+          typical_currency: string | null
+          typical_price: number | null
+        }
+        Insert: {
+          billing_cycles?: string[] | null
+          cancellation_steps?: string | null
+          cancellation_url?: string | null
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          popularity_score?: number | null
+          typical_currency?: string | null
+          typical_price?: number | null
+        }
+        Update: {
+          billing_cycles?: string[] | null
+          cancellation_steps?: string | null
+          cancellation_url?: string | null
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          popularity_score?: number | null
+          typical_currency?: string | null
+          typical_price?: number | null
+        }
+        Relationships: []
+      }
+      subscription_usage_logs: {
+        Row: {
+          id: string
+          notes: string | null
+          subscription_id: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          notes?: string | null
+          subscription_id: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          notes?: string | null
+          subscription_id?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_usage_logs_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           amount: number
           billing_cycle: string
           canceled_at: string | null
+          cancellation_notes: string | null
+          cancellation_url: string | null
           category: string | null
           created_at: string
           currency: string
@@ -1161,6 +1350,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           is_shared: boolean | null
+          last_price_check: string | null
           last_used_at: string | null
           logo_url: string | null
           name: string
@@ -1177,12 +1367,15 @@ export type Database = {
           tags: string[] | null
           trial_ends_at: string | null
           updated_at: string
+          usage_frequency: string | null
           user_id: string
         }
         Insert: {
           amount: number
           billing_cycle: string
           canceled_at?: string | null
+          cancellation_notes?: string | null
+          cancellation_url?: string | null
           category?: string | null
           created_at?: string
           currency?: string
@@ -1190,6 +1383,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_shared?: boolean | null
+          last_price_check?: string | null
           last_used_at?: string | null
           logo_url?: string | null
           name: string
@@ -1206,12 +1400,15 @@ export type Database = {
           tags?: string[] | null
           trial_ends_at?: string | null
           updated_at?: string
+          usage_frequency?: string | null
           user_id: string
         }
         Update: {
           amount?: number
           billing_cycle?: string
           canceled_at?: string | null
+          cancellation_notes?: string | null
+          cancellation_url?: string | null
           category?: string | null
           created_at?: string
           currency?: string
@@ -1219,6 +1416,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_shared?: boolean | null
+          last_price_check?: string | null
           last_used_at?: string | null
           logo_url?: string | null
           name?: string
@@ -1235,6 +1433,7 @@ export type Database = {
           tags?: string[] | null
           trial_ends_at?: string | null
           updated_at?: string
+          usage_frequency?: string | null
           user_id?: string
         }
         Relationships: []
