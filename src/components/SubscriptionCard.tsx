@@ -10,6 +10,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { calculateNextRenewalDate, daysUntilRenewal } from "@/lib/renewalCalculations";
+import { useMemo, useCallback } from "react";
 
 interface SubscriptionCardProps {
   subscription: any;
@@ -23,10 +24,10 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
   const isRTL = useIsRTL();
   const queryClient = useQueryClient();
 
-  const daysLeft = daysUntilRenewal(subscription.next_renewal_date);
+  const daysLeft = useMemo(() => daysUntilRenewal(subscription.next_renewal_date), [subscription.next_renewal_date]);
   const isDueToday = daysLeft === 0;
   const isTrial = subscription.trial_ends_at && new Date(subscription.trial_ends_at) > new Date();
-  const trialDaysLeft = isTrial ? daysUntilRenewal(subscription.trial_ends_at) : 0;
+  const trialDaysLeft = useMemo(() => isTrial ? daysUntilRenewal(subscription.trial_ends_at) : 0, [isTrial, subscription.trial_ends_at]);
 
   const renewalStatus = daysLeft < 0 
     ? "overdue" 
@@ -105,11 +106,11 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
     },
   });
 
-  const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this subscription?')) {
+  const handleDelete = useCallback(() => {
+    if (confirm(t('subscriptions.deleteConfirm'))) {
       deleteSubscription.mutate();
     }
-  };
+  }, [deleteSubscription, t]);
 
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -151,7 +152,7 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
         {/* Trial Badge */}
         {isTrial && (
           <Badge variant="default" className="bg-warning text-warning-foreground">
-            Trial: {trialDaysLeft} {trialDaysLeft === 1 ? 'day' : 'days'} left
+            {t('subscriptions.trial')}: {trialDaysLeft} {t('common.daysLeft', { count: trialDaysLeft })}
           </Badge>
         )}
 
@@ -166,8 +167,8 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
         {!isTrial && daysLeft >= 0 && (
           <div className="space-y-1">
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Next renewal</span>
-              <span>{daysLeft} days</span>
+              <span>{t('subscriptions.nextRenewal')}</span>
+              <span>{daysLeft} {t('common.days')}</span>
             </div>
             <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
               <div 
@@ -186,7 +187,7 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
         {/* Usage Indicator */}
         {daysSinceLastUsed !== null && daysSinceLastUsed > 30 && (
           <div className="flex items-center gap-2 p-2 bg-warning/10 border border-warning/20 rounded-lg text-xs">
-            <span className="text-warning">⚠️ Not used in {daysSinceLastUsed} days</span>
+            <span className="text-warning">⚠️ {t('subscriptions.notUsed', { count: daysSinceLastUsed })}</span>
           </div>
         )}
 
@@ -216,7 +217,7 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
             }>
               {renewalStatus === "overdue" 
                 ? `${Math.abs(daysLeft)} ${t('subscriptions.overdue')}`
-                : `${t('subscriptions.renews')} ${daysLeft} ${t('subscriptions.days')}`
+                : `${t('subscriptions.renews')} ${daysLeft} ${t('common.days')}`
               }
             </span>
           )}
@@ -251,14 +252,14 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
 
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={onEdit} className="flex-1">
-            <Edit className="w-4 h-4 mr-2" />
-            Edit
+            <Edit className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+            {t('common.edit')}
           </Button>
 
           {subscription.is_shared && onManageContributors && (
             <Button variant="outline" size="sm" onClick={onManageContributors} className="flex-1">
-              <UserPlus className="w-4 h-4 mr-2" />
-              Contributors
+              <UserPlus className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+              {t('subscriptions.contributors')}
             </Button>
           )}
 

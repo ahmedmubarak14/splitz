@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/lib/formatters";
+import { useIsRTL } from "@/lib/rtl-utils";
 
 interface InlineContributorManagerProps {
   totalAmount: number;
@@ -30,6 +31,7 @@ export function InlineContributorManager({
   onContributorsChange,
 }: InlineContributorManagerProps) {
   const { t, i18n } = useTranslation();
+  const isRTL = useIsRTL();
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [emailInput, setEmailInput] = useState("");
   const [emails, setEmails] = useState<string[]>([]);
@@ -70,7 +72,7 @@ export function InlineContributorManager({
     enabled: selectedUserIds.length > 0,
   });
 
-  const handleAddEmail = () => {
+  const handleAddEmail = useCallback(() => {
     const trimmedEmail = emailInput.trim().toLowerCase();
     if (!trimmedEmail) return;
     
@@ -85,26 +87,26 @@ export function InlineContributorManager({
     setEmails([...emails, trimmedEmail]);
     setEmailInput("");
     updateContributors([...emails, trimmedEmail], selectedUserIds, splitType, memberSplits);
-  };
+  }, [emailInput, emails, selectedUserIds, splitType, memberSplits]);
 
-  const handleRemoveEmail = (email: string) => {
+  const handleRemoveEmail = useCallback((email: string) => {
     const newEmails = emails.filter((e) => e !== email);
     setEmails(newEmails);
     updateContributors(newEmails, selectedUserIds, splitType, memberSplits);
-  };
+  }, [emails, selectedUserIds, splitType, memberSplits]);
 
-  const handleUserSelectionChange = (userIds: string[]) => {
+  const handleUserSelectionChange = useCallback((userIds: string[]) => {
     setSelectedUserIds(userIds);
     updateContributors(emails, userIds, splitType, memberSplits);
-  };
+  }, [emails, splitType, memberSplits]);
 
-  const handleSplitsChange = (splits: MemberSplit[], newSplitType: SplitType) => {
+  const handleSplitsChange = useCallback((splits: MemberSplit[], newSplitType: SplitType) => {
     setMemberSplits(splits);
     setSplitType(newSplitType);
     updateContributors(emails, selectedUserIds, newSplitType, splits);
-  };
+  }, [emails, selectedUserIds]);
 
-  const updateContributors = (
+  const updateContributors = useCallback((
     currentEmails: string[],
     currentUserIds: string[],
     currentSplitType: SplitType,
@@ -116,7 +118,7 @@ export function InlineContributorManager({
       splitType: currentSplitType,
       memberSplits: currentSplits,
     });
-  };
+  }, [onContributorsChange]);
 
   // Build members list for split selector (current user + selected users + emails)
   const allMembers = [

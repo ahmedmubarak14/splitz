@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Switch } from './ui/switch';
 import { toast } from 'sonner';
 import { SubscriptionSplitTypeSelector } from './SubscriptionSplitTypeSelector';
+import { useTranslation } from 'react-i18next';
+import { useIsRTL } from '@/lib/rtl-utils';
 
 interface Subscription {
   id: string;
@@ -31,6 +33,8 @@ interface EditSubscriptionDialogProps {
 }
 
 const EditSubscriptionDialog = ({ open, onOpenChange, subscription }: EditSubscriptionDialogProps) => {
+  const { t } = useTranslation();
+  const isRTL = useIsRTL();
   const queryClient = useQueryClient();
   const [name, setName] = useState(subscription.name);
   const [amount, setAmount] = useState(subscription.amount.toString());
@@ -149,32 +153,32 @@ const EditSubscriptionDialog = ({ open, onOpenChange, subscription }: EditSubscr
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Subscription</DialogTitle>
+          <DialogTitle>{t('subscriptions.editSubscription')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="name">Subscription Name *</Label>
+              <Label htmlFor="name">{t('subscriptions.subscriptionName')} *</Label>
               <Input
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Netflix, Spotify, etc."
+                placeholder={t('subscriptions.namePlaceholder')}
               />
             </div>
 
             <div>
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="status">{t('common.status')}</Label>
               <Select value={status} onValueChange={setStatus}>
                 <SelectTrigger id="status">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">🟢 Active</SelectItem>
-                  <SelectItem value="paused">⏸️ Paused</SelectItem>
-                  <SelectItem value="canceled">🔴 Canceled</SelectItem>
-                  <SelectItem value="archived">📦 Archived</SelectItem>
+                  <SelectItem value="active">{t('subscriptions.statusActive')}</SelectItem>
+                  <SelectItem value="paused">{t('subscriptions.statusPaused')}</SelectItem>
+                  <SelectItem value="canceled">{t('subscriptions.statusCanceled')}</SelectItem>
+                  <SelectItem value="archived">{t('subscriptions.statusArchived')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -236,13 +240,13 @@ const EditSubscriptionDialog = ({ open, onOpenChange, subscription }: EditSubscr
 
           {isRecurring && (
             <div className="space-y-4 border-t pt-4">
-              <h3 className="font-semibold">Renewal Notifications</h3>
+              <h3 className="font-semibold">{t('subscriptions.renewalNotifications')}</h3>
               
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="notifications">Enable Notifications</Label>
+                  <Label htmlFor="notifications">{t('subscriptions.enableNotifications')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Get notified before renewal
+                    {t('subscriptions.notificationDesc')}
                   </p>
                 </div>
                 <Switch
@@ -254,16 +258,16 @@ const EditSubscriptionDialog = ({ open, onOpenChange, subscription }: EditSubscr
 
               {notificationsEnabled && (
                 <div>
-                  <Label htmlFor="reminderDays">Remind Me (Days Before)</Label>
+                  <Label htmlFor="reminderDays">{t('subscriptions.remindDays')}</Label>
                   <Select value={reminderDays} onValueChange={setReminderDays}>
                     <SelectTrigger id="reminderDays">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">1 day before</SelectItem>
-                      <SelectItem value="3">3 days before</SelectItem>
-                      <SelectItem value="7">7 days before</SelectItem>
-                      <SelectItem value="14">14 days before</SelectItem>
+                      <SelectItem value="1">{t('subscriptions.daysBefore', { count: 1 })}</SelectItem>
+                      <SelectItem value="3">{t('subscriptions.daysBefore', { count: 3 })}</SelectItem>
+                      <SelectItem value="7">{t('subscriptions.daysBefore', { count: 7 })}</SelectItem>
+                      <SelectItem value="14">{t('subscriptions.daysBefore', { count: 14 })}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -274,9 +278,9 @@ const EditSubscriptionDialog = ({ open, onOpenChange, subscription }: EditSubscr
           <div className="border-t pt-4 space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label htmlFor="shared">Shared Subscription</Label>
+                <Label htmlFor="shared">{t('subscriptions.sharedSubscription')}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Split cost with contributors
+                  {t('subscriptions.splitCostDesc')}
                 </p>
               </div>
               <Switch
@@ -305,12 +309,12 @@ const EditSubscriptionDialog = ({ open, onOpenChange, subscription }: EditSubscr
           </div>
 
           <div>
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">{t('subscriptions.notes')}</Label>
             <Input
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Additional information..."
+              placeholder={t('subscriptions.notesPlaceholder')}
             />
           </div>
 
@@ -320,10 +324,10 @@ const EditSubscriptionDialog = ({ open, onOpenChange, subscription }: EditSubscr
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={updateSubscription.isPending}>
-              {updateSubscription.isPending ? 'Saving...' : 'Save Changes'}
+              {updateSubscription.isPending ? t('common.saving') : t('common.saveChanges')}
             </Button>
           </div>
         </form>
