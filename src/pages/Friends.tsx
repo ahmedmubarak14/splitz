@@ -127,10 +127,15 @@ export default function Friends() {
 
   const acceptFriendRequest = async (friendshipId: string) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
       const { error } = await supabase
         .from("friendships")
         .update({ status: "accepted", accepted_at: new Date().toISOString() })
-        .eq("id", friendshipId);
+        .eq("id", friendshipId)
+        .eq("friend_id", user.id)
+        .eq("status", "pending");
 
       if (error) throw error;
 
