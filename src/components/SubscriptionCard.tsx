@@ -28,6 +28,8 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
   );
 
   const isDueToday = daysUntilRenewal === 0;
+  const isTrial = subscription.trial_ends_at && new Date(subscription.trial_ends_at) > new Date();
+  const trialDaysLeft = isTrial ? differenceInDays(new Date(subscription.trial_ends_at), new Date()) : 0;
 
   const renewalStatus = daysUntilRenewal < 0 
     ? "overdue" 
@@ -36,6 +38,11 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
     : daysUntilRenewal <= 3 
     ? "due-soon" 
     : "upcoming";
+
+  // Calculate usage indicator (days since last used)
+  const daysSinceLastUsed = subscription.last_used_at 
+    ? differenceInDays(new Date(), new Date(subscription.last_used_at))
+    : null;
 
   const calculateNextRenewal = (currentDate: Date, cycle: string, customDays?: number): Date => {
     const nextDate = new Date(currentDate);
@@ -170,12 +177,47 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
       </CardHeader>
       
       <CardContent className="space-y-4">
+        {/* Trial Badge */}
+        {isTrial && (
+          <Badge variant="default" className="bg-warning text-warning-foreground">
+            Trial: {trialDaysLeft} {trialDaysLeft === 1 ? 'day' : 'days'} left
+          </Badge>
+        )}
+
         <div className={`flex items-center justify-between ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <span className="text-2xl font-bold">
             {formatCurrency(Number(subscription.amount), subscription.currency, i18n.language)}
           </span>
           <Badge variant="outline">{t(`subscriptions.${subscription.billing_cycle}`)}</Badge>
         </div>
+
+        {/* Renewal Progress Bar */}
+        {!isTrial && daysUntilRenewal >= 0 && (
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Next renewal</span>
+              <span>{daysUntilRenewal} days</span>
+            </div>
+            <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
+              <div 
+                className={`h-full transition-all ${
+                  daysUntilRenewal <= 3 ? 'bg-destructive' : 
+                  daysUntilRenewal <= 7 ? 'bg-warning' : 'bg-primary'
+                }`}
+                style={{ 
+                  width: `${Math.max(10, 100 - (daysUntilRenewal / 30 * 100))}%` 
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Usage Indicator */}
+        {daysSinceLastUsed !== null && daysSinceLastUsed > 30 && (
+          <div className="flex items-center gap-2 p-2 bg-warning/10 border border-warning/20 rounded-lg text-xs">
+            <span className="text-warning">⚠️ Not used in {daysSinceLastUsed} days</span>
+          </div>
+        )}
 
         <div className={`flex items-center gap-2 text-sm ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <Calendar className="h-4 w-4 text-muted-foreground" />

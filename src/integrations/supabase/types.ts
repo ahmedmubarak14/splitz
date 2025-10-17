@@ -1082,6 +1082,41 @@ export type Database = {
           },
         ]
       }
+      subscription_price_history: {
+        Row: {
+          changed_at: string
+          created_at: string
+          id: string
+          new_price: number
+          old_price: number
+          subscription_id: string
+        }
+        Insert: {
+          changed_at?: string
+          created_at?: string
+          id?: string
+          new_price: number
+          old_price: number
+          subscription_id: string
+        }
+        Update: {
+          changed_at?: string
+          created_at?: string
+          id?: string
+          new_price?: number
+          old_price?: number
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_price_history_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscription_reminders: {
         Row: {
           created_at: string
@@ -1126,17 +1161,21 @@ export type Database = {
           id: string
           is_active: boolean | null
           is_shared: boolean | null
+          last_used_at: string | null
           logo_url: string | null
           name: string
           next_renewal_date: string
           notes: string | null
           notifications_enabled: boolean | null
+          original_price: number | null
           paused_at: string | null
           reminder_days_before: number | null
           split_type:
             | Database["public"]["Enums"]["subscription_split_type"]
             | null
           status: Database["public"]["Enums"]["subscription_status"] | null
+          tags: string[] | null
+          trial_ends_at: string | null
           updated_at: string
           user_id: string
         }
@@ -1151,17 +1190,21 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_shared?: boolean | null
+          last_used_at?: string | null
           logo_url?: string | null
           name: string
           next_renewal_date: string
           notes?: string | null
           notifications_enabled?: boolean | null
+          original_price?: number | null
           paused_at?: string | null
           reminder_days_before?: number | null
           split_type?:
             | Database["public"]["Enums"]["subscription_split_type"]
             | null
           status?: Database["public"]["Enums"]["subscription_status"] | null
+          tags?: string[] | null
+          trial_ends_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -1176,17 +1219,21 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_shared?: boolean | null
+          last_used_at?: string | null
           logo_url?: string | null
           name?: string
           next_renewal_date?: string
           notes?: string | null
           notifications_enabled?: boolean | null
+          original_price?: number | null
           paused_at?: string | null
           reminder_days_before?: number | null
           split_type?:
             | Database["public"]["Enums"]["subscription_split_type"]
             | null
           status?: Database["public"]["Enums"]["subscription_status"] | null
+          tags?: string[] | null
+          trial_ends_at?: string | null
           updated_at?: string
           user_id?: string
         }

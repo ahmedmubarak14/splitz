@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Plus, CreditCard, Pause, XCircle, Archive, Users } from "lucide-react";
+import { Plus, CreditCard, Pause, XCircle, Archive, Users, Filter, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SEO } from "@/components/SEO";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +16,9 @@ import { CreateSubscriptionDialog } from "@/components/CreateSubscriptionDialog"
 import EditSubscriptionDialog from "@/components/EditSubscriptionDialog";
 import ManageContributorsDialog from "@/components/ManageContributorsDialog";
 import { SubscriptionDetailsDialog } from "@/components/SubscriptionDetailsDialog";
+import { SubscriptionAnalyticsDashboard } from "@/components/SubscriptionAnalyticsDashboard";
+import { TrialTracker } from "@/components/TrialTracker";
+import { RenewalCalendar } from "@/components/RenewalCalendar";
 import { EmptyState } from "@/components/EmptyState";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
@@ -27,7 +32,10 @@ export default function Subscriptions() {
   const [contributorsDialogOpen, setContributorsDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState<any>(null);
-  const [selectedTab, setSelectedTab] = useState("my-active");
+  const [selectedTab, setSelectedTab] = useState("overview");
+  const [filterCategory, setFilterCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("renewal_date");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Owned subscriptions query
   const { data: subscriptions, isLoading } = useQuery({
@@ -216,58 +224,172 @@ export default function Subscriptions() {
 
         {/* Subscriptions List */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="grid w-full max-w-5xl grid-cols-5 bg-muted/50 p-1 rounded-lg border border-border/40">
-            <TabsTrigger 
-              value="my-active"
-              className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-success" />
-                <span className="hidden sm:inline font-medium">My Active</span>
-                <Badge variant="secondary" className="ml-1">{myActiveSubscriptions.length}</Badge>
-              </div>
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-4 bg-muted/50 p-1 rounded-lg border border-border/40">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="trials">
+              Trials
+              {(subscriptions?.filter(s => s.trial_ends_at && new Date(s.trial_ends_at) > new Date()) || []).length > 0 && (
+                <Badge variant="destructive" className="ml-2">
+                  {(subscriptions?.filter(s => s.trial_ends_at && new Date(s.trial_ends_at) > new Date()) || []).length}
+                </Badge>
+              )}
             </TabsTrigger>
-            <TabsTrigger 
-              value="shared"
-              className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-info" />
-                <span className="hidden sm:inline font-medium">Shared</span>
-                <Badge variant="secondary" className="ml-1">{sharedWithMe.length}</Badge>
-              </div>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="paused"
-              className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-warning" />
-                <span className="hidden sm:inline font-medium">Paused</span>
-                <Badge variant="secondary" className="ml-1">{pausedSubscriptions.length}</Badge>
-              </div>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="canceled"
-              className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-destructive" />
-                <span className="hidden sm:inline font-medium">Canceled</span>
-                <Badge variant="secondary" className="ml-1">{canceledSubscriptions.length}</Badge>
-              </div>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="archived"
-              className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-muted-foreground" />
-                <span className="hidden sm:inline font-medium">Archived</span>
-                <Badge variant="secondary" className="ml-1">{archivedSubscriptions.length}</Badge>
-              </div>
-            </TabsTrigger>
+            <TabsTrigger value="calendar">Calendar</TabsTrigger>
+            <TabsTrigger value="all">All</TabsTrigger>
           </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6 mt-6">
+            <SubscriptionAnalyticsDashboard 
+              subscriptions={[...(subscriptions || []), ...(sharedSubscriptions || [])]}
+              currency="SAR"
+            />
+
+            {/* Active Subscriptions */}
+            <div>
+              <h2 className="text-xl font-semibold mb-4">Active Subscriptions</h2>
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
+                  ))}
+                </div>
+              ) : myActiveSubscriptions.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {myActiveSubscriptions.slice(0, 6).map((subscription) => (
+                    <SubscriptionCard
+                      key={subscription.id}
+                      subscription={subscription}
+                      onEdit={() => handleEdit(subscription)}
+                      onManageContributors={() => handleManageContributors(subscription)}
+                      onViewDetails={() => handleViewDetails(subscription)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  title="No Active Subscriptions"
+                  description="Start tracking your subscriptions by adding your first one"
+                  action={
+                    <Button onClick={() => setCreateDialogOpen(true)}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Subscription
+                    </Button>
+                  }
+                />
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Trials Tab */}
+          <TabsContent value="trials" className="mt-6">
+            <TrialTracker 
+              subscriptions={[...(subscriptions || []), ...(sharedSubscriptions || [])]}
+              onEdit={handleEdit}
+            />
+          </TabsContent>
+
+          {/* Calendar Tab */}
+          <TabsContent value="calendar" className="mt-6">
+            <RenewalCalendar 
+              subscriptions={[...(subscriptions || []), ...(sharedSubscriptions || [])]}
+              onSelectSubscription={handleViewDetails}
+            />
+          </TabsContent>
+
+          {/* All Tab with Filters */}
+          <TabsContent value="all" className="space-y-4 mt-6">
+            {/* Filters and Sorting */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <Input
+                  placeholder="Search subscriptions..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <Select value={filterCategory} onValueChange={setFilterCategory}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                  <Filter className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="streaming">Streaming</SelectItem>
+                  <SelectItem value="software">Software</SelectItem>
+                  <SelectItem value="gaming">Gaming</SelectItem>
+                  <SelectItem value="cloud">Cloud</SelectItem>
+                  <SelectItem value="fitness">Fitness</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                  <ArrowUpDown className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="renewal_date">Renewal Date</SelectItem>
+                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="amount">Amount</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Sub-tabs for different statuses */}
+            <Tabs defaultValue="my-active">
+              <TabsList className="grid w-full grid-cols-5 bg-muted/50 p-1 rounded-lg border border-border/40">
+                <TabsTrigger 
+                  value="my-active"
+                  className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-success" />
+                    <span className="hidden sm:inline font-medium">My Active</span>
+                    <Badge variant="secondary" className="ml-1">{myActiveSubscriptions.length}</Badge>
+                  </div>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="shared"
+                  className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-info" />
+                    <span className="hidden sm:inline font-medium">Shared</span>
+                    <Badge variant="secondary" className="ml-1">{sharedWithMe.length}</Badge>
+                  </div>
+                </TabsTrigger>
+                 <TabsTrigger 
+                   value="paused"
+                   className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
+                 >
+                   <div className="flex items-center gap-2">
+                     <div className="w-2 h-2 rounded-full bg-warning" />
+                     <span className="hidden sm:inline font-medium">Paused</span>
+                     <Badge variant="secondary" className="ml-1">{pausedSubscriptions.length}</Badge>
+                   </div>
+                 </TabsTrigger>
+                 <TabsTrigger 
+                   value="canceled"
+                   className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
+                 >
+                   <div className="flex items-center gap-2">
+                     <div className="w-2 h-2 rounded-full bg-destructive" />
+                     <span className="hidden sm:inline font-medium">Canceled</span>
+                     <Badge variant="secondary" className="ml-1">{canceledSubscriptions.length}</Badge>
+                   </div>
+                 </TabsTrigger>
+                 <TabsTrigger 
+                   value="archived"
+                   className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
+                 >
+                   <div className="flex items-center gap-2">
+                     <div className="w-2 h-2 rounded-full bg-muted-foreground" />
+                     <span className="hidden sm:inline font-medium">Archived</span>
+                     <Badge variant="secondary" className="ml-1">{archivedSubscriptions.length}</Badge>
+                   </div>
+                 </TabsTrigger>
+               </TabsList>
 
           <TabsContent value="my-active" className="space-y-4 mt-6">
             {isLoading ? (
@@ -307,7 +429,7 @@ export default function Subscriptions() {
                   <SubscriptionCard 
                     key={subscription.id} 
                     subscription={subscription}
-                    onEdit={() => handleEditSubscription(subscription)}
+                     onEdit={() => handleEdit(subscription)}
                     onManageContributors={() => handleManageContributors(subscription)}
                     onViewDetails={() => handleViewDetails(subscription)}
                   />
@@ -377,6 +499,15 @@ export default function Subscriptions() {
           </TabsContent>
 
           <TabsContent value="canceled" className="space-y-4 mt-6">
+            <EmptyState title="Canceled Subscriptions" description="No canceled subscriptions" />
+          </TabsContent>
+
+          <TabsContent value="archived" className="space-y-4 mt-6">
+            <EmptyState title="Archived Subscriptions" description="No archived subscriptions" />
+          </TabsContent>
+        </Tabs>
+      </TabsContent>
+    </Tabs>
             {canceledSubscriptions.length === 0 ? (
               <EmptyState
                 icon={CreditCard}
@@ -389,7 +520,7 @@ export default function Subscriptions() {
                   <SubscriptionCard 
                     key={subscription.id} 
                     subscription={subscription}
-                    onEdit={() => handleEditSubscription(subscription)}
+                     onEdit={() => handleEdit(subscription)}
                     onManageContributors={() => handleManageContributors(subscription)}
                     onViewDetails={() => handleViewDetails(subscription)}
                   />
@@ -411,15 +542,21 @@ export default function Subscriptions() {
                   <SubscriptionCard 
                     key={subscription.id} 
                     subscription={subscription}
-                    onEdit={() => handleEditSubscription(subscription)}
+                     onEdit={() => handleEdit(subscription)}
                     onManageContributors={() => handleManageContributors(subscription)}
                     onViewDetails={() => handleViewDetails(subscription)}
                   />
                 ))}
               </div>
             )}
+           </TabsContent>
+            </Tabs>
           </TabsContent>
         </Tabs>
+      </div>
+    </>
+  );
+}
 
         <CreateSubscriptionDialog
           open={createDialogOpen}
