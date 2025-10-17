@@ -167,7 +167,7 @@ const Habits = () => {
       const { error } = await supabase.from('habits').insert(payload);
       if (error) throw error;
 
-      toast.success('Habit created');
+      toast.success(t('habits.habitCreated'));
       setNewHabitTitle('');
       setNewHabitIcon('🔥');
       setNewHabitTargetDays('30');
@@ -314,7 +314,7 @@ const Habits = () => {
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div>
-                  <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('habits.chooseEmoji')}</label>
+                  <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('habits.dialog.chooseEmoji')}</label>
                   <div className="flex items-center gap-4">
                     <button
                       type="button"
@@ -325,7 +325,7 @@ const Habits = () => {
                     <div className="flex-1 space-y-2">
                       <Dialog open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
                         <DialogTrigger asChild>
-                          <Button variant="outline" className="w-full">Choose Any Emoji 🎨</Button>
+                          <Button variant="outline" className="w-full">{t('habits.dialog.chooseAnyEmoji')}</Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-sm p-0">
                           <EmojiPicker
@@ -338,7 +338,7 @@ const Habits = () => {
                           />
                         </DialogContent>
                       </Dialog>
-                      <p className="text-sm text-muted-foreground">Quick select:</p>
+                      <p className="text-sm text-muted-foreground">{t('habits.dialog.quickSelect')}</p>
                       <div className="flex flex-wrap gap-2">
                         {emojiOptions.map((emoji) => (
                           <button
@@ -366,19 +366,19 @@ const Habits = () => {
                   className={isRTL ? 'text-right' : 'text-left'}
                 />
                 <div>
-                  <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>Duration Goal</label>
+                  <label className={`text-sm font-medium mb-2 block ${isRTL ? 'text-right' : 'text-left'}`}>{t('habits.dialog.durationGoal')}</label>
                   <Select value={newHabitTargetDays} onValueChange={setNewHabitTargetDays}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select duration" />
+                      <SelectValue placeholder={t('habits.dialog.selectDuration')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="7">📅 1 Week - Quick win</SelectItem>
-                      <SelectItem value="21">🎯 21 Days - Habit forming</SelectItem>
-                      <SelectItem value="30">📆 1 Month - Standard</SelectItem>
-                      <SelectItem value="66">💪 66 Days - Scientific</SelectItem>
-                      <SelectItem value="90">🏆 90 Days - Master</SelectItem>
-                      <SelectItem value="365">🌟 1 Year - Ultimate</SelectItem>
-                      <SelectItem value="custom">✏️ Custom duration</SelectItem>
+                      <SelectItem value="7">{t('habits.dialog.oneWeek')}</SelectItem>
+                      <SelectItem value="21">{t('habits.dialog.twentyOneDays')}</SelectItem>
+                      <SelectItem value="30">{t('habits.dialog.oneMonth')}</SelectItem>
+                      <SelectItem value="66">{t('habits.dialog.sixtySixDays')}</SelectItem>
+                      <SelectItem value="90">{t('habits.dialog.ninetyDays')}</SelectItem>
+                      <SelectItem value="365">{t('habits.dialog.oneYear')}</SelectItem>
+                      <SelectItem value="custom">{t('habits.dialog.custom')}</SelectItem>
                     </SelectContent>
                   </Select>
                   {newHabitTargetDays === 'custom' && (
@@ -386,7 +386,7 @@ const Habits = () => {
                       type="number"
                       min="1"
                       max="365"
-                      placeholder="Enter number of days"
+                      placeholder={t('habits.dialog.enterDays')}
                       value={customTargetDays}
                       onChange={(e) => setCustomTargetDays(e.target.value)}
                       className="mt-2"
@@ -406,12 +406,12 @@ const Habits = () => {
           <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="my-habits" className="flex items-center gap-2">
               <Flame className="w-4 h-4" />
-              My Habits
+              {t('habits.myHabits')}
               <Badge variant="secondary">{habits.length}</Badge>
             </TabsTrigger>
             <TabsTrigger value="shared" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
-              Shared
+              {t('habits.shared')}
               <Badge variant="secondary">{sharedHabits?.length || 0}</Badge>
             </TabsTrigger>
           </TabsList>

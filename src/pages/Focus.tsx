@@ -894,8 +894,8 @@ const Focus = () => {
                   <div className="py-8">
                     <EmptyState
                       icon={StickyNote}
-                      title={t('focus.noActiveTasks')}
-                      description={t('focus.createTaskToStart')}
+                      title={t('focus.emptyState.title')}
+                      description={t('focus.emptyState.description')}
                       actionLabel={t('focus.addTask')}
                       onAction={() => setIsAddTaskOpen(true)}
                     />
