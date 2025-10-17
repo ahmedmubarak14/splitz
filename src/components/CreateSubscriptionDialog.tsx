@@ -18,6 +18,7 @@ import { formatDate } from "@/lib/formatters";
 import { detectDuplicatesEnhanced } from "@/lib/duplicateDetection";
 import { DuplicateDetectionDialog } from "./DuplicateDetectionDialog";
 import { SubscriptionTemplateSelector } from "./SubscriptionTemplateSelector";
+import { InlineContributorManager } from "./InlineContributorManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -46,6 +47,18 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
     is_shared: false,
     next_renewal_date: new Date(),
     logo_url: "",
+  });
+  
+  const [contributorData, setContributorData] = useState<{
+    userIds: string[];
+    emails: string[];
+    splitType: any;
+    memberSplits: any[];
+  }>({
+    userIds: [],
+    emails: [],
+    splitType: 'equal',
+    memberSplits: [],
   });
 
   // Fetch existing subscriptions for duplicate detection
@@ -113,7 +126,7 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
       billing_cycle: formData.billing_cycle,
       category: formData.category,
       is_shared: formData.is_shared,
-      split_type: formData.is_shared ? 'equal' : null,
+      split_type: formData.is_shared ? contributorData.splitType : null,
       next_renewal_date: format(formData.next_renewal_date, "yyyy-MM-dd"),
       user_id: user.id,
       logo_url: formData.logo_url || null,
@@ -125,13 +138,67 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
       subscriptionData.trial_ends_at = format(trialEndDate, "yyyy-MM-dd");
     }
 
-    const { error } = await supabase
+    const { data: newSubscription, error } = await supabase
       .from("subscriptions")
-      .insert([subscriptionData]);
+      .insert([subscriptionData])
+      .select()
+      .single();
 
     if (error) {
       toast.error(t('errors.genericError'));
       return;
+    }
+
+    // If shared, add contributors
+    if (formData.is_shared && newSubscription && (contributorData.userIds.length > 0 || contributorData.emails.length > 0)) {
+      // Add existing users as contributors
+      if (contributorData.userIds.length > 0) {
+        const contributors = contributorData.memberSplits
+          .filter(split => contributorData.userIds.includes(split.user_id))
+          .map(split => ({
+            subscription_id: newSubscription.id,
+            user_id: split.user_id,
+            contribution_amount: split.calculated_amount,
+            split_value: split.split_value,
+          }));
+        
+        const { error: contribError } = await supabase
+          .from('subscription_contributors')
+          .insert(contributors);
+        
+        if (contribError) {
+          console.error("Error adding contributors:", contribError);
+          toast.error(t("subscriptions.failedToAddContributors"));
+        }
+      }
+
+      // Create invitations for emails
+      if (contributorData.emails.length > 0) {
+        for (const email of contributorData.emails) {
+          // Find the split amount for this email
+          const emailSplit = contributorData.memberSplits.find(s => s.full_name === email || s.name === email);
+          
+          const inviteCode = Math.random().toString(36).substring(2, 15);
+          const { error: inviteError } = await supabase
+            .from('invitations')
+            .insert({
+              invite_code: inviteCode,
+              invite_type: 'subscription',
+              resource_id: newSubscription.id,
+              created_by: user.id,
+              expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+              payload: { 
+                email, 
+                subscription_name: newSubscription.name,
+                contribution_amount: emailSplit?.calculated_amount || 0,
+              },
+            });
+          
+          if (inviteError) {
+            console.error("Error creating invitation:", inviteError);
+          }
+        }
+      }
     }
 
     toast.success(t('toast.subscriptionCreated'));
@@ -146,6 +213,12 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
     setTrialStartDate(new Date());
     setTrialEndDate(undefined);
     setDuplicateMatches([]);
+    setContributorData({
+      userIds: [],
+      emails: [],
+      splitType: 'equal',
+      memberSplits: [],
+    });
     setFormData({
       name: "",
       amount: "",
@@ -329,12 +402,15 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
                         onCheckedChange={(checked) => setFormData({ ...formData, is_shared: checked })}
                       />
                     </div>
-                    {formData.is_shared && (
-                      <p className="text-xs text-muted-foreground">
-                        Add contributors after creating the subscription
-                      </p>
-                    )}
                   </div>
+
+                  {formData.is_shared && (
+                    <InlineContributorManager
+                      totalAmount={parseFloat(formData.amount) || 0}
+                      currency={formData.currency}
+                      onContributorsChange={setContributorData}
+                    />
+                  )}
 
                   {duplicateMatches.length > 0 && (
                     <Alert variant="destructive">
@@ -521,12 +597,15 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
                       onCheckedChange={(checked) => setFormData({ ...formData, is_shared: checked })}
                     />
                   </div>
-                  {formData.is_shared && (
-                    <p className="text-xs text-muted-foreground">
-                      Add contributors after creating the subscription
-                    </p>
-                  )}
                 </div>
+
+                {formData.is_shared && (
+                  <InlineContributorManager
+                    totalAmount={parseFloat(formData.amount) || 0}
+                    currency={formData.currency}
+                    onContributorsChange={setContributorData}
+                  />
+                )}
 
                 {duplicateMatches.length > 0 && (
                   <Alert variant="destructive">
