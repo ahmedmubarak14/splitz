@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import splitzLogo from '@/assets/splitz-logo.png';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,24 +9,57 @@ import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { PasswordInput } from '@/components/PasswordInput';
 import { toast } from 'sonner';
-import { Mail, User, ArrowRight, Sparkles, Shield, AlertTriangle } from 'lucide-react';
+import { Mail, User, ArrowRight, Sparkles, Shield, AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
 import { usePasswordStrength } from '@/hooks/usePasswordStrength';
 import { useTranslation } from 'react-i18next';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing } from '@/lib/responsive-utils';
 import * as Sentry from "@sentry/react";
 
+// Debounce utility
+const debounce = <T extends (...args: any[]) => any>(func: T, wait: number) => {
+  let timeout: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
+
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
+  const [emailOrUsername, setEmailOrUsername] = useState(''); // For login
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState(''); // For signup
   const [loading, setLoading] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
+  const [checkingUsername, setCheckingUsername] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isRTL = useIsRTL();
   const passwordStrength = usePasswordStrength(password);
+
+  // Debounced username availability checker
+  const checkUsernameAvailability = useMemo(
+    () =>
+      debounce(async (value: string) => {
+        if (!value || value.length < 3) {
+          setUsernameAvailable(null);
+          return;
+        }
+        
+        setCheckingUsername(true);
+        const { data, error } = await supabase.rpc('is_username_available', {
+          username_to_check: value.toLowerCase()
+        });
+        
+        setCheckingUsername(false);
+        setUsernameAvailable(data === true);
+      }, 500),
+    []
+  );
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -47,13 +80,13 @@ const Auth = () => {
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email.trim() || !password.trim()) {
-      toast.error(t('errors.fillAllFields'));
+    if (isLogin && (!emailOrUsername.trim() || !password.trim())) {
+      toast.error(t('errors.fillAllFields') || 'Please fill all fields');
       return;
     }
 
-    if (!isLogin && !fullName.trim()) {
-      toast.error(t('errors.enterFullName'));
+    if (!isLogin && (!email.trim() || !password.trim() || !fullName.trim())) {
+      toast.error(t('errors.fillAllFields') || 'Please fill all fields');
       return;
     }
 
@@ -61,25 +94,81 @@ const Auth = () => {
 
     try {
       if (isLogin) {
+        let loginEmail = emailOrUsername.trim();
+        
+        // Check if input is username (no @ symbol)
+        if (!emailOrUsername.includes('@')) {
+          // Fetch email from username
+          const { data: fetchedEmail, error: usernameError } = await supabase.rpc('get_email_by_username', {
+            username_input: emailOrUsername.trim()
+          });
+          
+          if (usernameError || !fetchedEmail) {
+            toast.error(t('errors.usernameNotFound') || 'Username not found. Please check and try again.');
+            setLoading(false);
+            return;
+          }
+          loginEmail = fetchedEmail;
+        }
+        
         const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
+          email: loginEmail,
           password,
         });
+        
         if (error) throw error;
-        toast.success(t('success.welcomeBack'));
+        toast.success(t('success.welcomeBack') || 'Welcome back!');
       } else {
-        const { error } = await supabase.auth.signUp({
+        // Validate username for signup
+        if (!username.trim()) {
+          toast.error(t('errors.enterUsername') || 'Please enter a username');
+          setLoading(false);
+          return;
+        }
+        
+        if (username.length < 3 || username.length > 20) {
+          toast.error(t('errors.usernameLength') || 'Username must be 3-20 characters');
+          setLoading(false);
+          return;
+        }
+        
+        if (!/^[a-z0-9_]+$/.test(username)) {
+          toast.error(t('errors.usernameFormat') || 'Username can only contain lowercase letters, numbers, and underscores');
+          setLoading(false);
+          return;
+        }
+        
+        if (!usernameAvailable) {
+          toast.error(t('errors.usernameTaken') || 'This username is already taken');
+          setLoading(false);
+          return;
+        }
+
+        const { error, data } = await supabase.auth.signUp({
           email: email.trim(),
           password,
           options: {
-            data: { full_name: fullName.trim() },
+            data: { 
+              full_name: fullName.trim(),
+              username: username.toLowerCase().trim()
+            },
             emailRedirectTo: `${window.location.origin}/`,
           },
         });
+        
         if (error) throw error;
-        toast.success(t('success.checkEmail'), {
+        
+        // Update profile with username (backup in case trigger doesn't handle it)
+        if (data.user) {
+          await supabase
+            .from('profiles')
+            .update({ username: username.toLowerCase().trim() })
+            .eq('id', data.user.id);
+        }
+
+        toast.success(t('success.checkEmail') || 'Check your email', {
           duration: 6000,
-          description: t('success.checkEmailDescription'),
+          description: t('success.checkEmailDescription') || 'We sent you a verification link',
         });
       }
     } catch (error: any) {
@@ -89,17 +178,17 @@ const Auth = () => {
       if (message.includes('password is too weak') || 
           message.includes('insufficient entropy') ||
           message.includes('does not meet security requirements')) {
-        toast.error(t('errors.passwordTooWeak'));
+        toast.error(t('errors.passwordTooWeak') || 'Password is too weak');
       } else if (message.includes('password') && message.includes('least')) {
-        toast.error(t('errors.passwordLength'));
+        toast.error(t('errors.passwordLength') || 'Password is too short');
       } else if (message.includes('invalid login credentials')) {
-        toast.error(t('errors.invalidEmail'));
+        toast.error(t('errors.invalidEmail') || 'Invalid credentials');
       } else if (message.includes('user already registered')) {
-        toast.error(t('errors.emailAlreadyRegistered'));
+        toast.error(t('errors.emailAlreadyRegistered') || 'Email already registered');
       } else if (message.includes('email')) {
-        toast.error(t('errors.validEmailRequired'));
+        toast.error(t('errors.validEmailRequired') || 'Invalid email');
       } else {
-        toast.error(error.message || t('errors.genericError'));
+        toast.error(error.message || t('errors.genericError') || 'Something went wrong');
       }
       
       if (import.meta.env.PROD) {
@@ -148,42 +237,108 @@ const Auth = () => {
           <Card className="p-8 shadow-lg border-2">
             <form onSubmit={handleAuth} className="space-y-5">
               {!isLogin && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName" className={`text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                      {t('auth.fullName')}
+                    </Label>
+                    <div className="relative">
+                      <User className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground`} />
+                      <Input
+                        id="fullName"
+                        type="text"
+                        placeholder="John Doe"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required={!isLogin}
+                        className={`h-12 ${isRTL ? 'pr-10' : 'pl-10'} text-base`}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="username" className={`text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                      {t('auth.username') || 'Username'}
+                    </Label>
+                    <div className="relative">
+                      <User className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground`} />
+                      <Input
+                        id="username"
+                        type="text"
+                        placeholder="johndoe_123"
+                        value={username}
+                        onChange={(e) => {
+                          const value = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
+                          setUsername(value);
+                          checkUsernameAvailability(value);
+                        }}
+                        required
+                        className={`h-12 ${isRTL ? 'pr-10 pl-10' : 'pl-10 pr-10'} text-base`}
+                      />
+                      {checkingUsername && (
+                        <div className={`absolute ${isRTL ? 'left-3' : 'right-3'} top-1/2 -translate-y-1/2`}>
+                          <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                        </div>
+                      )}
+                      {username.length >= 3 && !checkingUsername && (
+                        <div className={`absolute ${isRTL ? 'left-3' : 'right-3'} top-1/2 -translate-y-1/2`}>
+                          {usernameAvailable ? (
+                            <CheckCircle2 className="h-5 w-5 text-green-600" />
+                          ) : (
+                            <XCircle className="h-5 w-5 text-red-600" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {username && username.length >= 3 && !checkingUsername && (
+                      <p className={`text-xs ${usernameAvailable ? 'text-green-600' : 'text-red-600'}`}>
+                        {usernameAvailable ? (t('auth.usernameAvailable') || '✓ Username available') : (t('auth.usernameTaken') || '✗ Username already taken')}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      {t('auth.usernameHint') || '3-20 characters: lowercase letters, numbers, and underscores'}
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {isLogin ? (
                 <div className="space-y-2">
-                  <Label htmlFor="fullName" className={`text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
-                    {t('auth.fullName')}
+                  <Label htmlFor="emailOrUsername" className={`text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {t('auth.emailOrUsername') || 'Email or Username'}
                   </Label>
                   <div className="relative">
-                    <User className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground`} />
+                    <Mail className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground`} />
                     <Input
-                      id="fullName"
+                      id="emailOrUsername"
                       type="text"
-                      placeholder="John Doe"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      required={!isLogin}
+                      placeholder={t('auth.emailOrUsernamePlaceholder') || 'you@example.com or username'}
+                      value={emailOrUsername}
+                      onChange={(e) => setEmailOrUsername(e.target.value)}
+                      required
+                      className={`h-12 ${isRTL ? 'pr-10' : 'pl-10'} text-base`}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label htmlFor="email" className={`text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
+                    {t('auth.email')}
+                  </Label>
+                  <div className="relative">
+                    <Mail className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground`} />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
                       className={`h-12 ${isRTL ? 'pr-10' : 'pl-10'} text-base`}
                     />
                   </div>
                 </div>
               )}
-
-              <div className="space-y-2">
-                <Label htmlFor="email" className={`text-sm font-medium ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {t('auth.email')}
-                </Label>
-                <div className="relative">
-                  <Mail className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground`} />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className={`h-12 ${isRTL ? 'pr-10' : 'pl-10'} text-base`}
-                  />
-                </div>
-              </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -300,9 +455,12 @@ const Auth = () => {
                   onClick={() => {
                     setIsLogin(!isLogin);
                     setEmail('');
+                    setEmailOrUsername('');
                     setPassword('');
                     setFullName('');
+                    setUsername('');
                     setPasswordTouched(false);
+                    setUsernameAvailable(null);
                   }}
                   className="w-full h-11 font-medium"
                 >

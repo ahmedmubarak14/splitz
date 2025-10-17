@@ -1456,6 +1456,10 @@ export type Database = {
         }
         Returns: string
       }
+      get_email_by_username: {
+        Args: { username_input: string }
+        Returns: string
+      }
       get_friend_invite_by_code: {
         Args: { _invite_code: string }
         Returns: {
