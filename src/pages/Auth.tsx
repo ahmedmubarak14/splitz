@@ -36,6 +36,8 @@ const Auth = () => {
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
   const [checkingUsername, setCheckingUsername] = useState(false);
+  const [showResendVerification, setShowResendVerification] = useState(false);
+  const [resendEmail, setResendEmail] = useState('');
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isRTL = useIsRTL();
@@ -60,6 +62,25 @@ const Auth = () => {
       }, 500),
     []
   );
+
+  const handleResendVerification = async () => {
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: resendEmail,
+      });
+      
+      if (error) throw error;
+      
+      toast.success(t('auth.verificationEmailSent') || 'Verification email sent!', {
+        description: t('auth.checkInboxAndSpam') || 'Check your inbox and spam folder.',
+      });
+    } catch (error: any) {
+      toast.error(t('errors.failedToResendEmail') || 'Failed to resend email', {
+        description: error.message,
+      });
+    }
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -166,9 +187,9 @@ const Auth = () => {
             .eq('id', data.user.id);
         }
 
-        toast.success(t('success.checkEmail') || 'Check your email', {
-          duration: 6000,
-          description: t('success.checkEmailDescription') || 'We sent you a verification link',
+        toast.success(t('success.accountCreated') || 'Account created successfully! 🎉', {
+          duration: 8000,
+          description: t('success.checkEmailForVerification') || 'Check your email for a verification link. You can log in after verifying.',
         });
       }
     } catch (error: any) {
@@ -441,6 +462,38 @@ const Auth = () => {
                   </span>
                 )}
               </Button>
+
+              {/* Resend Verification Link */}
+              <div className="mt-4 text-center text-sm">
+                <button
+                  type="button"
+                  onClick={() => setShowResendVerification(!showResendVerification)}
+                  className="text-primary hover:underline"
+                >
+                  {t('auth.didntReceiveEmail') || "Didn't receive verification email?"}
+                </button>
+              </div>
+
+              {showResendVerification && (
+                <div className="mt-4 p-4 border rounded-lg bg-muted/50">
+                  <Label htmlFor="resendEmail" className="text-sm font-medium">
+                    {t('auth.emailAddress') || 'Email Address'}
+                  </Label>
+                  <div className="flex gap-2 mt-2">
+                    <Input
+                      id="resendEmail"
+                      type="email"
+                      value={resendEmail}
+                      onChange={(e) => setResendEmail(e.target.value)}
+                      placeholder={t('auth.emailPlaceholder') || 'your@email.com'}
+                      className="flex-1"
+                    />
+                    <Button onClick={handleResendVerification} variant="secondary">
+                      {t('auth.resendVerification') || 'Resend'}
+                    </Button>
+                  </div>
+                </div>
+              )}
             </form>
 
             <div className="mt-6">
