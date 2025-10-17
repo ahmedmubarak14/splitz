@@ -304,8 +304,8 @@ export const SubscriptionDetailsDialog = ({
       // Create notification
       const { error: notifError } = await supabase.rpc('create_notification', {
         p_user_id: contributor.user_id,
-        p_title: "Payment Reminder",
-        p_message: `Payment reminder for "${subscriptionName}" - ${subscription?.currency} ${contributor.contribution_amount}`,
+        p_title: t("subscriptions.reminderTitle"),
+        p_message: `${t("subscriptions.reminderMessage")} "${subscriptionName}" - ${subscription?.currency} ${contributor.contribution_amount}`,
         p_type: 'subscription',
         p_resource_id: subscriptionId
       });
@@ -328,14 +328,16 @@ export const SubscriptionDetailsDialog = ({
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['subscription-contributors', subscriptionId] });
-      toast.success(`Reminder sent successfully (${data.remainingToday} remaining today)`);
+      toast.success(
+        `${t("subscriptions.reminderSent")} (${data.remainingToday} ${t("subscriptions.remainingToday")})`
+      );
     },
     onError: (error: any) => {
       console.error("Failed to send reminder:", error);
       if (error.message.includes("Daily reminder limit")) {
-        toast.error("Daily reminder limit reached (5/5). Try again tomorrow.");
+        toast.error(t("subscriptions.reminderLimitReached"));
       } else {
-        toast.error("Failed to send reminder");
+        toast.error(t("subscriptions.reminderFailed"));
       }
     },
   });

@@ -618,8 +618,8 @@ const ManageContributorsDialog = ({
               
               <Tabs defaultValue="search" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="search">{t("Search Users")}</TabsTrigger>
-                  <TabsTrigger value="email">{t("Invite by Email")}</TabsTrigger>
+                  <TabsTrigger value="search">{t("tabs.users")}</TabsTrigger>
+                  <TabsTrigger value="email">{t("subscriptions.inviteByEmail")}</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="search" className="space-y-4 mt-4">
@@ -629,7 +629,7 @@ const ManageContributorsDialog = ({
                     multiSelect={true}
                     excludeUserIds={contributors?.map((c) => c.user_id) || []}
                     showFriendsTab={true}
-                    placeholder={t("Search by @username")}
+                    placeholder={t("subscriptions.searchByUsername")}
                   />
                   <Button
                     onClick={() => addContributor.mutate({ userIds: selectedUserIds })}
@@ -639,7 +639,7 @@ const ManageContributorsDialog = ({
                     {addContributor.isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     ) : null}
-                    {t(`Add ${selectedUserIds.length} User(s)`)}
+                    {t("subscriptions.addContributor")}
                   </Button>
                 </TabsContent>
 
