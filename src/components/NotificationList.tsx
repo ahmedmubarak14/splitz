@@ -28,6 +28,61 @@ const translateNotificationTitle = (title: string, type: string, t: any): string
   return title;
 };
 
+const parseNotificationMessage = (message: string, type: string, t: any): string => {
+  // "You were added to "X" - Your share: Y"
+  const addedToSubMatch = message.match(/You were added to "([^"]+)" - Your share: (.+)/);
+  if (addedToSubMatch) {
+    return t('notificationMessages.addedToSubscription', {
+      name: addedToSubMatch[1],
+      amount: addedToSubMatch[2]
+    });
+  }
+  
+  // "X sent you a friend request"
+  const friendRequestMatch = message.match(/(.+) sent you a friend request/);
+  if (friendRequestMatch) {
+    return t('notificationMessages.friendRequest', {
+      name: friendRequestMatch[1]
+    });
+  }
+  
+  // "Payment approved for "X""
+  const paymentStatusMatch = message.match(/Payment approved for "([^"]+)"/);
+  if (paymentStatusMatch) {
+    return t('notificationMessages.paymentStatus', {
+      name: paymentStatusMatch[1]
+    });
+  }
+  
+  // "X submitted payment for "Y""
+  const paymentSubmittedMatch = message.match(/(.+) submitted payment for "([^"]+)"/);
+  if (paymentSubmittedMatch) {
+    return t('notificationMessages.paymentSubmitted', {
+      name: paymentSubmittedMatch[1],
+      subscription: paymentSubmittedMatch[2]
+    });
+  }
+  
+  // "Payment needs review for "X""
+  const paymentReviewMatch = message.match(/Payment needs review for "([^"]+)"/);
+  if (paymentReviewMatch) {
+    return t('notificationMessages.paymentReview', {
+      name: paymentReviewMatch[1]
+    });
+  }
+  
+  // "Your streak was saved! You have X freezes remaining."
+  const streakFreezeMatch = message.match(/Your streak was saved! You have (\d+) freezes? remaining\./);
+  if (streakFreezeMatch) {
+    return t('notificationMessages.streakFreeze', {
+      count: streakFreezeMatch[1]
+    });
+  }
+  
+  // Fallback: return original message
+  return message;
+};
+
 interface Notification {
   id: string;
   title: string;
@@ -165,7 +220,7 @@ export function NotificationList({ onRead }: NotificationListProps) {
               <div className="flex-1">
                 <h4 className="font-medium text-sm">{translateNotificationTitle(notification.title, notification.type, t)}</h4>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {notification.message}
+                  {parseNotificationMessage(notification.message, notification.type, t)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-2">
                   {formatDistanceToNow(new Date(notification.created_at), {
