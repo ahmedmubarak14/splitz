@@ -12,8 +12,10 @@ import { Button } from '@/components/ui/button';
 import { PasswordInput } from '@/components/PasswordInput';
 import { toast } from 'sonner';
 import { KeyRound } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const ChangePasswordDialog = () => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -24,17 +26,17 @@ export const ChangePasswordDialog = () => {
     e.preventDefault();
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      toast.error('Please fill in all fields');
+      toast.error(t('auth.changePassword.fillAllFields'));
       return;
     }
 
     if (newPassword.length < 6) {
-      toast.error('New password must be at least 6 characters');
+      toast.error(t('auth.changePassword.passwordMinLength'));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error('New passwords do not match');
+      toast.error(t('auth.changePassword.passwordsNoMatch'));
       return;
     }
 
@@ -50,7 +52,7 @@ export const ChangePasswordDialog = () => {
         password: currentPassword,
       });
 
-      if (signInError) throw new Error('Current password is incorrect');
+      if (signInError) throw new Error(t('auth.changePassword.incorrectPassword'));
 
       // Update to new password
       const { error: updateError } = await supabase.auth.updateUser({
@@ -59,14 +61,14 @@ export const ChangePasswordDialog = () => {
 
       if (updateError) throw updateError;
 
-      toast.success('Password changed successfully!');
+      toast.success(t('auth.changePassword.success'));
       setOpen(false);
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error: any) {
       console.error('Change password error:', error);
-      toast.error(error.message || 'Failed to change password');
+      toast.error(error.message || t('auth.changePassword.failed'));
     } finally {
       setLoading(false);
     }
@@ -77,46 +79,46 @@ export const ChangePasswordDialog = () => {
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full">
           <KeyRound className="mr-2 h-4 w-4" />
-          Change Password
+          {t('auth.changePassword.button')}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Change Password</DialogTitle>
+          <DialogTitle>{t('auth.changePassword.title')}</DialogTitle>
           <DialogDescription>
-            Enter your current password and choose a new one
+            {t('auth.changePassword.description')}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleChangePassword} className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Current Password</label>
+            <label className="text-sm font-medium">{t('auth.changePassword.currentPassword')}</label>
             <PasswordInput
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="Enter current password"
+              placeholder={t('auth.changePassword.currentPasswordPlaceholder')}
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">New Password</label>
+            <label className="text-sm font-medium">{t('auth.changePassword.newPassword')}</label>
             <PasswordInput
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Enter new password"
+              placeholder={t('auth.changePassword.newPasswordPlaceholder')}
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Confirm New Password</label>
+            <label className="text-sm font-medium">{t('auth.changePassword.confirmNewPassword')}</label>
             <PasswordInput
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm new password"
+              placeholder={t('auth.changePassword.confirmPasswordPlaceholder')}
             />
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Changing...' : 'Change Password'}
+            {loading ? t('auth.changePassword.buttonLoading') : t('auth.changePassword.button')}
           </Button>
         </form>
       </DialogContent>

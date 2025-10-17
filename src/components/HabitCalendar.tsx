@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { CalendarDays, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface HabitCalendarProps {
   habitId: string;
@@ -15,6 +16,7 @@ interface HabitCalendarProps {
 }
 
 const HabitCalendar = ({ habitId, habitName, open, onOpenChange }: HabitCalendarProps) => {
+  const { t } = useTranslation();
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
   const [checkInDates, setCheckInDates] = useState<Date[]>([]);
   const [stats, setStats] = useState({
@@ -61,7 +63,7 @@ const HabitCalendar = ({ habitId, habitName, open, onOpenChange }: HabitCalendar
       });
     } catch (error) {
       console.error('Error fetching check-ins:', error);
-      toast.error('Failed to load check-in history');
+      toast.error(t('habits.calendar.loadFailed'));
     }
   };
 

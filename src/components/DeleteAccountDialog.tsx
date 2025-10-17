@@ -16,8 +16,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const DeleteAccountDialog = () => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +27,7 @@ export const DeleteAccountDialog = () => {
 
   const handleDeleteAccount = async () => {
     if (confirmText !== 'DELETE') {
-      toast.error('Please type DELETE to confirm');
+      toast.error(t('account.delete.typeDeleteError'));
       return;
     }
 
@@ -40,15 +42,15 @@ export const DeleteAccountDialog = () => {
       if (error) {
         // Fallback: sign out if admin delete fails
         await supabase.auth.signOut();
-        toast.success('Account deletion initiated. Please contact support to complete the process.');
+        toast.success(t('account.delete.fallbackSuccess'));
       } else {
-        toast.success('Account deleted successfully');
+        toast.success(t('account.delete.success'));
       }
 
       navigate('/');
     } catch (error: any) {
       console.error('Delete account error:', error);
-      toast.error(error.message || 'Failed to delete account');
+      toast.error(error.message || t('account.delete.failed'));
     } finally {
       setLoading(false);
     }
@@ -59,32 +61,32 @@ export const DeleteAccountDialog = () => {
       <AlertDialogTrigger asChild>
         <Button variant="destructive" className="w-full">
           <Trash2 className="mr-2 h-4 w-4" />
-          Delete Account
+          {t('account.delete.button')}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Account Permanently?</AlertDialogTitle>
+          <AlertDialogTitle>{t('account.delete.title')}</AlertDialogTitle>
           <AlertDialogDescription className="space-y-4">
             <p>
-              This action <strong>cannot be undone</strong>. This will permanently delete:
+              {t('account.delete.cannotBeUndone')}
             </p>
             <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>Your account and profile</li>
-              <li>All your habits and check-ins</li>
-              <li>All challenges you created</li>
-              <li>All your focus sessions</li>
-              <li>All expense data you created</li>
-              <li>All notifications and preferences</li>
+              <li>{t('account.delete.yourAccount')}</li>
+              <li>{t('account.delete.allHabits')}</li>
+              <li>{t('account.delete.allChallenges')}</li>
+              <li>{t('account.delete.allFocus')}</li>
+              <li>{t('account.delete.allExpenses')}</li>
+              <li>{t('account.delete.allNotifications')}</li>
             </ul>
             <div className="space-y-2 pt-4">
               <label className="text-sm font-medium">
-                Type <strong>DELETE</strong> to confirm:
+                {t('account.delete.typeDeleteConfirm')}
               </label>
               <Input
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
-                placeholder="DELETE"
+                placeholder={t('account.delete.typeDeletePlaceholder')}
                 className="uppercase"
               />
             </div>
@@ -92,14 +94,14 @@ export const DeleteAccountDialog = () => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={() => setConfirmText('')}>
-            Cancel
+            {t('account.delete.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDeleteAccount}
             disabled={confirmText !== 'DELETE' || loading}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {loading ? 'Deleting...' : 'Delete Forever'}
+            {loading ? t('account.delete.deleting') : t('account.delete.deleteForever')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

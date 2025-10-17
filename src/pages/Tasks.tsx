@@ -21,7 +21,7 @@ const Tasks = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
-  const [selectedProject, setSelectedProject] = useState('Inbox');
+  const [selectedProject, setSelectedProject] = useState(t('projects.inbox'));
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [showProjectManager, setShowProjectManager] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -45,7 +45,7 @@ const Tasks = () => {
   });
 
   // Get unique projects
-  const projects = Array.from(new Set(tasks?.map(t => t.project) || ['Inbox']));
+  const projects = Array.from(new Set(tasks?.map(t => t.project) || [t('projects.inbox')]));
 
   const filteredTasks = tasks?.filter(t => t.project === selectedProject) || [];
 
