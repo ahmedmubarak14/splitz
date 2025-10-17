@@ -445,7 +445,7 @@ const resources = {
         badge: 'Complete System',
       },
       footer: {
-        tagline: 'Build habits together. Split life fairly.',
+        tagline: 'Your life, organized. Tasks, habits, expenses—all in one place.',
         rights: 'All rights reserved.',
       },
       habits: {
@@ -1536,7 +1536,7 @@ const resources = {
         badge: 'نظام متكامل',
       },
       footer: {
-        tagline: 'ابنِ العادات معاً. واقسم المصاريف بعدل.',
+        tagline: 'حياتك منظمة. المهام، العادات، النفقات—كل شيء في مكان واحد.',
         rights: 'جميع الحقوق محفوظة.',
       },
       habits: {
