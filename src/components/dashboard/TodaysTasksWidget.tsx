@@ -111,7 +111,7 @@ export function TodaysTasksWidget({ tasks, onRefresh }: TodaysTasksWidgetProps) 
             {t('dashboard.noTasksToday')}
           </p>
           <p className="text-xs text-muted-foreground mb-4 max-w-xs mx-auto leading-relaxed">
-            Get started by creating your first task
+            {t('dashboard.widgets.tasksEmptyDescription')}
           </p>
           <Button 
             size="sm" 

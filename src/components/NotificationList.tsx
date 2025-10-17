@@ -9,6 +9,25 @@ import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import { useIsRTL } from '@/lib/rtl-utils';
 
+const translateNotificationTitle = (title: string, type: string, t: any): string => {
+  // Try exact title match first
+  const titleKey = `notificationTitles.${title}`;
+  const translated = t(titleKey);
+  if (translated !== titleKey) {
+    return translated;
+  }
+  
+  // Fallback to type-based translation
+  const typeKey = `notificationTitles.${type}`;
+  const typeTranslated = t(typeKey);
+  if (typeTranslated !== typeKey) {
+    return typeTranslated;
+  }
+  
+  // Return original if no translation found
+  return title;
+};
+
 interface Notification {
   id: string;
   title: string;
@@ -144,7 +163,7 @@ export function NotificationList({ onRead }: NotificationListProps) {
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1">
-                <h4 className="font-medium text-sm">{notification.title}</h4>
+                <h4 className="font-medium text-sm">{translateNotificationTitle(notification.title, notification.type, t)}</h4>
                 <p className="text-sm text-muted-foreground mt-1">
                   {notification.message}
                 </p>

@@ -136,7 +136,7 @@ export function AppSidebar() {
           <SidebarGroup>
             {!isCollapsed && (
               <SidebarGroupLabel className="px-5 py-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Overview
+                {t('sidebar.overview')}
               </SidebarGroupLabel>
             )}
             <SidebarGroupContent>
@@ -171,7 +171,7 @@ export function AppSidebar() {
           <SidebarGroup className="mt-4">
             {!isCollapsed && (
               <SidebarGroupLabel className="px-5 py-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Workspace
+                {t('sidebar.workspace')}
               </SidebarGroupLabel>
             )}
             <SidebarGroupContent>
@@ -206,7 +206,7 @@ export function AppSidebar() {
           <SidebarGroup className="mt-4">
             {!isCollapsed && (
               <SidebarGroupLabel className="px-5 py-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Account & Support
+                {t('sidebar.accountAndSupport')}
               </SidebarGroupLabel>
             )}
             <SidebarGroupContent>
