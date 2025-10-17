@@ -21,6 +21,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useIsRTL } from '@/lib/rtl-utils';
 import Navigation from '@/components/Navigation';
 import { EmptyState } from '@/components/EmptyState';
+import { FocusSessionCelebration } from '@/components/FocusSessionCelebration';
 
 interface FocusTask {
   id: string;
@@ -70,6 +71,8 @@ const Focus = () => {
   const [pausedAt, setPausedAt] = useState<Date | null>(null);
   const [totalPausedTime, setTotalPausedTime] = useState(0);
   const [isStartingSession, setIsStartingSession] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationData, setCelebrationData] = useState({ totalTrees: 0, totalFocusMinutes: 0, sessionDuration: 0 });
 
   const [newTask, setNewTask] = useState({
     title: '',
@@ -456,10 +459,18 @@ const Focus = () => {
         console.log('[Focus] Session completed successfully:', { id: resolvedSessionId, treeSurvived });
         
         if (treeSurvived) {
-          toast.success(t('focus.treeSurvived'), {
-            description: t('focus.sessionCompleted'),
-            duration: 5000,
+          // Calculate stats for celebration
+          const survivedSessions = sessions.filter(s => s.tree_survived);
+          const newTotalTrees = survivedSessions.length + 1;
+          const totalFocusTime = sessions.reduce((acc, s) => acc + (s.duration_minutes || 0), 0);
+          const newTotalMinutes = totalFocusTime + (sessionType === 'custom' ? customDuration : sessionType === 'work' ? 25 : sessionType === 'short_break' ? 5 : 15);
+          
+          setCelebrationData({
+            totalTrees: newTotalTrees,
+            totalFocusMinutes: newTotalMinutes,
+            sessionDuration: sessionType === 'custom' ? customDuration : sessionType === 'work' ? 25 : sessionType === 'short_break' ? 5 : 15
           });
+          setShowCelebration(true);
         } else {
           toast.error(t('focus.treeDied'), {
             description: t('focus.sessionEndedEarly'),
@@ -960,6 +971,15 @@ const Focus = () => {
         </div>
       </div>
       <Navigation />
+      
+      {/* Focus Session Celebration */}
+      <FocusSessionCelebration
+        show={showCelebration}
+        totalTrees={celebrationData.totalTrees}
+        totalFocusMinutes={celebrationData.totalFocusMinutes}
+        sessionDuration={celebrationData.sessionDuration}
+        onComplete={() => setShowCelebration(false)}
+      />
     </div>
   );
 };
