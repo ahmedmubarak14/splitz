@@ -10,7 +10,8 @@ import { useTranslation } from 'react-i18next';
  */
 export const useIsRTL = (): boolean => {
   const { i18n } = useTranslation();
-  return i18n.language === 'ar';
+  const lng = i18n.resolvedLanguage || i18n.language;
+  return i18n.dir(lng) === 'rtl';
 };
 
 /**
@@ -18,7 +19,8 @@ export const useIsRTL = (): boolean => {
  */
 export const useDirection = (): 'rtl' | 'ltr' => {
   const { i18n } = useTranslation();
-  return i18n.language === 'ar' ? 'rtl' : 'ltr';
+  const lng = i18n.resolvedLanguage || i18n.language;
+  return i18n.dir(lng) as 'rtl' | 'ltr';
 };
 
 /**

@@ -34,7 +34,7 @@ export const TrialTracker = ({ subscriptions, onEdit }: TrialTrackerProps) => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir={isRTL ? 'rtl' : 'ltr'}>
       {trialSubscriptions.map(sub => {
         const daysLeft = differenceInDays(new Date(sub.trial_ends_at), new Date());
         const urgency = daysLeft <= 1 ? 'critical' : daysLeft <= 3 ? 'warning' : 'normal';
@@ -59,7 +59,7 @@ export const TrialTracker = ({ subscriptions, onEdit }: TrialTrackerProps) => {
                   </div>
                 </div>
                 <Badge variant={urgency === 'critical' ? 'destructive' : urgency === 'warning' ? 'default' : 'secondary'}>
-                  {t('subscriptions.daysLeft', { count: daysLeft })}
+                  {t('subscriptions.daysLeft_one', { count: daysLeft })}
                 </Badge>
               </div>
             </CardHeader>

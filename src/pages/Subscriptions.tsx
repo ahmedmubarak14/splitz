@@ -131,7 +131,7 @@ export default function Subscriptions() {
         description={t('subscriptions.subtitle')}
       />
       
-      <div className={`min-h-screen bg-gradient-to-b from-muted/30 via-muted/10 to-background p-4 md:p-6 space-y-6 md:space-y-8 pb-24 md:pb-6 ${isRTL ? 'rtl' : 'ltr'}`}>
+      <div className="min-h-screen bg-gradient-to-b from-muted/30 via-muted/10 to-background p-4 md:p-6 space-y-6 md:space-y-8 pb-24 md:pb-6" dir={isRTL ? 'rtl' : 'ltr'}>
         {/* Header */}
         <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <div>
@@ -366,7 +366,7 @@ export default function Subscriptions() {
                   onClick={() => setCreateDialogOpen(true)}
                   className="shadow-sm hover:shadow-md"
                 >
-                  <Plus className="w-4 h-4 mr-2" />
+                  <Plus className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
                   {t('subscriptions.addFirstSubscription')}
                 </Button>
               </div>

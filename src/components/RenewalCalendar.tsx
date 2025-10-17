@@ -71,7 +71,7 @@ export const RenewalCalendar = ({ subscriptions, onSelectSubscription }: Renewal
       </CardHeader>
       <CardContent>
         {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-2">
+        <div className="grid grid-cols-7 gap-2" dir={isRTL ? 'rtl' : 'ltr'}>
           {/* Week day headers */}
           {weekDays.map(day => (
             <div key={day} className="text-center text-xs font-semibold text-muted-foreground p-2">

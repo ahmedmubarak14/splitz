@@ -8,7 +8,7 @@ const LanguageToggle = () => {
 
   useEffect(() => {
     // Set HTML dir attribute based on language
-    document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = i18n.dir();
     document.documentElement.lang = i18n.language;
   }, [i18n.language]);
 
