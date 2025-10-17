@@ -102,7 +102,7 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subscriptions'] });
-      toast.success('Subscription deleted');
+      toast.success(t('subscriptions.deleted'));
     },
   });
 
@@ -152,7 +152,7 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
         {/* Trial Badge */}
         {isTrial && (
           <Badge variant="default" className="bg-warning text-warning-foreground">
-            {t('subscriptions.trial')}: {trialDaysLeft} {t('common.daysLeft', { count: trialDaysLeft })}
+            {t('subscriptions.trial')}: {t('common.daysLeft', { count: trialDaysLeft })}
           </Badge>
         )}
 
@@ -166,9 +166,9 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
         {/* Renewal Progress Bar */}
         {!isTrial && daysLeft >= 0 && (
           <div className="space-y-1">
-            <div className="flex justify-between text-xs text-muted-foreground">
+            <div className={`flex justify-between text-xs text-muted-foreground ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
               <span>{t('subscriptions.nextRenewal')}</span>
-              <span>{daysLeft} {t('common.days')}</span>
+              <span>{t('common.daysLeft', { count: daysLeft })}</span>
             </div>
             <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
               <div 
@@ -216,8 +216,8 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
                 : "text-muted-foreground"
             }>
               {renewalStatus === "overdue" 
-                ? `${Math.abs(daysLeft)} ${t('subscriptions.overdue')}`
-                : `${t('subscriptions.renews')} ${daysLeft} ${t('common.days')}`
+                ? t('subscriptions.overdueDays', { count: Math.abs(daysLeft) })
+                : t('subscriptions.renewsIn', { count: daysLeft })
               }
             </span>
           )}

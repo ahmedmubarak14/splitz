@@ -199,9 +199,9 @@ export default function Subscriptions() {
               ) : (
                 <EmptyState
                   icon={CreditCard}
-                  title="No Active Subscriptions"
-                  description="Start tracking your subscriptions by adding your first one"
-                  actionLabel="Add Subscription"
+                  title={t('subscriptions.noActive')}
+                  description={t('subscriptions.startTracking')}
+                  actionLabel={t('subscriptions.addSubscription')}
                   onAction={() => setCreateDialogOpen(true)}
                 />
               )}
@@ -210,9 +210,9 @@ export default function Subscriptions() {
             {/* Shared with Me Section */}
             {sharedWithMe.length > 0 && (
               <div className="border-t pt-6">
-                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                <h2 className={`text-xl font-semibold mb-4 flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
                   <Users className="h-5 w-5 text-info" />
-                  Shared with Me
+                  {t('subscriptions.sharedWithMe')}
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {sharedWithMe.slice(0, 6).map((subscription) => (
@@ -247,38 +247,38 @@ export default function Subscriptions() {
           {/* All Tab with Filters */}
           <TabsContent value="all" className="space-y-4 mt-6">
             {/* Filters and Sorting */}
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className={`flex flex-col md:flex-row gap-4 ${rtlClass(isRTL, 'md:flex-row-reverse', 'md:flex-row')}`}>
               <div className="flex-1">
                 <Input
-                  placeholder="Search subscriptions..."
+                  placeholder={t('subscriptions.search')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <Select value={filterCategory} onValueChange={setFilterCategory}>
                 <SelectTrigger className="w-full md:w-[180px]">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue placeholder="Category" />
+                  <Filter className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                  <SelectValue placeholder={t('subscriptions.categoryFilter')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="streaming">Streaming</SelectItem>
-                  <SelectItem value="software">Software</SelectItem>
-                  <SelectItem value="gaming">Gaming</SelectItem>
-                  <SelectItem value="cloud">Cloud</SelectItem>
-                  <SelectItem value="fitness">Fitness</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="all">{t('subscriptions.allCategories')}</SelectItem>
+                  <SelectItem value="streaming">{t('subscriptions.streaming')}</SelectItem>
+                  <SelectItem value="software">{t('subscriptions.software')}</SelectItem>
+                  <SelectItem value="gaming">{t('subscriptions.gaming')}</SelectItem>
+                  <SelectItem value="cloud">{t('subscriptions.cloud')}</SelectItem>
+                  <SelectItem value="fitness">{t('subscriptions.fitness')}</SelectItem>
+                  <SelectItem value="other">{t('subscriptions.other')}</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-full md:w-[180px]">
-                  <ArrowUpDown className="w-4 h-4 mr-2" />
-                  <SelectValue placeholder="Sort by" />
+                  <ArrowUpDown className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                  <SelectValue placeholder={t('subscriptions.sortBy')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="renewal_date">Renewal Date</SelectItem>
-                  <SelectItem value="name">Name</SelectItem>
-                  <SelectItem value="amount">Amount</SelectItem>
+                  <SelectItem value="renewal_date">{t('subscriptions.nextRenewalDate')}</SelectItem>
+                  <SelectItem value="name">{t('subscriptions.name')}</SelectItem>
+                  <SelectItem value="amount">{t('subscriptions.amount')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -290,50 +290,50 @@ export default function Subscriptions() {
                   value="my-active"
                   className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
                     <div className="w-2 h-2 rounded-full bg-success" />
-                    <span className="hidden sm:inline font-medium">My Active</span>
-                    <Badge variant="secondary" className="ml-1">{myActiveSubscriptions.length}</Badge>
+                    <span className="hidden sm:inline font-medium">{t('subscriptions.myActive')}</span>
+                    <Badge variant="secondary" className={isRTL ? 'mr-1' : 'ml-1'}>{myActiveSubscriptions.length}</Badge>
                   </div>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="shared"
                   className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
                     <div className="w-2 h-2 rounded-full bg-info" />
-                    <span className="hidden sm:inline font-medium">Shared</span>
-                    <Badge variant="secondary" className="ml-1">{sharedWithMe.length}</Badge>
+                    <span className="hidden sm:inline font-medium">{t('subscriptions.sharedWithMe')}</span>
+                    <Badge variant="secondary" className={isRTL ? 'mr-1' : 'ml-1'}>{sharedWithMe.length}</Badge>
                   </div>
                 </TabsTrigger>
                  <TabsTrigger 
                    value="paused"
                    className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
                  >
-                   <div className="flex items-center gap-2">
+                   <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
                      <div className="w-2 h-2 rounded-full bg-warning" />
-                     <span className="hidden sm:inline font-medium">Paused</span>
-                     <Badge variant="secondary" className="ml-1">{pausedSubscriptions.length}</Badge>
+                     <span className="hidden sm:inline font-medium">{t('subscriptions.paused')}</span>
+                     <Badge variant="secondary" className={isRTL ? 'mr-1' : 'ml-1'}>{pausedSubscriptions.length}</Badge>
                    </div>
                  </TabsTrigger>
                  <TabsTrigger 
                    value="canceled"
                    className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
                  >
-                   <div className="flex items-center gap-2">
+                   <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
                      <div className="w-2 h-2 rounded-full bg-destructive" />
-                     <span className="hidden sm:inline font-medium">Canceled</span>
-                     <Badge variant="secondary" className="ml-1">{canceledSubscriptions.length}</Badge>
+                     <span className="hidden sm:inline font-medium">{t('subscriptions.canceled')}</span>
+                     <Badge variant="secondary" className={isRTL ? 'mr-1' : 'ml-1'}>{canceledSubscriptions.length}</Badge>
                    </div>
                  </TabsTrigger>
                  <TabsTrigger 
                    value="archived"
                    className="data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all duration-200"
                  >
-                   <div className="flex items-center gap-2">
+                   <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
                      <div className="w-2 h-2 rounded-full bg-muted-foreground" />
-                     <span className="hidden sm:inline font-medium">Archived</span>
-                     <Badge variant="secondary" className="ml-1">{archivedSubscriptions.length}</Badge>
+                     <span className="hidden sm:inline font-medium">{t('subscriptions.archived')}</span>
+                     <Badge variant="secondary" className={isRTL ? 'mr-1' : 'ml-1'}>{archivedSubscriptions.length}</Badge>
                    </div>
                  </TabsTrigger>
                </TabsList>
