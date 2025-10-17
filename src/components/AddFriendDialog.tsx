@@ -63,19 +63,27 @@ export function AddFriendDialog({ open, onOpenChange, onFriendAdded }: AddFriend
       if (!user) throw new Error("Not authenticated");
 
       // Check if friendship already exists
-      const { data: existing } = await supabase
+      const { data: existing, error: checkError } = await supabase
         .from("friendships")
-        .select("id, status")
+        .select("id, status, user_id, friend_id")
         .or(`and(user_id.eq.${user.id},friend_id.eq.${friendId}),and(user_id.eq.${friendId},friend_id.eq.${user.id})`)
-        .single();
+        .maybeSingle();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        throw checkError;
+      }
 
       if (existing) {
-        if (existing.status === "pending") {
-          toast.error("Friend request already sent");
-        } else if (existing.status === "accepted") {
+        if (existing.status === "accepted") {
           toast.error("Already friends");
+          return;
         }
-        return;
+        // Remove existing pending request (either direction) to allow resending
+        const { error: deleteError } = await supabase
+          .from("friendships")
+          .delete()
+          .eq("id", existing.id);
+        if (deleteError) throw deleteError;
       }
 
       const { error } = await supabase.from("friendships").insert({
