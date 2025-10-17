@@ -1294,9 +1294,16 @@ const resources = {
         failedToLoad: 'Failed to load friends',
       },
       projects: {
-        inbox: 'Inbox',
-        today: 'Today',
-      },
+      inbox: 'Inbox',
+      today: 'Today',
+    },
+    notificationList: {
+      loading: 'Loading...',
+      noNotifications: 'No notifications yet',
+      deleted: 'Notification deleted',
+      deleteFailed: 'Failed to delete notification',
+      about: 'about',
+    },
     },
   },
   ar: {
@@ -1991,9 +1998,16 @@ const resources = {
         failedToLoad: 'فشل تحميل الأصدقاء',
       },
       projects: {
-        inbox: 'صندوق الوارد',
-        today: 'اليوم',
-      },
+      inbox: 'صندوق الوارد',
+      today: 'اليوم',
+    },
+    notificationList: {
+      loading: 'جارٍ التحميل...',
+      noNotifications: 'لا توجد إشعارات بعد',
+      deleted: 'تم حذف الإشعار',
+      deleteFailed: 'فشل حذف الإشعار',
+      about: 'منذ حوالي',
+    },
       profile: {
         title: 'الملف الشخصي',
         subtitle: 'إدارة إعدادات حسابك',

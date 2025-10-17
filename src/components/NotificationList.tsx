@@ -6,6 +6,8 @@ import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useTranslation } from 'react-i18next';
+import { useIsRTL } from '@/lib/rtl-utils';
 
 interface Notification {
   id: string;
@@ -25,6 +27,8 @@ export function NotificationList({ onRead }: NotificationListProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const isRTL = useIsRTL();
 
   useEffect(() => {
     fetchNotifications();
@@ -80,10 +84,10 @@ export function NotificationList({ onRead }: NotificationListProps) {
 
       setNotifications(prev => prev.filter(n => n.id !== notificationId));
       onRead?.();
-      toast.success("Notification deleted");
+      toast.success(t('notificationList.deleted'));
     } catch (error) {
       console.error('Error deleting notification:', error);
-      toast.error("Failed to delete notification");
+      toast.error(t('notificationList.deleteFailed'));
     }
   };
 
@@ -115,20 +119,20 @@ export function NotificationList({ onRead }: NotificationListProps) {
   };
 
   if (loading) {
-    return <div className="p-4 text-center text-muted-foreground">Loading...</div>;
+    return <div className="p-4 text-center text-muted-foreground" dir={isRTL ? 'rtl' : 'ltr'}>{t('notificationList.loading')}</div>;
   }
 
   if (notifications.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
+      <div className="flex flex-col items-center justify-center py-12 text-center" dir={isRTL ? 'rtl' : 'ltr'}>
         <Bell className="h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">No notifications yet</p>
+        <p className="text-muted-foreground">{t('notificationList.noNotifications')}</p>
       </div>
     );
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] mt-4">
+    <ScrollArea className="h-[calc(100vh-8rem)] mt-4" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="space-y-2">
         {notifications.map((notification) => (
           <div
