@@ -73,50 +73,50 @@ export const CreateTripDialog = ({ open, onOpenChange }: CreateTripDialogProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Plan a Trip</DialogTitle>
+          <DialogTitle>{t('trips.title')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Trip Name</Label>
+            <Label htmlFor="name">{t('trips.tripName')}</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="Dubai Weekend, Road Trip..."
+              placeholder={t('trips.tripNamePlaceholder')}
               required
             />
           </div>
 
           <div>
-            <Label htmlFor="destination">Destination</Label>
+            <Label htmlFor="destination">{t('trips.destination')}</Label>
             <Input
               id="destination"
               value={formData.destination}
               onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-              placeholder="Dubai, UAE"
+              placeholder={t('trips.destinationPlaceholder')}
             />
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('trips.description')}</Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Trip details..."
+              placeholder={t('trips.descriptionPlaceholder')}
               rows={3}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Start Date</Label>
+              <Label>{t('trips.startDate')}</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start">
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(formData.start_date, "PP")}
+                    <CalendarIcon className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                    {formatDate(formData.start_date, i18n.language)}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -130,12 +130,12 @@ export const CreateTripDialog = ({ open, onOpenChange }: CreateTripDialogProps) 
             </div>
 
             <div>
-              <Label>End Date</Label>
+              <Label>{t('trips.endDate')}</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className="w-full justify-start">
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {format(formData.end_date, "PP")}
+                    <CalendarIcon className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                    {formatDate(formData.end_date, i18n.language)}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -151,9 +151,9 @@ export const CreateTripDialog = ({ open, onOpenChange }: CreateTripDialogProps) 
 
           <div className="flex gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
-              Cancel
+              {t('common.cancel')}
             </Button>
-            <Button type="submit" className="flex-1">Create Trip</Button>
+            <Button type="submit" className="flex-1">{t('trips.create')}</Button>
           </div>
         </form>
       </DialogContent>

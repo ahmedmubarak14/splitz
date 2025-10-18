@@ -522,9 +522,9 @@ const Habits = () => {
             ) : !sharedHabits || sharedHabits.length === 0 ? (
               <EmptyState
                 icon={Users}
-                title="No Shared Habits Yet"
-                description="Create or join shared habits with friends to track progress together"
-                actionLabel="Create Shared Habit"
+                title={t('sharedHabits.noSharedHabits')}
+                description={t('sharedHabits.noSharedHabitsDesc')}
+                actionLabel={t('sharedHabits.createSharedHabit')}
                 onAction={() => setCreateSharedDialogOpen(true)}
               />
             ) : (
@@ -546,7 +546,7 @@ const Habits = () => {
                             <CardTitle className={`${responsiveText.cardTitle} font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{habit.name}</CardTitle>
                             <p className={`${responsiveText.caption} text-muted-foreground mt-1 flex items-center gap-2 ${isRTL ? 'text-right flex-row-reverse' : 'text-left'}`}>
                               <Users className="w-3 h-3" />
-                              <span>Shared Habit</span>
+                              <span>{t('sharedHabits.sharedLabel')}</span>
                             </p>
                           </div>
                         </div>
@@ -554,12 +554,12 @@ const Habits = () => {
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className={`flex items-center justify-between p-3 bg-accent rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}>
-                        <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>Current Streak</span>
-                        <span className="font-semibold">{habit.current_streak ?? 0} days</span>
+                        <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>{t('habits.currentStreak')}</span>
+                        <span className="font-semibold">{habit.current_streak ?? 0} {t('habits.days')}</span>
                       </div>
                       <div className={`flex items-center justify-between p-3 bg-accent rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}>
-                        <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>Best Streak</span>
-                        <span className="font-semibold">{habit.best_streak ?? 0} days</span>
+                        <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>{t('habits.bestStreak')}</span>
+                        <span className="font-semibold">{habit.best_streak ?? 0} {t('habits.days')}</span>
                       </div>
                     </CardContent>
                   </Card>

@@ -71,7 +71,7 @@ export const SubscriptionTemplateSelector = ({
             {Object.entries(categoryGroups).map(([category, categoryTemplates]) => (
               <div key={category} className="space-y-2">
                 <h3 className="text-sm font-semibold text-muted-foreground capitalize">
-                  {category}
+                  {t(`subscriptionCategories.${category}`) || category}
                 </h3>
                 <div className="grid grid-cols-2 gap-2">
                   {categoryTemplates.map((template) => (
