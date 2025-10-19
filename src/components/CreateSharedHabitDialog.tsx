@@ -24,6 +24,7 @@ import { FriendSelector } from "./FriendSelector";
 import { UserSearchSelector } from "./UserSearchSelector";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface CreateSharedHabitDialogProps {
   open: boolean;
@@ -31,27 +32,12 @@ interface CreateSharedHabitDialogProps {
   onCreated: () => void;
 }
 
-const CATEGORIES = [
-  { value: "health", label: "Health & Fitness" },
-  { value: "productivity", label: "Productivity" },
-  { value: "mindfulness", label: "Mindfulness" },
-  { value: "learning", label: "Learning" },
-  { value: "social", label: "Social" },
-  { value: "other", label: "Other" },
-];
-
-const TARGET_DAYS_PRESETS = [
-  { value: "30", label: "30 days" },
-  { value: "60", label: "60 days" },
-  { value: "90", label: "90 days" },
-  { value: "custom", label: "Custom" },
-];
-
 export function CreateSharedHabitDialog({
   open,
   onOpenChange,
   onCreated,
 }: CreateSharedHabitDialogProps) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [icon, setIcon] = useState("⭐");
@@ -65,14 +51,14 @@ export function CreateSharedHabitDialog({
 
   const handleCreate = async () => {
     if (!name.trim()) {
-      toast.error("Please enter a habit name");
+      toast.error(t('sharedHabits.enterHabitName'));
       return;
     }
 
     const finalTargetDays = targetDays === "custom" ? parseInt(customDays) : parseInt(targetDays);
     
     if (!finalTargetDays || finalTargetDays < 1 || finalTargetDays > 365) {
-      toast.error("Please enter a valid number of days (1-365)");
+      toast.error(t('sharedHabits.enterValidDays'));
       return;
     }
 
@@ -130,21 +116,21 @@ export function CreateSharedHabitDialog({
         for (const friendId of selectedFriends) {
           await supabase.rpc('create_notification', {
             p_user_id: friendId,
-            p_title: 'New Habit Invitation',
-            p_message: `${profile?.full_name || 'Someone'} invited you to join "${habit.name}"`,
+            p_title: t('sharedHabits.inviteNotification'),
+            p_message: t('sharedHabits.inviteMessage', { inviter: profile?.full_name || 'Someone', habit: habit.name }),
             p_type: 'habit',
             p_resource_id: habit.id,
           });
         }
       }
 
-      toast.success("Shared habit created!");
+      toast.success(t('sharedHabits.habitCreated'));
       resetForm();
       onCreated();
       onOpenChange(false);
     } catch (error) {
       console.error("Error creating habit:", error);
-      toast.error("Failed to create habit");
+      toast.error(t('sharedHabits.createFailed'));
     } finally {
       setCreating(false);
     }
@@ -171,22 +157,22 @@ export function CreateSharedHabitDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create Shared Habit</DialogTitle>
+          <DialogTitle>{t('sharedHabits.createDialogTitle')}</DialogTitle>
           <DialogDescription>
-            Start a new habit and invite friends to join you
+            {t('sharedHabits.createDialogDesc')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Emoji Selection */}
           <div>
-            <Label>Choose Icon</Label>
+            <Label>{t('sharedHabits.chooseIcon')}</Label>
             <div className="flex items-center gap-4 mt-2">
               <div className="text-6xl">{icon}</div>
               <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" size="sm">
-                    Change Icon
+                    {t('sharedHabits.changeIcon')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0 border-none shadow-lg">
@@ -198,10 +184,10 @@ export function CreateSharedHabitDialog({
 
           {/* Habit Name */}
           <div>
-            <Label htmlFor="habit-name">Habit Name *</Label>
+            <Label htmlFor="habit-name">{t('sharedHabits.habitName')} *</Label>
             <Input
               id="habit-name"
-              placeholder="e.g., Morning Meditation"
+              placeholder={t('sharedHabits.habitNamePlaceholder')}
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={50}
@@ -211,10 +197,10 @@ export function CreateSharedHabitDialog({
 
           {/* Description */}
           <div>
-            <Label htmlFor="description">Description (optional)</Label>
+            <Label htmlFor="description">{t('sharedHabits.descriptionOptional')}</Label>
             <Textarea
               id="description"
-              placeholder="What does this habit involve?"
+              placeholder={t('sharedHabits.descriptionPlaceholder')}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -225,17 +211,16 @@ export function CreateSharedHabitDialog({
 
           {/* Target Days */}
           <div>
-            <Label htmlFor="target-days">Target Days</Label>
+            <Label htmlFor="target-days">{t('sharedHabits.targetDays')}</Label>
             <Select value={targetDays} onValueChange={setTargetDays}>
               <SelectTrigger id="target-days" className="mt-2">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {TARGET_DAYS_PRESETS.map((preset) => (
-                  <SelectItem key={preset.value} value={preset.value}>
-                    {preset.label}
-                  </SelectItem>
-                ))}
+                <SelectItem value="30">{t('sharedHabits.targetDaysPresets.thirtyDays')}</SelectItem>
+                <SelectItem value="60">{t('sharedHabits.targetDaysPresets.sixtyDays')}</SelectItem>
+                <SelectItem value="90">{t('sharedHabits.targetDaysPresets.ninetyDays')}</SelectItem>
+                <SelectItem value="custom">{t('sharedHabits.targetDaysPresets.custom')}</SelectItem>
               </SelectContent>
             </Select>
             {targetDays === "custom" && (
@@ -243,7 +228,7 @@ export function CreateSharedHabitDialog({
                 type="number"
                 min="1"
                 max="365"
-                placeholder="Enter number of days"
+                placeholder={t('sharedHabits.enterDaysPlaceholder')}
                 value={customDays}
                 onChange={(e) => setCustomDays(e.target.value)}
                 className="mt-2"
@@ -253,48 +238,49 @@ export function CreateSharedHabitDialog({
 
           {/* Category */}
           <div>
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category">{t('sharedHabits.category')}</Label>
             <Select value={category} onValueChange={setCategory}>
               <SelectTrigger id="category" className="mt-2">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {CATEGORIES.map((cat) => (
-                  <SelectItem key={cat.value} value={cat.value}>
-                    {cat.label}
-                  </SelectItem>
-                ))}
+                <SelectItem value="health">{t('sharedHabits.categories.health')}</SelectItem>
+                <SelectItem value="productivity">{t('sharedHabits.categories.productivity')}</SelectItem>
+                <SelectItem value="mindfulness">{t('sharedHabits.categories.mindfulness')}</SelectItem>
+                <SelectItem value="learning">{t('sharedHabits.categories.learning')}</SelectItem>
+                <SelectItem value="social">{t('sharedHabits.categories.social')}</SelectItem>
+                <SelectItem value="other">{t('sharedHabits.categories.other')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Visibility */}
           <div>
-            <Label htmlFor="visibility">Visibility</Label>
+            <Label htmlFor="visibility">{t('sharedHabits.visibility')}</Label>
             <Select value={visibility} onValueChange={setVisibility}>
               <SelectTrigger id="visibility" className="mt-2">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="private">Private (invite only)</SelectItem>
-                <SelectItem value="friends_only">Friends Only</SelectItem>
-                <SelectItem value="public">Public (anyone can join)</SelectItem>
+                <SelectItem value="private">{t('sharedHabits.visibilityOptions.private')}</SelectItem>
+                <SelectItem value="friends_only">{t('sharedHabits.visibilityOptions.friends_only')}</SelectItem>
+                <SelectItem value="public">{t('sharedHabits.visibilityOptions.public')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Invite Participants */}
           <div>
-            <Label>Invite Participants (optional)</Label>
+            <Label>{t('sharedHabits.inviteParticipants')}</Label>
             <p className="text-sm text-muted-foreground mt-1 mb-3">
-              Search for users by @username or invite friends
+              {t('sharedHabits.inviteDesc')}
             </p>
             <UserSearchSelector
               selectedUsers={selectedFriends}
               onSelectionChange={setSelectedFriends}
               multiSelect={true}
               showFriendsTab={true}
-              placeholder="Search by @username"
+              placeholder={t('sharedHabits.searchByUsername')}
             />
           </div>
 
@@ -305,14 +291,14 @@ export function CreateSharedHabitDialog({
               onClick={() => onOpenChange(false)}
               className="flex-1"
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               onClick={handleCreate}
               disabled={creating || !name.trim()}
               className="flex-1"
             >
-              {creating ? "Creating..." : selectedFriends.length > 0 ? "Create & Invite" : "Create Habit"}
+              {creating ? t('sharedHabits.creating') : selectedFriends.length > 0 ? t('sharedHabits.createAndInvite') : t('sharedHabits.createHabit')}
             </Button>
           </div>
         </div>
