@@ -65,6 +65,23 @@ const Privacy = () => {
                 <li><strong>Other User Content:</strong> Comments, notes, and any other content you create in the app</li>
               </ul>
 
+              {/* Camera Access */}
+              <h3 className="text-lg font-medium mb-2 mt-4">Camera Access</h3>
+              <p className="text-muted-foreground mb-2">
+                When you use the receipt scanning feature:
+              </p>
+              <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+                <li><strong>Purpose:</strong> Splitz needs access to your camera to scan bills and receipts so they can be uploaded and attached to your expenses automatically</li>
+                <li><strong>When Access is Requested:</strong> Camera permission is only requested when you tap "Take Photo" in the expense creation screen</li>
+                <li><strong>What We Collect:</strong> Only the photos you explicitly choose to capture and attach to your expenses</li>
+                <li><strong>Storage:</strong> Receipt images are securely stored in our cloud infrastructure and linked to your expense records</li>
+                <li><strong>Control:</strong> You can deny camera access and still use all other features. You may also upload receipts from your photo library</li>
+                <li><strong>Deletion:</strong> Receipt images are permanently deleted when you delete the associated expense or your account</li>
+              </ul>
+              <p className="text-muted-foreground mt-2">
+                <strong>Important:</strong> We never access your camera in the background. Camera access is only used when you actively choose to capture a receipt photo.
+              </p>
+
               {/* Identifiers */}
               <h3 className="text-lg font-medium mb-2 mt-4">Identifiers</h3>
               <p className="text-muted-foreground mb-2">
@@ -109,6 +126,7 @@ const Privacy = () => {
               <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
                 <li>Create and maintain your account</li>
                 <li>Enable habit tracking, challenges, expense splitting, and focus sessions</li>
+                <li>Process and store receipt photos you capture for expense tracking</li>
                 <li>Sync your data across devices</li>
                 <li>Facilitate collaboration with friends and groups</li>
               </ul>
