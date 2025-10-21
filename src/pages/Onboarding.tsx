@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle2, Target, Trophy, DollarSign, Brain, ArrowRight, Sparkles } from 'lucide-react';
@@ -7,52 +8,53 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import splitzLogo from '@/assets/splitz-logo.png';
 
-const features = [
-  {
-    icon: Target,
-    title: 'Track Habits',
-    description: 'Build lasting habits with daily check-ins and streak tracking',
-    color: 'text-blue-500',
-  },
-  {
-    icon: Trophy,
-    title: 'Join Challenges',
-    description: 'Compete with friends and achieve your goals together',
-    color: 'text-yellow-500',
-  },
-  {
-    icon: DollarSign,
-    title: 'Split Expenses',
-    description: 'Easily split bills and track who owes what',
-    color: 'text-green-500',
-  },
-  {
-    icon: Brain,
-    title: 'Focus Sessions',
-    description: 'Stay productive with Pomodoro timer and task tracking',
-    color: 'text-purple-500',
-  },
-];
-
-const steps = [
-  {
-    title: 'Welcome to Splitz!',
-    description: 'Your all-in-one platform for habits, challenges, expenses, and productivity',
-  },
-  {
-    title: 'Explore Features',
-    description: 'Discover what makes Splitz powerful',
-  },
-  {
-    title: 'Get Started',
-    description: 'Ready to begin your journey?',
-  },
-];
-
 export default function Onboarding() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  const features = [
+    {
+      icon: Target,
+      title: t('onboarding.features.trackHabits.title'),
+      description: t('onboarding.features.trackHabits.description'),
+      color: 'text-blue-500',
+    },
+    {
+      icon: Trophy,
+      title: t('onboarding.features.joinChallenges.title'),
+      description: t('onboarding.features.joinChallenges.description'),
+      color: 'text-yellow-500',
+    },
+    {
+      icon: DollarSign,
+      title: t('onboarding.features.splitExpenses.title'),
+      description: t('onboarding.features.splitExpenses.description'),
+      color: 'text-green-500',
+    },
+    {
+      icon: Brain,
+      title: t('onboarding.features.focusSessions.title'),
+      description: t('onboarding.features.focusSessions.description'),
+      color: 'text-purple-500',
+    },
+  ];
+
+  const steps = [
+    {
+      title: t('onboarding.step1Title'),
+      description: t('onboarding.step1Description'),
+    },
+    {
+      title: t('onboarding.step2Title'),
+      description: t('onboarding.step2Description'),
+    },
+    {
+      title: t('onboarding.step3Title'),
+      description: t('onboarding.step3Description'),
+    },
+  ];
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -91,7 +93,7 @@ export default function Onboarding() {
           .update({ onboarding_completed: true })
           .eq('id', user.id);
         
-        toast.success('Welcome to Splitz! 🎉');
+        toast.success(t('onboarding.welcomeToast'));
       }
       navigate('/dashboard');
     } catch (error) {
@@ -147,7 +149,7 @@ export default function Onboarding() {
             {currentStep === 0 && (
               <div className="space-y-6 py-4">
                 <p className="text-center text-muted-foreground">
-                  Splitz helps you build better habits, achieve goals with friends, manage shared expenses, and stay focused on what matters.
+                  {t('onboarding.introText')}
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {features.slice(0, 2).map((feature, index) => (
@@ -189,9 +191,9 @@ export default function Onboarding() {
                     <Sparkles className="w-10 h-10 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold mb-2">You're all set!</h3>
+                    <h3 className="text-xl font-semibold mb-2">{t('onboarding.allSet')}</h3>
                     <p className="text-muted-foreground">
-                      Start by creating your first habit, joining a challenge, or splitting an expense with friends.
+                      {t('onboarding.allSetDescription')}
                     </p>
                   </div>
                 </div>
@@ -203,7 +205,7 @@ export default function Onboarding() {
                     onClick={() => navigate('/habits')}
                   >
                     <Target className="w-6 h-6 text-blue-500" />
-                    <span className="font-semibold">Start a Habit</span>
+                    <span className="font-semibold">{t('onboarding.quickActions.startHabit')}</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -211,7 +213,7 @@ export default function Onboarding() {
                     onClick={() => navigate('/challenges')}
                   >
                     <Trophy className="w-6 h-6 text-yellow-500" />
-                    <span className="font-semibold">Join Challenge</span>
+                    <span className="font-semibold">{t('onboarding.quickActions.joinChallenge')}</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -219,7 +221,7 @@ export default function Onboarding() {
                     onClick={() => navigate('/expenses')}
                   >
                     <DollarSign className="w-6 h-6 text-green-500" />
-                    <span className="font-semibold">Split Expense</span>
+                    <span className="font-semibold">{t('onboarding.quickActions.splitExpense')}</span>
                   </Button>
                 </div>
               </div>
@@ -232,17 +234,17 @@ export default function Onboarding() {
                 onClick={handleSkip}
                 disabled={loading}
               >
-                Skip Tour
+                {t('onboarding.skipTour')}
               </Button>
 
               {currentStep < steps.length - 1 ? (
                 <Button onClick={handleNext} className="gap-2">
-                  Next
+                  {t('onboarding.next')}
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               ) : (
                 <Button onClick={handleComplete} disabled={loading} className="gap-2">
-                  {loading ? 'Loading...' : 'Go to Dashboard'}
+                  {loading ? t('onboarding.loading') : t('onboarding.goToDashboard')}
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               )}

@@ -137,6 +137,45 @@ const resources = {
         noExpenses: 'All settled up! 💰',
         viewExpenses: 'View Expenses',
       },
+      onboarding: {
+        step1Title: 'Welcome to Splitz!',
+        step1Description: 'Your all-in-one platform for habits, challenges, expenses, and productivity',
+        step2Title: 'Explore Features',
+        step2Description: 'Discover what makes Splitz powerful',
+        step3Title: 'Get Started',
+        step3Description: 'Ready to begin your journey?',
+        introText: 'Splitz helps you build better habits, achieve goals with friends, manage shared expenses, and stay focused on what matters.',
+        allSet: "You're all set!",
+        allSetDescription: 'Start by creating your first habit, joining a challenge, or splitting an expense with friends.',
+        skipTour: 'Skip Tour',
+        next: 'Next',
+        loading: 'Loading...',
+        goToDashboard: 'Go to Dashboard',
+        welcomeToast: 'Welcome to Splitz! 🎉',
+        features: {
+          trackHabits: {
+            title: 'Track Habits',
+            description: 'Build lasting habits with daily check-ins and streak tracking',
+          },
+          joinChallenges: {
+            title: 'Join Challenges',
+            description: 'Compete with friends and achieve your goals together',
+          },
+          splitExpenses: {
+            title: 'Split Expenses',
+            description: 'Easily split bills and track who owes what',
+          },
+          focusSessions: {
+            title: 'Focus Sessions',
+            description: 'Stay productive with Pomodoro timer and task tracking',
+          },
+        },
+        quickActions: {
+          startHabit: 'Start a Habit',
+          joinChallenge: 'Join Challenge',
+          splitExpense: 'Split Expense',
+        },
+      },
       matrix: {
         title: 'Eisenhower Matrix',
         subtitle: 'Prioritize your tasks using the Eisenhower Matrix',
@@ -1982,6 +2021,45 @@ const resources = {
       footer: {
         tagline: 'حياتك منظمة. المهام، العادات، النفقات—كل شيء في مكان واحد.',
         rights: 'جميع الحقوق محفوظة.',
+      },
+      onboarding: {
+        step1Title: 'مرحبًا بك في سبليتز!',
+        step1Description: 'منصتك الشاملة للعادات والتحديات والمصاريف والإنتاجية',
+        step2Title: 'استكشف المميزات',
+        step2Description: 'اكتشف ما يجعل سبليتز قوياً',
+        step3Title: 'ابدأ الآن',
+        step3Description: 'هل أنت مستعد لبدء رحلتك؟',
+        introText: 'سبليتز يساعدك على بناء عادات أفضل، وتحقيق الأهداف مع الأصدقاء، وإدارة المصاريف المشتركة، والبقاء مركزاً على ما يهم.',
+        allSet: 'كل شيء جاهز!',
+        allSetDescription: 'ابدأ بإنشاء عادتك الأولى، أو الانضمام إلى تحدٍ، أو تقسيم مصروف مع الأصدقاء.',
+        skipTour: 'تخطي الجولة',
+        next: 'التالي',
+        loading: 'جاري التحميل...',
+        goToDashboard: 'الذهاب إلى لوحة التحكم',
+        welcomeToast: 'مرحباً بك في سبليتز! 🎉',
+        features: {
+          trackHabits: {
+            title: 'تتبع العادات',
+            description: 'بناء عادات دائمة مع تسجيل الحضور اليومي وتتبع السلاسل',
+          },
+          joinChallenges: {
+            title: 'انضم للتحديات',
+            description: 'تنافس مع الأصدقاء وحقق أهدافك معاً',
+          },
+          splitExpenses: {
+            title: 'قسّم المصاريف',
+            description: 'قسّم الفواتير بسهولة وتتبع من يدين بماذا',
+          },
+          focusSessions: {
+            title: 'جلسات التركيز',
+            description: 'ابقَ منتجاً مع مؤقت بومودورو وتتبع المهام',
+          },
+        },
+        quickActions: {
+          startHabit: 'ابدأ عادة',
+          joinChallenge: 'انضم لتحدٍ',
+          splitExpense: 'قسّم مصروف',
+        },
       },
       habits: {
         title: 'سلاسل العادات',
