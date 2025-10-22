@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Upload, X, Image as ImageIcon, Camera } from 'lucide-react';
 import { Camera as CapacitorCamera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
+import { useTranslation } from 'react-i18next';
 
 interface ReceiptUploadProps {
   expenseId?: string;
@@ -14,6 +15,7 @@ interface ReceiptUploadProps {
 }
 
 export const ReceiptUpload = ({ expenseId, existingReceiptUrl, onUploadComplete, onDelete }: ReceiptUploadProps) => {
+  const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(existingReceiptUrl || null);
 
@@ -39,10 +41,10 @@ export const ReceiptUpload = ({ expenseId, existingReceiptUrl, onUploadComplete,
 
       setPreviewUrl(publicUrl);
       onUploadComplete(filePath);
-      toast.success('Receipt uploaded successfully!');
+      toast.success(t('camera.receiptDeleted'));
     } catch (error: any) {
       console.error('Receipt upload error:', error);
-      toast.error(error.message || 'Failed to upload receipt');
+      toast.error(error.message || t('camera.uploadFailed'));
     } finally {
       setUploading(false);
     }
@@ -50,7 +52,7 @@ export const ReceiptUpload = ({ expenseId, existingReceiptUrl, onUploadComplete,
 
   const handleCamera = async () => {
     if (!Capacitor.isNativePlatform()) {
-      toast.error('Camera is only available on mobile devices');
+      toast.error(t('camera.cameraNotAvailable'));
       return;
     }
 
@@ -70,7 +72,7 @@ export const ReceiptUpload = ({ expenseId, existingReceiptUrl, onUploadComplete,
     } catch (error: any) {
       if (error.message !== 'User cancelled photos app') {
         console.error('Camera error:', error);
-        toast.error('Failed to capture photo');
+        toast.error(t('camera.captureFailed'));
       }
     }
   };
@@ -81,13 +83,13 @@ export const ReceiptUpload = ({ expenseId, existingReceiptUrl, onUploadComplete,
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file');
+      toast.error(t('camera.uploadFailed'));
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('File size must be less than 5MB');
+      toast.error(t('camera.uploadFailed'));
       return;
     }
 
@@ -106,16 +108,16 @@ export const ReceiptUpload = ({ expenseId, existingReceiptUrl, onUploadComplete,
 
       setPreviewUrl(null);
       onDelete?.();
-      toast.success('Receipt deleted');
+      toast.success(t('camera.receiptDeleted'));
     } catch (error: any) {
       console.error('Receipt delete error:', error);
-      toast.error(error.message || 'Failed to delete receipt');
+      toast.error(error.message || t('camera.deleteFailed'));
     }
   };
 
   return (
     <div className="space-y-3">
-      <label className="text-sm font-medium">Receipt (Optional)</label>
+      <label className="text-sm font-medium">{t('camera.receiptOptional')}</label>
       
       {previewUrl ? (
         <div className="relative">
@@ -145,7 +147,7 @@ export const ReceiptUpload = ({ expenseId, existingReceiptUrl, onUploadComplete,
               disabled={uploading}
             >
               <Camera className="mr-2 h-4 w-4" />
-              Take Photo
+              {t('camera.takePhoto')}
             </Button>
           )}
           
@@ -165,14 +167,14 @@ export const ReceiptUpload = ({ expenseId, existingReceiptUrl, onUploadComplete,
               {uploading ? (
                 <>
                   <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent" />
-                  <p className="text-sm text-muted-foreground">Uploading...</p>
+                  <p className="text-sm text-muted-foreground">{t('camera.uploading')}</p>
                 </>
               ) : (
                 <>
                   <ImageIcon className="h-8 w-8 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium">Click to upload receipt</p>
-                    <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
+                    <p className="text-sm font-medium">{t('camera.clickToUpload')}</p>
+                    <p className="text-xs text-muted-foreground">{t('camera.fileTypeHint')}</p>
                   </div>
                 </>
               )}

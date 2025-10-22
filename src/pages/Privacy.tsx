@@ -2,9 +2,11 @@ import { useIsRTL } from '@/lib/rtl-utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { responsiveText, responsiveSpacing } from '@/lib/responsive-utils';
 import { Shield, Lock, Eye, Users, Bell, Trash2, Download, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Privacy = () => {
   const isRTL = useIsRTL();
+  const { t } = useTranslation();
 
   return (
     <div className={`min-h-screen bg-background ${responsiveSpacing.pageContainer} ${responsiveSpacing.mobileNavPadding}`} dir={isRTL ? 'rtl' : 'ltr'}>
@@ -66,20 +68,19 @@ const Privacy = () => {
               </ul>
 
               {/* Camera Access */}
-              <h3 className="text-lg font-medium mb-2 mt-4">Camera Access</h3>
+              <h3 className="text-lg font-medium mb-2 mt-4">{t('camera.purpose.title')}</h3>
               <p className="text-muted-foreground mb-2">
-                When you use the receipt scanning feature:
+                {t('camera.purpose.description')}
               </p>
               <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
-                <li><strong>Purpose:</strong> Splitz needs access to your camera to scan bills and receipts so they can be uploaded and attached to your expenses automatically</li>
-                <li><strong>When Access is Requested:</strong> Camera permission is only requested when you tap "Take Photo" in the expense creation screen</li>
-                <li><strong>What We Collect:</strong> Only the photos you explicitly choose to capture and attach to your expenses</li>
-                <li><strong>Storage:</strong> Receipt images are securely stored in our cloud infrastructure and linked to your expense records</li>
-                <li><strong>Control:</strong> You can deny camera access and still use all other features. You may also upload receipts from your photo library</li>
-                <li><strong>Deletion:</strong> Receipt images are permanently deleted when you delete the associated expense or your account</li>
+                <li><strong>{t('privacy.whenRequested')}:</strong> {t('camera.purpose.whenRequested')}</li>
+                <li><strong>{t('privacy.whatWeCollect')}:</strong> {t('camera.purpose.whatWeCollect')}</li>
+                <li><strong>{t('privacy.storage')}:</strong> {t('camera.purpose.storage')}</li>
+                <li><strong>{t('privacy.control')}:</strong> {t('camera.purpose.control')}</li>
+                <li><strong>{t('privacy.deletion')}:</strong> {t('camera.purpose.deletion')}</li>
               </ul>
               <p className="text-muted-foreground mt-2">
-                <strong>Important:</strong> We never access your camera in the background. Camera access is only used when you actively choose to capture a receipt photo.
+                <strong>{t('privacy.important')}:</strong> {t('camera.purpose.important')}
               </p>
 
               {/* Identifiers */}
