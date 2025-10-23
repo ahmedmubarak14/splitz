@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { MobileQuickActionsFAB } from "@/components/MobileQuickActionsFAB";
 import { TripTaskList } from "@/components/TripTaskList";
 import { TripMembersList } from "@/components/TripMembersList";
 import { CreateTripTaskDialog } from "@/components/CreateTripTaskDialog";
@@ -26,6 +27,7 @@ export default function TripDetails() {
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const [inviteMemberOpen, setInviteMemberOpen] = useState(false);
   const [editTripOpen, setEditTripOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('tasks');
 
   const { data: trip, isLoading } = useQuery({
     queryKey: ["trip", id],
@@ -123,7 +125,7 @@ export default function TripDetails() {
         </div>
 
         {/* Content Tabs */}
-        <Tabs defaultValue="tasks" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="tasks" className="w-full">
           <TabsList className="w-full justify-start">
             <TabsTrigger value="tasks">{t('trips.tasks')}</TabsTrigger>
             <TabsTrigger value="members">{t('trips.members')}</TabsTrigger>
@@ -153,15 +155,10 @@ export default function TripDetails() {
         </Tabs>
 
         {/* Mobile FAB */}
-        {isMobile && (
-          <Button
-            className="fixed right-6 h-14 w-14 rounded-full shadow-lg z-50"
-            style={{ bottom: 'calc(84px + env(safe-area-inset-bottom, 0px))' }}
-            size="icon"
-            onClick={() => setCreateTaskOpen(true)}
-          >
-            <Plus className="h-6 w-6" />
-          </Button>
+        {isMobile && activeTab === 'tasks' && (
+          <MobileQuickActionsFAB 
+            onAddTask={() => setCreateTaskOpen(true)}
+          />
         )}
 
         <CreateTripTaskDialog

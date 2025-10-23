@@ -26,6 +26,8 @@ import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing, responsiveGrid } from '@/lib/responsive-utils';
 import * as Sentry from "@sentry/react";
 import { z } from 'zod';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
 type Challenge = Tables<'challenges'> & {
   participant_count?: number;
   user_progress?: number;
@@ -66,6 +68,7 @@ const Challenges = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isRTL = useIsRTL();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     checkAuth();
@@ -560,6 +563,11 @@ const Challenges = () => {
           challengeName={milestoneChallengeName}
         />
       )}
+
+      {/* Mobile FAB */}
+      <MobileQuickActionsFAB 
+        onAddChallenge={() => setDialogOpen(true)}
+      />
 
       <Navigation />
     </div>

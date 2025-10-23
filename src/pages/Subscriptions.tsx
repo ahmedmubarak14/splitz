@@ -23,10 +23,13 @@ import { EmptyState } from "@/components/EmptyState";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 import { formatCurrency } from "@/lib/formatters";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { MobileQuickActionsFAB } from "@/components/MobileQuickActionsFAB";
 
 export default function Subscriptions() {
   const { t, i18n } = useTranslation();
   const isRTL = useIsRTL();
+  const isMobile = useIsMobile();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [contributorsDialogOpen, setContributorsDialogOpen] = useState(false);
@@ -521,6 +524,11 @@ export default function Subscriptions() {
             />
           </>
         )}
+
+        {/* Mobile FAB */}
+        <MobileQuickActionsFAB 
+          onAddSubscription={() => setCreateDialogOpen(true)}
+        />
       </div>
     </>
   );

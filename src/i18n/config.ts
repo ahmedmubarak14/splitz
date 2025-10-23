@@ -704,6 +704,8 @@ const resources = {
         createGroup: 'Create Group',
         newChallenge: 'New Challenge',
         startFocus: 'Start Focus',
+        trackSubscription: 'Track Subscription',
+        planTrip: 'Plan Trip',
       },
       search: {
         all: 'All',
@@ -1927,6 +1929,8 @@ const resources = {
         createGroup: 'إنشاء مجموعة',
         newChallenge: 'تحدٍ جديد',
         startFocus: 'بدء التركيز',
+        trackSubscription: 'تتبع اشتراك',
+        planTrip: 'تخطيط رحلة',
       },
       search: {
         all: 'الكل',

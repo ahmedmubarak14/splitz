@@ -10,10 +10,13 @@ import { CreateTripDialog } from "@/components/CreateTripDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { MobileQuickActionsFAB } from "@/components/MobileQuickActionsFAB";
 
 export default function Trips() {
   const { t } = useTranslation();
   const isRTL = useIsRTL();
+  const isMobile = useIsMobile();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const { data: trips, isLoading } = useQuery({
@@ -87,6 +90,11 @@ export default function Trips() {
         <CreateTripDialog
           open={createDialogOpen}
           onOpenChange={setCreateDialogOpen}
+        />
+
+        {/* Mobile FAB */}
+        <MobileQuickActionsFAB 
+          onAddTrip={() => setCreateDialogOpen(true)}
         />
       </div>
     </>

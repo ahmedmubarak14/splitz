@@ -19,6 +19,8 @@ interface MobileQuickActionsFABProps {
   onAddHabit?: () => void;
   onAddChallenge?: () => void;
   onStartFocus?: () => void;
+  onAddTrip?: () => void;
+  onAddSubscription?: () => void;
 }
 
 export function MobileQuickActionsFAB({
@@ -27,6 +29,8 @@ export function MobileQuickActionsFAB({
   onAddHabit,
   onAddChallenge,
   onStartFocus,
+  onAddTrip,
+  onAddSubscription,
 }: MobileQuickActionsFABProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const location = useLocation();
@@ -115,6 +119,32 @@ export function MobileQuickActionsFAB({
       ];
     }
 
+    if (path === '/trips') {
+      return [
+        {
+          icon: Plane,
+          label: t('quickActions.planTrip'),
+          onClick: () => {
+            onAddTrip?.();
+            setIsExpanded(false);
+          },
+        },
+      ];
+    }
+
+    if (path === '/subscriptions') {
+      return [
+        {
+          icon: DollarSign,
+          label: t('quickActions.trackSubscription'),
+          onClick: () => {
+            onAddSubscription?.();
+            setIsExpanded(false);
+          },
+        },
+      ];
+    }
+
     // Default actions for other pages
     return [
       {
@@ -138,26 +168,12 @@ export function MobileQuickActionsFAB({
 
   const actions = getContextualActions();
 
-  // Get contextual icon based on current page
-  const getFABIcon = () => {
-    const path = location.pathname;
-    if (path === '/habits') return CheckCircle;
-    if (path === '/tasks') return ListPlus;
-    if (path === '/expenses') return DollarSign;
-    if (path === '/challenges') return Trophy;
-    if (path === '/trips') return Plane;
-    if (path === '/focus') return Brain;
-    return Plus; // Default
-  };
-
-  const FABIcon = getFABIcon();
-
   return (
     <>
       {/* Backdrop */}
       {isExpanded && (
         <div
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
+          className="fixed inset-0 bg-background/80 backdrop-blur-md z-40 animate-fade-in"
           onClick={() => setIsExpanded(false)}
         />
       )}
@@ -175,15 +191,20 @@ export function MobileQuickActionsFAB({
                   className="flex items-center gap-3 animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  <span className="text-sm font-medium bg-card px-3 py-1.5 rounded-lg shadow-lg border">
+                  <span className="text-sm font-semibold bg-card/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl border border-border/40 whitespace-nowrap">
                     {action.label}
                   </span>
                   <Button
                     size="lg"
-                    className="rounded-full w-12 h-12 shadow-lg hover:scale-110 transition-transform"
+                    className={cn(
+                      'rounded-full w-14 h-14 shadow-xl hover:shadow-2xl',
+                      'hover:scale-110 active:scale-95',
+                      'transition-all duration-200',
+                      'border border-border/40'
+                    )}
                     onClick={action.onClick}
                   >
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-6 h-6" />
                   </Button>
                 </div>
               );
@@ -191,16 +212,20 @@ export function MobileQuickActionsFAB({
           </div>
         )}
 
-        {/* Main FAB with Contextual Icon */}
+        {/* Main FAB - Always Plus Icon */}
         <Button
           size="lg"
           className={cn(
-            'rounded-full w-14 h-14 shadow-lg hover:scale-110 transition-all',
-            isExpanded && 'rotate-45'
+            'rounded-full w-16 h-16 shadow-2xl hover:shadow-3xl',
+            'bg-gradient-to-br from-primary to-primary/80',
+            'hover:scale-110 active:scale-95',
+            'transition-all duration-300 ease-out',
+            'border-2 border-background',
+            isExpanded && 'rotate-45 scale-110'
           )}
           onClick={() => setIsExpanded(!isExpanded)}
         >
-          <FABIcon className="w-6 h-6" />
+          <Plus className="w-7 h-7 stroke-[2.5]" />
         </Button>
       </div>
     </>

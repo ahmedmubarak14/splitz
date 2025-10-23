@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
 import { responsiveSpacing, responsiveText } from '@/lib/responsive-utils';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -92,17 +93,9 @@ const Matrix = () => {
         />
 
         {/* Mobile FAB */}
-        {isMobile && (
-          <div className="fixed bottom-20 right-4 z-20">
-            <Button
-              size="lg"
-              className="rounded-full w-14 h-14 shadow-2xl hover:shadow-3xl active:scale-95 transition-all duration-200"
-              onClick={() => setQuickAddOpen(true)}
-            >
-              <Plus className="w-6 h-6" />
-            </Button>
-          </div>
-        )}
+        <MobileQuickActionsFAB 
+          onAddTask={() => setQuickAddOpen(true)}
+        />
       </div>
     </div>
   );

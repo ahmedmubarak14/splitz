@@ -21,6 +21,8 @@ import { SkeletonList } from '@/components/ui/skeleton-card';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing } from '@/lib/responsive-utils';
 import { formatCurrency } from '@/lib/formatters';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
 import { SplitTypeSelector } from '@/components/SplitTypeSelector';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ExpenseHistory from '@/components/ExpenseHistory';
@@ -72,6 +74,7 @@ const Expenses = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isRTL = useIsRTL();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     checkAuth();
@@ -866,6 +869,11 @@ const Expenses = () => {
           />
         </>
       )}
+
+      {/* Mobile FAB */}
+      <MobileQuickActionsFAB 
+        onAddExpense={() => setAddExpenseDialogOpen(true)}
+      />
 
       <Navigation />
     </div>
