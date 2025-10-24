@@ -89,8 +89,6 @@ export const ReceiptUpload = ({ expenseId, existingReceiptUrl, onUploadComplete,
 
   return (
     <div className="space-y-3">
-      <label className="text-sm font-medium">{t('camera.receiptOptional')}</label>
-      
       {previewUrl ? (
         <div className="relative">
           <img 
