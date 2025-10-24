@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Upload, X, Image as ImageIcon, Camera } from 'lucide-react';
-import { Camera as CapacitorCamera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { Capacitor } from '@capacitor/core';
+import { X, Image as ImageIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface ReceiptUploadProps {
@@ -50,32 +48,6 @@ export const ReceiptUpload = ({ expenseId, existingReceiptUrl, onUploadComplete,
     }
   };
 
-  const handleCamera = async () => {
-    if (!Capacitor.isNativePlatform()) {
-      toast.error(t('camera.cameraNotAvailable'));
-      return;
-    }
-
-    try {
-      const image = await CapacitorCamera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.Uri,
-        source: CameraSource.Camera
-      });
-
-      if (image.webPath) {
-        const response = await fetch(image.webPath);
-        const blob = await response.blob();
-        await uploadImageBlob(blob, `receipt-${Date.now()}.jpg`);
-      }
-    } catch (error: any) {
-      if (error.message !== 'User cancelled photos app') {
-        console.error('Camera error:', error);
-        toast.error(t('camera.captureFailed'));
-      }
-    }
-  };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -137,21 +109,7 @@ export const ReceiptUpload = ({ expenseId, existingReceiptUrl, onUploadComplete,
           </Button>
         </div>
       ) : (
-        <div className="space-y-3">
-          {Capacitor.isNativePlatform() && (
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={handleCamera}
-              disabled={uploading}
-            >
-              <Camera className="mr-2 h-4 w-4" />
-              {t('camera.takePhoto')}
-            </Button>
-          )}
-          
-          <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors">
+        <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors">
             <input
               type="file"
               id="receipt-upload"
@@ -179,7 +137,6 @@ export const ReceiptUpload = ({ expenseId, existingReceiptUrl, onUploadComplete,
                 </>
               )}
             </label>
-          </div>
         </div>
       )}
     </div>

@@ -67,24 +67,6 @@ const Privacy = () => {
                 <li><strong>Other User Content:</strong> Comments, notes, and any other content you create in the app</li>
               </ul>
 
-              {/* Camera & Photo Library Access */}
-              <h3 className="text-lg font-medium mb-2 mt-4">{t('camera.purpose.title')}</h3>
-              <p className="text-muted-foreground mb-2">
-                {t('camera.purpose.description')}
-              </p>
-              <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                <li><strong>{t('privacy.whenRequested')}:</strong> {t('camera.purpose.whenRequested')}</li>
-                <li><strong>{t('privacy.whatWeCollect')}:</strong> {t('camera.purpose.whatWeCollect')}</li>
-                <li><strong>{t('privacy.storage')}:</strong> {t('camera.purpose.storage')}</li>
-                <li><strong>{t('privacy.control')}:</strong> {t('camera.purpose.control')}</li>
-                <li><strong>{t('privacy.deletion')}:</strong> {t('camera.purpose.deletion')}</li>
-              </ul>
-              <p className="text-muted-foreground mt-3 p-4 bg-muted/30 rounded-lg border border-border/50">
-                <strong>{t('privacy.important')}:</strong> {t('camera.purpose.important')}
-              </p>
-              <p className="text-muted-foreground mt-3">
-                <strong>{t('privacy.examples')}:</strong> {t('camera.purpose.examples')}
-              </p>
 
               {/* Identifiers */}
               <h3 className="text-lg font-medium mb-2 mt-4">Identifiers</h3>
