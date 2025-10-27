@@ -144,6 +144,30 @@ export type Database = {
         }
         Relationships: []
       }
+      email_log: {
+        Row: {
+          email_type: string
+          id: string
+          sent_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          email_type: string
+          id?: string
+          sent_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          email_type?: string
+          id?: string
+          sent_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       expense_group_members: {
         Row: {
           group_id: string
@@ -1638,6 +1662,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_activity: {
+        Row: {
+          activity_data: Json | null
+          activity_type: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          activity_data?: Json | null
+          activity_type: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          activity_data?: Json | null
+          activity_type?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       public_profiles: {
@@ -1675,10 +1723,7 @@ export type Database = {
       }
     }
     Functions: {
-      backfill_profile_emails: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      backfill_profile_emails: { Args: never; Returns: undefined }
       calculate_next_renewal_date: {
         Args: {
           p_current_date: string
@@ -1691,10 +1736,7 @@ export type Database = {
         Args: { _invite_type: string; _resource_id: string; _user_id: string }
         Returns: boolean
       }
-      cleanup_old_rate_limits: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_old_rate_limits: { Args: never; Returns: undefined }
       create_notification: {
         Args: {
           p_message: string
@@ -1725,6 +1767,15 @@ export type Database = {
         Args: { other_user_id: string }
         Returns: string
       }
+      get_inactive_users: {
+        Args: { days_inactive: number }
+        Returns: {
+          email: string
+          full_name: string
+          last_activity_at: string
+          user_id: string
+        }[]
+      }
       get_invitation_by_code: {
         Args: { _invite_code: string }
         Returns: {
@@ -1740,7 +1791,7 @@ export type Database = {
         }[]
       }
       get_own_profile: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           avatar_url: string
           created_at: string
@@ -1773,10 +1824,8 @@ export type Database = {
           username: string
         }[]
       }
-      habit_checkin_date: {
-        Args: { checked_in_at: string }
-        Returns: string
-      }
+      get_user_weekly_summary: { Args: { p_user_id: string }; Returns: Json }
+      habit_checkin_date: { Args: { checked_in_at: string }; Returns: string }
       increment_invitation_uses: {
         Args: { _invitation_id: string }
         Returns: undefined
@@ -1813,18 +1862,20 @@ export type Database = {
         Args: { username_to_check: string }
         Returns: boolean
       }
-      notify_upcoming_subscriptions: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
+      log_user_activity: {
+        Args: {
+          p_activity_data?: Json
+          p_activity_type: string
+          p_user_id: string
+        }
+        Returns: string
       }
+      notify_upcoming_subscriptions: { Args: never; Returns: undefined }
       recalc_expense_split: {
         Args: { _expense_id: string }
         Returns: undefined
       }
-      recalc_net_balances: {
-        Args: { _group_id: string }
-        Returns: undefined
-      }
+      recalc_net_balances: { Args: { _group_id: string }; Returns: undefined }
       recalc_subscription_split: {
         Args: { _subscription_id: string }
         Returns: undefined

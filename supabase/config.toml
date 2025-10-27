@@ -6,6 +6,18 @@ verify_jwt = true
 [functions.create-expense-group]
 verify_jwt = true
 
+[functions.send-day1-reminder]
+verify_jwt = false
+
+[functions.send-day3-reengagement]
+verify_jwt = false
+
+[functions.send-weekly-summary]
+verify_jwt = false
+
+[functions.send-monthly-recap]
+verify_jwt = false
+
 # Authentication Email Configuration
 [auth]
 external_email_enabled = true
