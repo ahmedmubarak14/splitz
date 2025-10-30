@@ -505,7 +505,7 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
                 {/* Trial Toggle for Custom */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="is_trial_custom">Is this a free trial?</Label>
+                    <Label htmlFor="is_trial_custom">{t('subscriptions.isTrial')}</Label>
                     <Switch
                       id="is_trial_custom"
                       checked={isTrial}
@@ -518,18 +518,18 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
                       <Alert>
                         <AlertCircle className="h-4 w-4" />
                         <AlertDescription>
-                          Trial will convert to paid on the end date
+                          {t('subscriptions.trialWarning', { date: trialEndDate ? formatDate(trialEndDate, i18n.language) : '' })}
                         </AlertDescription>
                       </Alert>
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <Label>Trial Start Date</Label>
+                          <Label>{t('subscriptions.trialStartDate')}</Label>
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button variant="outline" className="w-full justify-start">
                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                {format(trialStartDate, "PPP")}
+                                {formatDate(trialStartDate, i18n.language)}
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0">
@@ -544,12 +544,12 @@ export const CreateSubscriptionDialog = ({ open, onOpenChange }: CreateSubscript
                         </div>
 
                         <div>
-                          <Label>Trial End Date</Label>
+                          <Label>{t('subscriptions.trialEndDate')}</Label>
                           <Popover>
                             <PopoverTrigger asChild>
                               <Button variant="outline" className="w-full justify-start">
                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                {trialEndDate ? format(trialEndDate, "PPP") : "Select date"}
+                                {trialEndDate ? formatDate(trialEndDate, i18n.language) : t('common.selectDate')}
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0">

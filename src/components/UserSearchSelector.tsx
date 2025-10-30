@@ -201,7 +201,7 @@ export function UserSearchSelector({
           renderUserList(searchResults, isSearching)
         ) : (
           <div className="text-center py-8 text-muted-foreground">
-            <p>{t("Type at least 2 characters to search")}</p>
+            <p>{t("subscriptions.typeToSearch")}</p>
           </div>
         )}
       </TabsContent>
