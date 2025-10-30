@@ -6,6 +6,9 @@ verify_jwt = true
 [functions.create-expense-group]
 verify_jwt = true
 
+[functions.send-notification-email]
+verify_jwt = false
+
 [functions.send-day1-reminder]
 verify_jwt = false
 
