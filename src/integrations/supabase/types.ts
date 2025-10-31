@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          category: string
+          code: string
+          created_at: string | null
+          description: string
+          icon: string | null
+          id: string
+          name: string
+          requirement: Json
+          xp_reward: number | null
+        }
+        Insert: {
+          category: string
+          code: string
+          created_at?: string | null
+          description: string
+          icon?: string | null
+          id?: string
+          name: string
+          requirement: Json
+          xp_reward?: number | null
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string | null
+          description?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          requirement?: Json
+          xp_reward?: number | null
+        }
+        Relationships: []
+      }
       challenge_participants: {
         Row: {
           challenge_id: string
@@ -920,38 +956,101 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          best_login_streak: number | null
           created_at: string
           email: string | null
           full_name: string | null
           id: string
+          last_freeze_reset_date: string | null
+          last_login_date: string | null
+          level: number | null
+          login_streak: number | null
           onboarding_completed: boolean
           preferred_language: string | null
+          streak_freezes_used: number | null
           updated_at: string
           username: string | null
+          xp: number | null
         }
         Insert: {
           avatar_url?: string | null
+          best_login_streak?: number | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id: string
+          last_freeze_reset_date?: string | null
+          last_login_date?: string | null
+          level?: number | null
+          login_streak?: number | null
           onboarding_completed?: boolean
           preferred_language?: string | null
+          streak_freezes_used?: number | null
           updated_at?: string
           username?: string | null
+          xp?: number | null
         }
         Update: {
           avatar_url?: string | null
+          best_login_streak?: number | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
+          last_freeze_reset_date?: string | null
+          last_login_date?: string | null
+          level?: number | null
+          login_streak?: number | null
           onboarding_completed?: boolean
           preferred_language?: string | null
+          streak_freezes_used?: number | null
           updated_at?: string
           username?: string | null
+          xp?: number | null
         }
         Relationships: []
+      }
+      push_tokens: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_used: string | null
+          platform: string
+          token: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_used?: string | null
+          platform: string
+          token: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_used?: string | null
+          platform?: string
+          token?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_tokens_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "push_tokens_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rate_limits: {
         Row: {
@@ -1662,6 +1761,49 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_activity: {
         Row: {
           activity_data: Json | null
@@ -1723,6 +1865,10 @@ export type Database = {
       }
     }
     Functions: {
+      award_xp: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: undefined
+      }
       backfill_profile_emails: { Args: never; Returns: undefined }
       calculate_next_renewal_date: {
         Args: {

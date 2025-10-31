@@ -21,6 +21,7 @@ import { UpcomingSubscriptionsWidget } from '@/components/dashboard/UpcomingSubs
 import { PendingExpensesWidget } from '@/components/dashboard/PendingExpensesWidget';
 import { HabitsDueTodayWidget } from '@/components/dashboard/HabitsDueTodayWidget';
 import { QuickActionsHub } from '@/components/dashboard/QuickActionsHub';
+import { StreakDisplay } from '@/components/StreakDisplay';
 import { addDays } from 'date-fns';
 import { prefetchTasks, prefetchHabits, prefetchExpenses, prefetchFocus } from '@/App';
 
@@ -340,6 +341,9 @@ export default function Dashboard() {
 
         {/* Widget Grid - 2 Column Layout */}
         <div className={`grid ${responsiveGrid.twoColumn} gap-4 md:gap-6`}>
+          <div className="col-span-full">
+            <StreakDisplay />
+          </div>
           <TodaysTasksWidget tasks={todaysTasks} onRefresh={fetchDashboardData} />
           <HabitsDueTodayWidget habits={habitsData} onRefresh={fetchDashboardData} />
           <UpcomingSubscriptionsWidget subscriptions={upcomingSubscriptions} />

@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import { useIsRTL } from '@/lib/rtl-utils';
+import { PushNotificationSetup } from './PushNotificationSetup';
 
 interface Preferences {
   habit_reminders: boolean;
@@ -102,6 +103,7 @@ export default function NotificationPreferences() {
 
   return (
     <div className="space-y-6" dir={isRTL ? 'rtl' : 'ltr'}>
+      <PushNotificationSetup />
       <Card>
         <CardHeader>
           <CardTitle>{t('notifications.types.title')}</CardTitle>

@@ -5,6 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Link, useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AchievementUnlock } from "@/components/AchievementUnlock";
+import { useAchievements } from "@/hooks/useAchievements";
 
 // Lazy load heavy components for better initial bundle size
 const AppSidebar = lazy(() => import("@/components/AppSidebar").then(m => ({ default: m.AppSidebar })));
@@ -80,6 +82,7 @@ const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const isRTL = useIsRTL();
+  const { newAchievement, clearAchievement } = useAchievements();
 
   // Load Ionic CSS only for native apps to avoid breaking web scrolling
   useEffect(() => {
@@ -120,6 +123,7 @@ const AppContent = () => {
   if (isLandingPage || isAuthPage || location.pathname === '/forgot-password' || location.pathname === '/reset-password' || location.pathname === '/onboarding' || location.pathname === '/auth/callback') {
     return (
       <div className={getPlatformClass()}>
+        <AchievementUnlock achievement={newAchievement} onClose={clearAchievement} />
         <Suspense fallback={<PageLoader />}>
           <Routes>
             {!isNativeApp && <Route path="/" element={<Index />} />}
@@ -152,6 +156,7 @@ const AppContent = () => {
 
   return (
     <SidebarProvider>
+      <AchievementUnlock achievement={newAchievement} onClose={clearAchievement} />
       <div className={`flex min-h-screen w-full ${getPlatformClass()}`}>
         <div className="hidden md:block">
           <Suspense fallback={<div className="w-[280px]" />}>
