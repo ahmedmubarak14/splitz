@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import { Resend } from "npm:resend@4.0.0";
+import { Resend } from "https://esm.sh/resend@4.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -115,9 +115,10 @@ serve(async (req) => {
 
         results.push({ email: user.email, status: "sent" });
         console.log(`Day 1 reminder sent to ${user.email}`);
-      } catch (error) {
-        console.error(`Failed to send to ${user.email}:`, error);
-        results.push({ email: user.email, status: "failed", error: error.message });
+      } catch (err) {
+        console.error(`Failed to send to ${user.email}:`, err);
+        const message = err instanceof Error ? err.message : typeof err === "string" ? err : JSON.stringify(err);
+        results.push({ email: user.email, status: "failed", error: message });
       }
     }
 
