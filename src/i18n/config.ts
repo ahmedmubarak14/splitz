@@ -274,6 +274,11 @@ const resources = {
           unlocked: 'Achievement Unlocked!',
           earned: 'You earned {{xp}} XP!',
           xpReward: '+{{xp}} XP',
+          showcase: 'Achievements',
+          unlocked_count: '{{count}} unlocked',
+          viewAll: 'View All',
+          locked: 'Locked',
+          progress: 'Progress: {{current}}/{{target}}'
         },
         pushNotifications: {
           title: 'Push Notifications',
@@ -282,6 +287,43 @@ const resources = {
           blocked: 'Notifications blocked. Enable them in your device settings.',
           enable: 'Enable Push Notifications',
         },
+      },
+      insights: {
+        title: 'Personalized Insights',
+        greeting: {
+          morning: 'Good morning',
+          afternoon: 'Good afternoon',
+          evening: 'Good evening'
+        },
+        suggestions: {
+          checkHabits: 'You have {{count}} habits to check in today',
+          completeTask: 'Complete your most important task',
+          focusSession: 'Start a focus session to boost productivity',
+          reviewExpenses: 'Review your pending expenses',
+          joinChallenge: 'Join a challenge with friends'
+        },
+        urgency: {
+          high: 'High Priority',
+          medium: 'Medium Priority',
+          low: 'Low Priority',
+          overdue: 'Overdue'
+        },
+        celebration: {
+          taskComplete: 'Great job! Task completed!',
+          habitStreak: 'Amazing! {{count}} day streak!',
+          challengeWin: 'Congratulations! You won the challenge!',
+          levelUp: 'Level Up! You reached level {{level}}!'
+        }
+      },
+      actionItems: {
+        title: 'Action Items',
+        dueToday: 'Due Today',
+        overdue: 'Overdue',
+        upcoming: 'Upcoming',
+        noActions: 'All caught up! 🎉',
+        checkIn: 'Check in',
+        complete: 'Complete',
+        review: 'Review'
       },
       notifications: {
         title: 'Notifications',
@@ -1889,6 +1931,11 @@ const resources = {
           unlocked: 'إنجاز جديد!',
           earned: 'حصلت على {{xp}} نقطة خبرة!',
           xpReward: '+{{xp}} نقاط',
+          showcase: 'الإنجازات',
+          unlocked_count: '{{count}} مفتوح',
+          viewAll: 'عرض الكل',
+          locked: 'مقفل',
+          progress: 'التقدم: {{current}}/{{target}}'
         },
         pushNotifications: {
           title: 'الإشعارات الفورية',
@@ -1897,6 +1944,43 @@ const resources = {
           blocked: 'الإشعارات محظورة. قم بتفعيلها في إعدادات جهازك.',
           enable: 'تفعيل الإشعارات الفورية',
         },
+      },
+      insights: {
+        title: 'رؤى شخصية',
+        greeting: {
+          morning: 'صباح الخير',
+          afternoon: 'مساء الخير',
+          evening: 'مساء الخير'
+        },
+        suggestions: {
+          checkHabits: 'لديك {{count}} عادة للتسجيل اليوم',
+          completeTask: 'أكمل مهمتك الأهم',
+          focusSession: 'ابدأ جلسة تركيز لتعزيز الإنتاجية',
+          reviewExpenses: 'راجع نفقاتك المعلقة',
+          joinChallenge: 'انضم إلى تحدٍ مع الأصدقاء'
+        },
+        urgency: {
+          high: 'أولوية عالية',
+          medium: 'أولوية متوسطة',
+          low: 'أولوية منخفضة',
+          overdue: 'متأخر'
+        },
+        celebration: {
+          taskComplete: 'عمل رائع! تم إكمال المهمة!',
+          habitStreak: 'رائع! سلسلة {{count}} يوم!',
+          challengeWin: 'مبروك! لقد ربحت التحدي!',
+          levelUp: 'ترقية! وصلت إلى المستوى {{level}}!'
+        }
+      },
+      actionItems: {
+        title: 'عناصر العمل',
+        dueToday: 'مستحق اليوم',
+        overdue: 'متأخر',
+        upcoming: 'قادم',
+        noActions: 'كل شيء منجز! 🎉',
+        checkIn: 'تسجيل',
+        complete: 'إكمال',
+        review: 'مراجعة'
       },
       hero: {
         badge: 'مجموعة إنتاجية شاملة',

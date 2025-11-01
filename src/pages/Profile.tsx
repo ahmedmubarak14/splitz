@@ -14,6 +14,7 @@ import Navigation from '@/components/Navigation';
 import NotificationPreferences from '@/components/NotificationPreferences';
 import { ChangePasswordDialog } from '@/components/ChangePasswordDialog';
 import { DeleteAccountDialog } from '@/components/DeleteAccountDialog';
+import { AchievementShowcase } from '@/components/AchievementShowcase';
 import type { Tables, TablesUpdate } from '@/integrations/supabase/types';
 import type { User } from '@supabase/supabase-js';
 import { useIsRTL } from '@/lib/rtl-utils';
@@ -352,6 +353,9 @@ const Profile = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Achievement Showcase */}
+        <AchievementShowcase />
 
         {/* Info Card */}
         <Card className="border border-border/40 shadow-sm">

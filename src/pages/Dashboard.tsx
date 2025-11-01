@@ -22,6 +22,8 @@ import { PendingExpensesWidget } from '@/components/dashboard/PendingExpensesWid
 import { HabitsDueTodayWidget } from '@/components/dashboard/HabitsDueTodayWidget';
 import { QuickActionsHub } from '@/components/dashboard/QuickActionsHub';
 import { StreakDisplay } from '@/components/StreakDisplay';
+import { DailyActionItems } from '@/components/dashboard/DailyActionItems';
+import { PersonalizedInsights } from '@/components/dashboard/PersonalizedInsights';
 import { addDays } from 'date-fns';
 import { prefetchTasks, prefetchHabits, prefetchExpenses, prefetchFocus } from '@/App';
 
@@ -344,6 +346,21 @@ export default function Dashboard() {
           <div className="col-span-full">
             <StreakDisplay />
           </div>
+          
+          {/* Personalized Insights & Action Items */}
+          <PersonalizedInsights
+            longestStreak={stats.longestStreak}
+            focusMinutes={stats.focusMinutes}
+            habitsCompleted={habitsData.filter(h => h.hasCheckedInToday).length}
+            weeklyGoal={7}
+          />
+          <DailyActionItems
+            habitsDue={habitsData.filter(h => !h.hasCheckedInToday).length}
+            tasksDue={todaysTasks.length}
+            expensesPending={stats.pendingExpenses}
+            challengesActive={stats.activeChallenges}
+          />
+          
           <TodaysTasksWidget tasks={todaysTasks} onRefresh={fetchDashboardData} />
           <HabitsDueTodayWidget habits={habitsData} onRefresh={fetchDashboardData} />
           <UpcomingSubscriptionsWidget subscriptions={upcomingSubscriptions} />
