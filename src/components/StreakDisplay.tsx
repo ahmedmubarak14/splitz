@@ -40,8 +40,8 @@ export const StreakDisplay = () => {
       if (data.login_streak > oldStreak && [7, 14, 30, 60, 100].includes(data.login_streak)) {
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 5000);
-        toast.success(`🎉 ${data.login_streak} Day Streak!`, {
-          description: 'You\'re on fire! Keep it going!'
+        toast.success(t('gamification.streak.milestoneToast', { count: data.login_streak }), {
+          description: t('gamification.streak.milestoneDescription')
         });
       }
     }
@@ -112,9 +112,9 @@ export const StreakDisplay = () => {
           </div>
 
           <div className="text-right">
-            <div className="text-sm text-muted-foreground">Level {streakData.level}</div>
+            <div className="text-sm text-muted-foreground">{t('gamification.streak.level')} {streakData.level}</div>
             <div className="text-xs text-muted-foreground">
-              {streakData.xp % nextLevelXP} / {nextLevelXP} XP
+              {streakData.xp % nextLevelXP} / {nextLevelXP} {t('gamification.streak.xp')}
             </div>
           </div>
         </div>
@@ -129,13 +129,16 @@ export const StreakDisplay = () => {
 
           {streakData.best_login_streak > streakData.login_streak && (
             <p className="text-xs text-muted-foreground text-center">
-              Best: {streakData.best_login_streak} days
+              {t('gamification.streak.best')}: {streakData.best_login_streak} {t('gamification.streak.daysCount')}
             </p>
           )}
 
           {freezesRemaining > 0 && streakData.login_streak >= 3 && (
             <p className="text-xs text-blue-500 text-center">
-              {freezesRemaining} streak {freezesRemaining === 1 ? 'freeze' : 'freezes'} remaining this month
+              {t('gamification.streak.freezesRemaining', {
+                count: freezesRemaining,
+                freeze: freezesRemaining === 1 ? t('gamification.streak.freeze') : t('gamification.streak.freezes')
+              })}
             </p>
           )}
         </div>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, X } from 'lucide-react';
 import Confetti from 'react-confetti';
 import { useWindowSize } from '@/hooks/use-window-size';
+import { useTranslation } from 'react-i18next';
 
 interface Achievement {
   id: string;
@@ -20,6 +21,7 @@ interface AchievementUnlockProps {
 }
 
 export const AchievementUnlock = ({ achievement, onClose }: AchievementUnlockProps) => {
+  const { t } = useTranslation();
   const [show, setShow] = useState(false);
   const { width, height } = useWindowSize();
 
@@ -59,7 +61,7 @@ export const AchievementUnlock = ({ achievement, onClose }: AchievementUnlockPro
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <Trophy className="w-6 h-6 text-yellow-500" />
-                    <h3 className="text-lg font-bold">Achievement Unlocked!</h3>
+                    <h3 className="text-lg font-bold">{t('gamification.achievement.unlocked')}</h3>
                   </div>
                   <Button
                     variant="ghost"
@@ -82,7 +84,7 @@ export const AchievementUnlock = ({ achievement, onClose }: AchievementUnlockPro
                     </p>
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-medium text-yellow-500">
-                        +{achievement.xp_reward} XP
+                        {t('gamification.achievement.xpReward', { xp: achievement.xp_reward })}
                       </span>
                     </div>
                   </div>

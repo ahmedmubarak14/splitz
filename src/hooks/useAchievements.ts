@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface Achievement {
   id: string;
@@ -15,6 +17,7 @@ interface Achievement {
 }
 
 export const useAchievements = () => {
+  const { t } = useTranslation();
   const [newAchievement, setNewAchievement] = useState<Achievement | null>(null);
 
   const checkAchievements = async () => {
@@ -95,6 +98,11 @@ export const useAchievements = () => {
           await supabase.rpc('award_xp', {
             p_user_id: user.id,
             p_amount: achievement.xp_reward
+          });
+
+          // Show toast notification
+          toast.success(t('gamification.achievement.unlocked'), {
+            description: t('gamification.achievement.earned', { xp: achievement.xp_reward })
           });
 
           setNewAchievement({

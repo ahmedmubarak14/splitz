@@ -17,29 +17,29 @@ export const PushNotificationSetup = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bell className="w-5 h-5" />
-          Push Notifications
+          {t('gamification.pushNotifications.title')}
         </CardTitle>
         <CardDescription>
-          Get notified about your habits, challenges, and more
+          {t('gamification.pushNotifications.description')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {permissionStatus === 'granted' ? (
           <div className="flex items-center gap-2 text-green-600">
             <CheckCircle className="w-5 h-5" />
-            <span className="text-sm font-medium">Notifications Enabled</span>
+            <span className="text-sm font-medium">{t('gamification.pushNotifications.enabled')}</span>
           </div>
         ) : permissionStatus === 'denied' ? (
           <div className="flex items-center gap-2 text-muted-foreground">
             <BellOff className="w-5 h-5" />
             <span className="text-sm">
-              Notifications blocked. Enable them in your device settings.
+              {t('gamification.pushNotifications.blocked')}
             </span>
           </div>
         ) : (
           <Button onClick={requestPermission} className="w-full">
             <Bell className="w-4 h-4 mr-2" />
-            Enable Push Notifications
+            {t('gamification.pushNotifications.enable')}
           </Button>
         )}
       </CardContent>
