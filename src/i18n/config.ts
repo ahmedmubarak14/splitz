@@ -257,6 +257,15 @@ const resources = {
         nextSlide: 'Next slide',
       },
       gamification: {
+        xp: 'XP',
+        level: 'Level',
+        achievements: 'Achievements',
+        unlocked: 'Unlocked',
+        locked: 'Locked',
+        progress: 'Progress',
+        reward: 'Reward',
+        youEarned: 'You earned',
+        viewAll: 'View All',
         streak: {
           title: 'Login Streak',
           best: 'Best',
@@ -280,6 +289,23 @@ const resources = {
           locked: 'Locked',
           progress: 'Progress: {{current}}/{{target}}'
         },
+        achievementShowcase: {
+          title: 'Achievement Showcase',
+          unlocked: 'Unlocked Achievements',
+          locked: 'Locked Achievements',
+          noUnlocked: 'No achievements unlocked yet',
+          noLocked: 'All achievements unlocked!',
+          startJourney: 'Start your journey to unlock achievements',
+          congratulations: 'Congratulations on unlocking everything!',
+          categories: {
+            habits: 'Habits',
+            challenges: 'Challenges',
+            social: 'Social',
+            expenses: 'Expenses',
+            subscriptions: 'Subscriptions',
+            trips: 'Trips'
+          }
+        },
         pushNotifications: {
           title: 'Push Notifications',
           description: 'Get notified about your habits, challenges, and more',
@@ -287,6 +313,32 @@ const resources = {
           blocked: 'Notifications blocked. Enable them in your device settings.',
           enable: 'Enable Push Notifications',
         },
+        leaderboard: {
+          title: 'Leaderboard',
+          globalRank: 'Global Rank',
+          friendsRank: 'Friends Rank',
+          thisWeek: 'This Week',
+          thisMonth: 'This Month',
+          allTime: 'All Time',
+          you: 'You',
+          rank: 'Rank',
+          user: 'User',
+          points: 'Points',
+          noData: 'No leaderboard data yet',
+          startCompeting: 'Complete activities to join the leaderboard',
+          viewProfile: 'View Profile'
+        },
+        social: {
+          shareAchievement: 'Share Achievement',
+          shareProgress: 'Share Progress',
+          inviteFriends: 'Invite Friends',
+          compareProgress: 'Compare with Friends',
+          challengeFriend: 'Challenge Friend',
+          friendActivity: 'Friend Activity',
+          recentActivity: 'Recent Activity',
+          noActivity: 'No recent activity',
+          friendsAchievements: "Friends' Achievements"
+        }
       },
       insights: {
         title: 'Personalized Insights',

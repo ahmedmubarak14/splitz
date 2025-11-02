@@ -363,6 +363,14 @@ export default function Dashboard() {
           
           <TodaysTasksWidget tasks={todaysTasks} onRefresh={fetchDashboardData} />
           <HabitsDueTodayWidget habits={habitsData} onRefresh={fetchDashboardData} />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <LeaderboardWidget />
+          <FriendActivityWidget />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <UpcomingSubscriptionsWidget subscriptions={upcomingSubscriptions} />
           <PendingExpensesWidget balances={netBalances} userId={userId} />
         </div>
