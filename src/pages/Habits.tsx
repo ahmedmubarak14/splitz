@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
@@ -28,7 +28,8 @@ import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
 import { HabitCheckInCelebration } from '@/components/HabitCheckInCelebration';
 import { SharedHabitDetailsDialog } from '@/components/SharedHabitDetailsDialog';
 import { CreateSharedHabitDialog } from '@/components/CreateSharedHabitDialog';
-import EmojiPicker from 'emoji-picker-react';
+// Lazy load emoji picker for better bundle size
+const EmojiPicker = lazy(() => import('emoji-picker-react'));
 import { useQuery } from '@tanstack/react-query';
 
 type Habit = {
@@ -328,14 +329,16 @@ const Habits = () => {
                           <Button variant="outline" className="w-full">{t('habits.dialog.chooseAnyEmoji')}</Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-sm p-0">
-                          <EmojiPicker
-                            onEmojiClick={(emojiData) => {
-                              setNewHabitIcon(emojiData.emoji);
-                              setShowEmojiPicker(false);
-                            }}
-                            width="100%"
-                            height={400}
-                          />
+                          <Suspense fallback={<div className="w-full h-[400px] animate-pulse bg-muted rounded-lg" />}>
+                            <EmojiPicker
+                              onEmojiClick={(emojiData) => {
+                                setNewHabitIcon(emojiData.emoji);
+                                setShowEmojiPicker(false);
+                              }}
+                              width="100%"
+                              height={400}
+                            />
+                          </Suspense>
                         </DialogContent>
                       </Dialog>
                       <p className="text-sm text-muted-foreground">{t('habits.dialog.quickSelect')}</p>

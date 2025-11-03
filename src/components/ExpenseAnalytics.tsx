@@ -1,8 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { supabase } from '@/integrations/supabase/client';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { TrendingDown, TrendingUp, CreditCard } from 'lucide-react';
+
+// Lazy load recharts for better bundle size
+const PieChart = lazy(() => import('recharts').then(m => ({ default: m.PieChart })));
+const Pie = lazy(() => import('recharts').then(m => ({ default: m.Pie })));
+const Cell = lazy(() => import('recharts').then(m => ({ default: m.Cell })));
+const ResponsiveContainer = lazy(() => import('recharts').then(m => ({ default: m.ResponsiveContainer })));
+const Tooltip = lazy(() => import('recharts').then(m => ({ default: m.Tooltip })));
 import { formatCurrency } from '@/lib/formatters';
 import { useTranslation } from 'react-i18next';
 
@@ -96,14 +102,16 @@ export function ExpenseAnalytics() {
         <Card>
           <CardHeader><CardTitle className="text-base">{t('expenses.analyticsData.spendingByCategory')}</CardTitle></CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie data={stats.categoryData} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => `${name} ${((percent as number) * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
-                  {stats.categoryData.map((entry, index) => (<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />))}
-                </Pie>
-                <Tooltip formatter={(value: number) => formatCurrency(value, 'SAR', i18n.language)} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
-              </PieChart>
-            </ResponsiveContainer>
+            <Suspense fallback={<div className="animate-pulse h-[250px] bg-muted rounded" />}>
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie data={stats.categoryData} cx="50%" cy="50%" labelLine={false} label={({ name, percent }) => `${name} ${((percent as number) * 100).toFixed(0)}%`} outerRadius={80} fill="#8884d8" dataKey="value">
+                    {stats.categoryData.map((entry, index) => (<Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />))}
+                  </Pie>
+                  <Tooltip formatter={(value: number) => formatCurrency(value, 'SAR', i18n.language)} contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </Suspense>
           </CardContent>
         </Card>
       )}

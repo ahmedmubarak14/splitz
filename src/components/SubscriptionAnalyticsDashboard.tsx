@@ -2,7 +2,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, DollarSign, CreditCard, AlertTriangle } from "lucide-react";
 import { formatCurrency } from "@/lib/formatters";
 import { useTranslation } from "react-i18next";
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { lazy, Suspense } from "react";
+
+// Lazy load recharts for better bundle size
+const BarChart = lazy(() => import('recharts').then(m => ({ default: m.BarChart })));
+const Bar = lazy(() => import('recharts').then(m => ({ default: m.Bar })));
+const PieChart = lazy(() => import('recharts').then(m => ({ default: m.PieChart })));
+const Pie = lazy(() => import('recharts').then(m => ({ default: m.Pie })));
+const Cell = lazy(() => import('recharts').then(m => ({ default: m.Cell })));
+const XAxis = lazy(() => import('recharts').then(m => ({ default: m.XAxis })));
+const YAxis = lazy(() => import('recharts').then(m => ({ default: m.YAxis })));
+const CartesianGrid = lazy(() => import('recharts').then(m => ({ default: m.CartesianGrid })));
+const Tooltip = lazy(() => import('recharts').then(m => ({ default: m.Tooltip })));
+const Legend = lazy(() => import('recharts').then(m => ({ default: m.Legend })));
+const ResponsiveContainer = lazy(() => import('recharts').then(m => ({ default: m.ResponsiveContainer })));
 
 interface SubscriptionAnalyticsDashboardProps {
   subscriptions: any[];

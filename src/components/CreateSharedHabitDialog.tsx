@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -22,7 +22,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FriendSelector } from "./FriendSelector";
 import { UserSearchSelector } from "./UserSearchSelector";
-import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+// Lazy load emoji picker for better bundle size
+const EmojiPicker = lazy(() => import("emoji-picker-react"));
+import type { EmojiClickData } from "emoji-picker-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
@@ -176,7 +178,9 @@ export function CreateSharedHabitDialog({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0 border-none shadow-lg">
-                  <EmojiPicker onEmojiClick={handleEmojiClick} width={350} />
+                  <Suspense fallback={<div className="w-[350px] h-[450px] animate-pulse bg-muted rounded-lg" />}>
+                    <EmojiPicker onEmojiClick={handleEmojiClick} width={350} />
+                  </Suspense>
                 </PopoverContent>
               </Popover>
             </div>
