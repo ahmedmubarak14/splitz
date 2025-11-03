@@ -24,6 +24,8 @@ import { QuickActionsHub } from '@/components/dashboard/QuickActionsHub';
 import { StreakDisplay } from '@/components/StreakDisplay';
 import { DailyActionItems } from '@/components/dashboard/DailyActionItems';
 import { PersonalizedInsights } from '@/components/dashboard/PersonalizedInsights';
+import { LeaderboardWidget } from '@/components/dashboard/LeaderboardWidget';
+import { FriendActivityWidget } from '@/components/dashboard/FriendActivityWidget';
 import { addDays } from 'date-fns';
 import { prefetchTasks, prefetchHabits, prefetchExpenses, prefetchFocus } from '@/App';
 
