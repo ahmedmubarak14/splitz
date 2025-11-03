@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
@@ -115,12 +115,12 @@ const Habits = () => {
     fetchHabits();
   }, []);
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) navigate('/auth');
-  };
+  }, [navigate]);
 
-  const fetchHabits = async () => {
+  const fetchHabits = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('habits')
@@ -145,9 +145,9 @@ const Habits = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const createHabit = async () => {
+  const createHabit = useCallback(async () => {
     if (!newHabitTitle.trim()) return;
 
     try {
@@ -177,9 +177,9 @@ const Habits = () => {
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : 'Failed to create habit');
     }
-  };
+  }, [newHabitTitle, newHabitTargetDays, customTargetDays, newHabitIcon, fetchHabits, t]);
 
-  const checkInHabit = async (habitId: string) => {
+  const checkInHabit = useCallback(async (habitId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
@@ -208,7 +208,7 @@ const Habits = () => {
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : 'Failed to check in');
     }
-  };
+  }, [habits, fetchHabits]);
 
   const openEditDialog = (habit: Habit) => {
     setEditingHabit(habit);

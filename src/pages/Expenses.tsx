@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { TablesInsert } from '@/integrations/supabase/types';
@@ -79,51 +79,37 @@ const Expenses = () => {
     fetchGroups();
   }, []);
 
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) navigate('/auth');
     
     const { data: { user } } = await supabase.auth.getUser();
     if (user) setCurrentUserId(user.id);
-  };
+  }, [navigate]);
 
-  const fetchGroups = async () => {
+  const fetchGroups = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Fetch all groups
-      const { data: groupsData, error: groupsError } = await supabase
-        .from('expense_groups')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // Batch all data fetching in parallel for better performance
+      const [
+        { data: groupsData, error: groupsError },
+        { data: membersData },
+        { data: expensesData },
+        { data: netBalancesData },
+        { data: profiles },
+        { data: expenseMembersData }
+      ] = await Promise.all([
+        supabase.from('expense_groups').select('*').order('created_at', { ascending: false }),
+        supabase.from('expense_group_members').select('group_id, user_id'),
+        supabase.from('expenses').select('id, group_id, total_amount, paid_by, user_id'),
+        supabase.from('net_balances').select('group_id, from_user_id, to_user_id, amount'),
+        supabase.from('profiles').select('id, full_name'),
+        supabase.from('expense_members').select('expense_id, user_id, amount_owed, is_settled')
+      ]);
 
       if (groupsError) throw groupsError;
-
-      // Fetch all members
-      const { data: membersData } = await supabase
-        .from('expense_group_members')
-        .select('group_id, user_id');
-
-      // Fetch all expenses
-      const { data: expensesData } = await supabase
-        .from('expenses')
-        .select('id, group_id, total_amount, paid_by, user_id');
-
-      // Fetch all net balances
-      const { data: netBalancesData } = await supabase
-        .from('net_balances')
-        .select('group_id, from_user_id, to_user_id, amount');
-
-      // Fetch profiles for names
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, full_name');
-
-      // Fetch expense members to calculate actual balances
-      const { data: expenseMembersData } = await supabase
-        .from('expense_members')
-        .select('expense_id, user_id, amount_owed, is_settled');
 
       // Process groups
       const processedGroups: ExpenseGroup[] = (groupsData || []).map((group) => {
@@ -179,9 +165,9 @@ const Expenses = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchGroupMembers = async (groupId: string) => {
+  const fetchGroupMembers = useCallback(async (groupId: string) => {
     try {
       const { data: membersData } = await supabase
         .from('expense_group_members')
@@ -197,7 +183,7 @@ const Expenses = () => {
     } catch (error) {
       toast.error('Failed to fetch group members');
     }
-  };
+  }, []);
 
   const createGroup = async () => {
     if (!groupName.trim()) {

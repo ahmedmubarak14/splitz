@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,14 +23,17 @@ interface ExpenseCardProps {
   onAddExpense?: (id: string) => void;
 }
 
-const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps) => {
+const ExpenseCard = memo(({ expense, onViewDetails, onAddExpense }: ExpenseCardProps) => {
   const { t } = useTranslation();
   const isRTL = useIsRTL();
 
-  const totalOwed = expense.total_owed || 0;
-  const totalReceived = expense.total_received || 0;
-  const netBalance = totalReceived - totalOwed;
-  const allSettled = expense.settled_count === expense.member_count;
+  // Memoize expensive calculations
+  const { totalOwed, totalReceived, netBalance, allSettled } = useMemo(() => ({
+    totalOwed: expense.total_owed || 0,
+    totalReceived: expense.total_received || 0,
+    netBalance: (expense.total_received || 0) - (expense.total_owed || 0),
+    allSettled: expense.settled_count === expense.member_count
+  }), [expense.total_owed, expense.total_received, expense.settled_count, expense.member_count]);
 
   return (
     <Card className="border border-border hover:shadow-md transition-shadow">
@@ -142,6 +146,8 @@ const ExpenseCard = ({ expense, onViewDetails, onAddExpense }: ExpenseCardProps)
       </CardContent>
     </Card>
   );
-};
+});
+
+ExpenseCard.displayName = 'ExpenseCard';
 
 export default ExpenseCard;
