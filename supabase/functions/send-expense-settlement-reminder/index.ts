@@ -26,11 +26,8 @@ serve(async (req) => {
         id,
         user_id,
         amount_owed,
-        expense:expenses(
-          id,
-          name,
-          group:expense_groups(name)
-        )
+        expense_id,
+        created_at
       `)
       .eq('is_settled', false)
       .lt('created_at', threeDaysAgo.toISOString());
@@ -38,6 +35,28 @@ serve(async (req) => {
     if (unsettledError) throw unsettledError;
 
     for (const member of unsettled || []) {
+      // Get expense details
+      const { data: expense } = await supabase
+        .from('expenses')
+        .select(`
+          id,
+          name,
+          group_id
+        `)
+        .eq('id', member.expense_id)
+        .single();
+
+      if (!expense) continue;
+
+      // Get group details
+      const { data: group } = await supabase
+        .from('expense_groups')
+        .select('name')
+        .eq('id', expense.group_id)
+        .single();
+
+      if (!group) continue;
+
       // Check notification preferences
       const { data: prefs } = await supabase
         .from('notification_preferences')
@@ -53,8 +72,8 @@ serve(async (req) => {
             user_id: member.user_id,
             type: 'expense_settlement',
             title: 'Pending Payment',
-            message: `You have an unsettled payment of $${member.amount_owed} for "${member.expense.name}" in ${member.expense.group.name}`,
-            resource_id: member.expense.id
+            message: `You have an unsettled payment of $${member.amount_owed} for "${expense.name}" in ${group.name}`,
+            resource_id: expense.id
           });
       }
     }
@@ -66,7 +85,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
