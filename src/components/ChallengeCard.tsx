@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,13 +26,16 @@ interface ChallengeCardProps {
   currentUserId?: string;
 }
 
-const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDelete, onInvite, currentUserId }: ChallengeCardProps) => {
+const ChallengeCard = memo(({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDelete, onInvite, currentUserId }: ChallengeCardProps) => {
   const { t } = useTranslation();
   const isRTL = useIsRTL();
 
-  const isActive = new Date(challenge.end_date) >= new Date();
-  const daysLeft = Math.ceil((new Date(challenge.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-  const isCreator = challenge.creator_id === currentUserId;
+  // Memoize expensive calculations
+  const { isActive, daysLeft, isCreator } = useMemo(() => ({
+    isActive: new Date(challenge.end_date) >= new Date(),
+    daysLeft: Math.ceil((new Date(challenge.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
+    isCreator: challenge.creator_id === currentUserId
+  }), [challenge.end_date, challenge.creator_id, currentUserId]);
 
   return (
     <Card className="border border-border hover:shadow-md transition-shadow">
@@ -178,6 +182,8 @@ const ChallengeCard = ({ challenge, onJoin, onLeave, onViewDetails, onEdit, onDe
       </CardContent>
     </Card>
   );
-};
+});
+
+ChallengeCard.displayName = 'ChallengeCard';
 
 export default ChallengeCard;
