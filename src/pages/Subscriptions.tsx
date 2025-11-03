@@ -19,7 +19,7 @@ import { SubscriptionDetailsDialog } from "@/components/SubscriptionDetailsDialo
 import { SubscriptionAnalyticsDashboard } from "@/components/SubscriptionAnalyticsDashboard";
 import { TrialTracker } from "@/components/TrialTracker";
 import { RenewalCalendar } from "@/components/RenewalCalendar";
-import { EmptyState } from "@/components/EmptyState";
+import { EnhancedEmptyState } from "@/components/EnhancedEmptyState";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 import { formatCurrency } from "@/lib/formatters";
@@ -200,12 +200,18 @@ export default function Subscriptions() {
                   ))}
                 </div>
               ) : (
-                <EmptyState
+                <EnhancedEmptyState
                   icon={CreditCard}
+                  emoji="💳"
                   title={t('subscriptions.noActive')}
                   description={t('subscriptions.startTracking')}
                   actionLabel={t('subscriptions.addSubscription')}
                   onAction={() => setCreateDialogOpen(true)}
+                  tips={[
+                    t('subscriptions.tips.neverForget'),
+                    t('subscriptions.tips.saveoney'),
+                    t('subscriptions.tips.shareWithOthers')
+                  ]}
                 />
               )}
             </div>
@@ -428,8 +434,9 @@ export default function Subscriptions() {
 
           <TabsContent value="paused" className="space-y-4 mt-6">
             {pausedSubscriptions.length === 0 ? (
-                <EmptyState
+                <EnhancedEmptyState
                   icon={CreditCard}
+                  emoji="⏸️"
                   title={t('subscriptions.noPausedTitle')}
                   description={t('subscriptions.noPausedDesc')}
                 />
@@ -450,8 +457,9 @@ export default function Subscriptions() {
 
           <TabsContent value="canceled" className="space-y-4 mt-6">
             {canceledSubscriptions.length === 0 ? (
-                <EmptyState
+                <EnhancedEmptyState
                   icon={XCircle}
+                  emoji="❌"
                   title={t('subscriptions.noCanceledTitle')}
                   description={t('subscriptions.noCanceledDesc')}
                 />
@@ -472,8 +480,9 @@ export default function Subscriptions() {
 
           <TabsContent value="archived" className="space-y-4 mt-6">
             {archivedSubscriptions.length === 0 ? (
-                <EmptyState
+                <EnhancedEmptyState
                   icon={Archive}
+                  emoji="📦"
                   title={t('subscriptions.noArchivedTitle')}
                   description={t('subscriptions.noArchivedDesc')}
                 />

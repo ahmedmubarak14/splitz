@@ -13,7 +13,7 @@ import { DollarSign, Plus, Users, ArrowRight, Receipt, History, BarChart3 } from
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import { InviteDialog } from '@/components/InviteDialog';
-import { EmptyState } from '@/components/EmptyState';
+import { EnhancedEmptyState } from '@/components/EnhancedEmptyState';
 import EditExpenseDialog from '@/components/EditExpenseDialog';
 import ExpenseGroupDetailsDialog from '@/components/ExpenseGroupDetailsDialog';
 import ExpenseDetailsDialog from '@/components/ExpenseDetailsDialog';
@@ -607,12 +607,18 @@ const Expenses = () => {
         {loading ? (
           <SkeletonList count={6} />
         ) : groups.length === 0 ? (
-          <EmptyState
+          <EnhancedEmptyState
             icon={Users}
+            emoji="💰"
             title={t('expenses.noExpenseGroups')}
             description={t('expenses.createFirstGroup')}
             actionLabel={t('expenses.createGroup')}
             onAction={() => setCreateDialogOpen(true)}
+            tips={[
+              t('expenses.tips.trackShared'),
+              t('expenses.tips.settleEasily'),
+              t('expenses.tips.splitFairly')
+            ]}
           />
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

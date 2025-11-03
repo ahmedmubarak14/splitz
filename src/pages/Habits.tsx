@@ -22,7 +22,7 @@ import HabitCalendar from '@/components/HabitCalendar';
 import { HabitStatistics } from '@/components/HabitStatistics';
 import { useIsRTL } from '@/lib/rtl-utils';
 import { responsiveText, responsiveSpacing, responsiveGrid } from '@/lib/responsive-utils';
-import { EmptyState } from '@/components/EmptyState';
+import { EnhancedEmptyState } from '@/components/EnhancedEmptyState';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
 import { HabitCheckInCelebration } from '@/components/HabitCheckInCelebration';
@@ -424,12 +424,18 @@ const Habits = () => {
             {loading ? (
               <SkeletonList count={6} />
             ) : habits.length === 0 ? (
-              <EmptyState
+              <EnhancedEmptyState
                 icon={Target}
+                emoji="🎯"
                 title={t('habits.startJourney')}
                 description={t('habits.noHabits')}
                 actionLabel={t('habits.createNew')}
                 onAction={() => setDialogOpen(true)}
+                tips={[
+                  t('habits.tips.startSmall'),
+                  t('habits.tips.beConsistent'),
+                  t('habits.tips.trackProgress')
+                ]}
               />
             ) : (
               <div className={`grid ${responsiveGrid.cards} ${responsiveSpacing.gridGap}`}>
@@ -523,12 +529,18 @@ const Habits = () => {
             {isLoadingShared ? (
               <SkeletonList count={6} />
             ) : !sharedHabits || sharedHabits.length === 0 ? (
-              <EmptyState
+              <EnhancedEmptyState
                 icon={Users}
+                emoji="👥"
                 title={t('sharedHabits.noSharedHabits')}
                 description={t('sharedHabits.noSharedHabitsDesc')}
                 actionLabel={t('sharedHabits.createSharedHabit')}
                 onAction={() => setCreateSharedDialogOpen(true)}
+                tips={[
+                  t('sharedHabits.tips.inviteFriends'),
+                  t('sharedHabits.tips.stayMotivated'),
+                  t('sharedHabits.tips.celebrate')
+                ]}
               />
             ) : (
               <div className={`grid ${responsiveGrid.cards} ${responsiveSpacing.gridGap}`}>

@@ -477,6 +477,11 @@ const resources = {
         goal: 'Goal: {{count}} days',
         noActivityYet: 'No activity yet',
         checkInsWillAppear: 'Check-ins from you and your friends will appear here',
+        tips: {
+          inviteFriends: 'Invite friends to join your shared habits',
+          stayMotivated: 'Stay motivated by seeing friends\' progress',
+          celebrate: 'Celebrate milestones together'
+        },
       },
       subscriptionCategories: {
         entertainment: 'Entertainment',
@@ -688,6 +693,11 @@ const resources = {
           checkInHistory: 'Check-in History',
           close: 'Close',
           loadFailed: 'Failed to load check-in history',
+        },
+        tips: {
+          startSmall: 'Start with small, achievable goals',
+          beConsistent: 'Consistency is key - check in daily',
+          trackProgress: 'Track your progress and celebrate wins'
         },
       },
       hero: {
@@ -1078,6 +1088,11 @@ const resources = {
         paymentSettled: 'Debt settled successfully',
         paymentError: 'Failed to record payment',
         noMatchingExpense: 'No matching expense found',
+        tips: {
+          trackShared: 'Track all shared expenses in one place',
+          settleEasily: 'Settle up with a single tap',
+          splitFairly: 'Split costs equally or by custom amounts'
+        },
       },
       challenges: {
         title: 'Friend Challenges',
@@ -1109,6 +1124,14 @@ const resources = {
         activeChallenges: 'Active Challenges',
         daysLeft: 'd left',
         participants_plural: '{{count}} participants',
+        tips: {
+          setGoal: 'Set clear, measurable goals for better results',
+          inviteFriends: 'Invite friends to make it more fun',
+          stayConsistent: 'Check in daily to maintain momentum',
+          browseAll: 'Browse all challenges to find ones you like',
+          joinWithFriends: 'Join challenges with friends for accountability',
+          winRewards: 'Complete challenges to earn rewards and XP'
+        },
       },
       profile: {
         title: 'Profile',
@@ -1359,6 +1382,11 @@ const resources = {
          advancedFilters: 'Advanced Filters',
          usageTracking: 'Usage Tracking',
          considerCanceling: 'Consider canceling this subscription',
+         tips: {
+           neverForget: 'Never forget a renewal date - get reminded beforehand',
+           saveoney: 'Save money by tracking unused subscriptions',
+           shareWithOthers: 'Split costs with friends to save even more'
+         },
        },
       calendar: {
         title: 'Calendar',
@@ -1457,6 +1485,11 @@ const resources = {
         assignTo: 'Assign To',
         selectMember: 'Select a member',
         unassigned: 'Unassigned',
+        tips: {
+          addDestination: 'Add a destination and dates for your trip',
+          inviteMembers: 'Invite friends to collaborate on planning',
+          splitCosts: 'Track and split trip expenses easily'
+        },
       },
       taskSharing: {
         shareTask: 'Share Task',

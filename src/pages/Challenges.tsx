@@ -15,7 +15,7 @@ import { Trophy, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navigation from '@/components/Navigation';
 import ChallengeCard from '@/components/ChallengeCard';
-import { EmptyState } from '@/components/EmptyState';
+import { EnhancedEmptyState } from '@/components/EnhancedEmptyState';
 import ChallengeDetailsDialog from '@/components/ChallengeDetailsDialog';
 import EditChallengeDialog from '@/components/EditChallengeDialog';
 import { InviteDialog } from '@/components/InviteDialog';
@@ -477,12 +477,22 @@ const Challenges = () => {
             {loading ? (
               <SkeletonList count={6} />
             ) : filteredChallenges.length === 0 ? (
-              <EmptyState
+              <EnhancedEmptyState
                 icon={Trophy}
+                emoji="🏆"
                 title={activeTab === 'joined' ? t('challenges.noJoinedChallenges') : t('challenges.noChallenges').split('.')[0]}
                 description={activeTab === 'joined' ? t('challenges.joinToStart') : t('challenges.noChallenges')}
                 actionLabel={activeTab === 'all' ? t('challenges.createChallenge') : undefined}
                 onAction={() => setDialogOpen(true)}
+                tips={activeTab === 'all' ? [
+                  t('challenges.tips.setGoal'),
+                  t('challenges.tips.inviteFriends'),
+                  t('challenges.tips.stayConsistent')
+                ] : [
+                  t('challenges.tips.browseAll'),
+                  t('challenges.tips.joinWithFriends'),
+                  t('challenges.tips.winRewards')
+                ]}
               />
             ) : (
               <div className={`grid ${responsiveGrid.cards} ${responsiveSpacing.gridGap}`}>

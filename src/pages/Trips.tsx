@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { TripCard } from "@/components/TripCard";
 import { CreateTripDialog } from "@/components/CreateTripDialog";
-import { EmptyState } from "@/components/EmptyState";
+import { EnhancedEmptyState } from "@/components/EnhancedEmptyState";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -72,12 +72,18 @@ export default function Trips() {
             </div>
           </div>
         ) : !trips || trips.length === 0 ? (
-          <EmptyState
+          <EnhancedEmptyState
             icon={MapPin}
+            emoji="✈️"
             title={t('trips.noTrips')}
             description={t('trips.startPlanning')}
             actionLabel={t('trips.planFirstTrip')}
             onAction={() => setCreateDialogOpen(true)}
+            tips={[
+              t('trips.tips.addDestination'),
+              t('trips.tips.inviteMembers'),
+              t('trips.tips.splitCosts')
+            ]}
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
