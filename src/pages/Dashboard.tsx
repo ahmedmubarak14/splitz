@@ -277,18 +277,7 @@ export default function Dashboard() {
     }
   }, [t]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/20">
-        <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-3 border-primary border-t-transparent shadow-lg"></div>
-          <p className="text-sm text-muted-foreground animate-pulse">{t('dashboard.loadingMessage')}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Memoize stat cards to prevent recreating on every render
+  // Memoize stat cards to prevent recreating on every render - MUST be before early return
   const statCards = useMemo(() => [
     { 
       label: t('dashboard.stats.totalHabits'),
@@ -330,6 +319,17 @@ export default function Dashboard() {
     habitsData.filter(h => !h.hasCheckedInToday).length, 
     [habitsData]
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/20">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-3 border-primary border-t-transparent shadow-lg"></div>
+          <p className="text-sm text-muted-foreground animate-pulse">{t('dashboard.loadingMessage')}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
