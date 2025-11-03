@@ -6,6 +6,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import * as Sentry from "@sentry/react";
 import { Capacitor } from '@capacitor/core';
 import { setupIonicReact } from '@ionic/react';
+import { useOfflineDetection } from '@/hooks/useOfflineDetection';
 
 // Only initialize Ionic for native apps to avoid breaking web scrolling
 if (Capacitor.isNativePlatform()) {
@@ -49,8 +50,14 @@ window.addEventListener('error', (e) => {
   }
 });
 
+// Wrapper component for offline detection
+const AppWrapper = () => {
+  useOfflineDetection(); // Automatically monitors online/offline status
+  return <App />;
+};
+
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>
-    <App />
+    <AppWrapper />
   </ErrorBoundary>
 );

@@ -49,6 +49,7 @@ const Onboarding = lazy(() => import("./pages/Onboarding"));
 const JoinInvite = lazy(() => import("./pages/JoinInvite"));
 const JoinFriendInvite = lazy(() => import("./pages/JoinFriendInvite"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const InstallPWA = lazy(() => import("./pages/InstallPWA"));
 
 // Prefetch functions for critical routes
 export const prefetchDashboard = () => import("./pages/Dashboard");
@@ -133,6 +134,7 @@ const AppContent = () => {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/join/:inviteCode" element={<JoinInvite />} />
             <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/install" element={<InstallPWA />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/habits" element={<Habits />} />
             <Route path="/focus" element={<Focus />} />
@@ -213,6 +215,7 @@ const AppContent = () => {
               <Route path="/join/:inviteCode" element={<JoinInvite />} />
               <Route path="/join-friend/:inviteCode" element={<JoinFriendInvite />} />
               <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/install" element={<InstallPWA />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/habits" element={<Habits />} />
             <Route path="/tasks" element={<Tasks />} />
