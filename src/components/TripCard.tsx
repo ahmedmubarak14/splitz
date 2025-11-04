@@ -25,7 +25,7 @@ export const TripCard = ({ trip }: TripCardProps) => {
   const isActive = daysUntilStart <= 0 && differenceInDays(new Date(trip.end_date), new Date()) >= 0;
   const isCompleted = trip.status === "completed";
   
-  const memberCount = trip.trip_members?.[0]?.count || 0;
+  const memberCount = trip.trip_members?.length || 0;
   const displayAvatars = (trip as any).member_avatars?.slice(0, 3) || [];
   const remainingMembers = Math.max(0, memberCount - displayAvatars.length);
 

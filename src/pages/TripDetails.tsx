@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,24 +39,39 @@ export default function TripDetails() {
   const [editTripOpen, setEditTripOpen] = useState(false);
   const [createExpenseOpen, setCreateExpenseOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('tasks');
+  const [isAuthed, setIsAuthed] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        toast.error(t('errors.notAuthenticated'));
+        navigate('/auth');
+      } else {
+        setIsAuthed(true);
+      }
+    });
+  }, [navigate, t]);
 
   const { data: trip, isLoading } = useQuery({
     queryKey: ["trip", id],
+    enabled: isAuthed && !!id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("trips")
         .select(`
           *,
-          trip_members(count, user_id, role),
+          trip_members(user_id, role),
           trip_tasks(id, status)
         `)
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         toast.error(t('errors.failedToLoad'));
         throw error;
       }
+
+      if (!data) return null as any;
 
       // Fetch avatars for members
       const memberUserIds = data.trip_members?.slice(0, 5).map((m: any) => m.user_id) || [];
@@ -67,7 +82,7 @@ export default function TripDetails() {
           'get_public_profiles',
           { _user_ids: memberUserIds }
         );
-        
+
         memberAvatars = profiles?.map((p: any) => ({
           id: p.id,
           full_name: p.full_name,
@@ -108,7 +123,7 @@ export default function TripDetails() {
     return "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20";
   };
 
-  const memberCount = trip.trip_members?.[0]?.count || 0;
+  const memberCount = trip.trip_members?.length || 0;
   const displayAvatars = (trip as any).member_avatars?.slice(0, 5) || [];
   const remainingMembers = Math.max(0, memberCount - displayAvatars.length);
 
