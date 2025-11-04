@@ -1,77 +1,65 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
+import * as Sentry from "@sentry/react";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
+interface ErrorFallbackProps {
+  error: Error;
+  resetError: () => void;
 }
 
-interface ErrorBoundaryProps {
-  children: React.ReactNode;
-}
+function ErrorFallback({ error, resetError }: ErrorFallbackProps) {
+  const navigate = useNavigate();
 
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = {
-      hasError: false,
-      error: null,
-    };
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return {
-      hasError: true,
-      error,
-    };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
-  }
-
-  handleReset = () => {
-    this.setState({ hasError: false, error: null });
-    window.location.reload();
+  const handleGoHome = () => {
+    navigate("/");
+    resetError();
   };
 
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen bg-background flex items-center justify-center p-6">
-          <Card className="max-w-md w-full border-destructive">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <AlertTriangle className="w-8 h-8 text-destructive" />
-                <CardTitle className="text-2xl">Something went wrong</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                We encountered an unexpected error. Please try refreshing the page.
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <Card className="max-w-lg w-full">
+        <CardHeader className="text-center">
+          <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
+            <AlertTriangle className="h-6 w-6 text-destructive" />
+          </div>
+          <CardTitle className="text-2xl">Something went wrong</CardTitle>
+          <CardDescription className="text-base">
+            We're sorry, but something unexpected happened. Our team has been notified.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {import.meta.env.DEV && (
+            <div className="p-3 bg-muted rounded-lg">
+              <p className="text-sm font-mono text-muted-foreground break-all">
+                {error.message}
               </p>
-              {this.state.error && (
-                <details className="text-xs bg-muted p-3 rounded-lg">
-                  <summary className="cursor-pointer font-medium mb-2">Error details</summary>
-                  <code className="text-destructive">{this.state.error.message}</code>
-                </details>
-              )}
-              <div className="flex gap-2">
-                <Button onClick={this.handleReset} className="flex-1">
-                  Reload Page
-                </Button>
-                <Button onClick={() => window.location.href = '/'} variant="outline" className="flex-1">
-                  Go Home
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
+            </div>
+          )}
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button onClick={resetError} className="flex-1" variant="outline">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Try Again
+            </Button>
+            <Button onClick={handleGoHome} className="flex-1">
+              <Home className="h-4 w-4 mr-2" />
+              Go Home
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
+
+export const ErrorBoundary = Sentry.withErrorBoundary(
+  ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  {
+    fallback: ({ error, resetError }) => (
+      <ErrorFallback error={error as Error} resetError={resetError} />
+    ),
+    showDialog: false,
+  }
+);
