@@ -1613,6 +1613,82 @@ export type Database = {
           },
         ]
       }
+      trip_activity: {
+        Row: {
+          activity_data: Json | null
+          activity_type: string
+          created_at: string
+          id: string
+          trip_id: string
+          user_id: string
+        }
+        Insert: {
+          activity_data?: Json | null
+          activity_type: string
+          created_at?: string
+          id?: string
+          trip_id: string
+          user_id: string
+        }
+        Update: {
+          activity_data?: Json | null
+          activity_type?: string
+          created_at?: string
+          id?: string
+          trip_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_activity_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_budgets: {
+        Row: {
+          alert_threshold: number | null
+          category_budgets: Json | null
+          created_at: string
+          currency: string
+          id: string
+          total_budget: number
+          trip_id: string
+          updated_at: string
+        }
+        Insert: {
+          alert_threshold?: number | null
+          category_budgets?: Json | null
+          created_at?: string
+          currency?: string
+          id?: string
+          total_budget?: number
+          trip_id: string
+          updated_at?: string
+        }
+        Update: {
+          alert_threshold?: number | null
+          category_budgets?: Json | null
+          created_at?: string
+          currency?: string
+          id?: string
+          total_budget?: number
+          trip_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_budgets_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: true
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trip_comments: {
         Row: {
           comment: string
@@ -1673,6 +1749,41 @@ export type Database = {
             columns: ["trip_id"]
             isOneToOne: false
             referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trip_task_comments: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          task_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          id?: string
+          task_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          task_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "trip_tasks"
             referencedColumns: ["id"]
           },
         ]
@@ -2018,6 +2129,15 @@ export type Database = {
       is_username_available: {
         Args: { username_to_check: string }
         Returns: boolean
+      }
+      log_trip_activity: {
+        Args: {
+          p_activity_data?: Json
+          p_activity_type: string
+          p_trip_id: string
+          p_user_id: string
+        }
+        Returns: string
       }
       log_user_activity: {
         Args: {

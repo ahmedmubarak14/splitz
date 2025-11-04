@@ -22,6 +22,8 @@ import { EditTripDialog } from "@/components/EditTripDialog";
 import { TripExpensesList } from "@/components/TripExpensesList";
 import { CreateTripExpenseDialog } from "@/components/CreateTripExpenseDialog";
 import { TripExpenseSummary } from "@/components/TripExpenseSummary";
+import { TripActivityFeed } from "@/components/TripActivityFeed";
+import { TripBudgetTracker } from "@/components/TripBudgetTracker";
 import { format } from "date-fns";
 
 export default function TripDetails() {
@@ -216,7 +218,9 @@ export default function TripDetails() {
           <TabsList className="w-full justify-start">
             <TabsTrigger value="tasks">{t('trips.tasks')}</TabsTrigger>
             <TabsTrigger value="expenses">{t('trips.expenses.title')}</TabsTrigger>
+            <TabsTrigger value="budget">{t('trips.budget.title')}</TabsTrigger>
             <TabsTrigger value="members">{t('trips.members')}</TabsTrigger>
+            <TabsTrigger value="activity">{t('trips.activity.title')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="tasks" className="space-y-4">
@@ -242,6 +246,10 @@ export default function TripDetails() {
             <TripExpensesList tripId={id!} />
           </TabsContent>
 
+          <TabsContent value="budget" className="space-y-4">
+            <TripBudgetTracker tripId={id!} />
+          </TabsContent>
+
           <TabsContent value="members" className="space-y-4">
             <div className={`flex justify-between items-center ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
               <h2 className="text-xl font-semibold">{t('trips.members')}</h2>
@@ -251,6 +259,11 @@ export default function TripDetails() {
               </Button>
             </div>
             <TripMembersList tripId={id!} />
+          </TabsContent>
+
+          <TabsContent value="activity" className="space-y-4">
+            <h2 className="text-xl font-semibold">{t('trips.activity.title')}</h2>
+            <TripActivityFeed tripId={id!} />
           </TabsContent>
         </Tabs>
 

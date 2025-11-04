@@ -4,14 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar, MoreVertical, User } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Calendar, MoreVertical, User, ChevronDown, MessageSquare } from "lucide-react";
 import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { EditTripTaskDialog } from "./EditTripTaskDialog";
+import { TripTaskComments } from "./TripTaskComments";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +30,20 @@ export const TripTaskCard = ({ task }: TripTaskCardProps) => {
   const isRTL = useIsRTL();
   const queryClient = useQueryClient();
   const [editOpen, setEditOpen] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
+
+  const { data: commentsCount } = useQuery({
+    queryKey: ["trip-task-comments-count", task.id],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("trip_task_comments")
+        .select("*", { count: 'exact', head: true })
+        .eq("task_id", task.id);
+
+      if (error) throw error;
+      return count || 0;
+    },
+  });
 
   const updateStatusMutation = useMutation({
     mutationFn: async (newStatus: string) => {
@@ -79,78 +95,94 @@ export const TripTaskCard = ({ task }: TripTaskCardProps) => {
 
   return (
     <>
-      <Card className="p-4">
-        <div className={`flex items-start gap-3 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-          <Checkbox
-            checked={task.status === 'done'}
-            onCheckedChange={handleCheckChange}
-            className="mt-1"
-          />
-          
-          <div className="flex-1 space-y-2">
-            <div className={`flex items-start justify-between gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-              <h4 className={`font-medium ${task.status === 'done' ? 'line-through text-muted-foreground' : ''}`}>
-                {task.title}
-              </h4>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align={isRTL ? 'start' : 'end'}>
-                  <DropdownMenuItem onClick={() => setEditOpen(true)}>
-                    {t('common.edit')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => deleteMutation.mutate()}
-                    className="text-destructive"
-                  >
-                    {t('common.delete')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+      <Collapsible open={commentsOpen} onOpenChange={setCommentsOpen}>
+        <Card className="p-4">
+          <div className={`flex items-start gap-3 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+            <Checkbox
+              checked={task.status === 'done'}
+              onCheckedChange={handleCheckChange}
+              className="mt-1"
+            />
+            
+            <div className="flex-1 space-y-2">
+              <div className={`flex items-start justify-between gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                <h4 className={`font-medium ${task.status === 'done' ? 'line-through text-muted-foreground' : ''}`}>
+                  {task.title}
+                </h4>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align={isRTL ? 'start' : 'end'}>
+                    <DropdownMenuItem onClick={() => setEditOpen(true)}>
+                      {t('common.edit')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => deleteMutation.mutate()}
+                      className="text-destructive"
+                    >
+                      {t('common.delete')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
 
-            {task.description && (
-              <p className="text-sm text-muted-foreground">{task.description}</p>
-            )}
-
-            <div className={`flex flex-wrap items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-              <Badge variant="outline" className={priorityColors[task.priority as keyof typeof priorityColors]}>
-                {t(`trips.priority.${task.priority}`)}
-              </Badge>
-
-              {task.due_date && (
-                <div className={`flex items-center gap-1 text-sm text-muted-foreground ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-                  <Calendar className="h-3 w-3" />
-                  <span>{format(new Date(task.due_date), 'MMM d, yyyy')}</span>
-                </div>
+              {task.description && (
+                <p className="text-sm text-muted-foreground">{task.description}</p>
               )}
 
-              {task.assigned_user ? (
-                <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage src={task.assigned_user.avatar_url} />
-                    <AvatarFallback className="text-xs">
-                      {task.assigned_user.full_name?.[0] || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm text-muted-foreground">
-                    {task.assigned_user.full_name}
-                  </span>
-                </div>
-              ) : task.assigned_to_group ? (
-                <div className={`flex items-center gap-1 text-sm text-muted-foreground ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-                  <User className="h-3 w-3" />
-                  <span>{t('trips.everyone')}</span>
-                </div>
-              ) : null}
+              <div className={`flex flex-wrap items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                <Badge variant="outline" className={priorityColors[task.priority as keyof typeof priorityColors]}>
+                  {t(`trips.priority.${task.priority}`)}
+                </Badge>
+
+                {task.due_date && (
+                  <div className={`flex items-center gap-1 text-sm text-muted-foreground ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                    <Calendar className="h-3 w-3" />
+                    <span>{format(new Date(task.due_date), 'MMM d, yyyy')}</span>
+                  </div>
+                )}
+
+                {task.assigned_user ? (
+                  <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={task.assigned_user.avatar_url} />
+                      <AvatarFallback className="text-xs">
+                        {task.assigned_user.full_name?.[0] || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm text-muted-foreground">
+                      {task.assigned_user.full_name}
+                    </span>
+                  </div>
+                ) : task.assigned_to_group ? (
+                  <div className={`flex items-center gap-1 text-sm text-muted-foreground ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                    <User className="h-3 w-3" />
+                    <span>{t('trips.everyone')}</span>
+                  </div>
+                ) : null}
+                
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-7 gap-1">
+                    <MessageSquare className="h-3 w-3" />
+                    <span className="text-xs">{commentsCount || 0}</span>
+                    <ChevronDown className={`h-3 w-3 transition-transform ${commentsOpen ? 'rotate-180' : ''}`} />
+                  </Button>
+                </CollapsibleTrigger>
+              </div>
             </div>
           </div>
-        </div>
-      </Card>
+
+          <CollapsibleContent>
+            <div className="mt-4 pt-4 border-t">
+              <TripTaskComments taskId={task.id} />
+            </div>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
       <EditTripTaskDialog
         task={task}
