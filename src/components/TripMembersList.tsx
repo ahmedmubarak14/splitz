@@ -101,7 +101,14 @@ export const TripMembersList = ({ tripId }: TripMembersListProps) => {
             </div>
             
             {trip?.created_by === member.user_id && (
-              <Badge variant="secondary">{t('trips.creator')}</Badge>
+              <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                {t('trips.creator')}
+              </Badge>
+            )}
+            {member.role === 'admin' && trip?.created_by !== member.user_id && (
+              <Badge variant="outline" className="border-orange-500/20 text-orange-600 dark:text-orange-400">
+                {t('trips.admin')}
+              </Badge>
             )}
           </div>
         </Card>

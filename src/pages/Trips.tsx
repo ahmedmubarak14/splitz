@@ -26,7 +26,11 @@ export default function Trips() {
         .from("trips")
         .select(`
           *,
-          trip_members(count),
+          trip_members(
+            count,
+            user_id,
+            role
+          ),
           trip_tasks(id, status)
         `)
         .order("start_date", { ascending: true });
@@ -35,7 +39,31 @@ export default function Trips() {
         toast.error(t('errors.failedToLoad'));
         throw error;
       }
-      return data;
+
+      // Fetch avatars for first 3 members of each trip
+      const tripsWithAvatars = await Promise.all(
+        data.map(async (trip) => {
+          const memberUserIds = trip.trip_members?.slice(0, 3).map((m: any) => m.user_id) || [];
+          
+          let memberAvatars: any[] = [];
+          if (memberUserIds.length > 0) {
+            const { data: profiles } = await supabase.rpc(
+              'get_public_profiles',
+              { _user_ids: memberUserIds }
+            );
+            
+            memberAvatars = profiles?.map((p: any) => ({
+              id: p.id,
+              full_name: p.full_name,
+              avatar_url: p.avatar_url
+            })) || [];
+          }
+          
+          return { ...trip, member_avatars: memberAvatars };
+        })
+      );
+
+      return tripsWithAvatars;
     },
   });
 

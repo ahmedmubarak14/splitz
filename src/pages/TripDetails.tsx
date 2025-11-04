@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SEO } from "@/components/SEO";
 import { ArrowLeft, Plus, Calendar, MapPin, Users } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
@@ -40,7 +43,7 @@ export default function TripDetails() {
         .from("trips")
         .select(`
           *,
-          trip_members(count),
+          trip_members(count, user_id, role),
           trip_tasks(id, status)
         `)
         .eq("id", id)
@@ -50,7 +53,25 @@ export default function TripDetails() {
         toast.error(t('errors.failedToLoad'));
         throw error;
       }
-      return data;
+
+      // Fetch avatars for members
+      const memberUserIds = data.trip_members?.slice(0, 5).map((m: any) => m.user_id) || [];
+      
+      let memberAvatars: any[] = [];
+      if (memberUserIds.length > 0) {
+        const { data: profiles } = await supabase.rpc(
+          'get_public_profiles',
+          { _user_ids: memberUserIds }
+        );
+        
+        memberAvatars = profiles?.map((p: any) => ({
+          id: p.id,
+          full_name: p.full_name,
+          avatar_url: p.avatar_url
+        })) || [];
+      }
+
+      return { ...data, member_avatars: memberAvatars };
     },
   });
 
@@ -68,7 +89,24 @@ export default function TripDetails() {
   }
 
   const todoTasks = trip.trip_tasks?.filter((t: any) => t.status === 'todo').length || 0;
+  const inProgressTasks = trip.trip_tasks?.filter((t: any) => t.status === 'in_progress').length || 0;
+  const completedTasks = trip.trip_tasks?.filter((t: any) => t.status === 'done').length || 0;
   const totalTasks = trip.trip_tasks?.length || 0;
+  const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+
+  const isActive = trip.status === 'active';
+  const isCompleted = trip.status === 'completed';
+  const isPending = trip.status === 'planning';
+
+  const getStatusColor = () => {
+    if (isCompleted) return "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20";
+    if (isActive) return "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20";
+    return "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20";
+  };
+
+  const memberCount = trip.trip_members?.[0]?.count || 0;
+  const displayAvatars = (trip as any).member_avatars?.slice(0, 5) || [];
+  const remainingMembers = Math.max(0, memberCount - displayAvatars.length);
 
   return (
     <>
@@ -90,41 +128,86 @@ export default function TripDetails() {
           </Button>
 
           {/* Trip Header */}
-          <div className="rounded-lg border bg-card p-6 space-y-4">
+          <div className="rounded-lg border bg-card p-6 space-y-6">
             <div className={`flex justify-between items-start ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold">{trip.name}</h1>
-                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                  <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+              <div className="space-y-3 flex-1">
+                <div className={`flex items-center gap-3 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                  <h1 className="text-3xl font-bold">{trip.name}</h1>
+                  <Badge variant="outline" className={getStatusColor()}>
+                    {isCompleted ? t('trips.completed') : isActive ? t('trips.active') : t('trips.planning')}
+                  </Badge>
+                </div>
+
+                <div className="flex flex-wrap gap-4 text-sm">
+                  <div className={`flex items-center gap-2 text-muted-foreground ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
                     <MapPin className="h-4 w-4" />
                     <span>{trip.destination || t('trips.noDestination')}</span>
                   </div>
-                  <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                  <div className={`flex items-center gap-2 text-muted-foreground ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
                     <Calendar className="h-4 w-4" />
                     <span>
                       {format(new Date(trip.start_date), 'MMM d')} - {format(new Date(trip.end_date), 'MMM d, yyyy')}
                     </span>
                   </div>
+                  
+                  {/* Member Avatars */}
                   <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-                    <Users className="h-4 w-4" />
-                    <span>{trip.trip_members?.[0]?.count || 0} {t('trips.members')}</span>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <div className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} ${isRTL ? 'space-x-reverse' : ''} -space-x-2`}>
+                      {displayAvatars.map((member: any) => (
+                        <Avatar key={member.id} className="h-6 w-6 border-2 border-background">
+                          <AvatarImage src={member.avatar_url} />
+                          <AvatarFallback className="text-xs">
+                            {member.full_name?.[0] || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                      ))}
+                      {remainingMembers > 0 && (
+                        <div className="h-6 w-6 rounded-full bg-muted border-2 border-background flex items-center justify-center">
+                          <span className="text-[10px] font-medium">+{remainingMembers}</span>
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-muted-foreground">{memberCount}</span>
                   </div>
                 </div>
+
                 {trip.description && (
-                  <p className="text-muted-foreground mt-2">{trip.description}</p>
+                  <p className="text-muted-foreground">{trip.description}</p>
                 )}
               </div>
+              
               <Button onClick={() => setEditTripOpen(true)} variant="outline">
                 {t('common.edit')}
               </Button>
             </div>
 
-            <div className="flex gap-2 pt-2">
-              <div className="text-sm">
-                <span className="font-medium">{totalTasks - todoTasks}</span>
-                <span className="text-muted-foreground">/{totalTasks} {t('trips.tasksComplete')}</span>
+            {/* Progress Section */}
+            {totalTasks > 0 && (
+              <div className="space-y-3 pt-4 border-t">
+                <div className={`flex items-center justify-between ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                  <h3 className="font-semibold">{t('trips.taskProgress')}</h3>
+                  <span className="text-sm font-medium">
+                    {completedTasks}/{totalTasks} {t('common.completed')} ({Math.round(progress)}%)
+                  </span>
+                </div>
+                <Progress value={progress} className="h-3" />
+                <div className={`flex gap-4 text-sm ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                  <div className="flex items-center gap-2">
+                    <div className="h-3 w-3 rounded-full bg-muted-foreground/30"></div>
+                    <span className="text-muted-foreground">{todoTasks} {t('trips.status.todo')}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-3 w-3 rounded-full bg-blue-500"></div>
+                    <span className="text-muted-foreground">{inProgressTasks} {t('trips.status.in_progress')}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-3 w-3 rounded-full bg-green-500"></div>
+                    <span className="text-muted-foreground">{completedTasks} {t('trips.status.done')}</span>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 

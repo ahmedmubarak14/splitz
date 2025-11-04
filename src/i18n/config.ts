@@ -1488,6 +1488,7 @@ const resources = {
         taskTitleRequired: 'Task title is required',
         taskCreated: 'Task created successfully',
         dueDate: 'Due Date',
+        taskProgress: 'Task Progress',
         selectDate: 'Select date',
         assignToEveryone: 'Assign to Everyone',
         assignTo: 'Assign To',
@@ -1498,6 +1499,8 @@ const resources = {
           inviteMembers: 'Invite friends to collaborate on planning',
           splitCosts: 'Track and split trip expenses easily'
         },
+        tripInProgress: 'Trip in Progress',
+        admin: 'Admin',
         expenses: {
           title: 'Expenses',
           addExpense: 'Add Expense',
@@ -3219,6 +3222,7 @@ const resources = {
         taskTitleRequired: 'عنوان المهمة مطلوب',
         taskCreated: 'تم إنشاء المهمة بنجاح',
         dueDate: 'تاريخ الاستحقاق',
+        taskProgress: 'تقدم المهام',
         selectDate: 'اختر التاريخ',
         assignToEveryone: 'تعيين للجميع',
         assignTo: 'تعيين إلى',
@@ -3229,6 +3233,8 @@ const resources = {
           inviteMembers: 'ادع الأصدقاء للتعاون في التخطيط',
           splitCosts: 'تتبع وقسّم مصروفات الرحلة بسهولة'
         },
+        tripInProgress: 'الرحلة جارية',
+        admin: 'مسؤول',
         expenses: {
           title: 'المصروفات',
           addExpense: 'إضافة مصروف',

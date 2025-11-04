@@ -2,6 +2,7 @@ import { MapPin, Calendar, Users, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { differenceInDays, format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -23,6 +24,22 @@ export const TripCard = ({ trip }: TripCardProps) => {
   const daysUntilStart = differenceInDays(new Date(trip.start_date), new Date());
   const isActive = daysUntilStart <= 0 && differenceInDays(new Date(trip.end_date), new Date()) >= 0;
   const isCompleted = trip.status === "completed";
+  
+  const memberCount = trip.trip_members?.[0]?.count || 0;
+  const displayAvatars = (trip as any).member_avatars?.slice(0, 3) || [];
+  const remainingMembers = Math.max(0, memberCount - displayAvatars.length);
+
+  const getStatusVariant = () => {
+    if (isCompleted) return "default";
+    if (isActive) return "secondary";
+    return "outline";
+  };
+
+  const getStatusColor = () => {
+    if (isCompleted) return "text-green-600 dark:text-green-400";
+    if (isActive) return "text-blue-600 dark:text-blue-400";
+    return "text-muted-foreground";
+  };
 
   return (
     <Card 
@@ -42,7 +59,7 @@ export const TripCard = ({ trip }: TripCardProps) => {
               )}
             </div>
           </div>
-          <Badge variant={isCompleted ? "default" : isActive ? "secondary" : "outline"}>
+          <Badge variant={getStatusVariant()} className={getStatusColor()}>
             {isCompleted ? t('trips.completed') : isActive ? t('trips.active') : t('trips.planning')}
           </Badge>
         </div>
@@ -54,26 +71,62 @@ export const TripCard = ({ trip }: TripCardProps) => {
             <Calendar className="h-4 w-4" />
             <span>{formatDate(trip.start_date, i18n.language)}</span>
           </div>
-          <div className={`flex items-center gap-1 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-            <Users className="h-4 w-4" />
-            <span>{trip.trip_members?.[0]?.count || 0} {t('trips.members')}</span>
+          
+          {/* Member Avatars */}
+          <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+            <div className={`flex ${isRTL ? 'flex-row-reverse' : 'flex-row'} ${isRTL ? 'space-x-reverse' : ''} -space-x-2`}>
+              {displayAvatars.map((member: any, index: number) => (
+                <Avatar key={member.id} className="h-6 w-6 border-2 border-background">
+                  <AvatarImage src={member.avatar_url} />
+                  <AvatarFallback className="text-xs">
+                    {member.full_name?.[0] || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              ))}
+              {remainingMembers > 0 && (
+                <div className="h-6 w-6 rounded-full bg-muted border-2 border-background flex items-center justify-center">
+                  <span className="text-[10px] font-medium text-muted-foreground">
+                    +{remainingMembers}
+                  </span>
+                </div>
+              )}
+            </div>
+            <span className="text-xs">{memberCount} {t('trips.members')}</span>
           </div>
         </div>
 
         {totalTasks > 0 && (
           <div className="space-y-2">
             <div className={`flex items-center justify-between text-sm ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-              <span className="text-muted-foreground">{t('trips.tasks')}</span>
-              <span className="font-semibold">{completedTasks}/{totalTasks}</span>
+              <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">{t('trips.tasks')}</span>
+              </div>
+              <span className="font-semibold">
+                {completedTasks}/{totalTasks}
+                <span className="text-xs text-muted-foreground ml-1">
+                  ({Math.round(progress)}%)
+                </span>
+              </span>
             </div>
             <Progress value={progress} className="h-2" />
           </div>
         )}
 
         {!isCompleted && !isActive && daysUntilStart > 0 && (
-          <p className="text-sm text-center text-muted-foreground">
-            {t('trips.startsIn')} {daysUntilStart} {daysUntilStart === 1 ? t('common.day') : t('common.days')}
-          </p>
+          <div className="pt-2 border-t">
+            <p className="text-sm text-center text-muted-foreground">
+              🚀 {t('trips.startsIn')} <span className="font-semibold">{daysUntilStart}</span> {daysUntilStart === 1 ? t('common.day') : t('common.days')}
+            </p>
+          </div>
+        )}
+        
+        {isActive && (
+          <div className="pt-2 border-t">
+            <p className="text-sm text-center font-medium text-primary">
+              🎉 {t('trips.tripInProgress')}
+            </p>
+          </div>
         )}
       </CardContent>
     </Card>
