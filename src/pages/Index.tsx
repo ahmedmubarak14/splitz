@@ -56,18 +56,11 @@ const Index = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-xl border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-3">
-            <picture>
-              <source srcSet="/splitz-logo.webp" type="image/webp" />
-              <img
-                src={splitzLogo}
-                alt={t('common.logoAlt')}
-                width={32}
-                height={32}
-                className="h-8 w-auto rounded-none cursor-pointer hover:opacity-80 transition-opacity"
-                loading="eager"
-                decoding="async"
-              />
-            </picture>
+            <img
+              src={splitzLogo}
+              alt={t('common.logoAlt')}
+              className="h-8 w-auto rounded-none cursor-pointer hover:opacity-80 transition-opacity"
+            />
           </Link>
 
           {/* Desktop Nav */}
