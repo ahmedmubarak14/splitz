@@ -27,7 +27,6 @@ export default function Trips() {
         .select(`
           *,
           trip_members(
-            count,
             user_id,
             role
           ),
