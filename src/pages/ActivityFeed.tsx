@@ -126,16 +126,16 @@ export default function ActivityFeed() {
   return (
     <>
       <SEO 
-        title="Activity Feed"
-        description="See what your friends are up to on Splitz"
+        title={t('activityFeed.title')}
+        description={t('activityFeed.subtitle')}
       />
       
       <div className="container max-w-4xl py-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Activity Feed</h1>
+            <h1 className="text-3xl font-bold">{t('activityFeed.title')}</h1>
             <p className="text-muted-foreground mt-2">
-              See what your friends are accomplishing
+              {t('activityFeed.subtitle')}
             </p>
           </div>
           <Users className="h-8 w-8 text-muted-foreground" />
@@ -158,9 +158,9 @@ export default function ActivityFeed() {
             ) : activities.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No Activity Yet</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('activityFeed.noActivityYet')}</h3>
                 <p className="text-muted-foreground">
-                  Add friends to see their activity here!
+                  {t('activityFeed.noActivityDesc')}
                 </p>
               </div>
             ) : (
@@ -197,7 +197,7 @@ export default function ActivityFeed() {
                         
                         {activity.activity_data?.is_milestone && (
                           <Badge variant="secondary" className="text-xs">
-                            Milestone
+                            {t('activityFeed.milestone')}
                           </Badge>
                         )}
                       </div>

@@ -33,6 +33,7 @@ const resources = {
         account: 'Account',
         manageYourLife: 'Manage your life',
         friends: 'Friends',
+        activity: 'Activity',
       },
       sidebar: {
         overview: 'Overview',
@@ -482,6 +483,13 @@ const resources = {
           stayMotivated: 'Stay motivated by seeing friends\' progress',
           celebrate: 'Celebrate milestones together'
         },
+      },
+      activityFeed: {
+        title: 'Activity Feed',
+        subtitle: 'See what your friends are accomplishing',
+        noActivityYet: 'No Activity Yet',
+        noActivityDesc: 'Add friends to see their activity here!',
+        milestone: 'Milestone',
       },
       subscriptionCategories: {
         entertainment: 'Entertainment',
@@ -1802,6 +1810,7 @@ const resources = {
         account: 'الحساب',
         manageYourLife: 'أدر حياتك',
         friends: 'الأصدقاء',
+        activity: 'النشاط',
       },
       sidebar: {
         overview: 'نظرة عامة',
@@ -2246,6 +2255,13 @@ const resources = {
         week: 'هذا الأسبوع',
         month: 'هذا الشهر',
         allTime: 'كل الوقت',
+      },
+      activityFeed: {
+        title: 'موجز النشاط',
+        subtitle: 'شاهد ما يحققه أصدقاؤك',
+        noActivityYet: 'لا يوجد نشاط بعد',
+        noActivityDesc: 'أضف أصدقاء لرؤية نشاطهم هنا!',
+        milestone: 'إنجاز',
       },
       multiSelect: {
         selected: '{{count}} محدد',
