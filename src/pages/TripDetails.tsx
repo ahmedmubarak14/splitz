@@ -24,6 +24,8 @@ import { CreateTripExpenseDialog } from "@/components/CreateTripExpenseDialog";
 import { TripExpenseSummary } from "@/components/TripExpenseSummary";
 import { TripActivityFeed } from "@/components/TripActivityFeed";
 import { TripBudgetTracker } from "@/components/TripBudgetTracker";
+import { TripPackingList } from "@/components/TripPackingList";
+import { TripItinerary } from "@/components/TripItinerary";
 import { format } from "date-fns";
 
 export default function TripDetails() {
@@ -215,8 +217,10 @@ export default function TripDetails() {
 
         {/* Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="tasks" className="w-full">
-          <TabsList className="w-full justify-start">
+          <TabsList className="w-full justify-start overflow-x-auto">
             <TabsTrigger value="tasks">{t('trips.tasks')}</TabsTrigger>
+            <TabsTrigger value="itinerary">{t('trips.itinerary.title')}</TabsTrigger>
+            <TabsTrigger value="packing">{t('trips.packing.title')}</TabsTrigger>
             <TabsTrigger value="expenses">{t('trips.expenses.title')}</TabsTrigger>
             <TabsTrigger value="budget">{t('trips.budget.title')}</TabsTrigger>
             <TabsTrigger value="members">{t('trips.members')}</TabsTrigger>
@@ -232,6 +236,16 @@ export default function TripDetails() {
               </Button>
             </div>
             <TripTaskList tripId={id!} />
+          </TabsContent>
+
+          <TabsContent value="itinerary" className="space-y-4">
+            <h2 className="text-xl font-semibold">{t('trips.itinerary.title')}</h2>
+            <TripItinerary tripId={id!} startDate={trip.start_date} endDate={trip.end_date} />
+          </TabsContent>
+
+          <TabsContent value="packing" className="space-y-4">
+            <h2 className="text-xl font-semibold">{t('trips.packing.title')}</h2>
+            <TripPackingList tripId={id!} />
           </TabsContent>
 
           <TabsContent value="expenses" className="space-y-4">

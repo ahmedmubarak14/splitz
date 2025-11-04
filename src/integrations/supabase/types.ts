@@ -769,6 +769,59 @@ export type Database = {
         }
         Relationships: []
       }
+      itinerary_items: {
+        Row: {
+          activity_type: string | null
+          created_at: string
+          created_by: string
+          day_date: string
+          description: string | null
+          end_time: string | null
+          id: string
+          location: string | null
+          start_time: string | null
+          title: string
+          trip_id: string
+          updated_at: string
+        }
+        Insert: {
+          activity_type?: string | null
+          created_at?: string
+          created_by: string
+          day_date: string
+          description?: string | null
+          end_time?: string | null
+          id?: string
+          location?: string | null
+          start_time?: string | null
+          title: string
+          trip_id: string
+          updated_at?: string
+        }
+        Update: {
+          activity_type?: string | null
+          created_at?: string
+          created_by?: string
+          day_date?: string
+          description?: string | null
+          end_time?: string | null
+          id?: string
+          location?: string | null
+          start_time?: string | null
+          title?: string
+          trip_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itinerary_items_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       navigation_preferences: {
         Row: {
           created_at: string | null
@@ -914,6 +967,56 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      packing_lists: {
+        Row: {
+          added_by: string
+          category: string | null
+          created_at: string
+          id: string
+          is_packed: boolean | null
+          item_name: string
+          notes: string | null
+          packed_at: string | null
+          packed_by: string | null
+          trip_id: string
+          updated_at: string
+        }
+        Insert: {
+          added_by: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_packed?: boolean | null
+          item_name: string
+          notes?: string | null
+          packed_at?: string | null
+          packed_by?: string | null
+          trip_id: string
+          updated_at?: string
+        }
+        Update: {
+          added_by?: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_packed?: boolean | null
+          item_name?: string
+          notes?: string | null
+          packed_at?: string | null
+          packed_by?: string | null
+          trip_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "packing_lists_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payment_confirmations: {
         Row: {
@@ -1840,6 +1943,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      trip_templates: {
+        Row: {
+          category: string
+          created_at: string
+          default_packing_items: Json | null
+          default_tasks: Json | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          default_packing_items?: Json | null
+          default_tasks?: Json | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          default_packing_items?: Json | null
+          default_tasks?: Json | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
       }
       trips: {
         Row: {

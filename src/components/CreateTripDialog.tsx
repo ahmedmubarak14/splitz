@@ -10,10 +10,11 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useIsRTL } from "@/lib/rtl-utils";
 import { formatDate } from "@/lib/formatters";
+import { TripTemplateSelector } from "./TripTemplateSelector";
 
 interface CreateTripDialogProps {
   open: boolean;
@@ -24,12 +25,28 @@ export const CreateTripDialog = ({ open, onOpenChange }: CreateTripDialogProps) 
   const { t, i18n } = useTranslation();
   const isRTL = useIsRTL();
   const queryClient = useQueryClient();
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     destination: "",
     description: "",
     start_date: new Date(),
     end_date: new Date(),
+  });
+
+  const { data: template } = useQuery({
+    queryKey: ["trip-template", selectedTemplate],
+    queryFn: async () => {
+      if (!selectedTemplate) return null;
+      const { data, error } = await supabase
+        .from("trip_templates")
+        .select("*")
+        .eq("id", selectedTemplate)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!selectedTemplate,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,7 +58,7 @@ export const CreateTripDialog = ({ open, onOpenChange }: CreateTripDialogProps) 
       return;
     }
 
-    const { error } = await supabase
+    const { data: trip, error } = await supabase
       .from("trips")
       .insert([{
         name: formData.name,
@@ -50,11 +67,43 @@ export const CreateTripDialog = ({ open, onOpenChange }: CreateTripDialogProps) 
         start_date: format(formData.start_date, "yyyy-MM-dd"),
         end_date: format(formData.end_date, "yyyy-MM-dd"),
         created_by: user.id,
-      }]);
+      }])
+      .select()
+      .single();
 
     if (error) {
       toast.error(t('errors.genericError'));
       return;
+    }
+
+    // Apply template if selected
+    if (template && trip) {
+      // Add packing items
+      const packingItems = template.default_packing_items as any[];
+      if (packingItems?.length > 0) {
+        await supabase.from("packing_lists").insert(
+          packingItems.map((item: any) => ({
+            trip_id: trip.id,
+            item_name: item.name,
+            category: item.category,
+            added_by: user.id,
+          }))
+        );
+      }
+
+      // Add tasks
+      const tasks = template.default_tasks as any[];
+      if (tasks?.length > 0) {
+        await supabase.from("trip_tasks").insert(
+          tasks.map((task: any) => ({
+            trip_id: trip.id,
+            title: task.title,
+            priority: task.priority || "medium",
+            status: "todo",
+            created_by: user.id,
+          }))
+        );
+      }
     }
 
     toast.success(t('toast.tripCreated'));
@@ -67,18 +116,25 @@ export const CreateTripDialog = ({ open, onOpenChange }: CreateTripDialogProps) 
       start_date: new Date(),
       end_date: new Date(),
     });
+    setSelectedTemplate(null);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t('trips.title')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name">{t('trips.tripName')}</Label>
+          <TripTemplateSelector
+            selectedTemplate={selectedTemplate}
+            onSelectTemplate={setSelectedTemplate}
+          />
+
+          <div className="border-t pt-4">
+            <div>
+              <Label htmlFor="name">{t('trips.tripName')}</Label>
             <Input
               id="name"
               value={formData.name}
@@ -146,6 +202,7 @@ export const CreateTripDialog = ({ open, onOpenChange }: CreateTripDialogProps) 
                   />
                 </PopoverContent>
               </Popover>
+            </div>
             </div>
           </div>
 
