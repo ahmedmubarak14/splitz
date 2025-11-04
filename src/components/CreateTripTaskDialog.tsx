@@ -67,11 +67,18 @@ export const CreateTripTaskDialog = ({ tripId, open, onOpenChange }: CreateTripT
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Map priority to priority_quadrant enum
+      const priorityQuadrantMap: Record<string, string | null> = {
+        'high': 'urgent_important',
+        'medium': 'not_urgent_important',
+        'low': 'not_urgent_not_important'
+      };
+
       const { error } = await supabase.from("trip_tasks").insert({
         trip_id: tripId,
         title,
         description: description || null,
-        priority,
+        priority_quadrant: priorityQuadrantMap[priority],
         status,
         assigned_to: assignedToGroup ? null : (assignedTo === "unassigned" || !assignedTo ? null : assignedTo),
         assigned_to_group: assignedToGroup,
