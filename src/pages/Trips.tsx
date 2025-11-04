@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Plus, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/SEO";
@@ -12,26 +12,15 @@ import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileQuickActionsFAB } from "@/components/MobileQuickActionsFAB";
-import { useNavigate } from "react-router-dom";
+import { captureException } from "@/lib/sentry";
+
 export default function Trips() {
   const { t } = useTranslation();
   const isRTL = useIsRTL();
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [isAuthed, setIsAuthed] = useState(false);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        toast.error(t('errors.notAuthenticated'));
-        navigate('/auth');
-      } else {
-        setIsAuthed(true);
-      }
-    });
-  }, [navigate, t]);
-  const { data: trips, isLoading } = useQuery({
+  const { data: trips, isLoading, error } = useQuery({
     queryKey: ["trips"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -47,9 +36,16 @@ export default function Trips() {
         .order("start_date", { ascending: true });
 
       if (error) {
+        console.error('[Trips] Failed to fetch trips:', error);
+        captureException(error, { 
+          context: 'trips_list',
+          query: 'fetch_trips',
+        });
         toast.error(t('errors.failedToLoad'));
         throw error;
       }
+
+      if (!data) return [];
 
       // Fetch avatars for first 3 members of each trip
       const tripsWithAvatars = await Promise.all(
@@ -58,16 +54,21 @@ export default function Trips() {
           
           let memberAvatars: any[] = [];
           if (memberUserIds.length > 0) {
-            const { data: profiles } = await supabase.rpc(
-              'get_public_profiles',
-              { _user_ids: memberUserIds }
-            );
-            
-            memberAvatars = profiles?.map((p: any) => ({
-              id: p.id,
-              full_name: p.full_name,
-              avatar_url: p.avatar_url
-            })) || [];
+            try {
+              const { data: profiles } = await supabase.rpc(
+                'get_public_profiles',
+                { _user_ids: memberUserIds }
+              );
+              
+              memberAvatars = profiles?.map((p: any) => ({
+                id: p.id,
+                full_name: p.full_name,
+                avatar_url: p.avatar_url
+              })) || [];
+            } catch (avatarError) {
+              console.warn('[Trips] Failed to fetch avatars for trip:', trip.id, avatarError);
+              // Gracefully degrade - continue without avatars
+            }
           }
           
           return { ...trip, member_avatars: memberAvatars };
@@ -76,8 +77,12 @@ export default function Trips() {
 
       return tripsWithAvatars;
     },
-    enabled: isAuthed,
   });
+
+  // Log errors for debugging
+  if (error) {
+    console.error('[Trips] Query error:', error);
+  }
 
   return (
     <>

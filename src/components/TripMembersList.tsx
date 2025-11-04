@@ -17,7 +17,7 @@ export const TripMembersList = ({ tripId }: TripMembersListProps) => {
   const { t } = useTranslation();
   const isRTL = useIsRTL();
 
-  const { data: members, isLoading } = useQuery({
+  const { data: members, isLoading, error } = useQuery({
     queryKey: ["trip-members", tripId],
     queryFn: async () => {
       // First fetch trip members
@@ -27,32 +27,50 @@ export const TripMembersList = ({ tripId }: TripMembersListProps) => {
         .eq("trip_id", tripId);
 
       if (memberError) {
+        console.error('[TripMembers] Failed to fetch members:', memberError);
         toast.error(t('errors.failedToLoad'));
         throw memberError;
       }
 
       if (!memberData || memberData.length === 0) return [];
 
-      // Then fetch profiles for those users
+      // Fetch profiles using RPC to avoid RLS issues
       const userIds = memberData.map(m => m.user_id);
-      const { data: profiles, error: profileError } = await supabase
-        .from("profiles")
-        .select("id, full_name, avatar_url")
-        .in("id", userIds);
+      try {
+        const { data: profiles, error: profileError } = await supabase.rpc(
+          'get_public_profiles',
+          { _user_ids: userIds }
+        );
 
-      if (profileError) {
-        console.error("Failed to load profiles:", profileError);
-        // Return members without profile data
-        return memberData;
+        if (profileError) {
+          console.warn('[TripMembers] Failed to load profiles via RPC:', profileError);
+          // Return members with null profiles - will show fallback UI
+          return memberData.map(member => ({
+            ...member,
+            profiles: null
+          }));
+        }
+
+        // Merge members with their profiles
+        return memberData.map(member => ({
+          ...member,
+          profiles: profiles?.find((p: any) => p.id === member.user_id) || null
+        }));
+      } catch (rpcError) {
+        console.warn('[TripMembers] RPC call failed:', rpcError);
+        // Return members without profiles
+        return memberData.map(member => ({
+          ...member,
+          profiles: null
+        }));
       }
-
-      // Merge members with their profiles
-      return memberData.map(member => ({
-        ...member,
-        profiles: profiles?.find(p => p.id === member.user_id) || null
-      }));
     },
   });
+
+  // Log errors for debugging
+  if (error) {
+    console.error('[TripMembers] Query error:', error);
+  }
 
   const { data: trip } = useQuery({
     queryKey: ["trip", tripId],

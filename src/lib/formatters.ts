@@ -62,6 +62,27 @@ export const formatDate = (
 };
 
 /**
+ * Safe date formatter - returns fallback if date is invalid
+ */
+export const safeFormatDate = (
+  date: Date | string | null | undefined,
+  language: string = 'en',
+  options?: Intl.DateTimeFormatOptions,
+  fallback: string = '—'
+): string => {
+  if (!date) return fallback;
+  
+  try {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(dateObj.getTime())) return fallback;
+    return formatDate(dateObj, language, options);
+  } catch (error) {
+    console.warn('[formatters] Failed to format date:', error);
+    return fallback;
+  }
+};
+
+/**
  * Format just the number without currency symbol
  */
 export const formatAmount = (

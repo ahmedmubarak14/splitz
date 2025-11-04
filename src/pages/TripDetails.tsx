@@ -1,60 +1,50 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SEO } from "@/components/SEO";
-import { ArrowLeft, Plus, Calendar, MapPin, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { ArrowLeft, Pencil, CalendarDays, MapPin, Users, Plus } from "lucide-react";
+import { TripTaskList } from "@/components/TripTaskList";
+import { TripMembersList } from "@/components/TripMembersList";
+import { TripExpensesList } from "@/components/TripExpensesList";
+import { TripExpenseSummary } from "@/components/TripExpenseSummary";
+import { TripBudgetTracker } from "@/components/TripBudgetTracker";
+import { TripItinerary } from "@/components/TripItinerary";
+import { TripPackingList } from "@/components/TripPackingList";
+import { TripActivityFeed } from "@/components/TripActivityFeed";
+import { CreateTripTaskDialog } from "@/components/CreateTripTaskDialog";
+import { InviteTripMemberDialog } from "@/components/InviteTripMemberDialog";
+import { EditTripDialog } from "@/components/EditTripDialog";
+import { CreateTripExpenseDialog } from "@/components/CreateTripExpenseDialog";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileQuickActionsFAB } from "@/components/MobileQuickActionsFAB";
-import { TripTaskList } from "@/components/TripTaskList";
-import { TripMembersList } from "@/components/TripMembersList";
-import { CreateTripTaskDialog } from "@/components/CreateTripTaskDialog";
-import { InviteTripMemberDialog } from "@/components/InviteTripMemberDialog";
-import { EditTripDialog } from "@/components/EditTripDialog";
-import { TripExpensesList } from "@/components/TripExpensesList";
-import { CreateTripExpenseDialog } from "@/components/CreateTripExpenseDialog";
-import { TripExpenseSummary } from "@/components/TripExpenseSummary";
-import { TripActivityFeed } from "@/components/TripActivityFeed";
-import { TripBudgetTracker } from "@/components/TripBudgetTracker";
-import { TripPackingList } from "@/components/TripPackingList";
-import { TripItinerary } from "@/components/TripItinerary";
-import { format } from "date-fns";
+import { SEO } from "@/components/SEO";
+import { safeFormatDate } from "@/lib/formatters";
+import { captureException } from "@/lib/sentry";
 
 export default function TripDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isRTL = useIsRTL();
   const isMobile = useIsMobile();
+  
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const [inviteMemberOpen, setInviteMemberOpen] = useState(false);
   const [editTripOpen, setEditTripOpen] = useState(false);
   const [createExpenseOpen, setCreateExpenseOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('tasks');
-  const [isAuthed, setIsAuthed] = useState(false);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        toast.error(t('errors.notAuthenticated'));
-        navigate('/auth');
-      } else {
-        setIsAuthed(true);
-      }
-    });
-  }, [navigate, t]);
-
-  const { data: trip, isLoading } = useQuery({
+  const { data: trip, isLoading, error } = useQuery({
     queryKey: ["trip", id],
-    enabled: isAuthed && !!id,
+    enabled: !!id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("trips")
@@ -67,32 +57,50 @@ export default function TripDetails() {
         .maybeSingle();
 
       if (error) {
+        console.error('[TripDetails] Failed to fetch trip:', error);
+        captureException(error, { 
+          context: 'trip_details',
+          query: 'fetch_trip',
+          tripId: id,
+        });
         toast.error(t('errors.failedToLoad'));
         throw error;
       }
 
-      if (!data) return null as any;
+      if (!data) {
+        console.warn('[TripDetails] No trip found with id:', id);
+        return null;
+      }
 
       // Fetch avatars for members
       const memberUserIds = data.trip_members?.slice(0, 5).map((m: any) => m.user_id) || [];
-      
       let memberAvatars: any[] = [];
       if (memberUserIds.length > 0) {
-        const { data: profiles } = await supabase.rpc(
-          'get_public_profiles',
-          { _user_ids: memberUserIds }
-        );
+        try {
+          const { data: profiles } = await supabase.rpc(
+            'get_public_profiles',
+            { _user_ids: memberUserIds }
+          );
 
-        memberAvatars = profiles?.map((p: any) => ({
-          id: p.id,
-          full_name: p.full_name,
-          avatar_url: p.avatar_url
-        })) || [];
+          memberAvatars = profiles?.map((p: any) => ({
+            id: p.id,
+            full_name: p.full_name,
+            avatar_url: p.avatar_url
+          })) || [];
+        } catch (avatarError) {
+          console.warn('[TripDetails] Failed to fetch avatars:', avatarError);
+          // Gracefully degrade - continue without avatars
+        }
       }
 
       return { ...data, member_avatars: memberAvatars };
     },
   });
+
+  // Log errors for debugging
+  if (error) {
+    console.error('[TripDetails] Query error:', error);
+  }
 
   if (isLoading) {
     return <div className="flex items-center justify-center min-h-screen">{t('common.loading')}</div>;
@@ -100,12 +108,21 @@ export default function TripDetails() {
 
   if (!trip) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <p className="text-muted-foreground">{t('trips.notFound')}</p>
-        <Button onClick={() => navigate('/trips')}>{t('common.goBack')}</Button>
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="text-center space-y-4">
+          <h2 className="text-2xl font-bold">{t('trips.notFound')}</h2>
+          <p className="text-muted-foreground">{t('trips.notFoundDescription')}</p>
+          <Button onClick={() => navigate('/trips')}>
+            {t('trips.backToTrips')}
+          </Button>
+        </div>
       </div>
     );
   }
+
+  // Safe date formatting
+  const formattedStartDate = safeFormatDate(trip.start_date, i18n.language);
+  const formattedEndDate = safeFormatDate(trip.end_date, i18n.language);
 
   const todoTasks = trip.trip_tasks?.filter((t: any) => t.status === 'todo').length || 0;
   const inProgressTasks = trip.trip_tasks?.filter((t: any) => t.status === 'in_progress').length || 0;
@@ -158,16 +175,20 @@ export default function TripDetails() {
                 </div>
 
                 <div className="flex flex-wrap gap-4 text-sm">
-                  <div className={`flex items-center gap-2 text-muted-foreground ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-                    <MapPin className="h-4 w-4" />
-                    <span>{trip.destination || t('trips.noDestination')}</span>
-                  </div>
-                  <div className={`flex items-center gap-2 text-muted-foreground ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-                    <Calendar className="h-4 w-4" />
-                    <span>
-                      {format(new Date(trip.start_date), 'MMM d')} - {format(new Date(trip.end_date), 'MMM d, yyyy')}
-                    </span>
-                  </div>
+                  {trip.destination && (
+                    <div className={`flex items-center gap-2 text-muted-foreground ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                      <MapPin className="h-4 w-4" />
+                      <span>{trip.destination}</span>
+                    </div>
+                  )}
+                  {(trip.start_date || trip.end_date) && (
+                    <div className={`flex items-center gap-2 text-muted-foreground ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+                      <CalendarDays className="h-4 w-4" />
+                      <span>
+                        {formattedStartDate}{trip.end_date && ` - ${formattedEndDate}`}
+                      </span>
+                    </div>
+                  )}
                   
                   {/* Member Avatars */}
                   <div className={`flex items-center gap-2 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>

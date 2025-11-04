@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route, useLocation, Link, useNavigate } from "re
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AchievementUnlock } from "@/components/AchievementUnlock";
 import { useAchievements } from "@/hooks/useAchievements";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 // Lazy load heavy components for better initial bundle size
 const AppSidebar = lazy(() => import("@/components/AppSidebar").then(m => ({ default: m.AppSidebar })));
@@ -216,20 +218,20 @@ const AppContent = () => {
               <Route path="/join-friend/:inviteCode" element={<JoinFriendInvite />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/install" element={<InstallPWA />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/habits" element={<Habits />} />
-            <Route path="/tasks" element={<Tasks />} />
-            <Route path="/matrix" element={<Matrix />} />
-            <Route path="/focus" element={<Focus />} />
-            <Route path="/expenses" element={<Expenses />} />
-            <Route path="/challenges" element={<Challenges />} />
-            <Route path="/subscriptions" element={<Subscriptions />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/trips" element={<Trips />} />
-            <Route path="/trips/:id" element={<TripDetails />} />
-            <Route path="/activity" element={<ActivityFeed />} />
-            <Route path="/friends" element={<Friends />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/habits" element={<ProtectedRoute><Habits /></ProtectedRoute>} />
+            <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
+            <Route path="/matrix" element={<ProtectedRoute><Matrix /></ProtectedRoute>} />
+            <Route path="/focus" element={<ProtectedRoute><Focus /></ProtectedRoute>} />
+            <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
+            <Route path="/challenges" element={<ProtectedRoute><Challenges /></ProtectedRoute>} />
+            <Route path="/subscriptions" element={<ProtectedRoute><Subscriptions /></ProtectedRoute>} />
+            <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+            <Route path="/trips" element={<ProtectedRoute><Trips /></ProtectedRoute>} />
+            <Route path="/trips/:id" element={<ProtectedRoute><TripDetails /></ProtectedRoute>} />
+            <Route path="/activity" element={<ProtectedRoute><ActivityFeed /></ProtectedRoute>} />
+            <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/dev-tools" element={<DevTools />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
@@ -248,13 +250,15 @@ const AppContent = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
