@@ -174,7 +174,7 @@ const Auth = () => {
               full_name: fullName.trim(),
               username: username.toLowerCase().trim()
             },
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
           },
         });
         
@@ -186,11 +186,28 @@ const Auth = () => {
             .from('profiles')
             .update({ username: username.toLowerCase().trim() })
             .eq('id', data.user.id);
+          
+          // Send custom verification email as backup
+          try {
+            await supabase.functions.invoke('send-verification-email', {
+              body: {
+                recipientEmail: email.trim(),
+                userName: fullName.trim(),
+                verificationLink: `${window.location.origin}/auth/callback?token_hash=${data.session?.access_token || ''}&type=signup`
+              }
+            });
+          } catch (emailError) {
+            console.error('Failed to send custom verification email:', emailError);
+            // Don't fail signup if custom email fails, Supabase default should work
+          }
         }
 
+        setResendEmail(email.trim());
+        setShowResendVerification(false); // Hide it initially, user can show it if needed
+        
         toast.success(t('success.accountCreated') || 'Account created successfully! 🎉', {
-          duration: 8000,
-          description: t('success.checkEmailForVerification') || 'Check your email for a verification link. You can log in after verifying.',
+          duration: 10000,
+          description: t('success.checkEmailForVerification') || 'Check your email for a verification link. Check spam folder if you don\'t see it.',
         });
       }
     } catch (error: any) {

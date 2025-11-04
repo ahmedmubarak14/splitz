@@ -3,6 +3,9 @@ project_id = "laidjslcmowodlqxggil"
 [functions.send-invite]
 verify_jwt = true
 
+[functions.send-verification-email]
+verify_jwt = false
+
 [functions.create-expense-group]
 verify_jwt = true
 
@@ -26,9 +29,13 @@ verify_jwt = false
 external_email_enabled = true
 mailer_autoconfirm = false
 mailer_secure_email_change_enabled = true
+site_url = "https://splitz.live"
 
 [auth.email]
 max_frequency = "1h"
+enable_signup = true
+double_confirm_changes_enabled = true
+enable_confirmations = true
 
 # SMTP Configuration for Resend
 [auth.smtp]

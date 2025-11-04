@@ -14,11 +14,27 @@ export default function AuthCallback() {
     const handleEmailConfirmation = async () => {
       const token_hash = searchParams.get('token_hash');
       const type = searchParams.get('type');
+      const error_code = searchParams.get('error_code');
+      const error_description = searchParams.get('error_description');
+
+      // Handle errors from Supabase
+      if (error_code) {
+        setStatus('error');
+        if (error_code === 'otp_expired') {
+          setMessage('Verification link expired. Please request a new one.');
+        } else if (error_description) {
+          setMessage(error_description);
+        } else {
+          setMessage('Verification failed. Please try again.');
+        }
+        setTimeout(() => navigate('/auth'), 4000);
+        return;
+      }
 
       if (!token_hash || type !== 'signup') {
         setStatus('error');
-        setMessage('Invalid confirmation link');
-        setTimeout(() => navigate('/'), 3000);
+        setMessage('Invalid or missing confirmation link');
+        setTimeout(() => navigate('/auth'), 3000);
         return;
       }
 
@@ -28,7 +44,18 @@ export default function AuthCallback() {
           type: 'signup',
         });
 
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes('expired')) {
+            setMessage('Verification link expired. Please sign up again or request a new link.');
+          } else if (error.message.includes('already verified')) {
+            setMessage('Email already verified! Redirecting to login...');
+            setStatus('success');
+            setTimeout(() => navigate('/auth'), 2000);
+            return;
+          } else {
+            throw error;
+          }
+        }
 
         setStatus('success');
         setMessage('Email verified successfully! Redirecting to dashboard...');
@@ -38,8 +65,8 @@ export default function AuthCallback() {
       } catch (error: any) {
         console.error('Email verification error:', error);
         setStatus('error');
-        setMessage(error.message || 'Failed to verify email');
-        setTimeout(() => navigate('/'), 3000);
+        setMessage(error.message || 'Failed to verify email. Please try signing up again.');
+        setTimeout(() => navigate('/auth'), 4000);
       }
     };
 

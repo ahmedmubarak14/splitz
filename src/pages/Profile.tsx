@@ -256,6 +256,49 @@ const Profile = () => {
               </div>
             </div>
 
+            {/* Email Verification Status */}
+            {user && (
+              <div className={`p-4 rounded-lg border ${user.email_confirmed_at ? 'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800' : 'bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800'}`}>
+                <div className={`flex items-start gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <Mail className={`w-5 h-5 mt-0.5 ${user.email_confirmed_at ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`} />
+                  <div className="flex-1">
+                    <p className={`text-sm font-medium ${user.email_confirmed_at ? 'text-green-800 dark:text-green-200' : 'text-amber-800 dark:text-amber-200'} ${isRTL ? 'text-right' : 'text-left'}`}>
+                      {user.email_confirmed_at ? t('profile.emailVerified') || 'Email Verified' : t('profile.emailNotVerified') || 'Email Not Verified'}
+                    </p>
+                    <p className={`text-xs ${user.email_confirmed_at ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'} mt-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                      {user.email_confirmed_at 
+                        ? t('profile.verifiedOn') || `Verified on ${formatDate(user.email_confirmed_at)}`
+                        : t('profile.verificationRequired') || 'Please verify your email to access all features'
+                      }
+                    </p>
+                    {!user.email_confirmed_at && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={async () => {
+                          try {
+                            const { error } = await supabase.auth.resend({
+                              type: 'signup',
+                              email: user.email!,
+                            });
+                            if (error) throw error;
+                            toast.success(t('profile.verificationEmailSent') || 'Verification email sent! Check your inbox.');
+                          } catch (error: any) {
+                            toast.error(t('errors.failedToResendEmail') || 'Failed to resend verification email', {
+                              description: error.message,
+                            });
+                          }
+                        }}
+                      >
+                        {t('auth.resendVerification') || 'Resend Verification Email'}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Form */}
             <div className="space-y-4">
               <div>
