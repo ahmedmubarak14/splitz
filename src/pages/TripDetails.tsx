@@ -16,6 +16,9 @@ import { TripMembersList } from "@/components/TripMembersList";
 import { CreateTripTaskDialog } from "@/components/CreateTripTaskDialog";
 import { InviteTripMemberDialog } from "@/components/InviteTripMemberDialog";
 import { EditTripDialog } from "@/components/EditTripDialog";
+import { TripExpensesList } from "@/components/TripExpensesList";
+import { CreateTripExpenseDialog } from "@/components/CreateTripExpenseDialog";
+import { TripExpenseSummary } from "@/components/TripExpenseSummary";
 import { format } from "date-fns";
 
 export default function TripDetails() {
@@ -27,6 +30,7 @@ export default function TripDetails() {
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const [inviteMemberOpen, setInviteMemberOpen] = useState(false);
   const [editTripOpen, setEditTripOpen] = useState(false);
+  const [createExpenseOpen, setCreateExpenseOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('tasks');
 
   const { data: trip, isLoading } = useQuery({
@@ -128,6 +132,7 @@ export default function TripDetails() {
         <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="tasks" className="w-full">
           <TabsList className="w-full justify-start">
             <TabsTrigger value="tasks">{t('trips.tasks')}</TabsTrigger>
+            <TabsTrigger value="expenses">{t('trips.expenses.title')}</TabsTrigger>
             <TabsTrigger value="members">{t('trips.members')}</TabsTrigger>
           </TabsList>
 
@@ -140,6 +145,18 @@ export default function TripDetails() {
               </Button>
             </div>
             <TripTaskList tripId={id!} />
+          </TabsContent>
+
+          <TabsContent value="expenses" className="space-y-4">
+            <TripExpenseSummary tripId={id!} />
+            <div className={`flex justify-between items-center ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
+              <h2 className="text-xl font-semibold">{t('trips.expenses.title')}</h2>
+              <Button onClick={() => setCreateExpenseOpen(true)}>
+                <Plus className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                {t('trips.expenses.addExpense')}
+              </Button>
+            </div>
+            <TripExpensesList tripId={id!} />
           </TabsContent>
 
           <TabsContent value="members" className="space-y-4">
@@ -177,6 +194,12 @@ export default function TripDetails() {
           trip={trip}
           open={editTripOpen}
           onOpenChange={setEditTripOpen}
+        />
+
+        <CreateTripExpenseDialog
+          tripId={id!}
+          open={createExpenseOpen}
+          onOpenChange={setCreateExpenseOpen}
         />
       </div>
     </>

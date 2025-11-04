@@ -50,7 +50,6 @@ export const EditTripTaskDialog = ({ task, open, onOpenChange }: EditTripTaskDia
   const { data: members } = useQuery({
     queryKey: ["trip-members", task.trip_id],
     queryFn: async () => {
-      // Fetch trip members
       const { data: tripMembers, error } = await supabase
         .from("trip_members")
         .select("user_id")
@@ -59,19 +58,18 @@ export const EditTripTaskDialog = ({ task, open, onOpenChange }: EditTripTaskDia
       if (error) throw error;
       if (!tripMembers || tripMembers.length === 0) return [];
 
-      // Fetch profiles separately
+      // Use security definer function to get public profiles
       const userIds = tripMembers.map(m => m.user_id);
-      const { data: profiles, error: profilesError } = await supabase
-        .from("profiles")
-        .select("id, full_name")
-        .in("id", userIds);
+      const { data: profiles, error: profilesError } = await supabase.rpc(
+        'get_public_profiles',
+        { _user_ids: userIds }
+      );
 
       if (profilesError) throw profilesError;
 
-      // Merge data
       return tripMembers.map(member => ({
         user_id: member.user_id,
-        profiles: profiles?.find(p => p.id === member.user_id) || null
+        full_name: profiles?.find((p: any) => p.id === member.user_id)?.full_name || 'Unknown User'
       }));
     },
   });
@@ -203,7 +201,7 @@ export const EditTripTaskDialog = ({ task, open, onOpenChange }: EditTripTaskDia
                   <SelectItem value="unassigned">{t('trips.unassigned')}</SelectItem>
                   {members?.map((member: any) => (
                     <SelectItem key={member.user_id} value={member.user_id}>
-                      {member.profiles?.full_name || 'Unknown'}
+                      {member.full_name}
                     </SelectItem>
                   ))}
                 </SelectContent>

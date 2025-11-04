@@ -239,6 +239,7 @@ export type Database = {
           created_by: string
           id: string
           name: string
+          trip_id: string | null
           updated_at: string
         }
         Insert: {
@@ -246,6 +247,7 @@ export type Database = {
           created_by: string
           id?: string
           name: string
+          trip_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -253,9 +255,18 @@ export type Database = {
           created_by?: string
           id?: string
           name?: string
+          trip_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expense_groups_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       expense_members: {
         Row: {
