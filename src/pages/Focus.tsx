@@ -66,7 +66,6 @@ const Focus = () => {
   const sessionCompletedRef = useRef(false);
   const isCompletingRef = useRef(false);
   const [user, setUser] = useState<any>(null);
-  const [visibilityGraceTimer, setVisibilityGraceTimer] = useState<NodeJS.Timeout | null>(null);
   const [showSkipConfirmation, setShowSkipConfirmation] = useState(false);
   const [pausedAt, setPausedAt] = useState<Date | null>(null);
   const [totalPausedTime, setTotalPausedTime] = useState(0);
@@ -100,60 +99,6 @@ const Focus = () => {
     };
   }, [currentSessionId, isSessionActive]);
 
-  // Page visibility detection with grace period
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      // Tab/app is hidden
-      if (document.hidden && currentSessionId && isSessionActive) {
-        // CASE 1: Already paused - Don't kill tree, just track it
-        if (isPaused) {
-          console.log('Session paused, tab switched - tree safe');
-          return; // Don't kill tree if already paused
-        }
-        
-        // CASE 2: Running - Auto-pause and start grace period
-        pauseSession();
-        
-        toast.warning('Focus session paused', {
-          description: 'Return within 30 seconds to continue your session',
-          duration: 5000,
-        });
-        
-        // Start 30-second grace period
-        const graceTimer = setTimeout(() => {
-          // Only mark as failed if session hasn't been completed yet
-          if (currentSessionId && !sessionCompletedRef.current && !isCompletingRef.current) {
-            console.log('[Focus] Grace timer fired - marking session as failed:', currentSessionId);
-            markSessionAsFailed(currentSessionId);
-            toast.error('Tree died - You were away too long');
-          } else {
-            console.log('[Focus] Grace timer fired but session already completed/completing');
-          }
-        }, 30000); // 30 seconds
-        
-        setVisibilityGraceTimer(graceTimer);
-      }
-      
-      // Tab/app is visible again
-      if (!document.hidden && visibilityGraceTimer) {
-        // User came back within grace period - cancel tree death
-        clearTimeout(visibilityGraceTimer);
-        setVisibilityGraceTimer(null);
-        
-        toast.success('Welcome back!', {
-          description: 'Session is paused. Click Resume to continue.',
-        });
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (visibilityGraceTimer) {
-        clearTimeout(visibilityGraceTimer);
-      }
-    };
-  }, [currentSessionId, isSessionActive, isPaused, visibilityGraceTimer]);
 
   // Browser close/refresh detection
   useEffect(() => {
@@ -412,12 +357,6 @@ const Focus = () => {
     
     console.log('[Focus] Completing session:', { currentSessionId, treeSurvived });
     
-    // Clear any active grace timers
-    if (visibilityGraceTimer) {
-      clearTimeout(visibilityGraceTimer);
-      setVisibilityGraceTimer(null);
-    }
-    
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -629,12 +568,12 @@ const Focus = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Warning Banner */}
+                {/* Info Banner */}
                 {isSessionActive && (
-                  <Alert className="border-warning bg-warning/10">
-                    <AlertTriangle className="h-4 w-4 text-warning" />
+                  <Alert className="border-primary/30 bg-primary/5">
+                    <Sparkles className="h-4 w-4 text-primary" />
                     <AlertDescription className={`text-sm ${isRTL ? 'text-right' : ''}`}>
-                      {t('focus.warningStayFocused')}
+                      {t('focus.timerContinuesBackground')}
                     </AlertDescription>
                   </Alert>
                 )}
