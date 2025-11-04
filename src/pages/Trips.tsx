@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SEO } from "@/components/SEO";
@@ -12,13 +12,25 @@ import { useTranslation } from "react-i18next";
 import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileQuickActionsFAB } from "@/components/MobileQuickActionsFAB";
-
+import { useNavigate } from "react-router-dom";
 export default function Trips() {
   const { t } = useTranslation();
   const isRTL = useIsRTL();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [isAuthed, setIsAuthed] = useState(false);
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        toast.error(t('errors.notAuthenticated'));
+        navigate('/auth');
+      } else {
+        setIsAuthed(true);
+      }
+    });
+  }, [navigate, t]);
   const { data: trips, isLoading } = useQuery({
     queryKey: ["trips"],
     queryFn: async () => {
@@ -64,6 +76,7 @@ export default function Trips() {
 
       return tripsWithAvatars;
     },
+    enabled: isAuthed,
   });
 
   return (
