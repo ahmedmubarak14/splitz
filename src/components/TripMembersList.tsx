@@ -11,16 +11,42 @@ import { useIsRTL, rtlClass } from "@/lib/rtl-utils";
 
 interface TripMembersListProps {
   tripId: string;
+  members?: { user_id: string; role: string | null }[];
+  creatorId?: string;
 }
 
-export const TripMembersList = ({ tripId }: TripMembersListProps) => {
+export const TripMembersList = ({ tripId, members: providedMembers, creatorId }: TripMembersListProps) => {
   const { t } = useTranslation();
   const isRTL = useIsRTL();
 
+  // Build members list either from props or fetch from DB
   const { data: members, isLoading, error } = useQuery({
-    queryKey: ["trip-members", tripId],
+    queryKey: ["trip-members", tripId, providedMembers?.length ?? 'fetch'],
     queryFn: async () => {
-      // First fetch trip members
+      const baseMembers = providedMembers;
+
+      // If members were passed from parent, use them directly
+      if (baseMembers && baseMembers.length > 0) {
+        const userIds = baseMembers.map((m) => m.user_id);
+        try {
+          const { data: profiles, error: profileError } = await supabase.rpc(
+            'get_public_profiles',
+            { _user_ids: userIds }
+          );
+          if (profileError) throw profileError;
+
+          return baseMembers.map((member) => ({
+            ...member,
+            profiles: profiles?.find((p: any) => p.id === member.user_id) || null,
+            id: `${member.user_id}-${member.role || 'member'}`,
+          }));
+        } catch (e) {
+          console.warn('[TripMembers] RPC failed with provided members:', e);
+          return baseMembers.map((member) => ({ ...member, profiles: null, id: `${member.user_id}-${member.role || 'member'}` }));
+        }
+      }
+
+      // Fallback: fetch trip members (may be restricted by RLS)
       const { data: memberData, error: memberError } = await supabase
         .from("trip_members")
         .select("*")
@@ -34,35 +60,21 @@ export const TripMembersList = ({ tripId }: TripMembersListProps) => {
 
       if (!memberData || memberData.length === 0) return [];
 
-      // Fetch profiles using RPC to avoid RLS issues
-      const userIds = memberData.map(m => m.user_id);
+      const userIds = memberData.map((m) => m.user_id);
       try {
         const { data: profiles, error: profileError } = await supabase.rpc(
           'get_public_profiles',
           { _user_ids: userIds }
         );
+        if (profileError) throw profileError;
 
-        if (profileError) {
-          console.warn('[TripMembers] Failed to load profiles via RPC:', profileError);
-          // Return members with null profiles - will show fallback UI
-          return memberData.map(member => ({
-            ...member,
-            profiles: null
-          }));
-        }
-
-        // Merge members with their profiles
-        return memberData.map(member => ({
+        return memberData.map((member) => ({
           ...member,
-          profiles: profiles?.find((p: any) => p.id === member.user_id) || null
+          profiles: profiles?.find((p: any) => p.id === member.user_id) || null,
         }));
       } catch (rpcError) {
         console.warn('[TripMembers] RPC call failed:', rpcError);
-        // Return members without profiles
-        return memberData.map(member => ({
-          ...member,
-          profiles: null
-        }));
+        return memberData.map((member) => ({ ...member, profiles: null }));
       }
     },
   });
@@ -118,7 +130,7 @@ export const TripMembersList = ({ tripId }: TripMembersListProps) => {
               </div>
             </div>
             
-            {trip?.created_by === member.user_id && (
+            {(creatorId ?? trip?.created_by) === member.user_id && (
               <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
                 {t('trips.creator')}
               </Badge>

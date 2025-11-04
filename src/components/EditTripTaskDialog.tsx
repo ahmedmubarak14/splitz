@@ -76,24 +76,20 @@ export const EditTripTaskDialog = ({ task, open, onOpenChange }: EditTripTaskDia
 
   const updateMutation = useMutation({
     mutationFn: async () => {
-      // Map priority to priority_quadrant enum or set to null
-      const priorityQuadrantMap: Record<string, string | null> = {
-        'high': 'urgent_important',
-        'medium': 'not_urgent_important', 
-        'low': 'not_urgent_not_important'
-      };
-
       const { error } = await supabase.from("trip_tasks").update({
         title,
         description: description || null,
-        priority_quadrant: priority ? priorityQuadrantMap[priority] : null,
+        priority, // Use priority as text, not priority_quadrant
         status,
         assigned_to: assignedToGroup ? null : (assignedTo === "unassigned" || !assignedTo ? null : assignedTo),
         assigned_to_group: assignedToGroup,
         due_date: dueDate ? format(dueDate, 'yyyy-MM-dd') : null,
       }).eq("id", task.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('[EditTripTask] Update failed:', error);
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trip-tasks"] });
