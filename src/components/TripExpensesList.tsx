@@ -63,12 +63,13 @@ export const TripExpensesList = ({ tripId }: TripExpensesListProps) => {
 
   const handleAddExpense = async (groupId: string) => {
     setSelectedGroupId(groupId);
-    await fetchGroupMembers(groupId);
     setCreateExpenseOpen(true);
+    await fetchGroupMembers(groupId);
   };
 
   const handleEditExpense = async (expense: any, groupId: string) => {
     setSelectedExpense(expense);
+    setSelectedGroupId(groupId);
     await fetchGroupMembers(groupId);
     setEditExpenseOpen(true);
   };
@@ -111,26 +112,33 @@ export const TripExpensesList = ({ tripId }: TripExpensesListProps) => {
         })
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Failed to update expense:', error);
+        throw error;
+      }
 
       toast.success(t('trips.expenses.expenseUpdated'));
       setEditExpenseOpen(false);
-      queryClient.invalidateQueries({ queryKey: ["trip-expense-groups"] });
-      queryClient.invalidateQueries({ queryKey: ["trip-expense-summary"] });
-    } catch (error) {
-      toast.error(t('errors.updateFailed'));
+      queryClient.invalidateQueries({ queryKey: ["trip-expense-groups", tripId] });
+      queryClient.invalidateQueries({ queryKey: ["trip-expense-summary", tripId] });
+    } catch (error: any) {
+      console.error('Update expense error:', error);
+      const message = error?.message?.includes('permission') 
+        ? t('errors.permissionDenied') 
+        : t('errors.updateFailed');
+      toast.error(message);
     }
   };
 
   const handleExpenseSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ["trip-expense-groups"] });
-    queryClient.invalidateQueries({ queryKey: ["trip-expense-summary"] });
+    queryClient.invalidateQueries({ queryKey: ["trip-expense-groups", tripId] });
+    queryClient.invalidateQueries({ queryKey: ["trip-expense-summary", tripId] });
   };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-3 border-primary border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-[3px] border-primary border-t-transparent"></div>
       </div>
     );
   }

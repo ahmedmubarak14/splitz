@@ -60,13 +60,15 @@ export const CreateTripExpenseDialog = ({ tripId, open, onOpenChange }: CreateTr
       return groupData;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["trip-expense-groups"] });
+      queryClient.invalidateQueries({ queryKey: ["trip-expense-groups", tripId] });
       toast.success(t('trips.expenses.groupCreated'));
       setCreatedGroupId(data.id);
       setShowExpenseForm(true);
     },
-    onError: () => {
-      toast.error(t('errors.createFailed'));
+    onError: (error: any) => {
+      console.error('Create group error:', error);
+      const message = error?.message || t('errors.createFailed');
+      toast.error(message);
     },
   });
 
@@ -80,8 +82,8 @@ export const CreateTripExpenseDialog = ({ tripId, open, onOpenChange }: CreateTr
   };
 
   const handleExpenseSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ["trip-expense-groups"] });
-    queryClient.invalidateQueries({ queryKey: ["trip-expense-summary"] });
+    queryClient.invalidateQueries({ queryKey: ["trip-expense-groups", tripId] });
+    queryClient.invalidateQueries({ queryKey: ["trip-expense-summary", tripId] });
     setGroupName("");
     setCreatedGroupId(null);
     setShowExpenseForm(false);
