@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="theme-color" content="#8b5cf6" />
+    
+    <!-- SEO Meta Tags -->
+    <title>Splitz - Track Habits, Split Expenses, Challenge Friends</title>
+    <meta name="description" content="Build better habits, join friend challenges, and split expenses effortlessly. Stay organized and motivated with push notifications and WhatsApp reminders.">
+    <meta name="author" content="Splitz" />
+    <meta name="keywords" content="habit tracker, expense splitter, challenge app, productivity, finance management, group expenses, habit building, focus timer, pomodoro">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Splitz">
+    
+    <!-- Google Fonts - Optimized for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    
+    
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/mpcGzXZaRcWkcWbGbBP6sucfFiM2/social-images/social-1759496255820-ChatGPT Image Oct 3, 2025 at 03_51_01 PM.png">
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@linkup_app" />
+    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/mpcGzXZaRcWkcWbGbBP6sucfFiM2/social-images/social-1759496255820-ChatGPT Image Oct 3, 2025 at 03_51_01 PM.png">
+    
+  
+  
+  
+  
+  
+  
+  
+  <link rel="icon" type="image/x-icon" href="https://storage.googleapis.com/gpt-engineer-file-uploads/ZlYlKQfi26XayEC7TpFONSIonJx1/uploads/1759581044292-IMG_0061.jpg">
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <meta property="og:title" content="Splitz - Track Habits, Split Expenses, Challenge Friends">
+  <meta name="twitter:title" content="Splitz - Track Habits, Split Expenses, Challenge Friends">
+  <meta property="og:description" content="Build better habits, join friend challenges, and split expenses effortlessly. Stay organized and motivated with push notifications.">
+  <meta name="twitter:description" content="Build better habits, join friend challenges, and split expenses effortlessly. Stay organized and motivated with push notifications.">
+  <meta property="og:url" content="https://splitz.app">
+  <meta name="twitter:url" content="https://splitz.app">
+</head>
+
+  <body>
+    <noscript>
+      <div style="text-align: center; padding: 50px; font-family: system-ui;">
+        <h1>JavaScript Required</h1>
+        <p>Splitz requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
+      </div>
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Register service worker only in production, not in preview
+      if ('serviceWorker' in navigator) {
+        const host = location.hostname;
+        const isPreview = /localhost|127\.0\.0\.1|lovableproject\.com|lovable\.app/i.test(host);
+        
+        if (!isPreview) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+              .then(reg => console.log('Service Worker registered', reg.scope))
+              .catch(err => console.log('Service Worker registration failed', err));
+          });
+        } else {
+          // Unregister any existing service workers in preview
+          navigator.serviceWorker.getRegistrations().then(regs => {
+            regs.forEach(reg => reg.unregister());
+          });
+          // Clear caches in preview
+          if ('caches' in window) {
+            caches.keys().then(keys => {
+              keys.forEach(key => caches.delete(key));
+            });
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

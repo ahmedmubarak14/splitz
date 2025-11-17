@@ -1,60 +1,19 @@
 {
-  "name": "splitz",
+  "name": "splitz-monorepo",
   "version": "1.0.0",
-  "main": "expo/AppEntry.js",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "lint": "eslint .",
-    "typescript": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@expo/vector-icons": "^14.0.0",
-    "@hookform/resolvers": "^3.10.0",
-    "@react-navigation/bottom-tabs": "^6.5.20",
-    "@react-navigation/native": "^6.1.18",
-    "@react-navigation/native-stack": "^6.9.26",
-    "@react-native-async-storage/async-storage": "1.23.1",
-    "@sentry/react-native": "^5.22.0",
-    "@supabase/supabase-js": "^2.58.0",
-    "@tanstack/react-query": "^5.83.0",
-    "date-fns": "^3.6.0",
-    "date-fns-tz": "^3.2.0",
-    "expo": "~51.0.0",
-    "expo-constants": "~16.0.0",
-    "expo-device": "~6.0.0",
-    "expo-haptics": "~13.0.0",
-    "expo-linking": "~6.3.0",
-    "expo-localization": "~15.0.0",
-    "expo-notifications": "~0.28.0",
-    "expo-secure-store": "~13.0.0",
-    "expo-splash-screen": "~0.27.0",
-    "expo-status-bar": "~1.12.0",
-    "i18next": "^25.5.2",
-    "i18next-react-native-language-detector": "^1.1.0",
-    "lucide-react-native": "^0.378.0",
-    "nativewind": "^2.0.11",
-    "react": "18.2.0",
-    "react-hook-form": "^7.61.1",
-    "react-i18next": "^16.0.0",
-    "react-native": "0.74.5",
-    "react-native-gesture-handler": "~2.16.0",
-    "react-native-reanimated": "~3.10.0",
-    "react-native-safe-area-context": "4.10.5",
-    "react-native-screens": "3.31.1",
-    "react-native-svg": "15.2.0",
-    "react-native-toast-message": "^2.2.0",
-    "react-native-url-polyfill": "^2.0.0",
-    "zod": "^3.25.76"
+    "web": "npm run start --workspace=packages/web",
+    "web:dev": "npm run dev --workspace=packages/web",
+    "web:build": "npm run build --workspace=packages/web",
+    "mobile": "npm run start --workspace=packages/mobile",
+    "mobile:android": "npm run android --workspace=packages/mobile",
+    "mobile:ios": "npm run ios --workspace=packages/mobile"
   },
   "devDependencies": {
-    "@babel/core": "^7.24.0",
-    "@types/react": "~18.2.79",
-    "eslint": "^9.32.0",
-    "tailwindcss": "3.3.2",
     "typescript": "~5.3.3"
-  },
-  "private": true
+  }
 }
