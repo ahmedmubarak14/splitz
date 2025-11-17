@@ -10,6 +10,12 @@ import { ExpensesScreen } from '@/screens/ExpensesScreen';
 import { ProfileScreen } from '@/screens/ProfileScreen';
 import { TripDetailsScreen } from '@/screens/TripDetailsScreen';
 import { TripsScreen } from '@/screens/TripsScreen';
+import { CalendarScreen } from '@/screens/CalendarScreen';
+import { FocusScreen } from '@/screens/FocusScreen';
+import { ChallengesScreen } from '@/screens/ChallengesScreen';
+import { FriendsScreen } from '@/screens/FriendsScreen';
+import { ActivityFeedScreen } from '@/screens/ActivityFeedScreen';
+import { SubscriptionsScreen } from '@/screens/SubscriptionsScreen';
 
 export type MainTabParamList = {
   Dashboard: undefined;
@@ -23,6 +29,12 @@ export type MainStackParamList = {
   MainTabs: undefined;
   TripDetails: { tripId: string };
   Trips: undefined;
+  Calendar: undefined;
+  Focus: undefined;
+  Challenges: undefined;
+  Friends: undefined;
+  ActivityFeed: undefined;
+  Subscriptions: undefined;
 };
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -93,7 +105,17 @@ const MainTabs = () => {
 
 export const MainTabNavigator = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#ffffff',
+        },
+        headerTintColor: '#09090b',
+        headerTitleStyle: {
+          fontWeight: '600',
+        },
+      }}
+    >
       <Stack.Screen
         name="MainTabs"
         component={MainTabs}
@@ -108,6 +130,36 @@ export const MainTabNavigator = () => {
         name="TripDetails"
         component={TripDetailsScreen}
         options={{ title: 'Trip Details' }}
+      />
+      <Stack.Screen
+        name="Calendar"
+        component={CalendarScreen}
+        options={{ title: 'Calendar' }}
+      />
+      <Stack.Screen
+        name="Focus"
+        component={FocusScreen}
+        options={{ title: 'Focus' }}
+      />
+      <Stack.Screen
+        name="Challenges"
+        component={ChallengesScreen}
+        options={{ title: 'Challenges' }}
+      />
+      <Stack.Screen
+        name="Friends"
+        component={FriendsScreen}
+        options={{ title: 'Friends' }}
+      />
+      <Stack.Screen
+        name="ActivityFeed"
+        component={ActivityFeedScreen}
+        options={{ title: 'Activity' }}
+      />
+      <Stack.Screen
+        name="Subscriptions"
+        component={SubscriptionsScreen}
+        options={{ title: 'Subscriptions' }}
       />
     </Stack.Navigator>
   );

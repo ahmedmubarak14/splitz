@@ -13,9 +13,10 @@ import { useQuery } from '@tanstack/react-query';
 import { Plus, DollarSign } from 'lucide-react-native';
 import { format } from 'date-fns';
 
-import { Card, CardContent, Button } from '@/components/ui';
+import { Card, CardContent, Button, Modal } from '@/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { CreateExpenseForm } from '@/components/forms/CreateExpenseForm';
 
 interface Expense {
   id: string;
@@ -29,6 +30,7 @@ export const ExpensesScreen = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [refreshing, setRefreshing] = React.useState(false);
+  const [showCreateModal, setShowCreateModal] = React.useState(false);
 
   const { data: expenses, refetch } = useQuery({
     queryKey: ['expenses', user?.id],
@@ -120,7 +122,7 @@ export const ExpensesScreen = () => {
     <View style={styles.emptyState}>
       <Text style={styles.emptyTitle}>{t('expenses.noExpenses')}</Text>
       <Text style={styles.emptySubtitle}>{t('expenses.addFirst')}</Text>
-      <Button style={styles.addButton}>
+      <Button style={styles.addButton} onPress={() => setShowCreateModal(true)}>
         <Plus color="#ffffff" size={20} />
         <Text style={styles.addButtonText}>{t('expenses.addExpense')}</Text>
       </Button>
@@ -141,10 +143,17 @@ export const ExpensesScreen = () => {
         }
       />
       {expenses && expenses.length > 0 && (
-        <TouchableOpacity style={styles.fab}>
+        <TouchableOpacity style={styles.fab} onPress={() => setShowCreateModal(true)}>
           <Plus color="#ffffff" size={24} />
         </TouchableOpacity>
       )}
+      <Modal
+        visible={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Add Expense"
+      >
+        <CreateExpenseForm onSuccess={() => setShowCreateModal(false)} />
+      </Modal>
     </SafeAreaView>
   );
 };

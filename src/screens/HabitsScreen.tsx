@@ -12,9 +12,10 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, Flame } from 'lucide-react-native';
 
-import { Card, CardContent, Button } from '@/components/ui';
+import { Card, CardContent, Button, Modal } from '@/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { CreateHabitForm } from '@/components/forms/CreateHabitForm';
 
 interface Habit {
   id: string;
@@ -29,6 +30,7 @@ export const HabitsScreen = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [refreshing, setRefreshing] = React.useState(false);
+  const [showCreateModal, setShowCreateModal] = React.useState(false);
 
   const { data: habits, refetch } = useQuery({
     queryKey: ['habits', user?.id],
@@ -88,7 +90,7 @@ export const HabitsScreen = () => {
     <View style={styles.emptyState}>
       <Text style={styles.emptyTitle}>{t('habits.noHabits')}</Text>
       <Text style={styles.emptySubtitle}>{t('habits.createFirst')}</Text>
-      <Button style={styles.addButton}>
+      <Button style={styles.addButton} onPress={() => setShowCreateModal(true)}>
         <Plus color="#ffffff" size={20} />
         <Text style={styles.addButtonText}>{t('habits.addHabit')}</Text>
       </Button>
@@ -108,10 +110,17 @@ export const HabitsScreen = () => {
         }
       />
       {habits && habits.length > 0 && (
-        <TouchableOpacity style={styles.fab}>
+        <TouchableOpacity style={styles.fab} onPress={() => setShowCreateModal(true)}>
           <Plus color="#ffffff" size={24} />
         </TouchableOpacity>
       )}
+      <Modal
+        visible={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Create Habit"
+      >
+        <CreateHabitForm onSuccess={() => setShowCreateModal(false)} />
+      </Modal>
     </SafeAreaView>
   );
 };

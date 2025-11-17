@@ -12,9 +12,10 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, CheckCircle, Circle } from 'lucide-react-native';
 
-import { Card, CardContent, Button } from '@/components/ui';
+import { Card, CardContent, Button, Modal } from '@/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { CreateTaskForm } from '@/components/forms/CreateTaskForm';
 
 interface Task {
   id: string;
@@ -29,6 +30,7 @@ export const TasksScreen = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [refreshing, setRefreshing] = React.useState(false);
+  const [showCreateModal, setShowCreateModal] = React.useState(false);
 
   const { data: tasks, refetch } = useQuery({
     queryKey: ['tasks', user?.id],
@@ -124,7 +126,7 @@ export const TasksScreen = () => {
     <View style={styles.emptyState}>
       <Text style={styles.emptyTitle}>{t('tasks.noTasks')}</Text>
       <Text style={styles.emptySubtitle}>{t('tasks.createFirst')}</Text>
-      <Button style={styles.addButton}>
+      <Button style={styles.addButton} onPress={() => setShowCreateModal(true)}>
         <Plus color="#ffffff" size={20} />
         <Text style={styles.addButtonText}>{t('tasks.addTask')}</Text>
       </Button>
@@ -144,10 +146,17 @@ export const TasksScreen = () => {
         }
       />
       {tasks && tasks.length > 0 && (
-        <TouchableOpacity style={styles.fab}>
+        <TouchableOpacity style={styles.fab} onPress={() => setShowCreateModal(true)}>
           <Plus color="#ffffff" size={24} />
         </TouchableOpacity>
       )}
+      <Modal
+        visible={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Create Task"
+      >
+        <CreateTaskForm onSuccess={() => setShowCreateModal(false)} />
+      </Modal>
     </SafeAreaView>
   );
 };

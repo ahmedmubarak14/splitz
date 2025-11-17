@@ -10,6 +10,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   CheckSquare,
   Target,
@@ -17,15 +19,22 @@ import {
   TrendingUp,
   Calendar,
   Map,
+  Clock,
+  Trophy,
+  Users,
+  Activity,
+  CreditCard,
 } from 'lucide-react-native';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { MainStackParamList } from '@/navigation/MainTabNavigator';
 
 export const DashboardScreen = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
   const [refreshing, setRefreshing] = React.useState(false);
 
   // Fetch tasks count
@@ -145,13 +154,62 @@ export const DashboardScreen = () => {
             <CardTitle>{t('dashboard.quickActions')}</CardTitle>
           </CardHeader>
           <CardContent style={styles.quickActionsContent}>
-            <TouchableOpacity style={styles.quickAction}>
+            <TouchableOpacity
+              style={styles.quickAction}
+              onPress={() => navigation.navigate('Calendar')}
+            >
               <Calendar color="#6366f1" size={20} />
               <Text style={styles.quickActionText}>Calendar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.quickAction}>
-              <Map color="#6366f1" size={20} />
+            <TouchableOpacity
+              style={styles.quickAction}
+              onPress={() => navigation.navigate('Focus')}
+            >
+              <Clock color="#10b981" size={20} />
+              <Text style={styles.quickActionText}>Focus</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.quickAction}
+              onPress={() => navigation.navigate('Challenges')}
+            >
+              <Trophy color="#f59e0b" size={20} />
+              <Text style={styles.quickActionText}>Challenges</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.quickAction}
+              onPress={() => navigation.navigate('Friends')}
+            >
+              <Users color="#8b5cf6" size={20} />
+              <Text style={styles.quickActionText}>Friends</Text>
+            </TouchableOpacity>
+          </CardContent>
+        </Card>
+
+        <Card style={styles.quickActionsCard}>
+          <CardHeader>
+            <CardTitle>More</CardTitle>
+          </CardHeader>
+          <CardContent style={styles.quickActionsContent}>
+            <TouchableOpacity
+              style={styles.quickAction}
+              onPress={() => navigation.navigate('Trips')}
+            >
+              <Map color="#3b82f6" size={20} />
               <Text style={styles.quickActionText}>Trips</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.quickAction}
+              onPress={() => navigation.navigate('ActivityFeed')}
+            >
+              <Activity color="#ec4899" size={20} />
+              <Text style={styles.quickActionText}>Activity</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.quickAction}
+              onPress={() => navigation.navigate('Subscriptions')}
+            >
+              <CreditCard color="#14b8a6" size={20} />
+              <Text style={styles.quickActionText}>Subscriptions</Text>
             </TouchableOpacity>
           </CardContent>
         </Card>
@@ -221,19 +279,20 @@ const styles = StyleSheet.create({
   },
   quickActionsContent: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 12,
   },
   quickAction: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f4f4f5',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderRadius: 8,
-    gap: 8,
+    gap: 6,
   },
   quickActionText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
     color: '#09090b',
   },

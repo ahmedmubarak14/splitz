@@ -24,6 +24,7 @@
     "date-fns-tz": "^3.2.0",
     "expo": "~51.0.0",
     "expo-constants": "~16.0.0",
+    "expo-device": "~6.0.0",
     "expo-haptics": "~13.0.0",
     "expo-linking": "~6.3.0",
     "expo-localization": "~15.0.0",
