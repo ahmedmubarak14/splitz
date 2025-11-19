@@ -1,18 +1,23 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { captureException, setUserContext, clearUserContext } from '@/lib/sentry';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   checking: boolean;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   session: null,
   checking: true,
+  signIn: async () => ({ error: null }),
+  signUp: async () => ({ error: null }),
+  signOut: async () => {},
 });
 
 export const useAuth = () => {
@@ -29,57 +34,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('[Auth] State changed:', event);
         setSession(session);
         setUser(session?.user ?? null);
         setChecking(false);
-
-        // Update Sentry context
-        if (session?.user) {
-          setUserContext({
-            id: session.user.id,
-            email: session.user.email,
-          });
-        } else {
-          clearUserContext();
-        }
-
-        // Log auth events for debugging
-        if (event === 'SIGNED_OUT') {
-          console.log('[Auth] User signed out');
-        } else if (event === 'SIGNED_IN') {
-          console.log('[Auth] User signed in:', session?.user.id);
-        } else if (event === 'TOKEN_REFRESHED') {
-          console.log('[Auth] Token refreshed');
-        }
       }
     );
 
-    // THEN check for existing session
+    // Check for existing session
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (error) {
         console.error('[Auth] Error getting session:', error);
-        captureException(error, { context: 'auth_init' });
       }
       setSession(session);
       setUser(session?.user ?? null);
       setChecking(false);
-
-      if (session?.user) {
-        setUserContext({
-          id: session.user.id,
-          email: session.user.email,
-        });
-      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    return { error };
+  };
+
+  const signUp = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    return { error };
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, checking }}>
+    <AuthContext.Provider value={{ user, session, checking, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );
