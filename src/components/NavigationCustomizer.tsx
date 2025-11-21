@@ -1,0 +1,202 @@
+import { useState, useEffect } from 'react';
+import { Home, ListChecks, Brain, DollarSign, Trophy, CreditCard, Plane, Calendar, Grid3X3, Flame, Settings, Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+
+type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'matrix' | 'focus' | 'calendar' | 'expenses' | 'subscriptions' | 'trips' | 'challenges' | 'friends';
+
+interface NavItem {
+  id: NavItemId;
+  path: string;
+  icon: typeof Home;
+  label: string;
+  description: string;
+}
+
+interface NavigationCustomizerProps {
+  onSave?: () => void;
+}
+
+const NavigationCustomizer = ({ onSave }: NavigationCustomizerProps) => {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<NavItemId[]>([
+    'dashboard',
+    'tasks',
+    'focus',
+    'expenses',
+    'challenges',
+  ]);
+  const [saving, setSaving] = useState(false);
+
+  const allNavItems: NavItem[] = [
+    { id: 'dashboard', path: '/dashboard', icon: Home, label: t('nav.dashboard'), description: t('navigation.customize.descriptions.dashboard') },
+    { id: 'habits', path: '/habits', icon: Flame, label: t('nav.habits'), description: t('navigation.customize.descriptions.habits') },
+    { id: 'tasks', path: '/tasks', icon: ListChecks, label: t('nav.tasks'), description: t('navigation.customize.descriptions.tasks') },
+    { id: 'matrix', path: '/matrix', icon: Grid3X3, label: t('nav.matrix'), description: t('navigation.customize.descriptions.matrix') },
+    { id: 'focus', path: '/focus', icon: Brain, label: t('nav.focus'), description: t('navigation.customize.descriptions.focus') },
+    { id: 'calendar', path: '/calendar', icon: Calendar, label: t('nav.calendar'), description: t('navigation.customize.descriptions.calendar') },
+    { id: 'expenses', path: '/expenses', icon: DollarSign, label: t('nav.expenses'), description: t('navigation.customize.descriptions.expenses') },
+    { id: 'subscriptions', path: '/subscriptions', icon: CreditCard, label: t('nav.subscriptions'), description: t('navigation.customize.descriptions.subscriptions') },
+    { id: 'trips', path: '/trips', icon: Plane, label: t('nav.trips'), description: t('navigation.customize.descriptions.trips') },
+    { id: 'challenges', path: '/challenges', icon: Trophy, label: t('nav.challenges'), description: t('navigation.customize.descriptions.challenges') },
+    { id: 'friends', path: '/friends', icon: Users, label: t('nav.friends'), description: 'Manage your friends and connections' },
+  ];
+
+  useEffect(() => {
+    if (open) {
+      fetchPreferences();
+    }
+  }, [open]);
+
+  const fetchPreferences = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('navigation_preferences')
+      .select('visible_nav_items')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (data?.visible_nav_items) {
+      setSelectedItems(data.visible_nav_items as NavItemId[]);
+    }
+  };
+
+  const toggleItem = (itemId: NavItemId, checked: boolean) => {
+    if (checked) {
+      if (selectedItems.length >= 5) {
+        toast.error(t('navigation.customize.maxItemsError'));
+        return;
+      }
+      setSelectedItems([...selectedItems, itemId]);
+    } else {
+      if (selectedItems.length <= 1) {
+        toast.error(t('navigation.customize.minItemsError'));
+        return;
+      }
+      setSelectedItems(selectedItems.filter(id => id !== itemId));
+    }
+  };
+
+  const savePreferences = async () => {
+    setSaving(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('navigation_preferences')
+      .upsert({
+        user_id: user.id,
+        visible_nav_items: selectedItems,
+        nav_order: selectedItems,
+      });
+
+    if (error) {
+      toast.error(t('navigation.customize.saveFailed'));
+      console.error(error);
+    } else {
+      toast.success(t('navigation.customize.saveSuccess'));
+      setOpen(false);
+      onSave?.();
+    }
+    setSaving(false);
+  };
+
+  const resetToDefault = () => {
+    setSelectedItems(['dashboard', 'tasks', 'focus', 'expenses', 'challenges']);
+    toast.success(t('navigation.customize.resetSuccess'));
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="w-full">
+          <Settings className="w-4 h-4 mr-2" />
+          {t('navigation.customize.title')}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{t('navigation.customize.dialogTitle')}</DialogTitle>
+          <DialogDescription>
+            {t('navigation.customize.description')}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-2">
+          <p className="text-sm font-medium">{t('navigation.customize.selectLabel')}</p>
+          {allNavItems.map(item => {
+            const Icon = item.icon;
+            const isSelected = selectedItems.includes(item.id);
+            
+            return (
+              <div
+                key={item.id}
+                className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <Icon className="w-5 h-5 text-muted-foreground" />
+                  <div>
+                    <p className="font-medium">{item.label}</p>
+                    <p className="text-xs text-muted-foreground">{item.description}</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={isSelected}
+                  onCheckedChange={(checked) => toggleItem(item.id, checked)}
+                  disabled={!isSelected && selectedItems.length >= 5}
+                />
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-4">
+          <p className="text-sm font-medium mb-2">{t('navigation.customize.preview')}</p>
+          <div className="flex justify-around items-center h-16 bg-muted rounded-lg px-2">
+            <div className="flex flex-col items-center gap-0.5">
+              <Settings className="w-4 h-4" />
+              <span className="text-[10px]">{t('navigation.customize.menu')}</span>
+            </div>
+            {selectedItems.slice(0, 5).map(itemId => {
+              const item = allNavItems.find(i => i.id === itemId);
+              if (!item) return null;
+              const Icon = item.icon;
+              return (
+                <div key={itemId} className="flex flex-col items-center gap-0.5">
+                  <Icon className="w-4 h-4" />
+                  <span className="text-[10px]">{item.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={resetToDefault}>
+            {t('navigation.customize.resetToDefault')}
+          </Button>
+          <Button onClick={savePreferences} disabled={saving}>
+            {saving ? t('navigation.customize.saving') : t('navigation.customize.save')}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default NavigationCustomizer;

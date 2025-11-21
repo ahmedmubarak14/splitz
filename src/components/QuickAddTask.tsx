@@ -1,0 +1,142 @@
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
+import { Label } from './ui/label';
+import { toast } from 'sonner';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
+
+interface QuickAddTaskProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  defaultProject?: string;
+}
+
+const QuickAddTask = ({ open, onOpenChange, defaultProject = 'Inbox' }: QuickAddTaskProps) => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [project, setProject] = useState(defaultProject);
+
+  const addTask = useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      console.log('Adding task:', { user_id: user.id, title, description, project });
+
+      const { data, error } = await supabase
+        .from('focus_tasks')
+        .insert({
+          user_id: user.id,
+          title,
+          description: description || null,
+          project,
+        })
+        .select();
+
+      if (error) {
+        console.error('Error adding task:', error);
+        throw error;
+      }
+      
+      console.log('Task added successfully:', data);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['focus-tasks'] });
+      toast.success(t('tasks.quickAdd.success'));
+      setTitle('');
+      setDescription('');
+      onOpenChange(false);
+    },
+    onError: (error: any) => {
+      console.error('Failed to add task:', error);
+      toast.error(error.message || t('tasks.quickAdd.failed'));
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) {
+      toast.error(t('tasks.quickAdd.titleRequired'));
+      return;
+    }
+    addTask.mutate();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t('tasks.quickAdd.title')}</DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="title">{t('tasks.quickAdd.taskTitleRequired')}</Label>
+            <Input
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder={t('tasks.quickAdd.taskTitlePlaceholder')}
+              autoFocus
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="description">{t('tasks.quickAdd.description')}</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={t('tasks.quickAdd.descriptionPlaceholder')}
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="project">{t('tasks.quickAdd.project')}</Label>
+            <Select value={project} onValueChange={setProject}>
+              <SelectTrigger id="project">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Inbox">{t('tasks.quickAdd.projects.inbox')}</SelectItem>
+                <SelectItem value="Today">{t('tasks.quickAdd.projects.today')}</SelectItem>
+                <SelectItem value="Work">{t('tasks.quickAdd.projects.work')}</SelectItem>
+                <SelectItem value="Personal">{t('tasks.quickAdd.projects.personal')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex gap-2 justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
+              {t('tasks.quickAdd.cancel')}
+            </Button>
+            <Button type="submit" disabled={addTask.isPending}>
+              {addTask.isPending ? t('tasks.quickAdd.adding') : t('tasks.quickAdd.add')}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default QuickAddTask;

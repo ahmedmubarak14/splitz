@@ -1,0 +1,137 @@
+/* Force focus timer buttons to be visible */
+.focus-timer-controls button {
+  display: block !important;
+  opacity: 1 !important;
+}
+
+/* Platform Detection */
+.platform-ios {
+  --safe-area-top: env(safe-area-inset-top);
+  --safe-area-bottom: env(safe-area-inset-bottom);
+  --safe-area-left: env(safe-area-inset-left);
+  --safe-area-right: env(safe-area-inset-right);
+}
+
+/* iOS Native Cards */
+.platform-ios .native-card {
+  border-radius: 16px;
+  background: hsl(var(--card));
+  backdrop-filter: blur(20px);
+  border: none;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* iOS Native List Items */
+.platform-ios .native-list-item {
+  padding: 12px 16px;
+  background: hsl(var(--card));
+  border-bottom: 0.5px solid hsl(var(--border));
+}
+
+.platform-ios .native-list-item:active {
+  background: hsl(var(--accent));
+}
+
+/* Android Material Design Cards */
+.platform-android .native-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: hsl(var(--card));
+}
+
+.platform-android .native-list-item {
+  padding: 16px;
+  background: hsl(var(--card));
+}
+
+/* Native Buttons */
+.native-button-ios {
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  border-radius: 12px;
+  padding: 12px 24px;
+}
+
+.native-button-android {
+  text-transform: uppercase;
+  letter-spacing: 1.25px;
+  border-radius: 4px;
+  padding: 10px 24px;
+}
+
+/* Safe Area Handling */
+.safe-area-top {
+  padding-top: var(--safe-area-top, 0);
+}
+
+.safe-area-bottom {
+  padding-bottom: var(--safe-area-bottom, 0);
+}
+
+/* iOS Header */
+.platform-ios .ios-header {
+  background: hsl(var(--background));
+  border-bottom: 0.5px solid hsl(var(--border));
+  padding: 16px;
+}
+
+/* Android Header */
+.platform-android .android-header {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Native Tab Bar Styling - Lower z-index to allow FAB to be above */
+.native-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--background);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  z-index: 30;
+}
+
+/* Pull to Refresh Indicator */
+.pull-to-refresh {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+/* Native Mobile Container */
+.native-mobile {
+  min-height: 100vh;
+  background: hsl(var(--background));
+}
+
+/* Ionic Overrides for Theme */
+ion-tab-bar {
+  --background: hsl(var(--background));
+  --border: 0.5px solid hsl(var(--border));
+}
+
+ion-tab-button {
+  --color: hsl(var(--muted-foreground));
+  --color-selected: hsl(var(--primary));
+}
+
+ion-icon {
+  font-size: 24px;
+}
+
+ion-label {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Smooth Transitions */
+.native-mobile * {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}

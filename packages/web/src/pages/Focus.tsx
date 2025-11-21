@@ -1,0 +1,926 @@
+import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
+import { 
+  Play, Pause, SkipForward, Plus, Calendar, Bell, 
+  Repeat, StickyNote, CheckCircle2, Circle, Clock,
+  BarChart3, Trees, Sparkles, AlertTriangle, Skull
+} from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { useIsRTL } from '@/lib/rtl-utils';
+import Navigation from '@/components/Navigation';
+import { EmptyState } from '@/components/EmptyState';
+import { FocusSessionCelebration } from '@/components/FocusSessionCelebration';
+
+interface FocusTask {
+  id: string;
+  title: string;
+  description: string | null;
+  due_date: string | null;
+  has_reminder: boolean;
+  reminder_time: string | null;
+  parent_task_id: string | null;
+  repeat_pattern: string | null;
+  is_completed: boolean;
+  completed_at: string | null;
+  created_at: string;
+}
+
+interface FocusSession {
+  id: string;
+  task_id: string | null;
+  start_time: string;
+  end_time: string | null;
+  duration_minutes: number;
+  tree_survived: boolean;
+  session_type: string;
+}
+
+const Focus = () => {
+  const { t } = useTranslation();
+  const isRTL = useIsRTL();
+  const [tasks, setTasks] = useState<FocusTask[]>([]);
+  const [sessions, setSessions] = useState<FocusSession[]>([]);
+  const [selectedTask, setSelectedTask] = useState<string | null>(null);
+  const [isSessionActive, setIsSessionActive] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
+  const [sessionType, setSessionType] = useState<'work' | 'short_break' | 'long_break' | 'custom'>('work');
+  const [customDuration, setCustomDuration] = useState(25);
+  const [customDurationInput, setCustomDurationInput] = useState('25');
+  const [treeGrowth, setTreeGrowth] = useState(0);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const sessionCompletedRef = useRef(false);
+  const isCompletingRef = useRef(false);
+  const [user, setUser] = useState<any>(null);
+  const [showSkipConfirmation, setShowSkipConfirmation] = useState(false);
+  const [pausedAt, setPausedAt] = useState<Date | null>(null);
+  const [totalPausedTime, setTotalPausedTime] = useState(0);
+  const [isStartingSession, setIsStartingSession] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationData, setCelebrationData] = useState({ totalTrees: 0, totalFocusMinutes: 0, sessionDuration: 0 });
+
+  const [newTask, setNewTask] = useState({
+    title: '',
+    description: '',
+    due_date: '',
+    has_reminder: false,
+    reminder_time: '',
+    repeat_pattern: '',
+  });
+
+  useEffect(() => {
+    fetchUser();
+    fetchTasks();
+    fetchSessions();
+    cleanupOrphanedSessions();
+  }, []);
+
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      // Only mark as failed if session wasn't intentionally completed
+      if (currentSessionId && isSessionActive && !sessionCompletedRef.current) {
+        markSessionAsFailed(currentSessionId);
+      }
+    };
+  }, [currentSessionId, isSessionActive]);
+
+
+  // Browser close/refresh detection
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (currentSessionId && isSessionActive && !sessionCompletedRef.current && !isCompletingRef.current) {
+        console.log('[Focus] Before unload - marking session as failed:', currentSessionId);
+        markSessionAsFailed(currentSessionId);
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [currentSessionId, isSessionActive]);
+
+  const fetchUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    setUser(user);
+  };
+
+  const fetchTasks = async () => {
+    const { data, error } = await supabase
+      .from('focus_tasks')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      toast.error('Failed to fetch tasks');
+      return;
+    }
+
+    setTasks(data || []);
+  };
+
+  const fetchSessions = async () => {
+    const { data, error } = await supabase
+      .from('focus_sessions')
+      .select('*')
+      .not('end_time', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (error) {
+      toast.error('Failed to fetch sessions');
+      return;
+    }
+
+    setSessions(data || []);
+  };
+
+  const cleanupOrphanedSessions = async () => {
+    if (!user || isSessionActive) return;
+
+    console.log('[Focus] Cleaning up stale sessions (older than 24h)');
+
+    // Only cleanup truly stale sessions (older than 24 hours)
+    const { error } = await supabase
+      .from('focus_sessions')
+      .update({ 
+        end_time: new Date().toISOString(),
+        tree_survived: false 
+      })
+      .eq('user_id', user.id)
+      .is('end_time', null)
+      .lt('start_time', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+    if (error) {
+      console.error('Error cleaning up orphaned sessions:', error);
+    }
+  };
+
+  const markSessionAsFailed = async (sessionId: string) => {
+    // Check if session was already completed (don't overwrite completed sessions)
+    const { data: existingSession } = await supabase
+      .from('focus_sessions')
+      .select('tree_survived, end_time')
+      .eq('id', sessionId)
+      .maybeSingle();
+    
+    // If session already has an end_time, it's already completed - don't overwrite
+    if (existingSession?.end_time) {
+      console.log('[Focus] Session already completed, skipping mark as failed:', sessionId);
+      return;
+    }
+    
+    console.log('[Focus] Marking session as failed:', sessionId);
+    
+    // Only update if end_time is still null (idempotent)
+    await supabase
+      .from('focus_sessions')
+      .update({
+        end_time: new Date().toISOString(),
+        tree_survived: false,
+      })
+      .eq('id', sessionId)
+      .is('end_time', null);
+  };
+
+  const createTask = async () => {
+    if (!newTask.title.trim()) {
+      toast.error(t('focus.taskTitleRequired'));
+      return;
+    }
+
+    const { error } = await supabase
+      .from('focus_tasks')
+      .insert([{
+        ...newTask,
+        user_id: user?.id,
+        due_date: newTask.due_date || null,
+        reminder_time: newTask.has_reminder && newTask.reminder_time ? newTask.reminder_time : null,
+        repeat_pattern: newTask.repeat_pattern || null,
+      }]);
+
+    if (error) {
+      toast.error(t('focus.taskFailed'));
+      return;
+    }
+
+    toast.success(t('focus.taskCreated'));
+    setIsAddTaskOpen(false);
+    setNewTask({
+      title: '',
+      description: '',
+      due_date: '',
+      has_reminder: false,
+      reminder_time: '',
+      repeat_pattern: '',
+    });
+    fetchTasks();
+  };
+
+  const toggleTaskComplete = async (taskId: string, currentStatus: boolean) => {
+    const { error } = await supabase
+      .from('focus_tasks')
+      .update({ 
+        is_completed: !currentStatus,
+        completed_at: !currentStatus ? new Date().toISOString() : null
+      })
+      .eq('id', taskId);
+
+    if (error) {
+      toast.error(t('focus.taskFailed'));
+      return;
+    }
+
+    fetchTasks();
+  };
+
+  const startSession = async () => {
+    if (!user) return;
+    
+    // Validate custom duration
+    if (sessionType === 'custom') {
+      const parsedDuration = parseInt(customDurationInput);
+      if (!parsedDuration || parsedDuration < 1 || parsedDuration > 120) {
+        toast.error('Please enter a valid duration (1-120 minutes)');
+        setCustomDurationInput('25');
+        setCustomDuration(25);
+        return;
+      }
+      setCustomDuration(parsedDuration);
+    }
+
+    const duration = sessionType === 'work' ? 25 : 
+                    sessionType === 'short_break' ? 5 : 
+                    sessionType === 'long_break' ? 15 : 
+                    customDuration;
+    
+    setTimeLeft(duration * 60);
+    setIsStartingSession(true);
+
+    const { data, error } = await supabase
+      .from('focus_sessions')
+      .insert([{
+        user_id: user.id,
+        task_id: selectedTask,
+        duration_minutes: duration,
+        session_type: sessionType,
+        start_time: new Date().toISOString(),
+      }])
+      .select()
+      .single();
+
+    setIsStartingSession(false);
+
+    if (error) {
+      toast.error(t('focus.sessionStartFailed'));
+      return;
+    }
+
+    console.log('[Focus] Session started:', { id: data.id, duration, type: sessionType });
+
+    setCurrentSessionId(data.id);
+    setIsSessionActive(true);
+    setIsPaused(false);
+    setTreeGrowth(0);
+    startTimer();
+  };
+
+  const startTimer = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    intervalRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 0) {
+          completeSession(true);
+          return 0;
+        }
+        
+        // Grow tree as time passes (for work and custom sessions)
+        if (sessionType === 'work' || sessionType === 'custom') {
+          const duration = sessionType === 'work' ? 25 * 60 : customDuration * 60;
+          const progress = ((duration - prev) / duration) * 100;
+          setTreeGrowth(progress);
+        }
+        
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const pauseSession = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setIsPaused(true);
+    setPausedAt(new Date());
+  };
+
+  const resumeSession = () => {
+    if (pausedAt) {
+      const pausedDuration = (new Date().getTime() - pausedAt.getTime()) / 1000;
+      setTotalPausedTime(prev => prev + pausedDuration);
+    }
+    setPausedAt(null);
+    setIsPaused(false);
+    startTimer();
+  };
+
+  const skipSession = () => {
+    setShowSkipConfirmation(true);
+  };
+
+  const confirmSkipSession = () => {
+    setShowSkipConfirmation(false);
+    completeSession(false);
+  };
+
+  const completeSession = async (treeSurvived: boolean) => {
+    // Mark that session is being intentionally completed
+    sessionCompletedRef.current = true;
+    isCompletingRef.current = true;
+    
+    console.log('[Focus] Completing session:', { currentSessionId, treeSurvived });
+    
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    let resolvedSessionId = currentSessionId;
+
+    // Fallback: If currentSessionId is missing, find the last open session
+    if (!resolvedSessionId && user) {
+      console.log('[Focus] currentSessionId is null, searching for last open session...');
+      const { data: lastSession } = await supabase
+        .from('focus_sessions')
+        .select('id')
+        .eq('user_id', user.id)
+        .is('end_time', null)
+        .order('start_time', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (lastSession) {
+        resolvedSessionId = lastSession.id;
+        console.log('[Focus] Found last open session:', resolvedSessionId);
+      }
+    }
+
+    if (resolvedSessionId) {
+      const { error } = await supabase
+        .from('focus_sessions')
+        .update({
+          end_time: new Date().toISOString(),
+          tree_survived: treeSurvived,
+        })
+        .eq('id', resolvedSessionId);
+
+      if (error) {
+        console.error('[Focus] Failed to complete session:', error);
+        toast.error(t('focus.sessionSaveFailed'));
+      } else {
+        console.log('[Focus] Session completed successfully:', { id: resolvedSessionId, treeSurvived });
+        
+        if (treeSurvived) {
+          // Calculate stats for celebration
+          const survivedSessions = sessions.filter(s => s.tree_survived);
+          const newTotalTrees = survivedSessions.length + 1;
+          const totalFocusTime = sessions.reduce((acc, s) => acc + (s.duration_minutes || 0), 0);
+          const newTotalMinutes = totalFocusTime + (sessionType === 'custom' ? customDuration : sessionType === 'work' ? 25 : sessionType === 'short_break' ? 5 : 15);
+          
+          setCelebrationData({
+            totalTrees: newTotalTrees,
+            totalFocusMinutes: newTotalMinutes,
+            sessionDuration: sessionType === 'custom' ? customDuration : sessionType === 'work' ? 25 : sessionType === 'short_break' ? 5 : 15
+          });
+          setShowCelebration(true);
+        } else {
+          toast.error(t('focus.treeDied'), {
+            description: t('focus.sessionEndedEarly'),
+            duration: 3000,
+          });
+        }
+        
+        // Optimistically update sessions for immediate UI feedback
+        setSessions(prev => {
+          const newSession = {
+            id: resolvedSessionId,
+            user_id: user?.id || '',
+            task_id: null,
+            start_time: new Date().toISOString(),
+            end_time: new Date().toISOString(),
+            duration_minutes: Math.ceil((sessionType === 'custom' ? customDuration : sessionType === 'work' ? 25 : sessionType === 'short_break' ? 5 : 15)),
+            tree_survived: treeSurvived,
+            session_type: sessionType,
+            is_break: sessionType !== 'work' && sessionType !== 'custom',
+            round_number: 1,
+            created_at: new Date().toISOString()
+          };
+          return [newSession, ...prev];
+        });
+        
+        // Fetch sessions to sync with database
+        fetchSessions();
+      }
+    } else {
+      console.warn('[Focus] No session ID available to complete');
+    }
+
+    setIsSessionActive(false);
+    setCurrentSessionId(null);
+    setTreeGrowth(0);
+    setIsPaused(false);
+    setPausedAt(null);
+    setTotalPausedTime(0);
+    
+    // Reset the completion flags after state updates
+    isCompletingRef.current = false;
+    setTimeout(() => {
+      sessionCompletedRef.current = false;
+    }, 100);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const incompleteTasks = tasks.filter(t => !t.is_completed && !t.parent_task_id);
+  const completedTasks = tasks.filter(t => t.is_completed);
+  
+  // Only count completed sessions (with end_time)
+  const completedSessions = sessions.filter(s => s.end_time !== null);
+  const survivedSessions = completedSessions.filter(s => s.tree_survived);
+  const failedSessions = completedSessions.filter(s => !s.tree_survived);
+  const totalFocusTime = survivedSessions.reduce((sum, s) => sum + s.duration_minutes, 0);
+
+  return (
+    <div className={`min-h-screen p-4 md:p-6 pb-24 md:pb-6 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className={isRTL ? 'text-right' : ''}>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">{t('focus.title')}</h1>
+            <p className="text-sm md:text-base text-muted-foreground">{t('focus.subtitle')}</p>
+          </div>
+          <Dialog open={isAddTaskOpen} onOpenChange={setIsAddTaskOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <Plus className={`w-4 h-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                {t('focus.addTask')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>{t('focus.createNewTask')}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label>{t('focus.taskTitle')}</Label>
+                  <Input
+                    value={newTask.title}
+                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                    placeholder={t('focus.taskTitlePlaceholder')}
+                    dir={isRTL ? 'rtl' : 'ltr'}
+                  />
+                </div>
+                <div>
+                  <Label>{t('focus.description')}</Label>
+                  <Textarea
+                    value={newTask.description}
+                    onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                    placeholder={t('focus.descriptionPlaceholder')}
+                    dir={isRTL ? 'rtl' : 'ltr'}
+                  />
+                </div>
+                <div>
+                  <Label>{t('focus.dueDate')}</Label>
+                  <Input
+                    type="date"
+                    value={newTask.due_date}
+                    onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
+                  />
+                </div>
+                <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <Checkbox
+                    checked={newTask.has_reminder}
+                    onCheckedChange={(checked) => setNewTask({ ...newTask, has_reminder: !!checked })}
+                  />
+                  <Label>{t('focus.setReminder')}</Label>
+                </div>
+                {newTask.has_reminder && (
+                  <div>
+                    <Label>{t('focus.reminderTime')}</Label>
+                    <Input
+                      type="datetime-local"
+                      value={newTask.reminder_time}
+                      onChange={(e) => setNewTask({ ...newTask, reminder_time: e.target.value })}
+                    />
+                  </div>
+                )}
+                <div>
+                  <Label>{t('focus.repeat')}</Label>
+                  <Select value={newTask.repeat_pattern || 'none'} onValueChange={(value) => setNewTask({ ...newTask, repeat_pattern: value === 'none' ? '' : value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('focus.noRepeat')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t('focus.noRepeat')}</SelectItem>
+                      <SelectItem value="daily">{t('focus.daily')}</SelectItem>
+                      <SelectItem value="weekly">{t('focus.weekly')}</SelectItem>
+                      <SelectItem value="monthly">{t('focus.monthly')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button onClick={createTask} className="w-full">{t('focus.createTask')}</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Pomodoro Timer */}
+          <div className="lg:col-span-2">
+            <Card className="border-2 border-primary/20 shadow-lg bg-gradient-to-br from-background to-primary/5 overflow-hidden">
+              <CardHeader className="border-b border-border/40 bg-muted/20">
+                <CardTitle className={`flex items-center gap-2 font-semibold tracking-tight ${isRTL ? 'flex-row-reverse' : ''}`}>
+                  <div className="inline-flex p-2 rounded-lg bg-primary/10">
+                    <Clock className="w-5 h-5 text-primary" />
+                  </div>
+                  {t('focus.pomodoroTimer')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Info Banner */}
+                {isSessionActive && (
+                  <Alert className="border-primary/30 bg-primary/5">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <AlertDescription className={`text-sm ${isRTL ? 'text-right' : ''}`}>
+                      {t('focus.timerContinuesBackground')}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Session Type Selector */}
+                <div className="flex gap-2 flex-wrap">
+                  <Button
+                    variant={sessionType === 'work' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => !isSessionActive && setSessionType('work')}
+                    disabled={isSessionActive}
+                  >
+                    {t('focus.workSession')}
+                  </Button>
+                  <Button
+                    variant={sessionType === 'short_break' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => !isSessionActive && setSessionType('short_break')}
+                    disabled={isSessionActive}
+                  >
+                    {t('focus.shortBreak')}
+                  </Button>
+                  <Button
+                    variant={sessionType === 'long_break' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => !isSessionActive && setSessionType('long_break')}
+                    disabled={isSessionActive}
+                  >
+                    {t('focus.longBreak')}
+                  </Button>
+                  <Button
+                    variant={sessionType === 'custom' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => !isSessionActive && setSessionType('custom')}
+                    disabled={isSessionActive}
+                  >
+                    {t('focus.custom')}
+                  </Button>
+                </div>
+
+                {/* Custom Duration Input */}
+                {sessionType === 'custom' && !isSessionActive && (
+                  <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                    <Label>{t('focus.durationMinutes')}</Label>
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      min="1"
+                      max="120"
+                      value={customDurationInput}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Allow empty string for deletion
+                        if (value === '') {
+                          setCustomDurationInput('');
+                          return;
+                        }
+                        // Only allow digits
+                        const numValue = value.replace(/[^0-9]/g, '');
+                        if (numValue) {
+                          const parsed = parseInt(numValue);
+                          if (parsed >= 1 && parsed <= 120) {
+                            setCustomDurationInput(numValue);
+                            setCustomDuration(parsed);
+                          }
+                        }
+                      }}
+                      onBlur={(e) => {
+                        // On blur, validate and set to 1 if empty
+                        if (!e.target.value || parseInt(e.target.value) < 1) {
+                          setCustomDurationInput('1');
+                          setCustomDuration(1);
+                        }
+                      }}
+                      className="w-24"
+                      dir="ltr"
+                      placeholder="25"
+                    />
+                  </div>
+                )}
+
+                {/* Session Status Indicator */}
+                {isSessionActive && (
+                  <div className="text-center mb-4">
+                    {isPaused ? (
+                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/20 rounded-full">
+                        <Pause className="w-4 h-4 text-yellow-600" />
+                        <span className="text-sm font-medium text-yellow-700 dark:text-yellow-400">
+                          Session Paused - Tree is Safe
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/20 rounded-full">
+                        <Play className="w-4 h-4 text-green-600 animate-pulse" />
+                        <span className="text-sm font-medium text-green-700 dark:text-green-400">
+                          Session Active - Stay Focused!
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Timer Display */}
+                <div className="text-center py-8">
+                  <div className="text-7xl md:text-8xl font-bold tracking-tighter mb-4">
+                    <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{formatTime(timeLeft)}</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <div className={`h-2 w-2 rounded-full ${isSessionActive ? 'bg-primary animate-pulse' : 'bg-muted'}`} />
+                    <span className="text-sm text-muted-foreground">
+                      {sessionType === 'work' ? 'Focus Time' : sessionType === 'short_break' ? 'Short Break' : sessionType === 'long_break' ? 'Long Break' : 'Custom Session'}
+                    </span>
+                  </div>
+                  
+                  {/* Tree Growth */}
+                  {isSessionActive && (sessionType === 'work' || sessionType === 'custom') && (
+                    <div className="relative h-64 flex items-end justify-center mb-4">
+                      <div 
+                        className="transition-all duration-1000 ease-out transform"
+                        style={{
+                          height: `${treeGrowth}%`,
+                          opacity: Math.max(0.2, treeGrowth / 100)
+                        }}
+                      >
+                        <Trees className={`h-full w-auto ${treeGrowth > 75 ? 'text-success' : treeGrowth > 50 ? 'text-green-500' : 'text-green-400'}`} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Task Selector */}
+                {!isSessionActive && (
+                  <div>
+                    <Label>{t('focus.selectTask')}</Label>
+                    <Select value={selectedTask || 'none'} onValueChange={(value) => setSelectedTask(value === 'none' ? null : value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('focus.noTaskSelected')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">{t('focus.noTask')}</SelectItem>
+                        {incompleteTasks.map((task) => (
+                          <SelectItem key={task.id} value={task.id}>
+                            {task.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                {/* Controls */}
+                <div className="flex gap-2 justify-center flex-wrap focus-timer-controls">
+                  {!isSessionActive ? (
+                    <Button 
+                      onClick={startSession} 
+                      size="lg"
+                      disabled={isStartingSession || (sessionType === 'custom' && (!customDurationInput || parseInt(customDurationInput) < 1))}
+                    >
+                      <Play className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                      {isStartingSession ? 'Starting...' : t('focus.startFocus')}
+                    </Button>
+                  ) : (
+                    <>
+                      {!isPaused ? (
+                        <Button 
+                          onClick={pauseSession} 
+                          variant="secondary" 
+                          size="lg"
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white dark:text-white !opacity-100 !block"
+                          style={{ display: 'block !important', opacity: '1 !important' } as React.CSSProperties}
+                        >
+                          <Pause className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                          {t('focus.pause')}
+                        </Button>
+                      ) : (
+                        <>
+                          <Button onClick={resumeSession} size="lg" className="bg-green-600 hover:bg-green-700">
+                            <Play className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                            {t('focus.resume')}
+                          </Button>
+                          <div className="text-sm text-yellow-600 dark:text-yellow-400 font-semibold">
+                            ⏸️ Session Paused - Tree is safe while paused
+                          </div>
+                        </>
+                      )}
+                      <Button onClick={skipSession} variant="destructive" size="lg">
+                        <Skull className={`w-5 h-5 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                        {t('focus.giveUp')}
+                      </Button>
+                    </>
+                  )}
+                </div>
+                
+                {/* Skip Confirmation Dialog */}
+                <AlertDialog open={showSkipConfirmation} onOpenChange={setShowSkipConfirmation}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Give Up Session?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        If you end this session early, your tree will die. Are you sure?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Continue Session</AlertDialogCancel>
+                      <AlertDialogAction onClick={confirmSkipSession} className="bg-destructive hover:bg-destructive/90">
+                        End Session (Tree Dies)
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </CardContent>
+            </Card>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-2 md:gap-4 mt-4">
+              <Card className="shadow-sm hover:shadow-md transition-all duration-200 border border-border/40 overflow-hidden group">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-success/5 rounded-bl-full" />
+                <CardContent className="pt-4 md:pt-6 text-center">
+                  <div className="inline-flex p-2 rounded-lg bg-success/10 mb-2">
+                    <Trees className="w-6 h-6 md:w-8 md:h-8 text-success" />
+                  </div>
+                  <div className="text-xl md:text-2xl font-bold tracking-tight">{survivedSessions.length}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground">{t('focus.treesPlanted')}</div>
+                </CardContent>
+              </Card>
+              <Card className="shadow-sm hover:shadow-md transition-all duration-200 border border-border/40 overflow-hidden group">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-bl-full" />
+                <CardContent className="pt-4 md:pt-6 text-center">
+                  <div className="inline-flex p-2 rounded-lg bg-primary/10 mb-2">
+                    <Clock className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                  </div>
+                  <div className="text-xl md:text-2xl font-bold tracking-tight">{totalFocusTime}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground">{t('focus.focusMinutes')}</div>
+                </CardContent>
+              </Card>
+              <Card className="shadow-sm hover:shadow-md transition-all duration-200 border border-border/40 overflow-hidden group">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-destructive/5 rounded-bl-full" />
+                <CardContent className="pt-4 md:pt-6 text-center">
+                  <div className="inline-flex p-2 rounded-lg bg-destructive/10 mb-2">
+                    <Skull className="w-6 h-6 md:w-8 md:h-8 text-destructive" />
+                  </div>
+                  <div className="text-xl md:text-2xl font-bold tracking-tight">{failedSessions.length}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground">{t('focus.treesDied')}</div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Tasks List */}
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('focus.activeTasks')}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {incompleteTasks.length === 0 ? (
+                  <div className="py-8">
+                    <EmptyState
+                      icon={StickyNote}
+                      title={t('focus.emptyState.title')}
+                      description={t('focus.emptyState.description')}
+                      actionLabel={t('focus.addTask')}
+                      onAction={() => setIsAddTaskOpen(true)}
+                    />
+                  </div>
+                ) : (
+                  incompleteTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className={`flex items-start gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}
+                    >
+                      <button
+                        onClick={() => toggleTaskComplete(task.id, task.is_completed)}
+                        className="mt-0.5"
+                      >
+                        <Circle className="w-5 h-5 text-muted-foreground" />
+                      </button>
+                      <div className={`flex-1 min-w-0 ${isRTL ? 'text-right' : ''}`}>
+                        <div className="font-medium text-sm">{task.title}</div>
+                        {task.description && (
+                          <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
+                        )}
+                        <div className={`flex gap-2 mt-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                          {task.due_date && (
+                            <span className={`text-xs flex items-center gap-1 text-muted-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
+                              <Calendar className="w-3 h-3" />
+                              {new Date(task.due_date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { calendar: 'gregory' })}
+                            </span>
+                          )}
+                          {task.has_reminder && (
+                            <span className={`text-xs flex items-center gap-1 text-primary ${isRTL ? 'flex-row-reverse' : ''}`}>
+                              <Bell className="w-3 h-3" />
+                            </span>
+                          )}
+                          {task.repeat_pattern && (
+                            <span className={`text-xs flex items-center gap-1 text-muted-foreground ${isRTL ? 'flex-row-reverse' : ''}`}>
+                              <Repeat className="w-3 h-3" />
+                              {task.repeat_pattern}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+
+            {completedTasks.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t('focus.completed')}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {completedTasks.slice(0, 5).map((task) => (
+                    <div
+                      key={task.id}
+                      className={`flex items-start gap-2 p-2 rounded-lg bg-success/10 ${isRTL ? 'flex-row-reverse' : ''}`}
+                    >
+                      <button onClick={() => toggleTaskComplete(task.id, task.is_completed)}>
+                        <CheckCircle2 className="w-5 h-5 text-success" />
+                      </button>
+                      <div className={`flex-1 min-w-0 ${isRTL ? 'text-right' : ''}`}>
+                        <div className="font-medium text-sm line-through text-muted-foreground">
+                          {task.title}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
+      <Navigation />
+      
+      {/* Focus Session Celebration */}
+      <FocusSessionCelebration
+        show={showCelebration}
+        totalTrees={celebrationData.totalTrees}
+        totalFocusMinutes={celebrationData.totalFocusMinutes}
+        sessionDuration={celebrationData.sessionDuration}
+        onComplete={() => setShowCelebration(false)}
+      />
+    </div>
+  );
+};
+
+export default Focus;

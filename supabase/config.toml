@@ -1,1 +1,47 @@
 project_id = "laidjslcmowodlqxggil"
+
+[functions.send-invite]
+verify_jwt = true
+
+[functions.send-verification-email]
+verify_jwt = false
+
+[functions.create-expense-group]
+verify_jwt = true
+
+[functions.send-notification-email]
+verify_jwt = false
+
+[functions.send-day1-reminder]
+verify_jwt = false
+
+[functions.send-day3-reengagement]
+verify_jwt = false
+
+[functions.send-weekly-summary]
+verify_jwt = false
+
+[functions.send-monthly-recap]
+verify_jwt = false
+
+# Authentication Email Configuration
+[auth]
+external_email_enabled = true
+mailer_autoconfirm = false
+mailer_secure_email_change_enabled = true
+site_url = "https://splitz.live"
+
+[auth.email]
+max_frequency = "1h"
+enable_signup = true
+double_confirm_changes_enabled = true
+enable_confirmations = true
+
+# SMTP Configuration for Resend
+[auth.smtp]
+host = "smtp.resend.com"
+port = 587
+user = "resend"
+password = "env(RESEND_API_KEY)"
+admin_email = "noreply@splitz.live"
+sender_name = "Splitz"

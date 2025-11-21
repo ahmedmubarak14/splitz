@@ -1,0 +1,46 @@
+{
+  "name": "Splitz - Habits, Challenges & Expenses",
+  "short_name": "Splitz",
+  "description": "Track habits, join challenges, and split expenses with friends",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/splitz-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/splitz-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "lifestyle", "finance"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Add Habit",
+      "short_name": "New Habit",
+      "url": "/habits",
+      "icons": [{ "src": "/splitz-logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Add Expense",
+      "short_name": "New Expense",
+      "url": "/expenses",
+      "icons": [{ "src": "/splitz-logo.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Join Challenge",
+      "short_name": "Challenges",
+      "url": "/challenges",
+      "icons": [{ "src": "/splitz-logo.png", "sizes": "96x96" }]
+    }
+  ]
+}
