@@ -19,7 +19,8 @@
       "buildNumber": "1",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to take photos for your profile.",
-        "NSPhotoLibraryUsageDescription": "This app accesses your photos to set your profile picture."
+        "NSPhotoLibraryUsageDescription": "This app accesses your photos to set your profile picture.",
+        "NSFaceIDUsageDescription": "Enable Face ID for quick and secure access to your account."
       }
     },
     "android": {

@@ -8,6 +8,7 @@ import Toast from 'react-native-toast-message';
 
 import { AuthProvider } from '@/contexts/AuthContext';
 import { RootNavigator } from '@/navigation/RootNavigator';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import '@/i18n/config';
 
 const queryClient = new QueryClient({
@@ -23,16 +24,18 @@ const queryClient = new QueryClient({
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <RootNavigator />
-            <StatusBar style="auto" />
-            <Toast />
-          </AuthProvider>
-        </QueryClientProvider>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <ErrorBoundary>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <RootNavigator />
+              <StatusBar style="auto" />
+              <Toast />
+            </AuthProvider>
+          </QueryClientProvider>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }
