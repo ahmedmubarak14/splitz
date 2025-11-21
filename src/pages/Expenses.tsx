@@ -46,6 +46,24 @@ type ExpenseGroup = {
   }[];
 };
 
+type Expense = {
+  id: string;
+  user_id: string;
+  name: string;
+  total_amount: number;
+  created_at: string;
+};
+
+type ExpenseMember = {
+  id: string;
+  expense_id: string;
+  user_id: string;
+  amount_owed: number;
+  is_settled: boolean | null;
+  created_at: string;
+  expenses?: Expense; // when selecting with relation
+};
+
 const Expenses = () => {
   const [groups, setGroups] = useState<ExpenseGroup[]>([]);
   const [loading, setLoading] = useState(true);
@@ -540,6 +558,122 @@ const Expenses = () => {
           extra: { memberId }
         });
       }
+    }
+  };
+
+  const fetchData = async (uid: string) => {
+    try {
+      const [{ data: expenses, error: e1 }, { data: memberships, error: e2 }] = await Promise.all([
+        (supabase as any)
+          .from('expenses')
+          .select('*')
+          .eq('user_id', uid)
+          .order('created_at', { ascending: false }),
+        (supabase as any)
+          .from('expense_members')
+          .select('*, expenses(*)')
+          .eq('user_id', uid)
+          .order('created_at', { ascending: false })
+      ]);
+
+      if (e1) throw e1;
+      if (e2) throw e2;
+
+      setCreatedExpenses((expenses as Expense[]) || []);
+      setMyMemberships((memberships as ExpenseMember[]) || []);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to load expenses');
+    }
+  };
+
+  const createExpense = async () => {
+    if (!newExpenseName.trim()) return;
+    const total = parseFloat(newExpenseTotal || '0');
+    if (isNaN(total) || total < 0) {
+      toast.error('Enter a valid total amount');
+      return;
+    }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data: inserted, error } = await (supabase as any)
+        .from('expenses')
+        .insert({ user_id: user.id, name: newExpenseName, total_amount: total })
+        .select('*')
+        .maybeSingle();
+      if (error) throw error;
+
+      if (addSelfAsMember && inserted?.id) {
+        const owed = parseFloat(selfOwedAmount || '0');
+        if (!isNaN(owed) && owed >= 0) {
+          const { error: mErr } = await (supabase as any)
+            .from('expense_members')
+            .insert({ expense_id: inserted.id, user_id: user.id, amount_owed: owed });
+          if (mErr) throw mErr;
+        }
+      }
+
+      toast.success('Expense created');
+      setCreateDialogOpen(false);
+      setNewExpenseName('');
+      setNewExpenseTotal('');
+      setSelfOwedAmount('');
+      await fetchData(user.id);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to create expense');
+    }
+  };
+
+  const addMember = async () => {
+    if (!memberDialogExpenseId || !newMemberUserId.trim()) return;
+    const owed = parseFloat(newMemberOwed || '0');
+    if (isNaN(owed) || owed < 0) {
+      toast.error('Enter a valid owed amount');
+      return;
+    }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // only allow adding members if creator
+      const isOwner = createdExpenses.some(e => e.id === memberDialogExpenseId && e.user_id === user.id);
+      if (!isOwner) {
+        toast.error('Only the creator can add members');
+        return;
+      }
+
+      const { error } = await (supabase as any)
+        .from('expense_members')
+        .insert({ expense_id: memberDialogExpenseId, user_id: newMemberUserId, amount_owed: owed });
+      if (error) throw error;
+
+      toast.success('Member added');
+      setMemberDialogExpenseId(null);
+      setNewMemberUserId('');
+      setNewMemberOwed('');
+      await fetchData(user.id);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to add member');
+    }
+  };
+
+  const toggleSettlement = async (member: ExpenseMember) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      if (member.user_id !== user.id) {
+        toast.error('You can only update your own settlement');
+        return;
+      }
+      const { error } = await (supabase as any)
+        .from('expense_members')
+        .update({ is_settled: !member.is_settled })
+        .eq('id', member.id);
+      if (error) throw error;
+      await fetchData(user.id);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update settlement');
     }
   };
 
