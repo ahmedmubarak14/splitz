@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient (no rounded corners for adaptive icon) -->
+  <defs>
+    <linearGradient id="adaptiveBgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="adaptiveAccentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Full background -->
+  <rect width="1024" height="1024" fill="url(#adaptiveBgGradient)"/>
+
+  <!-- Logo (slightly larger for safe zone) -->
+  <g transform="translate(512, 512)">
+    <!-- Left half circle -->
+    <path d="M -200 -200 A 200 200 0 0 1 -200 200 L -90 200 A 90 90 0 0 0 -90 -200 Z"
+          fill="white" opacity="0.95"/>
+
+    <!-- Right half circle -->
+    <path d="M 200 -200 A 200 200 0 0 0 200 200 L 90 200 A 90 90 0 0 1 90 -200 Z"
+          fill="white" opacity="0.95"/>
+
+    <!-- Center divider -->
+    <rect x="-18" y="-220" width="36" height="440" fill="url(#adaptiveAccentGradient)" rx="18"/>
+
+    <!-- Top connector -->
+    <circle cx="0" cy="-200" r="40" fill="url(#adaptiveAccentGradient)"/>
+
+    <!-- Bottom connector -->
+    <circle cx="0" cy="200" r="40" fill="url(#adaptiveAccentGradient)"/>
+  </g>
+</svg>
