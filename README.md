@@ -1,197 +1,73 @@
-# Splitz - Monorepo (Web + Mobile)
+# Welcome to your Lovable project
 
-A productivity and expense management app available on both **web browsers** and **mobile devices** (iOS & Android).
+## Project info
 
----
+**URL**: https://lovable.dev/projects/3bea4428-754f-487d-a4c4-80e0c1d9c9f6
 
-## 📦 What is a Monorepo?
+## How can I edit this code?
 
-This project contains **TWO apps in ONE repository**:
+There are several ways of editing your application.
 
-```
-splitz/
-├── packages/
-│   ├── web/          ← React web app (runs in browsers)
-│   └── mobile/       ← React Native app (iOS & Android)
-```
+**Use Lovable**
 
-**Benefits:**
-- ✅ Share code between web and mobile
-- ✅ Update both apps at the same time
-- ✅ Easier to manage and maintain
-- ✅ Industry standard approach
+Simply visit the [Lovable Project](https://lovable.dev/projects/3bea4428-754f-487d-a4c4-80e0c1d9c9f6) and start prompting.
 
----
+Changes made via Lovable will be committed automatically to this repo.
 
-## 🚀 Quick Start Guide (No Coding Experience)
+**Use your preferred IDE**
 
-### Step 1: Install Required Software
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-1. **Node.js** (version 18+)
-   - Download: https://nodejs.org/
-   - Choose "LTS" version
-   - Install with default settings
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-2. **Git**
-   - Download: https://git-scm.com/downloads
-   - Install with default settings
+Follow these steps:
 
-3. **For Mobile Testing:**
-   - Install **Expo Go** app on your phone (App Store or Google Play)
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
 
-### Step 2: Clone and Install
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
 
-Open Terminal (Mac) or Command Prompt (Windows):
+# Step 3: Install the necessary dependencies.
+npm i
 
-```bash
-# 1. Clone this repository
-git clone <your-git-url>
-cd splitz
-
-# 2. Install all dependencies (takes 3-5 minutes)
-npm install
-
-# This installs packages for BOTH web and mobile
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
 ```
 
-### Step 3: Set Up Supabase (Your Database)
+**Edit a file directly in GitHub**
 
-1. Go to https://supabase.com/
-2. Create a free account
-3. Create a new project
-4. Get your API keys from Settings → API
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-### Step 4: Configure Environment Variables
+**Use GitHub Codespaces**
 
-**For Web App:**
-Create `packages/web/.env`:
-```
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_anon_key
-```
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-**For Mobile App:**
-Create `packages/mobile/.env`:
-```
-EXPO_PUBLIC_SUPABASE_URL=your_supabase_url
-EXPO_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-```
+## What technologies are used for this project?
 
----
+This project is built with:
 
-## ▶️ Running the Apps
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
-### Run Web App (Browser)
+## How can I deploy this project?
 
-```bash
-npm run web:dev
-```
+Simply open [Lovable](https://lovable.dev/projects/3bea4428-754f-487d-a4c4-80e0c1d9c9f6) and click on Share -> Publish.
 
-- Opens in browser at http://localhost:5173
-- Hot reload enabled (changes update instantly)
+## Can I connect a custom domain to my Lovable project?
 
-### Run Mobile App (Phone)
+Yes, you can!
 
-```bash
-npm run mobile
-```
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-- Shows a QR code
-- Open Expo Go app on your phone
-- Scan the QR code
-- App loads on your phone!
-
----
-
-## 📱 What Each App Does
-
-### Web App (`packages/web/`)
-- **Technology:** React + Vite + Tailwind CSS
-- **Runs on:** Chrome, Firefox, Safari, Edge
-- **Best for:** Desktop users, detailed work
-- **Features:** Full dashboard, all features
-
-### Mobile App (`packages/mobile/`)
-- **Technology:** React Native + Expo
-- **Runs on:** iOS and Android
-- **Best for:** On-the-go use
-- **Features:**
-  - Task management
-  - Habit tracking
-  - Expense tracking
-  - Trip planning
-  - Eisenhower Matrix (priority grid)
-  - Onboarding flow
-  - Settings & preferences
-
----
-
-## 🛠️ Available Commands
-
-### Root Commands (run from main folder):
-```bash
-npm run web:dev         # Start web dev server
-npm run web:build       # Build web for production
-npm run mobile          # Start mobile dev server
-npm run mobile:android  # Run on Android emulator
-npm run mobile:ios      # Run on iOS simulator (Mac only)
-```
-
----
-
-## 🔧 Common Issues & Solutions
-
-### "npm not found"
-→ Node.js not installed correctly. Reinstall from nodejs.org
-
-### "Cannot connect to Supabase"
-→ Check your `.env` files have correct API keys
-
-### Mobile app won't load
-→ Make sure phone and computer are on same WiFi
-
-### Web app won't start
-→ Port 5173 might be in use. Close other dev servers
-
----
-
-## 🆘 Need Help?
-
-### For Non-Developers:
-1. **Hire a developer** for initial setup (1-2 hours)
-2. **Use Fiverr or Upwork** to find help
-3. **Join Expo Discord** for mobile questions
-
----
-
-## 🎯 What's Included
-
-### Features:
-- ✅ User authentication (login/register)
-- ✅ Task management with priorities
-- ✅ Habit tracking with streaks
-- ✅ Expense tracking and splitting
-- ✅ Trip planning
-- ✅ Eisenhower Matrix (mobile)
-- ✅ Onboarding flow (mobile)
-- ✅ Settings & preferences
-- ✅ Multi-language support (i18n)
-
-### Tech Stack:
-
-**Web:**
-- React 18 + Vite
-- Tailwind CSS + shadcn/ui
-- React Router
-- Supabase
-
-**Mobile:**
-- React Native 0.74 + Expo SDK 51
-- React Navigation
-- NativeWind (Tailwind for RN)
-- Expo SecureStore
-- Supabase
-
----
-
-**Questions?** Check the individual README files in each package folder for more specific instructions.
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
