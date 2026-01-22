@@ -734,6 +734,36 @@ export type Database = {
         }
         Relationships: []
       }
+      invite_redemptions: {
+        Row: {
+          id: string
+          invite_code: string
+          invite_type: string
+          redeemed_at: string | null
+          resource_id: string
+          user_id: string
+          validated_at: string
+        }
+        Insert: {
+          id?: string
+          invite_code: string
+          invite_type: string
+          redeemed_at?: string | null
+          resource_id: string
+          user_id: string
+          validated_at?: string
+        }
+        Update: {
+          id?: string
+          invite_code?: string
+          invite_type?: string
+          redeemed_at?: string | null
+          resource_id?: string
+          user_id?: string
+          validated_at?: string
+        }
+        Relationships: []
+      }
       itinerary_items: {
         Row: {
           activity_type: string | null
@@ -2142,6 +2172,10 @@ export type Database = {
       }
       get_user_weekly_summary: { Args: { p_user_id: string }; Returns: Json }
       habit_checkin_date: { Args: { checked_in_at: string }; Returns: string }
+      has_validated_invite: {
+        Args: { _invite_type: string; _resource_id: string; _user_id: string }
+        Returns: boolean
+      }
       increment_invitation_uses: {
         Args: { _invitation_id: string }
         Returns: undefined
@@ -2195,6 +2229,10 @@ export type Database = {
         }
         Returns: string
       }
+      mark_invite_redeemed: {
+        Args: { _invite_type: string; _resource_id: string }
+        Returns: undefined
+      }
       notify_upcoming_subscriptions: { Args: never; Returns: undefined }
       recalc_expense_split: {
         Args: { _expense_id: string }
@@ -2212,6 +2250,20 @@ export type Database = {
           full_name: string
           id: string
           username: string
+        }[]
+      }
+      validate_invite_code: {
+        Args: { _invite_code: string }
+        Returns: {
+          created_at: string
+          created_by: string
+          current_uses: number
+          expires_at: string
+          id: string
+          invite_code: string
+          invite_type: string
+          max_uses: number
+          resource_id: string
         }[]
       }
     }
