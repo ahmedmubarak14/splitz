@@ -29,9 +29,10 @@ const JoinInvite = () => {
         return;
       }
 
-      // Fetch invitation details using secure function
+      // Fetch and validate invitation using secure function
+      // This also records the validation for RLS policy checks
       const { data: inviteData, error: inviteError } = await supabase
-        .rpc('get_invitation_by_code', { _invite_code: inviteCode })
+        .rpc('validate_invite_code', { _invite_code: inviteCode })
         .maybeSingle();
 
       if (inviteError) {
@@ -111,6 +112,21 @@ const JoinInvite = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // Helper to complete join process
+      const completeJoin = async (successMessage: string, redirectPath: string) => {
+        // Increment invitation uses
+        await supabase.rpc('increment_invitation_uses', { 
+          _invitation_id: invitation.id 
+        });
+        // Mark invite as redeemed so it can't be used again by this user
+        await supabase.rpc('mark_invite_redeemed', {
+          _resource_id: invitation.resource_id,
+          _invite_type: invitation.invite_type
+        });
+        toast.success(successMessage);
+        navigate(redirectPath);
+      };
+
       if (invitation.invite_type === 'challenge') {
         // Add user as challenge participant
         const { error } = await supabase
@@ -127,11 +143,7 @@ const JoinInvite = () => {
             throw error;
           }
         } else {
-          await supabase.rpc('increment_invitation_uses', { 
-            _invitation_id: invitation.id 
-          });
-          toast.success('Successfully joined the challenge! 🎉');
-          navigate('/challenges');
+          await completeJoin('Successfully joined the challenge! 🎉', '/challenges');
         }
       } else if (invitation.invite_type === 'expense') {
         // Add user as expense GROUP member
@@ -149,11 +161,7 @@ const JoinInvite = () => {
             throw error;
           }
         } else {
-          await supabase.rpc('increment_invitation_uses', { 
-            _invitation_id: invitation.id 
-          });
-          toast.success('Successfully joined the expense group! 💰');
-          navigate('/expenses');
+          await completeJoin('Successfully joined the expense group! 💰', '/expenses');
         }
       } else if (invitation.invite_type === 'subscription') {
         // Add user as subscription contributor
@@ -174,11 +182,7 @@ const JoinInvite = () => {
             throw error;
           }
         } else {
-          await supabase.rpc('increment_invitation_uses', { 
-            _invitation_id: invitation.id 
-          });
-          toast.success('Successfully joined the subscription! 💳');
-          navigate('/subscriptions');
+          await completeJoin('Successfully joined the subscription! 💳', '/subscriptions');
         }
       } else if (invitation.invite_type === 'trip') {
         // Add user as trip member
@@ -196,11 +200,7 @@ const JoinInvite = () => {
             throw error;
           }
         } else {
-          await supabase.rpc('increment_invitation_uses', { 
-            _invitation_id: invitation.id 
-          });
-          toast.success('Successfully joined the trip! ✈️');
-          navigate('/trips');
+          await completeJoin('Successfully joined the trip! ✈️', '/trips');
         }
       }
     } catch (error) {
