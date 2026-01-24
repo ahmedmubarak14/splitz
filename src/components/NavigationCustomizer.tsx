@@ -94,24 +94,56 @@ const NavigationCustomizer = ({ onSave }: NavigationCustomizerProps) => {
 
   const savePreferences = async () => {
     setSaving(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error(t('errors.notAuthenticated'));
+        setSaving(false);
+        return;
+      }
 
-    const { error } = await supabase
-      .from('navigation_preferences')
-      .upsert({
-        user_id: user.id,
-        visible_nav_items: selectedItems,
-        nav_order: selectedItems,
-      });
+      // Check if preference already exists
+      const { data: existing } = await supabase
+        .from('navigation_preferences')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-    if (error) {
+      let error;
+      if (existing) {
+        // Update existing record
+        const { error: updateError } = await supabase
+          .from('navigation_preferences')
+          .update({
+            visible_nav_items: selectedItems,
+            nav_order: selectedItems,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('user_id', user.id);
+        error = updateError;
+      } else {
+        // Insert new record
+        const { error: insertError } = await supabase
+          .from('navigation_preferences')
+          .insert({
+            user_id: user.id,
+            visible_nav_items: selectedItems,
+            nav_order: selectedItems,
+          });
+        error = insertError;
+      }
+
+      if (error) {
+        toast.error(t('navigation.customize.saveFailed'));
+        console.error('Save preferences error:', error);
+      } else {
+        toast.success(t('navigation.customize.saveSuccess'));
+        setOpen(false);
+        onSave?.();
+      }
+    } catch (err) {
+      console.error('Unexpected error saving preferences:', err);
       toast.error(t('navigation.customize.saveFailed'));
-      console.error(error);
-    } else {
-      toast.success(t('navigation.customize.saveSuccess'));
-      setOpen(false);
-      onSave?.();
     }
     setSaving(false);
   };
