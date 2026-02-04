@@ -117,7 +117,7 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
       <CardHeader className="pb-3">
         <div className={`flex items-start justify-between ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
           <div className={`flex items-center gap-3 ${rtlClass(isRTL, 'flex-row-reverse', 'flex-row')}`}>
-            <div className="h-12 w-12 rounded-lg bg-card border border-border flex items-center justify-center overflow-hidden">
+            <div className="h-12 w-12 rounded-lg bg-card border border-border flex items-center justify-center overflow-hidden relative">
               {subscription.logo_url ? (
                 <img 
                   src={subscription.logo_url} 
@@ -127,9 +127,32 @@ export const SubscriptionCard = ({ subscription, onEdit, onManageContributors, o
                   loading="lazy"
                   decoding="async"
                   className="h-8 w-8 object-contain"
+                  onError={(e) => {
+                    // Fallback to Google Favicon API on error
+                    const target = e.target as HTMLImageElement;
+                    const domain = subscription.name.toLowerCase().replace(/\s+/g, '') + '.com';
+                    const fallbackUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                    if (target.src !== fallbackUrl) {
+                      target.src = fallbackUrl;
+                    }
+                  }}
                 />
               ) : (
-                <CreditCard className="h-6 w-6 text-primary" />
+                <>
+                  <img 
+                    src={`https://www.google.com/s2/favicons?domain=${subscription.name.toLowerCase().replace(/\s+/g, '')}.com&sz=64`}
+                    alt={subscription.name}
+                    width={32}
+                    height={32}
+                    loading="lazy"
+                    className="h-8 w-8 object-contain"
+                    onError={(e) => {
+                      // Hide broken image
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                  <CreditCard className="h-6 w-6 text-primary absolute opacity-50" />
+                </>
               )}
             </div>
             <div>
