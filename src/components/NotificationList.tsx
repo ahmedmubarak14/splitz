@@ -10,21 +10,21 @@ import { useIsRTL } from '@/lib/rtl-utils';
 import { formatRelativeTime } from '@/lib/formatters';
 
 const translateNotificationTitle = (title: string, type: string, t: any): string => {
-  // Try exact title match first
-  const titleKey = `notificationTitles.${title}`;
-  const translated = t(titleKey);
-  if (translated !== titleKey) {
-    return translated;
+  // Try exact title match first (for titles like "Added to Subscription")
+  const exactKey = `notificationTitles.${title}`;
+  const exactTranslated = t(exactKey, { defaultValue: '' });
+  if (exactTranslated && exactTranslated !== exactKey && exactTranslated !== '') {
+    return exactTranslated;
   }
   
-  // Fallback to type-based translation
+  // Try type-based translation (for types like "subscription", "habit")
   const typeKey = `notificationTitles.${type}`;
-  const typeTranslated = t(typeKey);
-  if (typeTranslated !== typeKey) {
+  const typeTranslated = t(typeKey, { defaultValue: '' });
+  if (typeTranslated && typeTranslated !== typeKey && typeTranslated !== '') {
     return typeTranslated;
   }
   
-  // Return original if no translation found
+  // Return original title if no translation found
   return title;
 };
 
@@ -50,10 +50,10 @@ const parseNotificationMessage = (message: string, type: string, t: any): string
   }
   
   // "Payment approved for "X""
-  const paymentStatusMatch = message.match(new RegExp(`Payment approved for ${quotePattern}([^""]+)${quotePattern}`));
-  if (paymentStatusMatch) {
+  const paymentApprovedMatch = message.match(new RegExp(`Payment approved for ${quotePattern}([^""]+)${quotePattern}`));
+  if (paymentApprovedMatch) {
     return t('notificationMessages.paymentStatus', {
-      name: paymentStatusMatch[1].trim()
+      name: paymentApprovedMatch[1].trim()
     });
   }
   
@@ -79,6 +79,99 @@ const parseNotificationMessage = (message: string, type: string, t: any): string
   if (streakFreezeMatch) {
     return t('notificationMessages.streakFreeze', {
       count: streakFreezeMatch[1].trim()
+    });
+  }
+
+  // "🎉 Freeze Earned!" pattern
+  const freezeEarnedMatch = message.match(/You earned a Streak Freeze for reaching (\d+) days!/);
+  if (freezeEarnedMatch) {
+    return t('notificationMessages.freezeEarned', {
+      count: freezeEarnedMatch[1].trim(),
+      defaultValue: message
+    });
+  }
+
+  // "X added you to "Y"" for trips
+  const addedToTripMatch = message.match(new RegExp(`(.+) added you to ${quotePattern}([^""]+)${quotePattern}`));
+  if (addedToTripMatch) {
+    return t('notificationMessages.addedToTrip', {
+      name: addedToTripMatch[1].trim(),
+      trip: addedToTripMatch[2].trim(),
+      defaultValue: message
+    });
+  }
+
+  // "X assigned you "Y" in Z" for trip tasks
+  const taskAssignedMatch = message.match(new RegExp(`(.+) assigned you ${quotePattern}([^""]+)${quotePattern} in (.+)`));
+  if (taskAssignedMatch) {
+    return t('notificationMessages.taskAssigned', {
+      name: taskAssignedMatch[1].trim(),
+      task: taskAssignedMatch[2].trim(),
+      trip: taskAssignedMatch[3].trim(),
+      defaultValue: message
+    });
+  }
+
+  // "X joined "Y"" for challenges
+  const joinedChallengeMatch = message.match(new RegExp(`(.+) joined ${quotePattern}([^""]+)${quotePattern}`));
+  if (joinedChallengeMatch) {
+    return t('notificationMessages.joinedChallenge', {
+      name: joinedChallengeMatch[1].trim(),
+      challenge: joinedChallengeMatch[2].trim(),
+      defaultValue: message
+    });
+  }
+
+  // "X added "Y" (SAR Z) in W" for expenses
+  const newExpenseMatch = message.match(new RegExp(`(.+) added ${quotePattern}([^""]+)${quotePattern} \\((.+?)\\) in (.+)`));
+  if (newExpenseMatch) {
+    return t('notificationMessages.newExpense', {
+      name: newExpenseMatch[1].trim(),
+      expense: newExpenseMatch[2].trim(),
+      amount: newExpenseMatch[3].trim(),
+      group: newExpenseMatch[4].trim(),
+      defaultValue: message
+    });
+  }
+
+  // "X renews in Y days (Z)" for subscription reminders
+  const renewsMatch = message.match(/(.+) renews in (\d+) days? \((.+)\)/);
+  if (renewsMatch) {
+    return t('notificationMessages.subscriptionRenews', {
+      name: renewsMatch[1].trim(),
+      days: renewsMatch[2].trim(),
+      amount: renewsMatch[3].trim(),
+      defaultValue: message
+    });
+  }
+
+  // "X price changed from Y to Z" for price changes
+  const priceChangeMatch = message.match(/(.+) price changed from (.+) to (.+)/);
+  if (priceChangeMatch) {
+    return t('notificationMessages.priceChange', {
+      name: priceChangeMatch[1].trim(),
+      oldPrice: priceChangeMatch[2].trim(),
+      newPrice: priceChangeMatch[3].trim(),
+      defaultValue: message
+    });
+  }
+
+  // "You reached level X! Keep going!" for level up
+  const levelUpMatch = message.match(/You reached level (\d+)!/);
+  if (levelUpMatch) {
+    return t('notificationMessages.levelUp', {
+      level: levelUpMatch[1].trim(),
+      defaultValue: message
+    });
+  }
+
+  // "Someone reached X% in "Y"" for challenge milestones
+  const challengeMilestoneMatch = message.match(new RegExp(`Someone reached (\\d+)% in ${quotePattern}([^""]+)${quotePattern}`));
+  if (challengeMilestoneMatch) {
+    return t('notificationMessages.challengeMilestone', {
+      progress: challengeMilestoneMatch[1].trim(),
+      challenge: challengeMilestoneMatch[2].trim(),
+      defaultValue: message
     });
   }
   
@@ -221,7 +314,7 @@ export function NotificationList({ onRead }: NotificationListProps) {
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1">
-                <h4 className="font-medium text-sm">{t('notificationTitles.' + notification.type)}</h4>
+                <h4 className="font-medium text-sm">{translateNotificationTitle(notification.title, notification.type, t)}</h4>
                 <p className="text-sm text-muted-foreground mt-1">
                   {parseNotificationMessage(notification.message, notification.type, t)}
                 </p>
