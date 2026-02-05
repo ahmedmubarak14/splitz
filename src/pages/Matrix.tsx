@@ -7,7 +7,8 @@ import { cn } from '@/lib/utils';
 import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
 import { responsiveSpacing, responsiveText } from '@/lib/responsive-utils';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, ListTodo } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import EisenhowerMatrix from '@/components/EisenhowerMatrix';
 import QuickAddTask from '@/components/QuickAddTask';
 import { toast } from 'sonner';
@@ -17,6 +18,7 @@ const Matrix = () => {
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [selectedQuadrant, setSelectedQuadrant] = useState<string | null>(null);
 
   // Fetch all tasks
   const { data: tasks, isLoading } = useQuery({
@@ -59,24 +61,55 @@ const Matrix = () => {
     updateQuadrant.mutate({ taskId, quadrant });
   };
 
+  const handleAddToQuadrant = (quadrant: string) => {
+    setSelectedQuadrant(quadrant);
+    setQuickAddOpen(true);
+  };
+
+  const handleQuickAddClose = (open: boolean) => {
+    setQuickAddOpen(open);
+    if (!open) setSelectedQuadrant(null);
+  };
+
+  const taskStats = {
+    total: tasks?.filter(t => !t.is_completed).length || 0,
+    inMatrix: tasks?.filter(t => t.priority_quadrant && !t.is_completed).length || 0,
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-muted/30 via-muted/10 to-background">
       <div className={cn('max-w-7xl mx-auto', responsiveSpacing.pageContainer, responsiveSpacing.mobileNavPadding)}>
         {/* Header */}
-        <div className="mb-6 md:mb-8 flex items-center justify-between">
-          <div>
-            <h1 className={cn('font-bold tracking-tight mb-2', responsiveText.pageTitle)}>
+        <div className="mb-6 md:mb-8">
+          <div className="flex items-center justify-between mb-2">
+            <h1 className={cn('font-bold tracking-tight', responsiveText.pageTitle)}>
               {t('matrix.title')}
             </h1>
-            <p className="text-muted-foreground text-sm md:text-base">
-              {t('matrix.subtitle')}
-            </p>
+            
+            <div className="flex items-center gap-2">
+              <Link to="/tasks">
+                <Button variant="outline" size="sm" className="hidden md:flex">
+                  <ListTodo className="w-4 h-4 mr-2" />
+                  {t('matrix.viewAllTasks')}
+                </Button>
+              </Link>
+              <Button onClick={() => setQuickAddOpen(true)} className="shadow-sm hover:shadow-md transition-all duration-200">
+                <Plus className="w-4 h-4 mr-2" />
+                {t('matrix.addTask')}
+              </Button>
+            </div>
           </div>
-          
-          <Button onClick={() => setQuickAddOpen(true)} className="shadow-sm hover:shadow-md transition-all duration-200">
-            <Plus className="w-4 h-4 mr-2" />
-            {t('matrix.addTask')}
-          </Button>
+          <p className="text-muted-foreground text-sm md:text-base">
+            {t('matrix.subtitle')}
+          </p>
+          <div className="flex gap-4 mt-3 text-sm">
+            <span className="text-muted-foreground">
+              {t('matrix.statsInMatrix', { count: taskStats.inMatrix })}
+            </span>
+            <span className="text-muted-foreground">
+              {t('matrix.statsTotal', { count: taskStats.total })}
+            </span>
+          </div>
         </div>
 
         {/* Matrix */}
@@ -84,12 +117,14 @@ const Matrix = () => {
           tasks={tasks || []}
           isLoading={isLoading}
           onMoveTask={handleMoveTask}
+          onAddToQuadrant={handleAddToQuadrant}
         />
 
         {/* Quick Add Task Dialog */}
         <QuickAddTask
           open={quickAddOpen}
-          onOpenChange={setQuickAddOpen}
+          onOpenChange={handleQuickAddClose}
+          defaultQuadrant={selectedQuadrant}
         />
 
         {/* Mobile FAB */}
