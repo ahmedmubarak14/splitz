@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Check, Trash2 } from "lucide-react";
+import { Bell, Check, CheckCheck, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
@@ -243,6 +243,31 @@ export function NotificationList({ onRead }: NotificationListProps) {
     }
   };
 
+  const markAllAsRead = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
+      if (unreadIds.length === 0) return;
+
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('user_id', user.id)
+        .eq('is_read', false);
+
+      if (error) throw error;
+
+      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+      onRead?.();
+      toast.success(t('notificationList.markedAllRead'));
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+      toast.error(t('notificationList.markAllFailed'));
+    }
+  };
+
   const deleteNotification = async (notificationId: string) => {
     try {
       const { error } = await supabase
@@ -301,9 +326,25 @@ export function NotificationList({ onRead }: NotificationListProps) {
     );
   }
 
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+
   return (
-    <ScrollArea className="h-[calc(100vh-8rem)] mt-4" dir={isRTL ? 'rtl' : 'ltr'}>
-      <div className="space-y-2">
+    <div className="mt-4" dir={isRTL ? 'rtl' : 'ltr'}>
+      {unreadCount > 0 && (
+        <div className="flex justify-end mb-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={markAllAsRead}
+            className="text-xs"
+          >
+            <CheckCheck className="w-4 h-4 mr-1.5" />
+            {t('notificationList.markAllAsRead')}
+          </Button>
+        </div>
+      )}
+      <ScrollArea className="h-[calc(100vh-10rem)]">
+        <div className="space-y-2">
         {notifications.map((notification) => (
           <div
             key={notification.id}
@@ -351,7 +392,8 @@ export function NotificationList({ onRead }: NotificationListProps) {
             </div>
           </div>
         ))}
-      </div>
-    </ScrollArea>
+        </div>
+      </ScrollArea>
+    </div>
   );
 }
