@@ -10,7 +10,7 @@ const resources = {
         dashboard: 'Home',
         habits: 'Habits',
         expenses: 'Expense',
-        challenges: 'Wins',
+        challenges: 'Challenges',
         profile: 'Profile',
         focus: 'Focus',
         subscriptions: 'Subscriptions',
