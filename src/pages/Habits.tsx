@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables, TablesInsert, TablesUpdate } from '@/integrations/supabase/types';
@@ -10,10 +10,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Plus, Target, TrendingUp, MoreVertical, Pencil, Trash2, CheckCircle2, Calendar, Snowflake, Users, Flame } from 'lucide-react';
+import { Plus, Target, TrendingUp, MoreVertical, Pencil, Trash2, CheckCircle2, Calendar, Snowflake, Flame } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import Navigation from '@/components/Navigation';
@@ -26,11 +24,8 @@ import { EnhancedEmptyState } from '@/components/EnhancedEmptyState';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
 import { HabitCheckInCelebration } from '@/components/HabitCheckInCelebration';
-import { SharedHabitDetailsDialog } from '@/components/SharedHabitDetailsDialog';
-import { CreateSharedHabitDialog } from '@/components/CreateSharedHabitDialog';
 // Lazy load emoji picker for better bundle size
 const EmojiPicker = lazy(() => import('emoji-picker-react'));
-import { useQuery } from '@tanstack/react-query';
 
 type Habit = {
   id: string;
@@ -65,51 +60,11 @@ const Habits = () => {
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const [celebrating, setCelebrating] = useState(false);
   const [celebratedHabit, setCelebratedHabit] = useState<Habit | null>(null);
-  const [selectedTab, setSelectedTab] = useState('my-habits');
-  const [sharedHabitDialogOpen, setSharedHabitDialogOpen] = useState(false);
-  const [selectedSharedHabitId, setSelectedSharedHabitId] = useState<string | null>(null);
-  const [createSharedDialogOpen, setCreateSharedDialogOpen] = useState(false);
   
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isRTL = useIsRTL();
   const isMobile = useIsMobile();
-
-  // Fetch shared habits
-  const { data: sharedHabits, isLoading: isLoadingShared, refetch: refetchShared } = useQuery({
-    queryKey: ['shared-habits'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      const { data, error } = await (supabase as any)
-        .from('shared_habit_participants')
-        .select(`
-          *,
-          shared_habits!inner (
-            id,
-            name,
-            description,
-            icon,
-            target_days,
-            created_at,
-            created_by,
-            profiles!shared_habits_created_by_fkey (
-              full_name,
-              avatar_url
-            )
-          )
-        `)
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-      return data?.map(d => ({
-        ...d.shared_habits,
-        current_streak: d.current_streak,
-        best_streak: d.best_streak,
-      })) || [];
-    }
-  });
 
   useEffect(() => {
     checkAuth();
@@ -299,7 +254,7 @@ const Habits = () => {
             </p>
           </div>
           
-          <Dialog open={selectedTab === 'my-habits' ? dialogOpen : createSharedDialogOpen} onOpenChange={selectedTab === 'my-habits' ? setDialogOpen : setCreateSharedDialogOpen}>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button className="shadow-sm hover:shadow-md active:scale-95 transition-all duration-200">
                 <Plus className="w-4 h-4 mr-2" />
@@ -404,41 +359,25 @@ const Habits = () => {
           </Dialog>
         </div>
 
-        {/* Tabs */}
-        <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="my-habits" className="flex items-center gap-2">
-              <Flame className="w-4 h-4" />
-              {t('habits.myHabits')}
-              <Badge variant="secondary">{habits.length}</Badge>
-            </TabsTrigger>
-            <TabsTrigger value="shared" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              {t('habits.shared')}
-              <Badge variant="secondary">{sharedHabits?.length || 0}</Badge>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* My Habits Tab */}
-          <TabsContent value="my-habits" className="mt-6">
-            {loading ? (
-              <SkeletonList count={6} />
-            ) : habits.length === 0 ? (
-              <EnhancedEmptyState
-                icon={Target}
-                emoji="🎯"
-                title={t('habits.startJourney')}
-                description={t('habits.noHabits')}
-                actionLabel={t('habits.createNew')}
-                onAction={() => setDialogOpen(true)}
-                tips={[
-                  t('habits.tips.startSmall'),
-                  t('habits.tips.beConsistent'),
-                  t('habits.tips.trackProgress')
-                ]}
-              />
-            ) : (
-              <div className={`grid ${responsiveGrid.cards} ${responsiveSpacing.gridGap}`}>
+        {/* Habits Grid */}
+        {loading ? (
+          <SkeletonList count={6} />
+        ) : habits.length === 0 ? (
+          <EnhancedEmptyState
+            icon={Target}
+            emoji="🎯"
+            title={t('habits.startJourney')}
+            description={t('habits.noHabits')}
+            actionLabel={t('habits.createNew')}
+            onAction={() => setDialogOpen(true)}
+            tips={[
+              t('habits.tips.startSmall'),
+              t('habits.tips.beConsistent'),
+              t('habits.tips.trackProgress')
+            ]}
+          />
+        ) : (
+          <div className={`grid ${responsiveGrid.cards} ${responsiveSpacing.gridGap}`}>
             {habits.map((habit) => (
               <Card key={habit.id} className="border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 transition-all duration-200 overflow-hidden group">
                 <CardHeader className="pb-3">
@@ -519,70 +458,9 @@ const Habits = () => {
                   </Button>
                 </CardContent>
               </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          {/* Shared Habits Tab */}
-          <TabsContent value="shared" className="mt-6">
-            {isLoadingShared ? (
-              <SkeletonList count={6} />
-            ) : !sharedHabits || sharedHabits.length === 0 ? (
-              <EnhancedEmptyState
-                icon={Users}
-                emoji="👥"
-                title={t('sharedHabits.noSharedHabits')}
-                description={t('sharedHabits.noSharedHabitsDesc')}
-                actionLabel={t('sharedHabits.createSharedHabit')}
-                onAction={() => setCreateSharedDialogOpen(true)}
-                tips={[
-                  t('sharedHabits.tips.inviteFriends'),
-                  t('sharedHabits.tips.stayMotivated'),
-                  t('sharedHabits.tips.celebrate')
-                ]}
-              />
-            ) : (
-              <div className={`grid ${responsiveGrid.cards} ${responsiveSpacing.gridGap}`}>
-                {sharedHabits.map((habit: any) => (
-                  <Card 
-                    key={habit.id} 
-                    className="border border-border/40 shadow-sm hover:shadow-md hover:border-border/60 transition-all duration-200 overflow-hidden group cursor-pointer"
-                    onClick={() => {
-                      setSelectedSharedHabitId(habit.id);
-                      setSharedHabitDialogOpen(true);
-                    }}
-                  >
-                    <CardHeader className="pb-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="text-4xl group-hover:scale-110 transition-transform duration-200">{habit.icon || '🤝'}</div>
-                          <div>
-                            <CardTitle className={`${responsiveText.cardTitle} font-semibold ${isRTL ? 'text-right' : 'text-left'}`}>{habit.name}</CardTitle>
-                            <p className={`${responsiveText.caption} text-muted-foreground mt-1 flex items-center gap-2 ${isRTL ? 'text-right flex-row-reverse' : 'text-left'}`}>
-                              <Users className="w-3 h-3" />
-                              <span>{t('sharedHabits.sharedLabel')}</span>
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div className={`flex items-center justify-between p-3 bg-accent rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}>
-                        <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>{t('habits.currentStreak')}</span>
-                        <span className="font-semibold">{habit.current_streak ?? 0} {t('habits.days')}</span>
-                      </div>
-                      <div className={`flex items-center justify-between p-3 bg-accent rounded-lg ${isRTL ? 'flex-row-reverse' : ''}`}>
-                        <span className={`${responsiveText.caption} font-medium text-muted-foreground`}>{t('habits.bestStreak')}</span>
-                        <span className="font-semibold">{habit.best_streak ?? 0} {t('habits.days')}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+            ))}
+          </div>
+        )}
       </div>
 
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
@@ -729,27 +607,9 @@ const Habits = () => {
         />
       )}
 
-      {selectedSharedHabitId && (
-        <SharedHabitDetailsDialog
-          habitId={selectedSharedHabitId}
-          open={sharedHabitDialogOpen}
-          onOpenChange={setSharedHabitDialogOpen}
-          onUpdate={() => refetchShared()}
-        />
-      )}
-
-      <CreateSharedHabitDialog
-        open={createSharedDialogOpen}
-        onOpenChange={setCreateSharedDialogOpen}
-        onCreated={() => {
-          setCreateSharedDialogOpen(false);
-          refetchShared();
-        }}
-      />
-
       {isMobile && (
         <MobileQuickActionsFAB
-          onAddHabit={() => selectedTab === 'my-habits' ? setDialogOpen(true) : setCreateSharedDialogOpen(true)}
+          onAddHabit={() => setDialogOpen(true)}
         />
       )}
 

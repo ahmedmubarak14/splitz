@@ -37,10 +37,8 @@ const Focus = lazy(() => import("./pages/Focus"));
 const Expenses = lazy(() => import("./pages/Expenses"));
 const Challenges = lazy(() => import("./pages/Challenges"));
 const Subscriptions = lazy(() => import("./pages/Subscriptions"));
-const Calendar = lazy(() => import("./pages/Calendar"));
 const Trips = lazy(() => import("./pages/Trips"));
 const TripDetails = lazy(() => import("./pages/TripDetails"));
-const ActivityFeed = lazy(() => import("./pages/ActivityFeed"));
 const Friends = lazy(() => import("./pages/Friends"));
 const Profile = lazy(() => import("./pages/Profile"));
 const DevTools = lazy(() => import("./pages/DevTools"));
@@ -143,7 +141,6 @@ const AppContent = () => {
             <Route path="/expenses" element={<Expenses />} />
             <Route path="/challenges" element={<Challenges />} />
             <Route path="/subscriptions" element={<Subscriptions />} />
-            <Route path="/calendar" element={<Calendar />} />
             <Route path="/trips" element={<Trips />} />
             <Route path="/friends" element={<Friends />} />
             <Route path="/profile" element={<Profile />} />
@@ -226,10 +223,8 @@ const AppContent = () => {
             <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
             <Route path="/challenges" element={<ProtectedRoute><Challenges /></ProtectedRoute>} />
             <Route path="/subscriptions" element={<ProtectedRoute><Subscriptions /></ProtectedRoute>} />
-            <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
             <Route path="/trips" element={<ProtectedRoute><Trips /></ProtectedRoute>} />
             <Route path="/trips/:id" element={<ProtectedRoute><TripDetails /></ProtectedRoute>} />
-            <Route path="/activity" element={<ProtectedRoute><ActivityFeed /></ProtectedRoute>} />
             <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/dev-tools" element={<DevTools />} />

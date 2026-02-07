@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ListChecks, Brain, DollarSign, Trophy, Menu, CreditCard, Plane, Calendar, Grid3X3, Flame, Users } from 'lucide-react';
+import { Home, ListChecks, Brain, DollarSign, Trophy, Menu, CreditCard, Plane, Grid3X3, Flame, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -15,7 +15,7 @@ import {
   prefetchChallenges 
 } from '@/App';
 
-type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'matrix' | 'focus' | 'calendar' | 'expenses' | 'subscriptions' | 'trips' | 'challenges' | 'friends';
+type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'matrix' | 'focus' | 'expenses' | 'subscriptions' | 'trips' | 'challenges' | 'friends';
 
 const Navigation = () => {
   const location = useLocation();
@@ -46,7 +46,6 @@ const Navigation = () => {
     { id: 'tasks' as NavItemId, path: '/tasks', icon: ListChecks, label: t('nav.tasks') },
     { id: 'matrix' as NavItemId, path: '/matrix', icon: Grid3X3, label: t('nav.matrix') },
     { id: 'focus' as NavItemId, path: '/focus', icon: Brain, label: t('nav.focus') },
-    { id: 'calendar' as NavItemId, path: '/calendar', icon: Calendar, label: t('nav.calendar') },
     { id: 'expenses' as NavItemId, path: '/expenses', icon: DollarSign, label: t('nav.expenses') },
     { id: 'subscriptions' as NavItemId, path: '/subscriptions', icon: CreditCard, label: t('nav.subscriptions') },
     { id: 'trips' as NavItemId, path: '/trips', icon: Plane, label: t('nav.trips') },

@@ -13,12 +13,10 @@ import {
   Grid3x3,
   Brain,
   Trophy,
-  CalendarDays,
   DollarSign,
   CreditCard,
   MapPin,
   User,
-  Settings,
   LogOut,
   Users,
 } from 'lucide-react';
@@ -79,7 +77,6 @@ export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: Mobi
         { path: '/matrix', icon: Grid3x3, label: t('nav.matrix'), emoji: '📊' },
         { path: '/focus', icon: Brain, label: t('nav.focus'), emoji: '🎯' },
         { path: '/habits', icon: Trophy, label: t('nav.habits'), emoji: '🔥' },
-        { path: '/calendar', icon: CalendarDays, label: t('nav.calendar'), emoji: '📅' },
       ],
     },
     {
