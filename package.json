@@ -25,6 +25,7 @@
     "@hookform/resolvers": "^3.10.0",
     "@ionic/core": "^8.7.6",
     "@ionic/react": "^8.7.6",
+    "@lovable.dev/cloud-auth-js": "^0.0.2",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-aspect-ratio": "^1.1.7",
