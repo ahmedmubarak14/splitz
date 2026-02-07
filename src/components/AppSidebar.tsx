@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Target, DollarSign, Trophy, User, Brain, Wrench, CreditCard, Calendar, MapPin, ListChecks, Grid3x3, Users, Activity } from 'lucide-react';
+import { Home, Target, DollarSign, Trophy, User, Brain, Wrench, CreditCard, MapPin, ListChecks, Grid3x3, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { config } from '@/lib/config';
@@ -29,10 +29,8 @@ const workspaceItems = [
   { path: '/expenses', icon: DollarSign, labelKey: 'nav.expenses', label: 'Expenses' },
   { path: '/challenges', icon: Trophy, labelKey: 'nav.challenges', label: 'Challenges' },
   { path: '/subscriptions', icon: CreditCard, labelKey: 'nav.subscriptions', label: 'Subscriptions' },
-  { path: '/calendar', icon: Calendar, labelKey: 'nav.calendar', label: 'Calendar' },
   { path: '/trips', icon: MapPin, labelKey: 'nav.trips', label: 'Trips' },
   { path: '/friends', icon: Users, labelKey: 'nav.friends', label: 'Friends' },
-  { path: '/activity', icon: Activity, labelKey: 'nav.activity', label: 'Activity' },
 ];
 
 const accountItems = [
