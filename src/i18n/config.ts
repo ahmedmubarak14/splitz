@@ -869,9 +869,21 @@ const resources = {
         taskPlural: 'tasks',
         markedComplete: 'Task marked complete',
         markedIncomplete: 'Task marked incomplete',
+        allProjects: 'All Projects',
+        viewMatrix: 'Matrix',
         emptyState: {
           title: 'No tasks yet',
           description: 'Create your first task to get started with your productivity journey',
+        },
+        kanban: {
+          todo: 'To Do',
+          in_progress: 'In Progress',
+          done: 'Done',
+          empty: 'No tasks',
+          start: 'Start',
+          complete: 'Done',
+          reopen: 'Reopen',
+          movedToInProgress: 'Task moved to In Progress',
         },
         quickAdd: {
           title: 'Add New Task',
@@ -2364,9 +2376,21 @@ const resources = {
         taskPlural: 'مهام',
         markedComplete: 'تم وضع علامة مكتملة للمهمة',
         markedIncomplete: 'تم إلغاء علامة المكتملة للمهمة',
+        allProjects: 'جميع المشاريع',
+        viewMatrix: 'المصفوفة',
         emptyState: {
           title: 'لا توجد مهام بعد',
           description: 'أنشئ مهمتك الأولى للبدء في رحلة إنتاجيتك',
+        },
+        kanban: {
+          todo: 'للتنفيذ',
+          in_progress: 'قيد التنفيذ',
+          done: 'مكتمل',
+          empty: 'لا توجد مهام',
+          start: 'بدء',
+          complete: 'مكتمل',
+          reopen: 'إعادة فتح',
+          movedToInProgress: 'تم نقل المهمة إلى قيد التنفيذ',
         },
         quickAdd: {
           title: 'إضافة مهمة جديدة',
