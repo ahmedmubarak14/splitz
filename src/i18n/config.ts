@@ -447,7 +447,7 @@ const resources = {
       },
       projects: {
         inbox: 'Inbox',
-        today: 'Today',
+        learning: 'Learning',
       },
       toasts: {
         tasks: {
@@ -898,9 +898,9 @@ const resources = {
           priorityQuadrant: 'Priority (Matrix)',
           projects: {
             inbox: '📋 Inbox',
-            today: '📅 Today',
             work: '💼 Work',
             personal: '👤 Personal',
+            learning: '📚 Learning',
           },
           cancel: 'Cancel',
           add: 'Add Task',
@@ -2405,9 +2405,9 @@ const resources = {
           priorityQuadrant: 'الأولوية (المصفوفة)',
           projects: {
             inbox: '📋 صندوق الوارد',
-            today: '📅 اليوم',
             work: '💼 العمل',
             personal: '👤 شخصي',
+            learning: '📚 تعلم',
           },
           cancel: 'إلغاء',
           add: 'إضافة مهمة',
@@ -2845,7 +2845,7 @@ const resources = {
       },
       projects: {
       inbox: 'صندوق الوارد',
-      today: 'اليوم',
+      learning: 'تعلم',
     },
     notificationList: {
       loading: 'جارٍ التحميل...',

@@ -130,9 +130,9 @@ const QuickAddTask = ({ open, onOpenChange, defaultProject = 'Inbox', defaultQua
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Inbox">{t('tasks.quickAdd.projects.inbox')}</SelectItem>
-                  <SelectItem value="Today">{t('tasks.quickAdd.projects.today')}</SelectItem>
                   <SelectItem value="Work">{t('tasks.quickAdd.projects.work')}</SelectItem>
                   <SelectItem value="Personal">{t('tasks.quickAdd.projects.personal')}</SelectItem>
+                  <SelectItem value="Learning">{t('tasks.quickAdd.projects.learning')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
