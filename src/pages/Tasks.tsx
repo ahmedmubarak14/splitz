@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, LayoutList, Columns3, Grid3X3 } from 'lucide-react';
+import { Plus, LayoutList, Columns3, Grid3X3, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -10,33 +10,38 @@ import { responsiveSpacing, responsiveText } from '@/lib/responsive-utils';
 import QuickAddTask from '@/components/QuickAddTask';
 import ProjectTaskGroup from '@/components/ProjectTaskGroup';
 import KanbanBoard from '@/components/KanbanBoard';
+import ManageProjectsDialog from '@/components/ManageProjectsDialog';
 import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
 import { Link } from 'react-router-dom';
 import { useWelcomeTasks } from '@/hooks/useWelcomeTasks';
+import { useUserProjects } from '@/hooks/useUserProjects';
+import { toast } from 'sonner';
 
 type ViewMode = 'list' | 'kanban';
-
-const PROJECT_EMOJIS: Record<string, string> = {
-  Welcome: '👋',
-  Inbox: '📥',
-  Work: '💼',
-  Personal: '🏠',
-  Learning: '📚',
-};
-
-const getProjectEmoji = (project: string): string => {
-  return PROJECT_EMOJIS[project] || '📁';
-};
 
 const Tasks = () => {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
   const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [showManageProjects, setShowManageProjects] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
 
   // Seed welcome tasks for new users
   useWelcomeTasks();
+
+  const { projects, addProject, updateProject, deleteProject } = useUserProjects();
+
+  // Build emoji map from user projects
+  const projectEmojiMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    projects.forEach(p => { map[p.name] = p.emoji; });
+    return map;
+  }, [projects]);
+
+  const getProjectEmoji = (project: string): string => {
+    return projectEmojiMap[project] || '📁';
+  };
 
   // Fetch all tasks
   const { data: tasks, isLoading } = useQuery({
@@ -58,10 +63,9 @@ const Tasks = () => {
 
   const allTasks = tasks || [];
 
-  // Group tasks by project for list view, ordered like the design
+  // Group tasks by project, ordered by user's project order
   const groupedByProject = useMemo(() => {
     const groups: Record<string, typeof allTasks> = {};
-    const projectOrder = ['Welcome', 'Inbox', 'Work', 'Personal', 'Learning'];
 
     allTasks.forEach(task => {
       const proj = task.project || 'Inbox';
@@ -69,16 +73,18 @@ const Tasks = () => {
       groups[proj].push(task);
     });
 
-    // Return entries sorted by predefined order, unknown projects go last
+    // Sort by user's project order
+    const projectOrder = projects.map(p => p.name);
     const sorted: Record<string, typeof allTasks> = {};
     projectOrder.forEach(p => {
       if (groups[p]) sorted[p] = groups[p];
     });
+    // Unknown projects go last
     Object.keys(groups).forEach(p => {
       if (!sorted[p]) sorted[p] = groups[p];
     });
     return sorted;
-  }, [allTasks]);
+  }, [allTasks, projects]);
 
   const invalidateTasks = () => queryClient.invalidateQueries({ queryKey: ['focus-tasks'] });
 
@@ -119,6 +125,16 @@ const Tasks = () => {
                   <Columns3 className="w-4 h-4" />
                 </Button>
               </div>
+
+              {/* Manage Projects */}
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setShowManageProjects(true)}
+              >
+                <Settings2 className="w-4 h-4" />
+              </Button>
 
               {/* Matrix Link */}
               <Link to="/matrix">
@@ -171,6 +187,31 @@ const Tasks = () => {
         open={showQuickAdd}
         onOpenChange={setShowQuickAdd}
         defaultProject="Inbox"
+        projects={projects}
+      />
+
+      {/* Manage Projects Dialog */}
+      <ManageProjectsDialog
+        open={showManageProjects}
+        onOpenChange={setShowManageProjects}
+        projects={projects}
+        onAdd={(data) => {
+          addProject.mutate(data, {
+            onSuccess: () => toast.success(t('tasks.projects.added')),
+            onError: () => toast.error(t('tasks.projects.addFailed')),
+          });
+        }}
+        onUpdate={(data) => {
+          updateProject.mutate(data, {
+            onSuccess: () => toast.success(t('tasks.projects.updated')),
+          });
+        }}
+        onDelete={(id) => {
+          deleteProject.mutate(id, {
+            onSuccess: () => toast.success(t('tasks.projects.deleted')),
+          });
+        }}
+        isAdding={addProject.isPending}
       />
 
       {/* Mobile Quick Actions FAB */}

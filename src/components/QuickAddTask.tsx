@@ -20,12 +20,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from './ui/select';
+import type { UserProject } from '@/hooks/useUserProjects';
 
 interface QuickAddTaskProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultProject?: string;
   defaultQuadrant?: string | null;
+  projects?: UserProject[];
 }
 
 const QUADRANT_OPTIONS = [
@@ -35,7 +37,7 @@ const QUADRANT_OPTIONS = [
   { id: 'not_urgent_unimportant', emoji: '🗑️', color: 'text-green-600' },
 ];
 
-const QuickAddTask = ({ open, onOpenChange, defaultProject = 'Inbox', defaultQuadrant = null }: QuickAddTaskProps) => {
+const QuickAddTask = ({ open, onOpenChange, defaultProject = 'Inbox', defaultQuadrant = null, projects = [] }: QuickAddTaskProps) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [title, setTitle] = useState('');
@@ -43,6 +45,9 @@ const QuickAddTask = ({ open, onOpenChange, defaultProject = 'Inbox', defaultQua
   const [project, setProject] = useState(defaultProject);
   const [dueDate, setDueDate] = useState<Date | undefined>();
   const [priorityQuadrant, setPriorityQuadrant] = useState<string | null>(defaultQuadrant);
+
+  // Filter out Welcome from project options for new tasks
+  const availableProjects = projects.filter(p => p.name !== 'Welcome');
 
   const addTask = useMutation({
     mutationFn: async () => {
@@ -129,10 +134,20 @@ const QuickAddTask = ({ open, onOpenChange, defaultProject = 'Inbox', defaultQua
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Inbox">{t('tasks.quickAdd.projects.inbox')}</SelectItem>
-                  <SelectItem value="Work">{t('tasks.quickAdd.projects.work')}</SelectItem>
-                  <SelectItem value="Personal">{t('tasks.quickAdd.projects.personal')}</SelectItem>
-                  <SelectItem value="Learning">{t('tasks.quickAdd.projects.learning')}</SelectItem>
+                  {availableProjects.length > 0 ? (
+                    availableProjects.map((p) => (
+                      <SelectItem key={p.id} value={p.name}>
+                        {p.emoji} {p.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <>
+                      <SelectItem value="Inbox">📥 Inbox</SelectItem>
+                      <SelectItem value="Work">💼 Work</SelectItem>
+                      <SelectItem value="Personal">🏠 Personal</SelectItem>
+                      <SelectItem value="Learning">📚 Learning</SelectItem>
+                    </>
+                  )}
                 </SelectContent>
               </Select>
             </div>
