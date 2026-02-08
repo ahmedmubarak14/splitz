@@ -10,7 +10,6 @@ import NavigationCustomizer from './NavigationCustomizer';
 import {
   Home,
   ListChecks,
-  Grid3x3,
   Brain,
   Target,
   DollarSign,
@@ -73,7 +72,7 @@ export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: Mobi
       title: t('nav.productivity'),
       items: [
         { path: '/tasks', icon: ListChecks, label: t('nav.tasks'), emoji: '✅' },
-        { path: '/matrix', icon: Grid3x3, label: t('nav.matrix'), emoji: '📊' },
+        
         { path: '/focus', icon: Brain, label: t('nav.focus'), emoji: '🎯' },
         { path: '/habits', icon: Target, label: t('nav.habits'), emoji: '🔥' },
       ],
