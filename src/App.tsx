@@ -35,7 +35,7 @@ const Tasks = lazy(() => import("./pages/Tasks"));
 const Matrix = lazy(() => import("./pages/Matrix"));
 const Focus = lazy(() => import("./pages/Focus"));
 const Expenses = lazy(() => import("./pages/Expenses"));
-const Challenges = lazy(() => import("./pages/Challenges"));
+
 const Subscriptions = lazy(() => import("./pages/Subscriptions"));
 const Trips = lazy(() => import("./pages/Trips"));
 const TripDetails = lazy(() => import("./pages/TripDetails"));
@@ -57,7 +57,7 @@ export const prefetchTasks = () => import("./pages/Tasks");
 export const prefetchHabits = () => import("./pages/Habits");
 export const prefetchExpenses = () => import("./pages/Expenses");
 export const prefetchFocus = () => import("./pages/Focus");
-export const prefetchChallenges = () => import("./pages/Challenges");
+
 
 // Enhanced loading fallback with brand styling
 const PageLoader = () => (
@@ -139,7 +139,7 @@ const AppContent = () => {
             <Route path="/habits" element={<Habits />} />
             <Route path="/focus" element={<Focus />} />
             <Route path="/expenses" element={<Expenses />} />
-            <Route path="/challenges" element={<Challenges />} />
+            
             <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="/trips" element={<Trips />} />
             <Route path="/friends" element={<Friends />} />
@@ -221,7 +221,7 @@ const AppContent = () => {
             <Route path="/matrix" element={<ProtectedRoute><Matrix /></ProtectedRoute>} />
             <Route path="/focus" element={<ProtectedRoute><Focus /></ProtectedRoute>} />
             <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
-            <Route path="/challenges" element={<ProtectedRoute><Challenges /></ProtectedRoute>} />
+            
             <Route path="/subscriptions" element={<ProtectedRoute><Subscriptions /></ProtectedRoute>} />
             <Route path="/trips" element={<ProtectedRoute><Trips /></ProtectedRoute>} />
             <Route path="/trips/:id" element={<ProtectedRoute><TripDetails /></ProtectedRoute>} />
