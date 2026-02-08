@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { 
   Sparkles, Target, DollarSign, Users, Zap, 
   Clock, Shield, TrendingUp, CheckCircle2,
-  Rocket, Menu, X, CheckSquare, CreditCard, Plane
+  Rocket, Menu, X, CheckSquare, CreditCard, Plane, Grid3X3
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -218,6 +218,19 @@ const Index = () => {
               <CardContent className="p-5">
                 <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.tasks.title')}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{t('features.tasks.desc')}</p>
+              </CardContent>
+            </Card>
+
+            {/* Eisenhower Matrix */}
+            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
+              <div className="px-5 py-4 border-b border-border bg-muted/30">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                  <Grid3X3 className="w-5 h-5 text-purple-600" />
+                </div>
+              </div>
+              <CardContent className="p-5">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.matrix.title')}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.matrix.desc')}</p>
               </CardContent>
             </Card>
 
