@@ -12,12 +12,13 @@ import ProjectTaskGroup from '@/components/ProjectTaskGroup';
 import KanbanBoard from '@/components/KanbanBoard';
 import { MobileQuickActionsFAB } from '@/components/MobileQuickActionsFAB';
 import { Link } from 'react-router-dom';
+import { useWelcomeTasks } from '@/hooks/useWelcomeTasks';
 
 type ViewMode = 'list' | 'kanban';
 
 const PROJECT_EMOJIS: Record<string, string> = {
+  Welcome: '👋',
   Inbox: '📥',
-  Today: '☀️',
   Work: '💼',
   Personal: '🏠',
   Learning: '📚',
@@ -33,6 +34,9 @@ const Tasks = () => {
   const queryClient = useQueryClient();
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
+
+  // Seed welcome tasks for new users
+  useWelcomeTasks();
 
   // Fetch all tasks
   const { data: tasks, isLoading } = useQuery({
@@ -54,15 +58,26 @@ const Tasks = () => {
 
   const allTasks = tasks || [];
 
-  // Group tasks by project for list view
+  // Group tasks by project for list view, ordered like the design
   const groupedByProject = useMemo(() => {
     const groups: Record<string, typeof allTasks> = {};
+    const projectOrder = ['Welcome', 'Inbox', 'Work', 'Personal', 'Learning'];
+
     allTasks.forEach(task => {
       const proj = task.project || 'Inbox';
       if (!groups[proj]) groups[proj] = [];
       groups[proj].push(task);
     });
-    return groups;
+
+    // Return entries sorted by predefined order, unknown projects go last
+    const sorted: Record<string, typeof allTasks> = {};
+    projectOrder.forEach(p => {
+      if (groups[p]) sorted[p] = groups[p];
+    });
+    Object.keys(groups).forEach(p => {
+      if (!sorted[p]) sorted[p] = groups[p];
+    });
+    return sorted;
   }, [allTasks]);
 
   const invalidateTasks = () => queryClient.invalidateQueries({ queryKey: ['focus-tasks'] });
