@@ -32,7 +32,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Habits = lazy(() => import("./pages/Habits"));
 const Tasks = lazy(() => import("./pages/Tasks"));
-const Matrix = lazy(() => import("./pages/Matrix"));
+
 const Focus = lazy(() => import("./pages/Focus"));
 const Expenses = lazy(() => import("./pages/Expenses"));
 
@@ -218,7 +218,7 @@ const AppContent = () => {
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/habits" element={<ProtectedRoute><Habits /></ProtectedRoute>} />
             <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
-            <Route path="/matrix" element={<ProtectedRoute><Matrix /></ProtectedRoute>} />
+            
             <Route path="/focus" element={<ProtectedRoute><Focus /></ProtectedRoute>} />
             <Route path="/expenses" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
             
