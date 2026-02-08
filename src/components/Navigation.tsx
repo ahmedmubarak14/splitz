@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ListChecks, Brain, DollarSign, Menu, CreditCard, Plane, Flame, Users } from 'lucide-react';
+import { Home, ListChecks, Brain, DollarSign, Menu, CreditCard, Plane, Grid3X3, Flame, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -14,7 +14,7 @@ import {
   prefetchFocus, 
 } from '@/App';
 
-type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'focus' | 'expenses' | 'subscriptions' | 'trips' | 'friends';
+type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'matrix' | 'focus' | 'expenses' | 'subscriptions' | 'trips' | 'friends';
 
 const Navigation = () => {
   const location = useLocation();
@@ -43,7 +43,7 @@ const Navigation = () => {
     { id: 'dashboard' as NavItemId, path: '/dashboard', icon: Home, label: t('nav.dashboard') },
     { id: 'habits' as NavItemId, path: '/habits', icon: Flame, label: t('nav.habits') },
     { id: 'tasks' as NavItemId, path: '/tasks', icon: ListChecks, label: t('nav.tasks') },
-    
+    { id: 'matrix' as NavItemId, path: '/matrix', icon: Grid3X3, label: t('nav.matrix') },
     { id: 'focus' as NavItemId, path: '/focus', icon: Brain, label: t('nav.focus') },
     { id: 'expenses' as NavItemId, path: '/expenses', icon: DollarSign, label: t('nav.expenses') },
     { id: 'subscriptions' as NavItemId, path: '/subscriptions', icon: CreditCard, label: t('nav.subscriptions') },
