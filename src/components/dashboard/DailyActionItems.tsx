@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 interface ActionItem {
   id: string;
   title: string;
-  type: 'habit' | 'task' | 'expense' | 'challenge';
+  type: 'habit' | 'task' | 'expense';
   urgency: 'high' | 'medium' | 'low' | 'overdue';
   action: string;
   route: string;
@@ -20,14 +20,12 @@ interface DailyActionItemsProps {
   habitsDue: number;
   tasksDue: number;
   expensesPending: number;
-  challengesActive: number;
 }
 
 export const DailyActionItems = ({
   habitsDue,
   tasksDue,
   expensesPending,
-  challengesActive
 }: DailyActionItemsProps) => {
   const { t } = useTranslation();
   const isRTL = useIsRTL();
@@ -68,16 +66,8 @@ export const DailyActionItems = ({
     });
   }
 
-  if (challengesActive === 0) {
-    actions.push({
-      id: 'challenges',
-      title: t('insights.suggestions.joinChallenge'),
-      type: 'challenge',
-      urgency: 'low',
-      action: 'Join',
-      route: '/challenges'
-    });
-  }
+
+
 
   const getUrgencyIcon = (urgency: string) => {
     switch (urgency) {

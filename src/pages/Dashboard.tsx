@@ -63,7 +63,6 @@ export default function Dashboard() {
   const [stats, setStats] = useState({
     activeHabits: 0,
     longestStreak: 0,
-    activeChallenges: 0,
     pendingExpenses: 0,
     totalOwed: 0,
     totalExpenseGroups: 0,
@@ -122,8 +121,6 @@ export default function Dashboard() {
       // Batch all queries together for better performance
       const [
         habitsResult,
-        createdChallengesResult,
-        participantChallengesResult,
         focusSessionsResult,
         netBalancesOwedResult,
         groupMembershipsResult,
@@ -134,8 +131,6 @@ export default function Dashboard() {
         todayCheckInsResult
       ] = await Promise.all([
         supabase.from('habits').select('*').eq('user_id', user.id),
-        supabase.from('challenges').select('*').eq('creator_id', user.id).gte('end_date', today),
-        supabase.from('challenge_participants').select('challenge_id').eq('user_id', user.id),
         supabase.from('focus_sessions').select('*').eq('user_id', user.id).not('end_time', 'is', null).eq('tree_survived', true),
         supabase.from('net_balances').select('*').eq('from_user_id', user.id),
         supabase.from('expense_group_members').select('group_id').eq('user_id', user.id),
@@ -147,8 +142,6 @@ export default function Dashboard() {
       ]);
 
       const habits = habitsResult.data;
-      const createdChallenges = createdChallengesResult.data;
-      const participantChallenges = participantChallengesResult.data;
       const focusSessions = focusSessionsResult.data;
       const netBalancesOwed = netBalancesOwedResult.data;
       const groupMemberships = groupMembershipsResult.data;
@@ -157,20 +150,6 @@ export default function Dashboard() {
       const subscriptions = subscriptionsResult.data;
       const allNetBalances = allNetBalancesResult.data;
       const todayCheckIns = todayCheckInsResult.data;
-
-      // Process participant challenges
-      const participantChallengeIds = participantChallenges?.map(p => p.challenge_id) || [];
-      let joinedChallenges: any[] = [];
-      if (participantChallengeIds.length > 0) {
-        const { data } = await supabase
-          .from('challenges')
-          .select('*')
-          .in('id', participantChallengeIds)
-          .gte('end_date', today);
-        joinedChallenges = data || [];
-      }
-
-      const challenges = [...(createdChallenges || []), ...joinedChallenges];
 
       // Calculate focus minutes
       const totalFocusMinutes = focusSessions?.reduce((sum, session) => 
@@ -257,7 +236,6 @@ export default function Dashboard() {
       setStats({
         activeHabits: habits?.length || 0,
         longestStreak,
-        activeChallenges: challenges?.length || 0,
         pendingExpenses: netBalancesOwed?.length || 0,
         totalOwed,
         totalExpenseGroups: uniqueGroupIds.length,
@@ -287,9 +265,9 @@ export default function Dashboard() {
       color: 'text-primary'
     },
     { 
-      label: t('dashboard.stats.activeChallenges'),
-      value: stats.activeChallenges,
-      subtitle: t('dashboard.stats.inProgress'),
+      label: t('dashboard.stats.pendingExpenses'),
+      value: stats.pendingExpenses,
+      subtitle: t('dashboard.stats.toSettle'),
       icon: Clock,
       color: 'text-secondary'
     },
@@ -360,7 +338,6 @@ export default function Dashboard() {
             habitsDue={habitsDue}
             tasksDue={todaysTasks.length}
             expensesPending={stats.pendingExpenses}
-            challengesActive={stats.activeChallenges}
           />
           
           <TodaysTasksWidget tasks={todaysTasks} onRefresh={fetchDashboardData} />

@@ -12,7 +12,7 @@ import {
   ListChecks,
   Grid3x3,
   Brain,
-  Trophy,
+  Target,
   DollarSign,
   CreditCard,
   MapPin,
@@ -26,7 +26,6 @@ import {
   prefetchHabits, 
   prefetchExpenses, 
   prefetchFocus, 
-  prefetchChallenges 
 } from '@/App';
 
 interface MobileDrawerNavProps {
@@ -76,7 +75,7 @@ export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: Mobi
         { path: '/tasks', icon: ListChecks, label: t('nav.tasks'), emoji: '✅' },
         { path: '/matrix', icon: Grid3x3, label: t('nav.matrix'), emoji: '📊' },
         { path: '/focus', icon: Brain, label: t('nav.focus'), emoji: '🎯' },
-        { path: '/habits', icon: Trophy, label: t('nav.habits'), emoji: '🔥' },
+        { path: '/habits', icon: Target, label: t('nav.habits'), emoji: '🔥' },
       ],
     },
     {
@@ -91,7 +90,6 @@ export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: Mobi
       title: t('nav.social'),
       items: [
         { path: '/friends', icon: Users, label: t('nav.friends'), emoji: '👥' },
-        { path: '/challenges', icon: Trophy, label: t('nav.challenges'), emoji: '🏆' },
       ],
     },
     {
@@ -111,7 +109,7 @@ export function MobileDrawerNav({ open, onOpenChange, onNavigationChange }: Mobi
       case '/habits': prefetchHabits(); break;
       case '/expenses': prefetchExpenses(); break;
       case '/focus': prefetchFocus(); break;
-      case '/challenges': prefetchChallenges(); break;
+      
     }
   };
 

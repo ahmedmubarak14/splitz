@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ListChecks, Brain, DollarSign, Trophy, Menu, CreditCard, Plane, Grid3X3, Flame, Users } from 'lucide-react';
+import { Home, ListChecks, Brain, DollarSign, Menu, CreditCard, Plane, Grid3X3, Flame, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -12,10 +12,9 @@ import {
   prefetchHabits, 
   prefetchExpenses, 
   prefetchFocus, 
-  prefetchChallenges 
 } from '@/App';
 
-type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'matrix' | 'focus' | 'expenses' | 'subscriptions' | 'trips' | 'challenges' | 'friends';
+type NavItemId = 'dashboard' | 'habits' | 'tasks' | 'matrix' | 'focus' | 'expenses' | 'subscriptions' | 'trips' | 'friends';
 
 const Navigation = () => {
   const location = useLocation();
@@ -26,7 +25,7 @@ const Navigation = () => {
     'tasks',
     'focus',
     'expenses',
-    'challenges',
+    'habits',
   ]);
 
   // Dynamic item limiting based on screen size
@@ -49,7 +48,6 @@ const Navigation = () => {
     { id: 'expenses' as NavItemId, path: '/expenses', icon: DollarSign, label: t('nav.expenses') },
     { id: 'subscriptions' as NavItemId, path: '/subscriptions', icon: CreditCard, label: t('nav.subscriptions') },
     { id: 'trips' as NavItemId, path: '/trips', icon: Plane, label: t('nav.trips') },
-    { id: 'challenges' as NavItemId, path: '/challenges', icon: Trophy, label: t('nav.challenges') },
     { id: 'friends' as NavItemId, path: '/friends', icon: Users, label: t('nav.friends') },
   ];
 
@@ -87,7 +85,7 @@ const Navigation = () => {
       case '/habits': prefetchHabits(); break;
       case '/expenses': prefetchExpenses(); break;
       case '/focus': prefetchFocus(); break;
-      case '/challenges': prefetchChallenges(); break;
+      
     }
   };
 

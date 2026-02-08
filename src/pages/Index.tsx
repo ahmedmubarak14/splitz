@@ -3,9 +3,9 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
-  Sparkles, Target, DollarSign, Trophy, Users, Zap, 
-  Star, Clock, Shield, TrendingUp, MessageCircle, CheckCircle2,
-  Rocket, Menu, X, Calendar, CheckSquare, Grid3x3, CreditCard, Plane
+  Sparkles, Target, DollarSign, Users, Zap, 
+  Clock, Shield, TrendingUp, CheckCircle2,
+  Rocket, Menu, X, CheckSquare, CreditCard, Plane
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -195,45 +195,6 @@ const Index = () => {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Calendar Feature */}
-            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
-              <div className="px-5 py-4 border-b border-border bg-muted/30">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-blue-600" />
-                </div>
-              </div>
-              <CardContent className="p-5">
-                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.calendar.title')}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.calendar.desc')}</p>
-              </CardContent>
-            </Card>
-
-            {/* Task Management */}
-            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
-              <div className="px-5 py-4 border-b border-border bg-muted/30">
-                <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
-                  <CheckSquare className="w-5 h-5 text-green-600" />
-                </div>
-              </div>
-              <CardContent className="p-5">
-                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.tasks.title')}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.tasks.desc')}</p>
-              </CardContent>
-            </Card>
-
-            {/* Eisenhower Matrix */}
-            <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
-              <div className="px-5 py-4 border-b border-border bg-muted/30">
-                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center">
-                  <Grid3x3 className="w-5 h-5 text-indigo-600" />
-                </div>
-              </div>
-              <CardContent className="p-5">
-                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.matrix.title')}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.matrix.desc')}</p>
-              </CardContent>
-            </Card>
-
             {/* Habit Streaks */}
             <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
               <div className="px-5 py-4 border-b border-border bg-muted/30">
@@ -247,16 +208,16 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            {/* Group Challenges */}
+            {/* Task Management */}
             <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
               <div className="px-5 py-4 border-b border-border bg-muted/30">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                  <Trophy className="w-5 h-5 text-purple-600" />
+                <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                  <CheckSquare className="w-5 h-5 text-green-600" />
                 </div>
               </div>
               <CardContent className="p-5">
-                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.challenges.title')}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.challenges.desc')}</p>
+                <h3 className="text-lg font-semibold mb-2 text-foreground">{t('features.tasks.title')}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{t('features.tasks.desc')}</p>
               </CardContent>
             </Card>
 
@@ -330,7 +291,7 @@ const Index = () => {
             <Card className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden hover:shadow-md transition-all">
               <div className="px-5 py-6 border-b border-border bg-muted/30 text-center">
                 <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-blue-600" />
+                  <CheckSquare className="w-6 h-6 text-blue-600" />
                 </div>
                 <div className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary text-primary-foreground font-bold text-sm">
                   1

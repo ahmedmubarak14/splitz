@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Brain, Plus, DollarSign, CheckCircle, Trophy, Zap } from 'lucide-react';
+import { Brain, Plus, DollarSign, CheckCircle, Zap } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useIsRTL } from '@/lib/rtl-utils';
 
@@ -47,14 +47,6 @@ export function QuickActionsHub({ focusMinutesThisWeek }: QuickActionsHubProps) 
       bgColor: 'bg-secondary/10',
       onClick: () => navigate('/habits')
     },
-    {
-      icon: Trophy,
-      title: t('dashboard.createChallenge'),
-      subtitle: t('dashboard.setGoal'),
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50 dark:bg-orange-950/20',
-      onClick: () => navigate('/challenges')
-    }
   ], [navigate, t, focusMinutesThisWeek]);
 
   return (
